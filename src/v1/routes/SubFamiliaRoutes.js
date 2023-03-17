@@ -1,0 +1,25 @@
+const express = require("express");
+const router = express.Router();
+const subfamiliaController = require("../../controllers/SubFamiliaController")
+
+router.get("/", (req, res) => {
+  res.send("obtener todas las subfamilias");
+});
+
+router.get("/:subfamiliaId", (req, res) => {
+  res.send("Get an existing workout");
+});
+
+router.post("/", (req, res) => {
+  subfamiliaController.agregarSubFamilia(req,res)
+});
+
+router.patch("/:subfamiliaId", (req, res) => {
+  res.send("Update an existing workout");
+});
+
+router.delete("/:subfamiliaId", (req, res) => {
+  res.send("Delete an existing workout");
+});
+
+module.exports = router;
