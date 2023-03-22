@@ -10,6 +10,16 @@ const obtener_familias = (callback) => {
     connection.end();
 }
 
+const obtener_familias_opt = (callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query("SELECT f.idfamilia as 'value', f.nombre_largo as 'label' FROM familia f;",
+    (err,rows,fields)=>{
+        callback(rows);
+    })
+    connection.end();
+}
+
 
 const agregar_familia = (data,callback) => {
     const connection = mysql_connection.getConnection();
@@ -26,6 +36,7 @@ const agregar_familia = (data,callback) => {
 
 module.exports = {
     obtener_familias,
-    agregar_familia
+    agregar_familia,
+    obtener_familias_opt
 }
 

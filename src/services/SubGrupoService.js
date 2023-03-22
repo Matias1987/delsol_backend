@@ -1,6 +1,14 @@
 const SubGrupoDB = require("../database/SubGrupo")
 
-const obtenerSubgrupos = (req, res) => {}
+const obtener_subgrupos_bygrupo_opt = (grupoid,callback) => {
+  SubGrupoDB.obtener_subgrupos_bygrupo_opt(grupoid,(rows)=>{
+    return callback(rows);
+  })
+}
+
+const obtenerSubgrupos = (req, res) => {
+
+}
 
 const obtenerSubgrupo = (req, res) => {}
 
@@ -18,4 +26,5 @@ module.exports = {
     obtenerSubgrupo,
     agregarSubgrupo,
     editarSubgrupo,
+    obtener_subgrupos_bygrupo_opt,
   };

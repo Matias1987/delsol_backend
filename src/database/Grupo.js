@@ -10,6 +10,16 @@ const obtener_grupos = (callback) => {
     connection.end();
 }
 
+const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query("SELECT g.idgrupo as 'value', g.nombre_largo as 'label' FROM grupo g WHERE g.subfamilia_idsubfamilia="+idsubfamilia+";",
+    (err,rows,fields)=>{
+        return callback(rows);
+    });
+    connection.end();
+}
+
 const agregar_grupo = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -29,6 +39,7 @@ const agregar_grupo = (data,callback) => {
 
 module.exports = {
     obtener_grupos,
-    agregar_grupo
+    agregar_grupo,
+    obtener_grupos_bysubfamilia_opt,
 }
 

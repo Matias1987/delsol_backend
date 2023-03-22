@@ -26,7 +26,17 @@ const agregar_codigo = (data,callback) => {
     connection.end();
 }
 
+const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query("SELECT c.idcodigo AS 'value', c.codigo AS 'label' FROM codigo c WHERE c.subgrupo_idsubgrupo = "+idsubgrupo+";",(err,rows,fields)=>{
+        return callback(rows);
+    });
+    connection.end();
+}
+
 module.exports = {
     obtener_codigos,
-    agregar_codigo
+    agregar_codigo,
+    obtener_codigos_bysubgrupo_opt,
 }

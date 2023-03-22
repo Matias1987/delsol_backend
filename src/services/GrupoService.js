@@ -9,9 +9,16 @@ const agregarGrupo = (data,callback) => {
 }
 const editarGrupo = (req, res) => {}
 
+const obtener_grupos_bysubfamilia_opt = (idsubfamilia,callback) =>{
+  GrupoDB.obtener_grupos_bysubfamilia_opt(idsubfamilia,(rows)=>{
+    return callback(rows);
+  })
+}
+
 module.exports = {
     obtenerGrupo,
     obtenerGrupos,
     agregarGrupo,
     editarGrupo,
+    obtener_grupos_bysubfamilia_opt,
   };

@@ -10,6 +10,12 @@ router.get("/:familiaId", (req, res) => {
   res.send("obtener una familia con id");
 });
 
+router.get("/menu/options/", (req, res) => {
+  familiaController.obtener_familias_opt(req,res)
+});
+
+
+
 router.post("/", (req, res) => {
   familiaController.agregarFamilia(req,res);
 });

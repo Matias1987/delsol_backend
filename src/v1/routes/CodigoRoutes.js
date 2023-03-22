@@ -10,6 +10,10 @@ router.get("/:codigoId", (req, res) => {
   res.send("Get an existing workout");
 });
 
+router.get("/optforsubgrupo/:subgrupoId", (req, res) => {
+  codigoController.obtener_codigos_bysubgrupo_opt(req,res);
+});
+
 router.post("/", (req, res) => {
   codigoController.agregarCodigo(req,res);
 });

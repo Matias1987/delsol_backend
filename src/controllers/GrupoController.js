@@ -18,10 +18,24 @@ const agregarGrupo = (req, res) => {
 
 const editarGrupo = (req, res) => {}
 
+const obtener_grupos_bysubfamilia_opt = (req,res)=>{
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  const {params:{subfamiliaId}} = req;
+  grupoService.obtener_grupos_bysubfamilia_opt(
+    subfamiliaId,
+    (rows)=>{
+      res.status(201).send({status:'OK', data:rows});
+    }
+  )
+}
+
 
 module.exports = {
     obtenerGrupo,
     obtenerGrupos,
     agregarGrupo,
     editarGrupo,
+    obtener_grupos_bysubfamilia_opt,
   };

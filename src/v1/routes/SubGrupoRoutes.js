@@ -10,6 +10,10 @@ router.get("/:subgrupoId", (req, res) => {
   res.send("Get an existing workout");
 });
 
+router.get("/optionsforgrupo/:grupoId", (req, res) => {
+  subGrupoController.obtener_subgrupos_bygrupo_opt(req,res);
+});
+
 router.post("/", (req, res) => {
   subGrupoController.agregarSubgrupo(req,res);
 });

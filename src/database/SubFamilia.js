@@ -10,6 +10,18 @@ const obtener_subfamilias = (callback) => {
     connection.end();
 }
 
+const obtener_subfamilias_byfamilia_opt = (idfamilia,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(
+        "SELECT sf.idsubfamilia as 'value', sf.nombre_largo as 'label' FROM subfamilia sf WHERE sf.familia_idfamilia = "+idfamilia+";",
+        (err,rows,fields) => {
+            return callback(rows);   
+        }
+    )
+    connection.end();
+}
+
 
 const agregar_subfamilia = (data,callback) => {
     const connection = mysql_connection.getConnection();
@@ -26,6 +38,7 @@ const agregar_subfamilia = (data,callback) => {
 
 module.exports = {
     obtener_subfamilias,
-    agregar_subfamilia
+    agregar_subfamilia,
+    obtener_subfamilias_byfamilia_opt,
 }
 

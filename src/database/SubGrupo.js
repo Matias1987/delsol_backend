@@ -1,5 +1,15 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const obtener_subgrupos_bygrupo_opt = (grupoid,callback)=>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query("SELECT sg.idsubgrupo as 'value', sg.nombre_largo as 'label' FROM subgrupo sg WHERE sg.grupo_idgrupo="+grupoid+";",
+    (err,rows,fields)=>{
+        return callback(rows);
+    })
+    connection.end();
+}
+
 const obtener_subgrupos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -28,5 +38,6 @@ const agregar_subgrupo = (data,callback) => {
 
 module.exports = {
     obtener_subgrupos,
-    agregar_subgrupo
+    agregar_subgrupo,
+    obtener_subgrupos_bygrupo_opt
 }
