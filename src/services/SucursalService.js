@@ -1,6 +1,11 @@
 const SucursalDB = require("../database/Sucursal")
 
-const obtenerSucursales = (req, res) => {}
+const obtenerSucursales = (callback) => {
+  SucursalDB.obtener_sucursales((rows)=>{
+    return callback(rows)
+  })
+
+}
 
 const obtenerSucursal = (req, res) => {}
 

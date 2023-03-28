@@ -74,6 +74,12 @@ app.use("/api/v1/cargamanual",cargaManualRoutes);
 const tarjetaRoutes = require("./v1/routes/TarjetaRoutes");
 app.use("/api/v1/tarjetas",tarjetaRoutes);
 
+const facturaRoutes = require("./v1/routes/FacturaRoutes");
+app.use("/api/v1/facturas",facturaRoutes);
+
+const proveedorRoutes = require("./v1/routes/ProveedorRoutes");
+app.use("/api/v1/proveedores",proveedorRoutes);
+
 
 
 

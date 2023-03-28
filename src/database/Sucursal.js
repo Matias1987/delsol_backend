@@ -4,7 +4,7 @@ const obtener_sucursales = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query("select * from sucursal",(err,rows,fields)=>{
-        return callback(rows);
+        callback(rows);
     })
     connection.end();
 }

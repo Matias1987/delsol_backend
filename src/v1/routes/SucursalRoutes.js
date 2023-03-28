@@ -3,7 +3,7 @@ const router = express.Router();
 const sucursalController = require("../../controllers/SucursalController")
 
 router.get("/", (req, res) => {
-  res.send("Get all workouts");
+  sucursalController.obtenerSucursales(req,res)
 });
 
 router.get("/:sucursalId", (req, res) => {
