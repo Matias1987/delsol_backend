@@ -1,7 +1,11 @@
 const StockDB = require("../database/Stock")
 
 
-const obtenerListaStock = (req, res) => {}
+const obtenerListaStock = (data,callback) => {
+  return StockDB.obtener_stock(null,(rows)=>{
+    return callback(rows)
+  })
+}
 
 const obtenerStock = (req, res) =>{}
 

@@ -2,7 +2,15 @@ const grupoService = require("../services/GrupoService")
 
 const obtenerGrupo = (req, res) => {}
 
-const obtenerGrupos = (req, res) => {}
+const obtenerGrupos = (req, res) => {
+   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+   grupoService.obtenerGrupos((rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+   })
+}
 
 const agregarGrupo = (req, res) => {
   const {body} = req;

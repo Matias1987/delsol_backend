@@ -3,7 +3,7 @@ const router = express.Router();
 const familiaController = require("../../controllers/FamiliaController");
 
 router.get("/", (req, res) => {
-  res.send("obtener todas las familias...");
+  familiaController.obtenerFamilias(req,res)
 });
 
 router.get("/:familiaId", (req, res) => {

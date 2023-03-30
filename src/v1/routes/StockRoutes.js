@@ -3,7 +3,7 @@ const router = express.Router();
 const stockController = require("../../controllers/StockController")
 
 router.get("/", (req, res) => {
-  res.send("Get all workouts");
+  stockController.obtenerListaStock(req,res)
 });
 
 router.get("/:stockId", (req, res) => {

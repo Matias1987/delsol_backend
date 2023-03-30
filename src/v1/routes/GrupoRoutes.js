@@ -3,7 +3,7 @@ const router = express.Router();
 const grupoController = require("../../controllers/GrupoController")
 
 router.get("/", (req, res) => {
-  res.send("Obtener todos los grupos");
+  grupoController.obtenerGrupos(req,res)
 });
 
 router.get("/:grupoId", (req, res) => {

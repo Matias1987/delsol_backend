@@ -3,7 +3,7 @@ const router = express.Router();
 const subGrupoController = require("../../controllers/SubGrupoController");
 
 router.get("/", (req, res) => {
-  res.send("Get all workouts");
+  subGrupoController.obtenerSubgrupos(req,res)
 });
 
 router.get("/:subgrupoId", (req, res) => {

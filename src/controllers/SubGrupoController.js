@@ -1,6 +1,14 @@
 const subgrupoService = require("../services/SubGrupoService")
 
-const obtenerSubgrupos = (req, res) => {}
+const obtenerSubgrupos = (req, res) => {
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  
+  subgrupoService.obtenerSubgrupos((rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
 
 const obtenerSubgrupo = (req, res) => {
 

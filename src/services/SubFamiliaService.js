@@ -1,6 +1,12 @@
 const SubFamiliaDB = require("../database/SubFamilia")
 
-const obtenerSubFamilias = (req, res) => {}
+const obtenerSubFamilias = (callback) => {
+  SubFamiliaDB.obtener_subfamilias(
+    (rows)=>{
+      return callback(rows);
+    }
+    )
+}
 const obtenerSubFamilia = (data,callback) => {
   
 }

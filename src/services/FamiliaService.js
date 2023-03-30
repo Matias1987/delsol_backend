@@ -1,6 +1,12 @@
 const familiaDB = require("../database/Familia");
 
-const obtenerFamilias = (req, res) => {}
+const obtenerFamilias = (callback) => {
+
+  familiaDB.obtener_familias((rows)=>{
+    return callback(rows);
+  })
+
+}
 
 const obtenerFamilia = (req, res) => {}
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const subfamiliaController = require("../../controllers/SubFamiliaController")
 
 router.get("/", (req, res) => {
-  res.send("obtener todas las subfamilias");
+  subfamiliaController.obtenerSubFamilias(req,res)
 });
 
 router.get("/:subfamiliaId", (req, res) => {

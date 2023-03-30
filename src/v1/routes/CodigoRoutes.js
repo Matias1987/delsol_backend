@@ -3,7 +3,7 @@ const router = express.Router();
 const codigoController = require("../../controllers/CodigoController")
 
 router.get("/", (req, res) => {
-  res.send("Obtener todos los codigos");
+  codigoController.obtenerCodigos(req,res)
 });
 
 router.get("/:codigoId", (req, res) => {
