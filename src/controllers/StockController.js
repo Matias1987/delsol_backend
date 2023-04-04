@@ -1,5 +1,18 @@
 const stockService = require("../services/StockService")
 
+const search_stock = (req,res) => {
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  
+  const {params:{idsucursal, search_value}} = req;
+
+  stockService.search_stock(search_value,idsucursal,(rows)=>{
+    return res.status(201).send({status:'OK', data:rows});
+  })
+
+}
+
 const obtener_detalle_stock_sucursal = (req,res)=>{
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
   res.header("Access-Control-Allow-Origin", "*");
@@ -57,4 +70,5 @@ module.exports = {
     editarStock,
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
+    search_stock,
   };

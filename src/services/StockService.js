@@ -1,5 +1,14 @@
 const StockDB = require("../database/Stock")
 
+
+const search_stock = (search_value, idsucursal, callback) => {
+
+  StockDB.search_stock(search_value,idsucursal,(rows)=>{
+    return callback(rows);
+  })
+
+}
+
 const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
   return StockDB.obtener_detalle_stock_sucursal(idsucursal,idcodigo,(rows)=>{
     return callback(rows)
@@ -36,4 +45,5 @@ module.exports = {
     editarStock,
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
+    search_stock,
   };

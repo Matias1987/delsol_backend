@@ -14,6 +14,12 @@ router.get("/porsubgrupo/:idsubgrupo", (req, res) => {
   stockController.obtener_stock_por_subgrupo(req,res)
 });
 
+router.get("/search/:idsucursal/:search_value", (req, res) => {
+  stockController.search_stock(req,res)
+});
+
+
+
 router.get("/detalle/:idsucursal/:idcodigo", (req, res) => {
   stockController.obtener_detalle_stock_sucursal(req,res)
 });

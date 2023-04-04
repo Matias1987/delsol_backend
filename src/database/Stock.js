@@ -1,11 +1,28 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+/* FOR SEARCH PURPOSES, the client sends a code as a parameter for search and
+    the server returns a list of stocks rows
+*/
+
+const search_stock = (search_value, idsucursal, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const sql = `SELECT c.idcodigo,  c.codigo, c.descripcion  FROM codigo c, stock s WHERE 
+                c.idcodigo=s.codigo_idcodigo 
+                AND s.sucursal_idsucursal = ${idsucursal} 
+                AND c.codigo LIKE '%${search_value}%';`
+    connection.query(sql,(err,rows)=>{
+        callback(rows);
+    })
+    connection.end();
+}
 
 const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
 
     const sql = `SELECT 
+                c.idcodigo,
                 c.codigo AS 'codigo',
                 CONCAT(
                     f.nombre_corto,' / ',sf.nombre_corto, ' / ',
@@ -61,6 +78,7 @@ const obtener_stock = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     const sql = `SELECT 
+    c.idcodigo,
     c.codigo AS 'codigo',
     s.cantidad AS 'cantidad',
     CONCAT(
@@ -110,4 +128,5 @@ module.exports = {
     obtener_stock,
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
+    search_stock,
 }
