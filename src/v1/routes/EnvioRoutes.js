@@ -13,7 +13,7 @@ router.get("/:envioId", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  envioController.agregarEnvio(req,res);
+  envioController.agregarEnvio(req,res)
 });
 
 router.patch("/:envioId", (req, res) => {

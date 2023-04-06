@@ -5,14 +5,28 @@ const agregar_envio = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        envio_queries.queryAgregarEnvio(),
-        [[
-            data.sucursal_idsucursal,
-            data.usuario_idusuario,
-            data.cantidad_total,
-        ]],
+        `insert into envio (
+            sucursal_idsucursal
+            usuario_idusuario
+            cantidad_total)
+            values (${data.sucursal_idsucursal},${data.usuario_idusuario},${data.cantidad_total})`
+            ,
         (err,results)=>{
-            return callback(results.insertId);
+            let values = []
+            data.items.forEach(element => {
+                values.push( [
+                    results.insertId,
+                    element.codigo_idcodigo,
+                    element.cantidad
+                ])
+            });
+
+            connection.query("INSERT INTO `envio_has_stock` (`envio_idenvio`, `codigo_idcodigo`,  `cantidad`) VALUES (?);",
+            values,
+            
+            (err,res)=>{
+                callback(res);
+            })
         }
     );
     connection.end();
