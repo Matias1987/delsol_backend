@@ -28,7 +28,9 @@ const obtener_subgrupos_bygrupo_opt = (req,res)=>{
 }
 
 const agregarSubgrupo = (req, res) => {
-
+//FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+res.header("Access-Control-Allow-Origin", "*");
+res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   const {body} = req;
   const nuevo_subgrupo = {
     'nombre_corto' : body.nombre_corto,
@@ -36,7 +38,7 @@ const agregarSubgrupo = (req, res) => {
     'grupo_idgrupo' : body.grupo_idgrupo
   }
 
-  grupoService.agregarGrupo(nuevo_subgrupo,(id)=>{
+  subgrupoService.agregarSubgrupo(nuevo_subgrupo,(id)=>{
     res.status(201).send({status:'OK', data:id});
   })
 

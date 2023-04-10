@@ -13,6 +13,10 @@ const obtenerGrupos = (req, res) => {
 }
 
 const agregarGrupo = (req, res) => {
+    //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  
   const {body} = req;
   const nuevo_grupo = {
     'nombre_corto': body.nombre_corto,

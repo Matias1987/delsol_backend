@@ -46,9 +46,17 @@ const obtenerListaStock = (req, res) => {
 const obtenerStock = (req, res) =>{}
 
 const agregarStock = (req, res) => {
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  
+
+  let id_factura = "";//body.factura_idfactura == null ? "" : body.factura_idfactura;
+
   const {body} = req;
 
   const nuevo_stock = {
+    'factura_idfactura': id_factura,
     'sucursal_idsucursal':body.sucursal_idsucursal,
     'codigo_idcodigo':body.codigo_idcodigo,
     'cantidad':body.cantidad,
