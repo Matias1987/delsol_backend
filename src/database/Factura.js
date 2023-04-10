@@ -12,7 +12,8 @@ const obtener_facturas = (callback) => {
 const agregar_factura = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("",(err,result)=>{
+    connection.query(
+        `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad) VALUES ('${data.numero}', ${data.proveedor_idproveedor},${data.monto},${data.cantidad});`,(err,result)=>{
         callback(result.insertId)
     })
     connection.end();

@@ -12,13 +12,22 @@ const agregarEnvio = (req,res) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     
     const {body} = req;
-
+    console.log("body: ", body)
     const nuevo_envio = {
         'sucursal_idsucursal' : body.sucursal_idsucursal,
         'usuario_idusuario' : body.usuario_idusuario,
         'cantidad_total' : body.cantidad_total,
-        'items' : body.items
+        'items' : []/*body.items*/
     }
+
+    body.items.forEach((e)=>{
+        nuevo_envio.items.push(
+            {
+                codigo_idcodigo: e.codigo_idcodigo,
+                cantidad: e.cantidad,
+            }
+        )
+    })
 
     envioService.agregarEnvio(nuevo_envio,(id)=>{
         res.status(201).send({status:'OK', data: id});

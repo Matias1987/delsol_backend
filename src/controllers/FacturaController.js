@@ -10,8 +10,17 @@ const obtener_facturas = (req,res) => {
 }
 
 const agregar_factura = (req,res) => {
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
     const {body} = req
-    const data = {}
+    const data = {
+        numero: body.numero,
+        proveedor_idproveedor: body.proveedor_idproveedor,
+        monto: body.monto,
+        cantidad: body.cantidad
+    }
     facturaService.agregar_factura(data,(id)=>{
         res.status(201).send({status:'OK', data:id})
     })
