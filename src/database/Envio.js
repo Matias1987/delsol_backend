@@ -39,11 +39,11 @@ const agregar_envio = (data,callback) => {
     
 }
 
-const detalle_envio = (data,callback) => {
+const detalle_envio = (idenvio,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        envio_queries.queryDetalleEnvio(data.id),
+        envio_queries.queryDetalleEnvio(idenvio),
         (err,results)=>{
             return callback(results);
         }

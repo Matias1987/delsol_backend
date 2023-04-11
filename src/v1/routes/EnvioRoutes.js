@@ -8,8 +8,8 @@ router.get("/", (req, res) => {
   envioController.obtenerEnvios(req,res);
 });
 
-router.get("/:envioId", (req, res) => {
-  res.send("obtener una familia con id");
+router.get("/:idenvio", (req, res) => {
+  envioController.obtenerEnvio(req,res);
 });
 
 router.post("/", (req, res) => {

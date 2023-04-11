@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const envioStockController = require("../../controllers/EnvioHasStockController")
 
 router.get("/", (req, res) => {
   res.send("Obtener todos los envio producto");
 });
 
-router.get("/:clienteId", (req, res) => {
-  res.send("Get an existing workout");
+router.get("/:idenvio", (req, res) => {
+  envioStockController.obtenerEnvioStock(req,res)
 });
 
 router.post("/", (req, res) => {

@@ -1,9 +1,29 @@
 const queryListaEnvioStock = (idenvio) => {
-    return ``;
+    return `SELECT 
+            ehs.idenvio_has_stock,
+            ehs.cantidad,
+            c.codigo,
+            c.descripcion,
+            c.idcodigo
+            FROM 
+            envio_has_stock ehs,
+            codigo c
+            WHERE 
+            ehs.codigo_idcodigo = c.idcodigo and
+            ehs.envio_idenvio = ${idenvio};`;
 }
 
 const queryDetalleEnvio = (id) => {
-    return ``;
+    return `SELECT 
+    e.idenvio,
+	e.cantidad_total,
+	DATE_FORMAT(e.fecha,'%d-%m-%Y') AS 'fecha',
+	s.nombre AS 'sucursal',
+	u.nombre AS 'usuario' 
+    FROM envio e, sucursal s, usuario u WHERE 
+    e.sucursal_idsucursal=s.idsucursal AND
+    e.usuario_idusuario = u.idusuario AND 
+    e.idenvio=${id};`;
 }
 const queryListaEnvios = () => {
     return ``;

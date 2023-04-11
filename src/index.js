@@ -87,6 +87,9 @@ app.use("/api/v1/proveedores",proveedorRoutes);
 const envioRoutes = require("./v1/routes/EnvioRoutes");
 app.use("/api/v1/envio",envioRoutes);
 
+const envioStockRoutes = require("./v1/routes/EnvioHasStockRoutes");
+app.use("/api/v1/enviostock",envioStockRoutes);
+
 
 
 
