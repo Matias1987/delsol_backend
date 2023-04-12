@@ -7,7 +7,11 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:codigoId", (req, res) => {
-  res.send("Get an existing workout");
+  codigoController.obtenerCodigo(req,res)
+});
+
+router.get("/search/:search_param", (req, res) => {
+  codigoController.search_codigos(req,res)
 });
 
 router.get("/optforsubgrupo/:subgrupoId", (req, res) => {

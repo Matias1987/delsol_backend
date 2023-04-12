@@ -1,6 +1,16 @@
 const CodigoDB = require("../database/Codigo")
 
-const obtenerCodigo = (req, res) => {}
+const search_codigos = (data,callback) => {
+  CodigoDB.search_codigos(data,(rows)=>{
+    return callback(rows)
+  })
+}
+
+const obtenerCodigo = (idcodigo, callback) => {
+  CodigoDB.obtener_codigo(idcodigo,(rows)=>{
+    return callback(rows)
+  })
+}
 const obtenerCodigos = (callback) => {
   CodigoDB.obtener_codigos((rows)=>{
     return callback(rows)
@@ -25,4 +35,5 @@ module.exports = {
     agregarCodigo,
     editarCodigo,
     obtener_codigos_bysubgrupo_opt,
+    search_codigos,
   };

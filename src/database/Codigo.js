@@ -1,5 +1,25 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const search_codigos = (data, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(
+        `SELECT c.idcodigo,c.codigo,c.descripcion FROM codigo c WHERE c.codigo LIKE '%${data}%' OR c.descripcion LIKE '%${data}%';`
+        ,(err,rows,fields)=>{
+        return callback(rows);
+    })
+    connection.end();
+}
+
+const obtener_codigo = (idcodigo,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`select * from codigo where idcodigo=${idcodigo}`,(err,rows,fields)=>{
+        return callback(rows);
+    })
+    connection.end();
+}
+
 const obtener_codigos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -39,4 +59,6 @@ module.exports = {
     obtener_codigos,
     agregar_codigo,
     obtener_codigos_bysubgrupo_opt,
+    search_codigos,
+    obtener_codigo,
 }
