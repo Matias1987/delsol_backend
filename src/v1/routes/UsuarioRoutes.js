@@ -10,6 +10,10 @@ router.get("/:usuarioId", (req, res) => {
   res.send("Get an existing workout");
 });
 
+router.post("/login/",(req,res)=>{
+  usuarioController.login(req,res)
+})
+
 router.post("/", (req, res) => {
   usuarioController.agregarUsuario(req,res);
 });
@@ -21,5 +25,6 @@ router.patch("/:usuarioId", (req, res) => {
 router.delete("/:usuarioId", (req, res) => {
   res.send("Delete an existing workout");
 });
+
 
 module.exports = router;

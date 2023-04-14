@@ -1,5 +1,11 @@
 const UsuarioDB = require("../database/Usuario")
 
+const validarLogin = (data,callback) => {
+  UsuarioDB.validar_usuario_login(data,(res)=>{
+    return callback(res)
+  })
+}
+
 const obtenerUsuarios = (req, res) => {}
 
 const obtenerUsuario = (req, res) => {}
@@ -18,4 +24,5 @@ module.exports = {
     obtenerUsuario,
     agregarUsuario,
     editarUsuario,
+    validarLogin,
   };
