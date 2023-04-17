@@ -3,11 +3,16 @@ const router = express.Router();
 const usuarioController = require("../../controllers/UsuarioController")
 
 router.get("/", (req, res) => {
-  res.send("Get all workouts");
+  res.send("Get  allworkouts");
 });
 
 router.get("/:usuarioId", (req, res) => {
   res.send("Get an existing workout");
+});
+
+router.get("/l/checklogin/", (req, res) => {
+  //res.status(201).send({status:'OK',data:{loged:1}});
+  usuarioController.user_is_loged(req,res)
 });
 
 router.post("/login/",(req,res)=>{

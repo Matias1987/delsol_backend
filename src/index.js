@@ -67,7 +67,7 @@ const sucursalesRoutes = require("./v1/routes/SucursalRoutes");
 app.use("/api/v1/sucursales", sucursalesRoutes);
 
 const usuariosRoutes = require("./v1/routes/UsuarioRoutes");
-app.use("api/v1/usuarios", usuariosRoutes);
+app.use("/api/v1/usuarios", usuariosRoutes);
 
 const bancoRoutes = require("./v1/routes/BancoRoutes");
 app.use("/api/v1/bancos", bancoRoutes);

@@ -1,5 +1,20 @@
 const usuarioService = require("../services/UsuarioService")
 
+const user_is_loged = (req,res) => {
+  if(req.session == null){
+    res.status(201).send({status:'OK', data: {loged:0}});
+  }
+  else{
+    if(req.session.logedIn){
+      res.status(201).send({status:'OK', data: {loged:1}});
+    }
+    else{
+      res.status(201).send({status:'OK', data: {loged:0}});
+    }
+  }
+
+}
+
 const login = (req,res)=>{
   const {body} = req;
 
@@ -58,4 +73,5 @@ module.exports = {
     editarUsuario,
     login,
     logout,
+    user_is_loged,
   };
