@@ -9,6 +9,9 @@ router.get("/", (req, res) => {
 router.get("/:usuarioId", (req, res) => {
   res.send("Get an existing workout");
 });
+router.get("/l/logout/", (req, res) => {
+  usuarioController.logout(req,res)
+});
 
 router.get("/l/checklogin/", (req, res) => {
   //res.status(201).send({status:'OK',data:{loged:1}});

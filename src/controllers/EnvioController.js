@@ -11,8 +11,8 @@ const obtenerEnvio = (req,res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   const {params:{idenvio}} = req
-  envioService.obtenerEnvio(idenvio,(rows)=>{
-    res.status(201).send({status: 'OK', data:rows});
+  envioService.obtenerEnvio(idenvio,(id)=>{
+    res.status(201).send({status: 'OK', data:id});
   })
 }
 const agregarEnvio = (req,res) => {

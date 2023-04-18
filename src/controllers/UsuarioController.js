@@ -2,20 +2,23 @@ const usuarioService = require("../services/UsuarioService")
 
 const user_is_loged = (req,res) => {
   if(req.session == null){
+    console.log("session is null")
     res.status(201).send({status:'OK', data: {loged:0}});
   }
   else{
-    if(req.session.logedIn){
-      res.status(201).send({status:'OK', data: {loged:1}});
-    }
-    else{
-      res.status(201).send({status:'OK', data: {loged:0}});
-    }
+    console.log(JSON.stringify(req.session))
+    res.status(201).send({status:'OK', data: {loged:1}});
   }
 
 }
 
+
+
 const login = (req,res)=>{
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
   const {body} = req;
 
   const user_data = {
@@ -24,7 +27,7 @@ const login = (req,res)=>{
   }
 
   usuarioService.validarLogin(user_data,(resp)=>{
-
+    console.log(resp)
     if(resp.length>0){
       
       req.session.user = user_data.name;
@@ -41,8 +44,15 @@ const login = (req,res)=>{
 }
 
 const logout = (req,res) => {
-  req.session.destroy();
-  res.send({status:'OK', data: {loged:0}});
+  const {body} = req;
+
+  
+  usuarioService.logout(body.idusuario,(res)=>{
+    console.log("destroy session")
+    req.session.destroy()
+    res.send({status:'OK', data: {loged:0}});
+  })
+  
 }
 
 const obtenerUsuarios = (req, res) => {}

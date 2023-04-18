@@ -6,6 +6,12 @@ const validarLogin = (data,callback) => {
   })
 }
 
+const logout = (data,callback) => {
+  UsuarioDB.logout(data,(res)=>{
+    return callback(res)
+  })
+}
+
 const obtenerUsuarios = (req, res) => {}
 
 const obtenerUsuario = (req, res) => {}
@@ -25,4 +31,5 @@ module.exports = {
     agregarUsuario,
     editarUsuario,
     validarLogin,
+    logout,
   };

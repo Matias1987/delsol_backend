@@ -1,13 +1,36 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const logout = (data,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect()
+    let q = ``
+    connection.query(q,(err,rows)=>{
+        return callback(rows)
+    })
+    connection.end()
+}
 
 const validar_usuario_login = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`SELECT u.idusuario from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' ` ,(err,rows,fields)=>{
-        return callback(rows);
+    let q = `SELECT u.idusuario from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' `
+    console.log(q)
+    connection.query( q ,(err,rows,fields)=>{
+        if(rows.length>0){
+            let _q = `UPDATE usuario u SET u.loged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
+            connection.query(_q,(err,rows)=>{
+                callback([0]);
+                connection.end();
+
+            })
+        }
+        else{
+            callback([])
+            connection.end();
+        }
+        
     })
-    connection.end();
+   
 }
 
 const obtener_usuarios = (callback) => {
@@ -38,4 +61,5 @@ module.exports = {
     obtener_usuarios,
     agregar_usuario,
     validar_usuario_login,
+    logout,
 }

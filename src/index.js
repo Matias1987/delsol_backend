@@ -16,9 +16,17 @@ app.use(bodyParser.urlencoded({
   }));
 //app.use(express.urlencoded({ extended: true }));  
 
+const session = require("express-session");
 
 
-
+const oneDay = 1000 * 60 * 60 * 24;
+/*app.use(session({
+  secret: 'keyboard_cat',
+  resave: false,
+  saveUninitialized: true,
+  logedIn: false,
+  cookie: { secure: true,  maxAge: oneDay }
+}))*/
 
 
 app.use(express.json());
@@ -97,7 +105,7 @@ const envioRoutes = require("./v1/routes/EnvioRoutes");
 app.use("/api/v1/envio",envioRoutes);
 
 const envioStockRoutes = require("./v1/routes/EnvioHasStockRoutes");
-const session = require("express-session");
+
 app.use("/api/v1/enviostock",envioStockRoutes);
 
 
@@ -109,13 +117,6 @@ app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
 
-const oneDay = 1000 * 60 * 60 * 24;
-app.use(session({
-  secret: 'keyboard_cat',
-  resave: false,
-  saveUninitialized: true,
-  logedIn: false,
-  cookie: { secure: true,  maxAge: oneDay }
-}))
+
 
 app.use(cookieParser());

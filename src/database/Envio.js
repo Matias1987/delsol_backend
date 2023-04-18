@@ -2,6 +2,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const envio_queries = require("./queries/envioQueries");
 
 const agregar_envio = (data,callback) => {
+    var _eid=-1;
     const connection = mysql_connection.getConnection();
     connection.connect();
     let _query = `insert into envio (
@@ -15,12 +16,12 @@ const agregar_envio = (data,callback) => {
         _query
             ,
         (err,results)=>{
-
+            
             if(err){
                 console.error(err)
                 throw err;
             }
-
+            _eid = results.insertId;
             let values = "";
             data.items.forEach(element => {
                 values+= (values==""? "" : ",") + "("+results.insertId + "," + element.codigo_idcodigo + "," + element.cantidad+")"
@@ -31,7 +32,7 @@ const agregar_envio = (data,callback) => {
             
             (err,res)=>{
                 console.error(err)
-                callback(res);
+                callback(_eid);
             })
             connection.end();
         }
@@ -42,9 +43,11 @@ const agregar_envio = (data,callback) => {
 const detalle_envio = (idenvio,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
+    console.log("getting details of envio: " + idenvio)
     connection.query(
         envio_queries.queryDetalleEnvio(idenvio),
         (err,results)=>{
+            console.log(JSON.stringify(results))
             return callback(results);
         }
     );
