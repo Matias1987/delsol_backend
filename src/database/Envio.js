@@ -1,5 +1,10 @@
 const mysql_connection = require("../lib/mysql_connection");
+
 const envio_queries = require("./queries/envioQueries");
+
+const obtenerEnvios = (callback) => {
+
+}
 
 const agregar_envio = (data,callback) => {
     var _eid=-1;
@@ -71,4 +76,5 @@ module.exports = {
     agregar_envio,
     detalle_envio,
     lista_envios,
+    obtenerEnvios,
 }

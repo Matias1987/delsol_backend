@@ -18,15 +18,14 @@ app.use(bodyParser.urlencoded({
 
 const session = require("express-session");
 
-
 const oneDay = 1000 * 60 * 60 * 24;
-/*app.use(session({
+app.use(session({
   secret: 'keyboard_cat',
   resave: false,
   saveUninitialized: true,
   logedIn: false,
   cookie: { secure: true,  maxAge: oneDay }
-}))*/
+}))
 
 
 app.use(express.json());
