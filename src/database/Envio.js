@@ -3,7 +3,15 @@ const mysql_connection = require("../lib/mysql_connection");
 const envio_queries = require("./queries/envioQueries");
 
 const obtenerEnvios = (callback) => {
-
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query("SELECT * FROM envio e order by e.idenvio desc;",
+        (err,results)=>{
+            console.log(JSON.stringify(results))
+            return callback(results);
+        }
+    );
+    connection.end();
 }
 
 const agregar_envio = (data,callback) => {
