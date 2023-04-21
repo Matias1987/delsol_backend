@@ -44,6 +44,22 @@ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Ty
 
 }
 
+const modificar_multiplicador = (req, res) => {
+  
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  const {body} = req;
+  console.log("modificar mult. CONTROLLER")
+  console.log(JSON.stringify(body))
+
+  subgrupoService.modificar_multiplicador(body.categoria, body.id, body.value, (data)=>{
+    res.status(201).send({status:'OK', data:data});
+  })
+
+
+}
+
 const editarSubgrupo = (req, res) => {}
 
 
@@ -53,4 +69,5 @@ module.exports = {
     agregarSubgrupo,
     editarSubgrupo,
     obtener_subgrupos_bygrupo_opt,
+    modificar_multiplicador,
   };

@@ -22,6 +22,14 @@ const agregarSubgrupo = (data,callback) => {
 
 const editarSubgrupo = (req, res) => {}
 
+const modificar_multiplicador = (categoria, id, value, callback) => {
+  console.log("modificar mult. SERVICE")
+
+  SubGrupoDB.modificar_multiplicador_grupos(categoria, id, value, (data)=>{
+    callback(data)
+  })
+}
+
 
 module.exports = {
     obtenerSubgrupos,
@@ -29,4 +37,5 @@ module.exports = {
     agregarSubgrupo,
     editarSubgrupo,
     obtener_subgrupos_bygrupo_opt,
+    modificar_multiplicador,
   };

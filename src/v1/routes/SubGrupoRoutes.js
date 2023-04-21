@@ -18,6 +18,11 @@ router.post("/", (req, res) => {
   subGrupoController.agregarSubgrupo(req,res);
 });
 
+router.post("/modificar_multiplicador/", (req, res) => {
+  console.log("modificar mult.")
+  subGrupoController.modificar_multiplicador(req,res)
+});
+
 router.patch("/:subgrupoId", (req, res) => {
   res.send("Update an existing workout");
 });
