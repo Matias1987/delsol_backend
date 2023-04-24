@@ -35,7 +35,8 @@ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Ty
   const nuevo_subgrupo = {
     'nombre_corto' : body.nombre_corto,
     'nombre_largo' : body.nombre_largo,
-    'grupo_idgrupo' : body.grupo_idgrupo
+    'grupo_idgrupo' : body.grupo_idgrupo,
+    'multiplicador': body.multiplicador,
   }
 
   subgrupoService.agregarSubgrupo(nuevo_subgrupo,(id)=>{

@@ -1,5 +1,19 @@
 const stockService = require("../services/StockService")
 
+
+const modificar_cantidad = (req, res) => {
+  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  
+  const {body} = req;
+  console.log(JSON.stringify(body))
+  stockService.modificar_cantidad(body.idcodigo, body.idsucursal, body.cantidad,(data)=>{
+    return res.status(201).send({status:'OK', data:data});
+  })
+
+}
+
 const search_stock = (req,res) => {
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
   res.header("Access-Control-Allow-Origin", "*");
@@ -38,12 +52,13 @@ const obtenerListaStock = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   
-  stockService.obtenerListaStock(null,(rows)=>{
+  const {params:{idsucursal}} = req;
+
+
+  stockService.obtenerListaStock(idsucursal,(rows)=>{
     res.status(201).send({status:'OK', data:rows});
   })
 }
-
-const obtenerStock = (req, res) =>{}
 
 const agregarStock = (req, res) => {
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
@@ -73,10 +88,10 @@ const editarStock = (req, res) => {}
 
 module.exports = {
     obtenerListaStock,
-    obtenerStock,
     agregarStock,
     editarStock,
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
     search_stock,
+    modificar_cantidad,
   };

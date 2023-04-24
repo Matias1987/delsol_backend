@@ -45,12 +45,13 @@ const obtener_subgrupos = (callback) => {
 const agregar_subgrupo = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo) values (?)";
+    var sql = "insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador) values (?)";
 
     var values = [[
         data.nombre_corto,
         data.nombre_largo,
-        data.grupo_idgrupo
+        data.grupo_idgrupo,
+        data.multiplicador,
     ]];
 
     connection.query(sql,values, (err,result) => {
