@@ -1,5 +1,34 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+    const checkIfUserLoggedIn = (token, callback) => {
+        const connection = mysql_connection.getConnection();
+        connection.connect()
+        let q = `select * from usuario u where u.token = '${token}';`
+        console.log(q)
+        connection.query(q,(err,res)=>{
+            console.log(JSON.stringify(res))
+            let _logged = 0;
+            if(res.length>0){
+                if(res[0].logged=='1')
+                { 
+                    _logged=1;
+                }
+            }
+            return callback({logged:_logged})
+        })
+        connection.end()
+    }
+
+const setToken = (data, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect()
+    let q = `UPDATE usuario u SET u.token = '${data.token}' WHERE u.nombre='${data.nombre}' AND u.password='${data.password}';`
+    connection.query(q,(err,resp)=>{
+        return callback(resp)
+    })
+    connection.end()
+}
+
 const logout = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
@@ -62,4 +91,6 @@ module.exports = {
     agregar_usuario,
     validar_usuario_login,
     logout,
+    setToken,
+    checkIfUserLoggedIn,
 }

@@ -13,9 +13,9 @@ router.get("/l/logout/", (req, res) => {
   usuarioController.logout(req,res)
 });
 
-router.get("/l/checklogin/", (req, res) => {
+router.get("/l/checklogin/:token", (req, res) => {
   //res.status(201).send({status:'OK',data:{loged:1}});
-  usuarioController.user_is_loged(req,res)
+  usuarioController.user_is_logged(req,res)
 });
 
 router.post("/login/",(req,res)=>{

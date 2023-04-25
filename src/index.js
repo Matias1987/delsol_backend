@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require('cors')
-
+const session = require("express-session");
 const cookieParser = require("cookie-parser");
 //const session = require('express-session');
 
@@ -16,7 +16,6 @@ app.use(bodyParser.urlencoded({
   }));
 //app.use(express.urlencoded({ extended: true }));  
 
-const session = require("express-session");
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
@@ -26,9 +25,8 @@ app.use(session({
   logedIn: false,
   cookie: { secure: true,  maxAge: oneDay }
 }))
-
-
 app.use(express.json());
+app.use(cookieParser());
 /*
 routes 
 */
@@ -117,5 +115,3 @@ app.listen(port, () => {
  })
 
 
-
-app.use(cookieParser());

@@ -1,14 +1,24 @@
 const usuarioService = require("../services/UsuarioService")
+const jwt = require('jsonwebtoken');
+const config = require("../../config")
 
-const user_is_loged = (req,res) => {
-  if(req.session == null){
+
+const user_is_logged = (req,res) => {
+  const {params:{token}} = req;
+
+  usuarioService.checkIfUserLoggedIn(token,(_res)=>{
+    res.status(201).send({status:'OK', data: _res});
+  })
+
+
+  /*if(req.session == null){
     console.log("session is null")
     res.status(201).send({status:'OK', data: {loged:0}});
   }
   else{
     console.log(JSON.stringify(req.session))
     res.status(201).send({status:'OK', data: {loged:1}});
-  }
+  }*/
 
 }
 
@@ -30,13 +40,32 @@ const login = (req,res)=>{
     console.log(resp)
     if(resp.length>0){
       
-      req.session.user = user_data.name;
+      /*req.session.user = user_data.name;
       req.session.logedIn = true;
 
-      res.status(201).send({status:'OK', data: {loged:1}});
+      res.status(201).send({status:'OK', data: {loged:1}});*/
+
+      let token = jwt.sign({username: user_data.name},
+        config.secret,
+        { expiresIn: '1h' // expires in 24 hours
+        }
+      );
+
+      usuarioService.addToken({nombre: body.nombre, password: body.password, token: token},(resp)=>{
+        res.status(201).send({
+          status:'OK', 
+          data: {success: true,
+            loged: 1,
+            message: 'Authentication successful!',
+            token: token
+          }
+        });
+      })
+
+      
     }
     else{
-      res.status(201).send({status:'OK', data: {loged:0}});
+      res.status(403).send({status:'OK', data: {success: false, message: 'Authentication failed! stupid!'}});
     }
 
   })
@@ -83,5 +112,5 @@ module.exports = {
     editarUsuario,
     login,
     logout,
-    user_is_loged,
+    user_is_logged,
   };

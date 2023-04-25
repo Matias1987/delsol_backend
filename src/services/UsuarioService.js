@@ -1,5 +1,17 @@
 const UsuarioDB = require("../database/Usuario")
 
+const checkIfUserLoggedIn = (token, callback)=>{
+  UsuarioDB.checkIfUserLoggedIn(token,(res)=>{
+    callback(res)
+  })
+}
+
+const addToken = (data,callback) => {
+  UsuarioDB.setToken(data,(resp)=>{
+    callback(resp);
+  })
+}
+
 const validarLogin = (data,callback) => {
   UsuarioDB.validar_usuario_login(data,(res)=>{
     return callback(res)
@@ -32,4 +44,6 @@ module.exports = {
     editarUsuario,
     validarLogin,
     logout,
+    addToken,
+    checkIfUserLoggedIn
   };
