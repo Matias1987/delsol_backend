@@ -22,19 +22,19 @@ const mysql_connection = require("../lib/mysql_connection")
 const setToken = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    let q = `UPDATE usuario u SET u.token = '${data.token}' WHERE u.nombre='${data.nombre}' AND u.password='${data.password}';`
+    let q = `UPDATE usuario u SET u.logged = '1', u.token = '${data.token}' WHERE u.nombre='${data.nombre}' AND u.password='${data.password}';`
     connection.query(q,(err,resp)=>{
         return callback(resp)
     })
     connection.end()
 }
 
-const logout = (data,callback) => {
+const logout = (token,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    let q = ``
-    connection.query(q,(err,rows)=>{
-        return callback(rows)
+    let q = `update usuario u set u.logged = '0' where u.token = '${token}'`
+    connection.query(q,(err,data)=>{
+        return callback(data)
     })
     connection.end()
 }

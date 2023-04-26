@@ -73,13 +73,13 @@ const login = (req,res)=>{
 }
 
 const logout = (req,res) => {
-  const {body} = req;
+  const {params:{token}} = req ;
 
   
-  usuarioService.logout(body.idusuario,(res)=>{
-    console.log("destroy session")
-    req.session.destroy()
-    res.send({status:'OK', data: {loged:0}});
+  usuarioService.logout(token,(_res)=>{
+    //console.log("destroy session")
+    //req.session.destroy()
+    res.send({status:'OK', data: {logged:0}});
   })
   
 }
