@@ -38,7 +38,7 @@ const login = (req,res)=>{
 
   usuarioService.validarLogin(user_data,(resp)=>{
     console.log(resp)
-    if(resp.length>0){
+    if(resp.logged==1){
       
       /*req.session.user = user_data.name;
       req.session.logedIn = true;

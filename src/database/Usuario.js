@@ -46,15 +46,15 @@ const validar_usuario_login = (data,callback) => {
     console.log(q)
     connection.query( q ,(err,rows,fields)=>{
         if(rows.length>0){
-            let _q = `UPDATE usuario u SET u.loged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
+            let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
             connection.query(_q,(err,rows)=>{
-                callback([0]);
+                callback({logged:1});
                 connection.end();
 
             })
         }
         else{
-            callback([])
+            callback({logged:0})
             connection.end();
         }
         
