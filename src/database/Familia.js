@@ -4,8 +4,8 @@ const mysql_connection = require("../lib/mysql_connection")
 const obtener_familias = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from familia",(err,rows,fields)=>{
-        return callback(rows);
+    connection.query("select * from familia;",(err,rows)=>{
+        callback(rows);
     })
     connection.end();
 }
