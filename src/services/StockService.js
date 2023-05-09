@@ -42,6 +42,12 @@ const agregarStock = (data, callback) => {
 
 const editarStock = (req, res) => {}
 
+const obtener_codigos_sin_stock_sucursal = (idsucursal, callback) => {
+  StockDB.obtener_codigos_sin_stock_sucursal(idsucursal,(rows)=>{
+    return callback(rows);
+  })
+}
+
 
 module.exports = {
     obtenerListaStock,
@@ -52,4 +58,5 @@ module.exports = {
     obtener_detalle_stock_sucursal,
     search_stock,
     modificar_cantidad,
+    obtener_codigos_sin_stock_sucursal,
   };

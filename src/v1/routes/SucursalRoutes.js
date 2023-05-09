@@ -6,8 +6,8 @@ router.get("/", (req, res) => {
   sucursalController.obtenerSucursales(req,res)
 });
 
-router.get("/:sucursalId", (req, res) => {
-  res.send("Get an existing workout");
+router.get("/:idsucursal", (req, res) => {
+  sucursalController.obtenerSucursal(req,res)
 });
 
 router.post("/", (req, res) => {

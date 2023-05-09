@@ -1,5 +1,11 @@
 const SucursalDB = require("../database/Sucursal")
 
+const obtenerDetalleSucursal = (idsucursal, callback) => {
+  SucursalDB.obtener_detalle_sucursal(idsucursal, (resp)=>{
+    return callback(resp)
+  })
+}
+
 const obtenerSucursales = (callback) => {
   SucursalDB.obtener_sucursales((rows)=>{
     return callback(rows)
@@ -24,4 +30,5 @@ module.exports = {
     obtenerSucursal,
     agregarSucursal,
     editarSucursal,
+    obtenerDetalleSucursal,
   };

@@ -10,6 +10,9 @@ router.get("/:idsucursal", (req, res) => {
 router.get("/porsubgrupo/:idsubgrupo", (req, res) => {
   stockController.obtener_stock_por_subgrupo(req,res)
 });
+router.get("/cod_sin_stock_s/:idsucursal", (req, res) => {
+  stockController.obtener_codigos_sin_stock_sucursal(req,res)
+});
 
 router.get("/search/:idsucursal/:search_value", (req, res) => {
   stockController.search_stock(req,res)

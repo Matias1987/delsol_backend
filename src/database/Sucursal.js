@@ -1,5 +1,16 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const obtener_detalle_sucursal = (idsucursal,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`select * from sucursal s where s.idsucursal = ${idsucursal};` ,
+    (err,resp)=>{
+        callback(resp)
+    })
+    connection.end();
+} 
+
+
 const obtener_sucursales = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -26,5 +37,6 @@ const agregar_sucursal = (data,callback) => {
 
 module.exports = {
     obtener_sucursales,
-    agregar_sucursal
+    agregar_sucursal,
+    obtener_detalle_sucursal,
 }

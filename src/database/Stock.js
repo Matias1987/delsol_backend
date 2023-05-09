@@ -136,6 +136,20 @@ const agregar_stock = (data,callback) =>{
 
 }
 
+    const obtener_codigos_sin_stock_sucursal = (idsucursal, callback) => {
+        const query = `SELECT c.* FROM codigo c WHERE c.idcodigo NOT IN (
+            SELECT s.codigo_idcodigo FROM stock s WHERE s.sucursal_idsucursal=${idsucursal});`;
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        connection.query(query,(err,rows)=>{
+            callback(rows)
+        });
+        connection.end();
+
+
+    }
+
+
 module.exports = {
     agregar_stock,
     obtener_stock,
@@ -143,4 +157,5 @@ module.exports = {
     obtener_detalle_stock_sucursal,
     search_stock,
     modificar_cantidad,
+    obtener_codigos_sin_stock_sucursal,
 }

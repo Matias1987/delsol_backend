@@ -10,7 +10,12 @@ const obtenerSucursales = (req, res) => {
 
 }
 
-const obtenerSucursal = (req, res) => {}
+const obtenerSucursal = (req, res) => {
+  const {params:{idsucursal}} = req;
+  sucursalService.obtenerDetalleSucursal(idsucursal,(resp)=>{
+    res.status(201).send({status:'OK',data:resp});
+  })
+}
 
 const agregarSucursal = (req, res) => {
   const {body} = req;
