@@ -91,6 +91,11 @@ const obtener_codigos_sin_stock_sucursal = (req,res) => {
 
 }
 
+const agregar_stock_lote = (req,res) => {
+  const {body} = req;
+  
+}
+
 const editarStock = (req, res) => {}
 
 

@@ -48,6 +48,10 @@ const obtener_codigos_sin_stock_sucursal = (idsucursal, callback) => {
   })
 }
 
+const agregar_stock_lote = (values,callback) => {
+  
+}
+
 
 module.exports = {
     obtenerListaStock,

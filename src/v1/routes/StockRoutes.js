@@ -30,12 +30,17 @@ router.post("/m/modificar_cantidad/", (req, res) => {
   stockController.modificar_cantidad(req,res);
 });
 
+
 router.patch("/:stockId", (req, res) => {
   res.send("Update an existing workout");
 });
 
 router.delete("/:stockId", (req, res) => {
   res.send("Delete an existing workout");
+});
+
+router.post("/agregar_stock/lote/", (req, res) => {
+  stockController.modificar_cantidad(req,res);
 });
 
 module.exports = router;

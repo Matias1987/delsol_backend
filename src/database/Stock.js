@@ -149,6 +149,43 @@ const agregar_stock = (data,callback) =>{
 
     }
 
+    const agregar_stock_lote = (data, callback) => {
+
+
+        const query_insert_codigos=`INSERT ignore INTO codigo  (subgrupo_idsubgrupo, codigo, descripcion, costo) VALUES`;
+        
+        const query_insert_stock=`INSERT ignore INTO stock  (sucursal_idsucursal, codigo_idcodigo, cantidad)  (
+            SELECT ${data.sucursal}, c.idcodigo, 0 FROM codigo c WHERE c.codigo IN ('0')
+        )`;
+        
+        const query_update_quantities=`UPDATE stock s SET s.cantidad=0 WHERE s.codigo_idcodigo=0 AND s.sucursal_idsucursal=0;`;
+
+
+        let _values = "";
+        data.codigos.forEach(r=>{
+
+            _values += (_values.length>0? ",":"") +"("+data.subgrupo,r.codigo,"descripcion",r.costo+")"
+        
+        });
+
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+
+        connection.query(query_insert_codigos + _values,(err,res)=>{
+
+            connection.query(query_insert_stock,(_err,_res)=>{
+
+                connection.query(query_update_quantities,(__err,__res)=>{
+
+                    connection.end();
+
+                })
+
+            })
+
+        })
+    }
+
 
 module.exports = {
     agregar_stock,
