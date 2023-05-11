@@ -40,7 +40,7 @@ router.delete("/:stockId", (req, res) => {
 });
 
 router.post("/agregar_stock/lote/", (req, res) => {
-  stockController.modificar_cantidad(req,res);
+  stockController.agregar_stock_lote(req,res);
 });
 
 module.exports = router;

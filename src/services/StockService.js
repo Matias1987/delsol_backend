@@ -49,7 +49,9 @@ const obtener_codigos_sin_stock_sucursal = (idsucursal, callback) => {
 }
 
 const agregar_stock_lote = (values,callback) => {
-  
+  StockDB.agregar_stock_lote(values,(result)=>{
+    return callback(result)
+  })
 }
 
 
@@ -63,4 +65,5 @@ module.exports = {
     search_stock,
     modificar_cantidad,
     obtener_codigos_sin_stock_sucursal,
+    agregar_stock_lote,
   };
