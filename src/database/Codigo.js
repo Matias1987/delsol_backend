@@ -11,10 +11,19 @@ const search_codigos = (data, callback) => {
     connection.end();
 }
 
-const obtener_codigo = (idcodigo,callback) => {
+const obtener_codigo_por_id = (idcodigo,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`select * from codigo where idcodigo=${idcodigo}`,(err,rows,fields)=>{
+        return callback(rows);
+    })
+    connection.end();
+}
+
+const obtener_codigo = (idcodigo,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`select * from codigo c where  c.codigo='${idcodigo}'`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
@@ -32,16 +41,20 @@ const obtener_codigos = (callback) => {
 const agregar_codigo = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into codigo (codigo, descripcion,subgrupo_idsubgrupo) values (?)";
+    var sql = `insert ignore into codigo (codigo, descripcion,subgrupo_idsubgrupo) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo})`;
 
-    var values = [[
-        data.codigo,
-        data.descripcion,
-        data.subgrupo_idsubgrupo
-    ]];
+    console.log(sql)
 
-    connection.query(sql,values, (err,result) => {
-            return callback()
+    connection.query(sql, (err,result) => {
+        
+            if(err!=null){
+                return callback(-1)
+            }else{
+                const _id = typeof result === 'undefined' ? -1 : result.insertId;
+                return callback(_id)
+            }
+        
+            
         });
     connection.end();
 }
@@ -60,5 +73,6 @@ module.exports = {
     agregar_codigo,
     obtener_codigos_bysubgrupo_opt,
     search_codigos,
+    obtener_codigo_por_id,
     obtener_codigo,
 }

@@ -1,11 +1,20 @@
 const codigoService = require("../services/CodigoService")
 
-const obtenerCodigo = (req, res) => {
-  //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+const obtenerCodigo = (req,res) => {
+   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   const {body} = req;
+  
+  codigoService.obtenerCodigo(body.codigo,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
+const obtenerCodigoPorId = (req, res) => {
+ 
   const {params:{codigoId}} = req;
-  codigoService.obtenerCodigo(codigoId,(rows)=>{
+  codigoService.obtenerCodigoPorID(codigoId,(rows)=>{
     res.status(201).send({status:'OK', data:rows});
   })
 
@@ -44,7 +53,13 @@ const agregarCodigo = (req, res) => {
   }
   codigoService.agregarCodigo(nuevo_codigo,
     (id)=>{
-      res.status(201).send({status:'OK', data:id})
+      if(id<0){
+        res.status(201).send({status:'ERROR', data:-1})
+      }
+      else{
+        res.status(201).send({status:'OK', data:id})
+      }
+      
     })
 }
 
@@ -64,8 +79,9 @@ const obtener_codigos_bysubgrupo_opt = (req,res) =>{
 
 
 module.exports = {
-    obtenerCodigo,
+    obtenerCodigoPorId,
     obtenerCodigos,
+    obtenerCodigo,
     agregarCodigo,
     editarCodigo,
     obtener_codigos_bysubgrupo_opt,

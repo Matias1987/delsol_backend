@@ -96,8 +96,12 @@ const agregar_stock_lote = (req,res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
+ 
+
   
   const {body} = req;
+
+  console.log(JSON.stringify(body))
 
   stockService.agregar_stock_lote(body,(result)=>{
     res.status(201).send({status:'OK', data:result});

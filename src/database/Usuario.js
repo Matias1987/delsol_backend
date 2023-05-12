@@ -4,9 +4,9 @@ const mysql_connection = require("../lib/mysql_connection")
         const connection = mysql_connection.getConnection();
         connection.connect()
         let q = `select * from usuario u where u.token = '${token}';`
-        console.log(q)
+        //console.log(q)
         connection.query(q,(err,res)=>{
-            console.log(JSON.stringify(res))
+            //console.log(JSON.stringify(res))
             let _logged = 0;
             if(res.length>0){
                 if(res[0].logged=='1')

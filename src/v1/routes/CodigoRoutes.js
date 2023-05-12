@@ -10,6 +10,10 @@ router.get("/:codigoId", (req, res) => {
   codigoController.obtenerCodigo(req,res)
 });
 
+router.post("/porcodigo/", (req,res)=>{
+  codigoController.obtenerCodigo(req,res)
+});
+
 router.get("/search/:search_param", (req, res) => {
   codigoController.search_codigos(req,res)
 });

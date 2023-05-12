@@ -37,7 +37,7 @@ const login = (req,res)=>{
   }
 
   usuarioService.validarLogin(user_data,(resp)=>{
-    console.log(resp)
+    //console.log(resp)
     if(resp.logged==1){
       
       /*req.session.user = user_data.name;

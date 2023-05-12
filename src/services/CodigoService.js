@@ -6,8 +6,14 @@ const search_codigos = (data,callback) => {
   })
 }
 
-const obtenerCodigo = (idcodigo, callback) => {
-  CodigoDB.obtener_codigo(idcodigo,(rows)=>{
+const obtenerCodigoPorID = (idcodigo, callback) => {
+  CodigoDB.obtener_codigo_por_id(idcodigo,(rows)=>{
+    return callback(rows)
+  })
+}
+
+const obtenerCodigo = (codigo, callback) => {
+  CodigoDB.obtener_codigo(codigo,(rows)=>{
     return callback(rows)
   })
 }
@@ -30,10 +36,11 @@ const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{
 }
 
 module.exports = {
-    obtenerCodigo,
+    obtenerCodigoPorID,
     obtenerCodigos,
     agregarCodigo,
     editarCodigo,
     obtener_codigos_bysubgrupo_opt,
     search_codigos,
+    obtenerCodigo,
   };
