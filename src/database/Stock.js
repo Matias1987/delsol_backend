@@ -194,6 +194,17 @@ const agregar_stock = (data,callback) =>{
         })
     }
 
+    const obtener_stock_sucursal = (idsucursal, idcodigo, callback)=> {
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        const sql = `select * from stock s where s.sucursal_idsucursal=${idsucursal} and s.codigo_idcodigo=${idcodigo};`;
+        connection.query(sql,(err,rows)=>{
+            return callback(rows);
+        })
+
+        connection.end();
+    }
+
 
 module.exports = {
     agregar_stock,
@@ -204,4 +215,5 @@ module.exports = {
     modificar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
+    obtener_stock_sucursal,
 }

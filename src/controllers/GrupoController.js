@@ -24,7 +24,13 @@ const agregarGrupo = (req, res) => {
     'subfamilia_idsubfamilia': body.subfamilia_idsubfamilia
   }
   grupoService.agregarGrupo(nuevo_grupo,(id)=>{
-    res.status(201).send({status:'OK', data:id});
+    if(id<0){
+      res.status(201).send({status:'ERROR', data:"El grupo ya existe"});
+    }
+    else{
+      res.status(201).send({status:'OK', data:id});
+    }
+    
   })
 }
 

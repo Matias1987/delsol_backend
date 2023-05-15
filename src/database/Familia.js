@@ -24,14 +24,22 @@ const obtener_familias_opt = (callback) => {
 const agregar_familia = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into familia (nombre_corto, nombre_largo) values (?)";
 
-    var values = [[data.nombre_corto,data.nombre_largo]];
+    connection.query(`select f.idfamilia from familia f where f.nombre_corto ='${data.nombre_corto}'`,
+    (err,rows)=>{
+        if(rows.length>0){
+            return callback(-1);
+        }else{
+            var sql = "insert into familia (nombre_corto, nombre_largo) values (?)";
 
-    connection.query(sql,values, (err,result) => {
-            return callback()
-        });
-    connection.end();
+            var values = [[data.nombre_corto,data.nombre_largo]];
+        
+            connection.query(sql,values, (err,result) => {
+                    return callback(result.insertId)
+                });
+        }
+        connection.end();
+    })
     }
 
 module.exports = {

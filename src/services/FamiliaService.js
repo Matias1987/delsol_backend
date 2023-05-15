@@ -11,8 +11,8 @@ const obtenerFamilias = (callback) => {
 const obtenerFamilia = (req, res) => {}
 
 const agregarFamilia = (data, callback) => {
-  familiaDB.agregar_familia(data,()=>{
-    return callback();
+  familiaDB.agregar_familia(data,(id)=>{
+    return callback(id);
   })
 }
 

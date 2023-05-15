@@ -45,19 +45,32 @@ const obtener_subgrupos = (callback) => {
 const agregar_subgrupo = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador) values (?)";
 
-    var values = [[
-        data.nombre_corto,
-        data.nombre_largo,
-        data.grupo_idgrupo,
-        data.multiplicador,
-    ]];
+    connection.query(`select sg.idsubgrupo from subgrupo sg where sg.nombre_corto = '${data.nombre_corto}' and sg.grupo_idgrupo=${data.grupo_idgrupo}`,
+    (err,rows)=>{
+        if(rows.length>0){
+            return callback(-1)
+        }
+        else{
+            var sql = "insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador) values (?)";
 
-    connection.query(sql,values, (err,result) => {
-            return callback(result.insertId)
-        });
-    connection.end();
+            var values = [[
+                data.nombre_corto,
+                data.nombre_largo,
+                data.grupo_idgrupo,
+                data.multiplicador,
+            ]];
+        
+            connection.query(sql,values, (err,result) => {
+                    return callback(result.insertId)
+                });
+        }
+
+        connection.end();
+    })
+
+    
+    
 }
 
 module.exports = {

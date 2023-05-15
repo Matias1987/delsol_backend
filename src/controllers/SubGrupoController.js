@@ -40,7 +40,13 @@ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Ty
   }
 
   subgrupoService.agregarSubgrupo(nuevo_subgrupo,(id)=>{
-    res.status(201).send({status:'OK', data:id});
+    if(id<0){
+      res.status(201).send({status:'ERROR', data:"El subgrupo ya existe"});
+    }
+    else{
+      res.status(201).send({status:'OK', data:id});
+    }
+
   })
 
 }

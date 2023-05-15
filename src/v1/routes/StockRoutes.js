@@ -22,6 +22,10 @@ router.get("/detalle/:idsucursal/:idcodigo", (req, res) => {
   stockController.obtener_detalle_stock_sucursal(req,res)
 });
 
+router.get("/exists/:idsucursal/:idcodigo", (req,res)=>{
+  stockController.obtener_stock_sucursal(req,res)
+})
+
 router.post("/", (req, res) => {
   stockController.agregarStock(req,res);
 });

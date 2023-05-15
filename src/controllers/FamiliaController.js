@@ -18,8 +18,14 @@ const agregarFamilia = (req, res) => {
     nombre_corto: body.nombre_corto,
     nombre_largo: body.nombre_largo
   }
-  familiaService.agregarFamilia(familia_nueva,()=>{
-    res.status(201).send({status:'OK', data:"familia agregada..."});
+  familiaService.agregarFamilia(familia_nueva,(id)=>{
+    if(id<0){
+      res.status(201).send({status:'ERROR', data:"La Familia ya existe"});
+    }
+    else{
+      res.status(201).send({status:'OK', data:"familia agregada..."});
+    }
+    
   })
 }
 

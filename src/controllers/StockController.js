@@ -109,6 +109,13 @@ const agregar_stock_lote = (req,res) => {
   
 }
 
+const obtener_stock_sucursal = (req,res)=> {
+  const {params:{idsucursal, idcodigo}} = req;
+  stockService.obtener_stock_sucursal(idsucursal, idcodigo,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
 const editarStock = (req, res) => {}
 
 
@@ -122,4 +129,5 @@ module.exports = {
     modificar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
+    obtener_stock_sucursal,
   };

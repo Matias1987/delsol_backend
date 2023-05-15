@@ -54,6 +54,13 @@ const agregar_stock_lote = (values,callback) => {
   })
 }
 
+const obtener_stock_sucursal = (idsucursal, idcodigo, callback) => {
+  StockDB.obtener_stock_sucursal(idsucursal,idcodigo,(rows)=>{
+    callback(rows)
+  })
+
+}
+
 
 module.exports = {
     obtenerListaStock,
@@ -66,4 +73,5 @@ module.exports = {
     modificar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
+    obtener_stock_sucursal,
   };

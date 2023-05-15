@@ -23,18 +23,32 @@ const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
 const agregar_grupo = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into grupo (nombre_corto, nombre_largo,subfamilia_idsubfamilia) values (?)";
 
-    var values = [[
-        data.nombre_corto,
-        data.nombre_largo,
-        data.subfamilia_idsubfamilia
-    ]];
+    connection.query(`SELECT g.idgrupo FROM grupo g WHERE g.subfamilia_idsubfamilia = ${data.subfamilia_idsubfamilia} AND g.nombre_corto='${data.nombre_corto}'`,
+    (err,rows)=>{
+        if(rows.length>0){
+            return callback(-1);
+        }
+        else{
+            var sql = "insert into grupo (nombre_corto, nombre_largo,subfamilia_idsubfamilia) values (?)";
 
-    connection.query(sql,values, (err,result) => {
-            return callback(result.insertId)
-        });
-    connection.end();
+            var values = [[
+                data.nombre_corto,
+                data.nombre_largo,
+                data.subfamilia_idsubfamilia
+            ]];
+        
+            connection.query(sql,values, (err,result) => {
+                    return callback(result.insertId)
+                });
+        }
+
+        connection.end();
+    }
+    )
+
+    
+    
 }
 
 module.exports = {

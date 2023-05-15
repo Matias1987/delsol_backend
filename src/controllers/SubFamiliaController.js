@@ -23,7 +23,14 @@ const agregarSubFamilia = (req, res) => {
   }
   
   subfamiliaService.agregarSubFamilia(nueva_sub_familia,(id)=>{
-    res.status(201).send({status:'OK', data:id});
+    if(id<0){
+      res.status(201).send({status:'ERROR', data:"La subfamilia ya existe"});
+    }
+    else
+    {
+      res.status(201).send({status:'OK', data:id});
+    }
+    
   })
 }
 
