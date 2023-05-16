@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:codigoId", (req, res) => {
-  codigoController.obtenerCodigo(req,res)
+  codigoController.obtenerCodigoPorId(req,res)
 });
 
 router.post("/porcodigo/", (req,res)=>{

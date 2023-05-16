@@ -19,11 +19,27 @@ const modificar_cantidad = (idcodigo, idsucursal, cantidad, callback) => {
 const search_stock = (search_value, idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `SELECT c.idcodigo,  c.codigo, c.descripcion  FROM codigo c, stock s WHERE 
-                c.idcodigo=s.codigo_idcodigo 
-                AND s.sucursal_idsucursal = ${idsucursal} 
-                AND c.codigo LIKE '%${search_value}%';`
-    connection.query(sql,(err,rows)=>{
+    
+    const _sql = `SELECT 
+                        c.idcodigo,
+                        c.codigo AS 'codigo',
+                        CONCAT(
+                            f.nombre_corto,' / ',sf.nombre_corto, ' / ',
+                            g.nombre_corto,' / ',sg.nombre_corto, ' / '
+                        ) AS 'ruta',
+                        s.cantidad
+                    FROM 
+                    familia f, subfamilia sf, grupo g, subgrupo sg,
+                    codigo c, stock s WHERE
+                    s.sucursal_idsucursal = ${idsucursal} AND
+                    s.codigo_idcodigo = c.idcodigo AND
+                    c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+                    sg.grupo_idgrupo = g.idgrupo AND
+                    g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+                    sf.familia_idfamilia = f.idfamilia AND
+                    c.codigo LIKE '%${search_value}%';`
+
+    connection.query(_sql,(err,rows)=>{
         callback(rows);
     })
     connection.end();

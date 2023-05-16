@@ -5,7 +5,13 @@ const envio_queries = require("./queries/envioQueries");
 const obtenerEnvios = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("SELECT * FROM envio e order by e.idenvio desc;",
+    connection.query(`SELECT 
+    e.sucursal_idsucursal,
+    DATE_FORMAT(e.fecha, '%d-%m-%y') AS 'fecha', 
+    e.cantidad_total,
+    e.idenvio,
+    s.nombre AS 'sucursal'
+    FROM envio e, sucursal s WHERE e.sucursal_idsucursal = s.idsucursal order by e.idenvio desc;`,
         (err,results)=>{
             console.log(JSON.stringify(results))
             return callback(results);
