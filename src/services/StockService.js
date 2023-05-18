@@ -1,8 +1,8 @@
 const StockDB = require("../database/Stock")
 
 
-const modificar_cantidad = (idcodigo, idsucursal, cantidad, callback) => {
-  StockDB.modificar_cantidad(idcodigo,idsucursal,cantidad,(data)=>{
+const modificar_cantidad = (idcodigo, idsucursal, cantidad,fkfactura, callback) => {
+  StockDB.modificar_cantidad(idcodigo,idsucursal,cantidad,fkfactura, (data)=>{
     callback(data)
   })
 }

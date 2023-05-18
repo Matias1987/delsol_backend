@@ -4,16 +4,31 @@ const mysql_connection = require("../lib/mysql_connection")
     the server returns a list of stocks rows
 */
 
-const modificar_cantidad = (idcodigo, idsucursal, cantidad, callback) => {
+const modificar_cantidad = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `UPDATE stock s SET s.cantidad = ${cantidad} 
-    WHERE s.sucursal_idsucursal=${idsucursal} AND s.codigo_idcodigo=${idcodigo};`;
-    console.log(sql)
-    connection.query(sql,(err,data)=>{
-        callback(data)
+    const sql = `UPDATE stock s SET s.cantidad = ${data.cantidad} 
+    WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo=${data.idcodigo};`;
+    connection.query(sql,(err,response)=>{
+        callback(response)
+        //if idfactura exists..
+        if(data.fkfactura!=-1)
+        {
+            let query_str = `INSERT INTO codigo_factura (
+                stock_codigo_idcodigo,
+                factura_idfactura,
+                cantidad,
+                costo)
+                VALUES (${data.idcodigo}, ${data.fkfactura}, ${data.cantidad}, ${data.costo})`;
+
+                connection.query(query_str);
+        }
+        //update codigo
+        console.log(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
+        connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
+        connection.end();
     })
-    connection.end()
+    
 }
 
 const search_stock = (search_value, idsucursal, callback) => {
@@ -56,7 +71,8 @@ const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
                     f.nombre_corto,' / ',sf.nombre_corto, ' / ',
                     g.nombre_corto,' / ',sg.nombre_corto, ' / '
                 ) AS 'ruta',
-                s.cantidad
+                s.cantidad,
+                c.costo
             FROM 
             familia f, subfamilia sf, grupo g, subgrupo sg,
             codigo c, stock s WHERE
@@ -145,10 +161,23 @@ const agregar_stock = (data,callback) =>{
 
     connection.query(sql,values,(err,results,fields)=>{
         callback(results.insertId);
+        if(data.factura_idfactura>0)
+        {
+            let query_str = `INSERT INTO codigo_factura (
+                stock_codigo_idcodigo,
+                factura_idfactura,
+                cantidad,
+                costo)
+                VALUES (${data.codigo_idcodigo}, ${data.factura_idfactura}, ${data.cantidad}, ${data.costo})`;
+                console.log(query_str)
+                connection.query(query_str);
+        }
+
+        connection.end();
     })
 
 
-    connection.end();
+    
 
 }
 
@@ -187,9 +216,9 @@ const agregar_stock = (data,callback) =>{
             SELECT ${data.sucursal}, c.idcodigo, 0 FROM codigo c WHERE c.codigo IN (${_codigos_str})
         )`;
         
-        console.log(query_insert_codigos);
-        console.log(query_insert_stock);
-        console.log(update_queries);
+        //console.log(query_insert_codigos);
+        //console.log(query_insert_stock);
+        //console.log(update_queries);
 
         const connection = mysql_connection.getConnection();
 

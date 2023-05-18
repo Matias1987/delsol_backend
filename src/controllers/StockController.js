@@ -7,8 +7,21 @@ const modificar_cantidad = (req, res) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   
   const {body} = req;
-  console.log(JSON.stringify(body))
-  stockService.modificar_cantidad(body.idcodigo, body.idsucursal, body.cantidad,(data)=>{
+  
+  stockService.modificar_cantidad(
+    {
+      idcodigo: body.idcodigo, 
+    
+      idsucursal: body.idsucursal, 
+    
+      cantidad: body.cantidad, 
+    
+      fkfactura: (typeof body.factura_idfactura === 'undefined' ? -1 : body.factura_idfactura),
+      
+      costo: (typeof body.costo === 'undefined' ? 0 : body.costo),
+    }
+    ,
+    (data)=>{
     return res.status(201).send({status:'OK', data:data});
   })
 
@@ -65,13 +78,11 @@ const agregarStock = (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   
-
-  let id_factura = "";//body.factura_idfactura == null ? "" : body.factura_idfactura;
-
   const {body} = req;
 
   const nuevo_stock = {
-    'factura_idfactura': id_factura,
+    'factura_idfactura': (typeof body.factura_idfactura === 'undefined' ? -1 : body.factura_idfactura),
+    'costo': (typeof body.costo === 'undefined' ? 0 : body.costo),
     'sucursal_idsucursal':body.sucursal_idsucursal,
     'codigo_idcodigo':body.codigo_idcodigo,
     'cantidad':body.cantidad,
