@@ -10,7 +10,7 @@ const connection_data = {
     user: "admin",
     password: "admin",
     host: "testdatabase.cogxzxmytpda.us-east-1.rds.amazonaws.com",
-    database: "optdelsol_24"
+    database: "optdelsol_25"
 
 } 
 
