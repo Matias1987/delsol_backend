@@ -15,7 +15,7 @@ const search_stock = (search_value, idsucursal, callback) => {
 }
 
 const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
-  return StockDB.obtener_detalle_stock_sucursal(idsucursal,idcodigo,(rows)=>{
+  return StockDB.obtener_detalle_stock_sucursal_v2(idsucursal,idcodigo,(rows)=>{
     return callback(rows)
   })
 }

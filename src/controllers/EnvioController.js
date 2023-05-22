@@ -48,10 +48,21 @@ const agregarEnvio = (req,res) => {
 
 const editarEnvio = (req,res) => {}
 
+const obtener_envios_codigo = (req,res) => {
+
+    const {params:{idcodigo}} = req;
+
+    envioService.obtener_envios_codigo(idcodigo,(rows)=>{
+        res.status(201).send({status:'OK', data: rows});
+    })
+
+}
+
 
 module.exports = {
     obtenerEnvio,
     obtenerEnvios,
     agregarEnvio,
-    editarEnvio
+    editarEnvio,
+    obtener_envios_codigo,
 }

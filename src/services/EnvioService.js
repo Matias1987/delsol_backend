@@ -22,10 +22,17 @@ const agregarEnvio = (data, callback) => {
 
 const editarEnvio = (req,res) => {}
 
+const obtener_envios_codigo = (idcodigo, callback) => {
+    EnvioDB.obtener_envios_codigo(idcodigo,(rows)=>{
+        return callback(rows);
+    })
+}
+
 
 module.exports = {
     obtenerEnvio,
     obtenerEnvios,
     agregarEnvio,
-    editarEnvio
+    editarEnvio,
+    obtener_envios_codigo,
 }

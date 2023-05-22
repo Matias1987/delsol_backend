@@ -60,6 +60,7 @@ const search_stock = (search_value, idsucursal, callback) => {
     connection.end();
 }
 
+
 const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -83,6 +84,33 @@ const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
             sg.grupo_idgrupo = g.idgrupo AND
             g.subfamilia_idsubfamilia = sf.idsubfamilia AND
             sf.familia_idfamilia = f.idfamilia;`;
+
+    connection.query(sql,(err,rows)=>{
+        callback(rows)
+    })
+
+    connection.end();
+}
+
+const obtener_detalle_stock_sucursal_v2 = (idsucursal, idcodigo,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+
+    const sql = `SELECT 
+                CONCAT(f.nombre_corto, '/ ' , sf.nombre_corto, '/ ', g.nombre_corto, '/ ', sg.nombre_corto, '/ ') AS 'ruta',
+                c.codigo, c.costo, s.cantidad, c.descripcion, c.idcodigo,
+                sg.multiplicador
+                FROM 
+                stock s, codigo c,
+                grupo g, subgrupo sg, familia f, subfamilia sf 
+                WHERE
+                c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+                sg.grupo_idgrupo = g.idgrupo AND
+                g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+                sf.familia_idfamilia = f.idfamilia AND 
+                s.codigo_idcodigo = c.idcodigo AND 
+                s.sucursal_idsucursal = ${idsucursal} AND
+                c.idcodigo = ${idcodigo};`;
 
     connection.query(sql,(err,rows)=>{
         callback(rows)
@@ -249,6 +277,24 @@ const agregar_stock = (data,callback) =>{
 
         connection.end();
     }
+    /* @Returns a list with stock for each branch */
+    const stock_codigo_sucursales = (idcodigo, callback) => {
+
+        const query = `SELECT 
+        if(st.sucursal_idsucursal is NULL,0, st.cantidad) AS 'cantidad',
+        s.nombre AS 'sucursal'
+         FROM sucursal s LEFT JOIN 
+        (SELECT s1.cantidad, s1.sucursal_idsucursal FROM stock s1 WHERE s1.codigo_idcodigo = ${idcodigo})
+        AS  st 
+        ON st.sucursal_idsucursal = s.idsucursal; `;
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        connection.query(query,(err,rows)=>{
+            callback(rows)
+        })
+        connection.end();
+
+    }
 
 
 module.exports = {
@@ -256,9 +302,11 @@ module.exports = {
     obtener_stock,
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
+    obtener_detalle_stock_sucursal_v2,
     search_stock,
     modificar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
     obtener_stock_sucursal,
+    stock_codigo_sucursales,
 }

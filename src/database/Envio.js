@@ -104,10 +104,25 @@ const lista_envios = (callback) => {
     connection.end();
 }
 
+const obtener_envios_codigo = (idcodigo,callback) => {
+    const query = `SELECT ehs.envio_idenvio AS 'nroenvio', ehs.cantidad 
+    FROM envio_has_stock ehs WHERE ehs.codigo_idcodigo = ${idcodigo};`;
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(
+        query,
+        (err,results)=>{
+            return callback(results);
+        }
+    );
+    connection.end();
+}
+
 
 module.exports = {
     agregar_envio,
     detalle_envio,
     lista_envios,
     obtenerEnvios,
+    obtener_envios_codigo,
 }
