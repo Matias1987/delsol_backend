@@ -22,6 +22,13 @@ router.get("/detalle/:idsucursal/:idcodigo", (req, res) => {
   stockController.obtener_detalle_stock_sucursal(req,res)
 });
 
+router.get("/stock_sucursal/:idsucursal/:idcodigo", (req, res) => {
+  stockController.obtener_stock_sucursal(req,res)
+});
+router.get("/stock_sucursales/:idcodigo", (req, res) => {
+  stockController.stock_codigo_sucursales(req,res)
+});
+
 router.get("/exists/:idsucursal/:idcodigo", (req,res)=>{
   stockController.obtener_stock_sucursal(req,res)
 })
