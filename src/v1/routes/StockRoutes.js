@@ -18,6 +18,10 @@ router.get("/search/:idsucursal/:search_value", (req, res) => {
   stockController.search_stock(req,res)
 });
 
+router.get("/search_stock_envio/:idsucursal/:idsucursal_destino/:search_value", (req, res) => {
+  stockController.search_stock_envio(req,res)
+});
+
 router.get("/detalle/:idsucursal/:idcodigo", (req, res) => {
   stockController.obtener_detalle_stock_sucursal(req,res)
 });

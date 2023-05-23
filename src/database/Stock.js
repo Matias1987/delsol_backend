@@ -60,6 +60,43 @@ const search_stock = (search_value, idsucursal, callback) => {
     connection.end();
 }
 
+const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    
+    const _sql = `SELECT 
+                    c.idcodigo,
+                    c.codigo AS 'codigo',
+                    CONCAT(
+                        f.nombre_corto,' / ',sf.nombre_corto, ' / ',
+                        g.nombre_corto,' / ',sg.nombre_corto, ' / '
+                    ) AS 'ruta',
+                    s.cantidad,
+                    if(s2.cantidad IS NULL, 0 , s2.cantidad) AS 'cantidad_sucursal'
+                FROM 
+                familia f, subfamilia sf, grupo g, subgrupo sg,
+                codigo c, 
+                stock s 
+                LEFT JOIN (SELECT _s.cantidad, _s.codigo_idcodigo FROM stock _s WHERE _s.sucursal_idsucursal = ${idsucursal_destino}) 
+                as s2 ON s2.codigo_idcodigo = s.codigo_idcodigo
+                WHERE
+                s.sucursal_idsucursal = ${idsucursal_origen} AND
+                s.codigo_idcodigo = c.idcodigo AND
+                c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+                sg.grupo_idgrupo = g.idgrupo AND
+                g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+                sf.familia_idfamilia = f.idfamilia AND
+                c.codigo LIKE '%${search_value}%';`
+    console.log(_sql)
+    connection.query(_sql,(err,rows)=>{
+        callback(rows);
+    })
+    connection.end();
+}
+
+
+
+
 
 const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
     const connection = mysql_connection.getConnection();
@@ -309,4 +346,5 @@ module.exports = {
     agregar_stock_lote,
     obtener_stock_sucursal,
     stock_codigo_sucursales,
+    search_stock_envio,
 }

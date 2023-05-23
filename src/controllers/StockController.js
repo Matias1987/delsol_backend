@@ -135,6 +135,13 @@ const stock_codigo_sucursales = (req, res) => {
 
 }
 
+const search_stock_envio = (req,res)=>{
+  const {params:{idsucursal, idsucursal_destino, search_value}} = req;
+  stockService.search_stock_envio(search_value, idsucursal, idsucursal_destino,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
 const editarStock = (req, res) => {}
 
 
@@ -150,4 +157,5 @@ module.exports = {
     agregar_stock_lote,
     obtener_stock_sucursal,
     stock_codigo_sucursales,
+    search_stock_envio,
   };
