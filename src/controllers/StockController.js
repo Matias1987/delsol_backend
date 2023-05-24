@@ -1,14 +1,14 @@
 const stockService = require("../services/StockService")
 
 
-const modificar_cantidad = (req, res) => {
+const incrementar_cantidad = (req, res) => {
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   
   const {body} = req;
   
-  stockService.modificar_cantidad(
+  stockService.incrementar_cantidad(
     {
       idcodigo: body.idcodigo, 
     
@@ -142,6 +142,13 @@ const search_stock_envio = (req,res)=>{
   })
 }
 
+const modificar_cantidad = (req,res)=>{
+  const {body} = req;
+  stockService.modificar_cantidad(body, (response)=>{
+    res.status(201).send({status:'OK', data:response});
+  })
+}
+
 const editarStock = (req, res) => {}
 
 
@@ -152,10 +159,11 @@ module.exports = {
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
     search_stock,
-    modificar_cantidad,
+    incrementar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
     obtener_stock_sucursal,
     stock_codigo_sucursales,
     search_stock_envio,
+    modificar_cantidad,
   };

@@ -102,8 +102,11 @@ const envioRoutes = require("./v1/routes/EnvioRoutes");
 app.use("/api/v1/envio",envioRoutes);
 
 const envioStockRoutes = require("./v1/routes/EnvioHasStockRoutes");
-
 app.use("/api/v1/enviostock",envioStockRoutes);
+
+
+const bajaDesperfectoRoutes = require("./v1/routes/BajaDesperfectoRoutes");
+app.use("/api/v1/bajadesperfecto",bajaDesperfectoRoutes);
 
 
 

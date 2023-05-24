@@ -4,7 +4,7 @@ const mysql_connection = require("../lib/mysql_connection")
     the server returns a list of stocks rows
 */
 
-const modificar_cantidad = (data, callback) => {
+const incrementar_cantidad = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     const sql = `UPDATE stock s SET s.cantidad = ${data.cantidad} 
@@ -30,6 +30,7 @@ const modificar_cantidad = (data, callback) => {
     })
     
 }
+
 
 const search_stock = (search_value, idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
@@ -333,6 +334,28 @@ const agregar_stock = (data,callback) =>{
 
     }
 
+    
+    const modificar_cantidad = (_data,callback) => {
+        const data ={
+            cantidad: _data.cantidad,
+            fksucursal: _data.sucursal,
+            codigo: _data.codigo,
+        }
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+
+        const query = `UPDATE stock s, codigo c 
+        SET s.cantidad = (s.cantidad - ${data.cantidad} )
+        WHERE 
+        s.codigo_idcodigo = idcodigo AND 
+        s.sucursal_idsucursal = ${data.fksucursal} AND 
+        c.codigo='${data.codigo}';`;
+
+        connection.query(query,(err,resp)=>{
+            callback(resp)
+        })
+        connection.end();
+    }
 
 module.exports = {
     agregar_stock,
@@ -341,10 +364,11 @@ module.exports = {
     obtener_detalle_stock_sucursal,
     obtener_detalle_stock_sucursal_v2,
     search_stock,
-    modificar_cantidad,
+    incrementar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
     obtener_stock_sucursal,
     stock_codigo_sucursales,
     search_stock_envio,
+    modificar_cantidad,
 }

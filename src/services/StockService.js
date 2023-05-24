@@ -1,8 +1,8 @@
 const StockDB = require("../database/Stock")
 
 
-const modificar_cantidad = (idcodigo, idsucursal, cantidad,fkfactura, callback) => {
-  StockDB.modificar_cantidad(idcodigo,idsucursal,cantidad,fkfactura, (data)=>{
+const incrementar_cantidad = (idcodigo, idsucursal, cantidad,fkfactura, callback) => {
+  StockDB.incrementar_cantidad(idcodigo,idsucursal,cantidad,fkfactura, (data)=>{
     callback(data)
   })
 }
@@ -73,6 +73,12 @@ const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino,
   })
 }
 
+const modificar_cantidad = (data, callback)=>{
+  StockDB.modificar_cantidad(data,(response)=>{
+    return callback(response);
+  })
+}
+
 
 module.exports = {
     obtenerListaStock,
@@ -82,10 +88,11 @@ module.exports = {
     obtener_stock_por_subgrupo,
     obtener_detalle_stock_sucursal,
     search_stock,
-    modificar_cantidad,
+    incrementar_cantidad,
     obtener_codigos_sin_stock_sucursal,
     agregar_stock_lote,
     obtener_stock_sucursal,
     stock_codigo_sucursales,
     search_stock_envio,
+    modificar_cantidad,
   };
