@@ -73,8 +73,8 @@ const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino,
   })
 }
 
-const modificar_cantidad = (data, callback)=>{
-  StockDB.modificar_cantidad(data,(response)=>{
+const descontar_cantidad_por_codigo = (data, callback)=>{
+  StockDB.descontar_cantidad_por_codigo(data,(response)=>{
     return callback(response);
   })
 }
@@ -94,5 +94,5 @@ module.exports = {
     obtener_stock_sucursal,
     stock_codigo_sucursales,
     search_stock_envio,
-    modificar_cantidad,
+    descontar_cantidad_por_codigo,
   };

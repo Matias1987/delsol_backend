@@ -142,9 +142,9 @@ const search_stock_envio = (req,res)=>{
   })
 }
 
-const modificar_cantidad = (req,res)=>{
+const descontar_cantidad_por_codigo = (req,res)=>{
   const {body} = req;
-  stockService.modificar_cantidad(body, (response)=>{
+  stockService.descontar_cantidad_por_codigo(body, (response)=>{
     res.status(201).send({status:'OK', data:response});
   })
 }
@@ -165,5 +165,5 @@ module.exports = {
     obtener_stock_sucursal,
     stock_codigo_sucursales,
     search_stock_envio,
-    modificar_cantidad,
+    descontar_cantidad_por_codigo,
   };

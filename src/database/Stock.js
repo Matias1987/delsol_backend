@@ -7,7 +7,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const incrementar_cantidad = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `UPDATE stock s SET s.cantidad = ${data.cantidad} 
+    const sql = `UPDATE stock s SET s.cantidad = (s.cantidad + ${data.cantidad}) 
     WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo=${data.idcodigo};`;
     connection.query(sql,(err,response)=>{
         callback(response)
@@ -25,7 +25,9 @@ const incrementar_cantidad = (data, callback) => {
         }
         //update codigo
         console.log(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
-        connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
+        if(data.costo>-1){
+            connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
+        }        
         connection.end();
     })
     
@@ -335,7 +337,7 @@ const agregar_stock = (data,callback) =>{
     }
 
     
-    const modificar_cantidad = (_data,callback) => {
+    const descontar_cantidad_por_codigo = (_data,callback) => {
         const data ={
             cantidad: _data.cantidad,
             fksucursal: _data.sucursal,
@@ -344,17 +346,38 @@ const agregar_stock = (data,callback) =>{
         const connection = mysql_connection.getConnection();
         connection.connect();
 
-        const query = `UPDATE stock s, codigo c 
-        SET s.cantidad = (s.cantidad - ${data.cantidad} )
-        WHERE 
-        s.codigo_idcodigo = idcodigo AND 
-        s.sucursal_idsucursal = ${data.fksucursal} AND 
-        c.codigo='${data.codigo}';`;
+        //check if code exists!
 
-        connection.query(query,(err,resp)=>{
-            callback(resp)
+        connection.query(`SELECT c.idcodigo FROM stock s, codigo c WHERE c.idcodigo = s.codigo_idcodigo AND 
+        c.codigo = '${data.codigo}'`,(err,_res)=>{
+
+            console.log(" codigo existe?", JSON.stringify(_res))
+
+            if(_res.length>0){
+                //stock exists
+                console.log("el codigo existe")
+                const query = `UPDATE stock s, codigo c 
+                SET s.cantidad = (s.cantidad - ${data.cantidad} )
+                WHERE 
+                s.codigo_idcodigo = idcodigo AND 
+                s.sucursal_idsucursal = ${data.fksucursal} AND 
+                c.codigo='${data.codigo}';`;
+        
+                connection.query(query,(err,resp)=>{
+                    callback(resp)
+                })
+            }
+            else{
+                //stock doesn't exists
+                console.log("EL CODIGO NO EXISTE")
+                callback(-1)
+            }
+
+            connection.end();
         })
-        connection.end();
+
+        
+        
     }
 
 module.exports = {
@@ -370,5 +393,5 @@ module.exports = {
     obtener_stock_sucursal,
     stock_codigo_sucursales,
     search_stock_envio,
-    modificar_cantidad,
+    descontar_cantidad_por_codigo,
 }

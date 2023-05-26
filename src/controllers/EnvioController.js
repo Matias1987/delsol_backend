@@ -27,6 +27,7 @@ const agregarEnvio = (req,res) => {
         'sucursal_idsucursal' : body.sucursal_idsucursal,
         'usuario_idusuario' : body.usuario_idusuario,
         'cantidad_total' : body.cantidad_total,
+        'id_sucursal_origen': body.id_sucursal_origen,
         'items' : []/*body.items*/
     }
     

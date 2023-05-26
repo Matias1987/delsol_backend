@@ -45,8 +45,8 @@ router.post("/m/incrementar_cantidad/", (req, res) => {
   stockController.incrementar_cantidad(req,res);
 });
 
-router.post("/m/modificar_cantidad/", (req, res) => {
-  stockController.modificar_cantidad(req,res);
+router.post("/m/descontar_cantidad_por_codigo/", (req, res) => {
+  stockController.descontar_cantidad_por_codigo(req,res);
 });
 
 

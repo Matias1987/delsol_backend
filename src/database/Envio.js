@@ -51,9 +51,22 @@ const agregar_envio = (data,callback) => {
             
             (err,res)=>{
 
-                console.error(err)
+                //console.error(err)
 
                 //descontar cantidades
+
+                console.log(`UPDATE 
+                stock s, 
+                envio_has_stock ehs,
+                envio e
+                SET 
+                s.cantidad = s.cantidad - ehs.cantidad
+                WHERE
+                e.idenvio = ehs.envio_idenvio AND  
+                s.codigo_idcodigo = ehs.codigo_idcodigo AND
+                s.sucursal_idsucursal = e.sucursal_idsucursal AND 
+                ehs.envio_idenvio=${_eid} 
+                ;`)
 
                 connection.query(`UPDATE 
                 stock s, 
@@ -64,7 +77,7 @@ const agregar_envio = (data,callback) => {
                 WHERE
                 e.idenvio = ehs.envio_idenvio AND  
                 s.codigo_idcodigo = ehs.codigo_idcodigo AND
-                s.sucursal_idsucursal = e.sucursal_idsucursal AND 
+                s.sucursal_idsucursal = ${data.id_sucursal_origen} AND 
                 ehs.envio_idenvio=${_eid} 
                 ;`, (err,_resp)=>{
                     callback(_eid);
