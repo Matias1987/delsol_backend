@@ -52,6 +52,7 @@ const agregarCodigo = (req, res) => {
     'subgrupo_idsubgrupo': body.subgrupo_idsubgrupo,
     'genero': (typeof body.genero === 'undefined' ? '' : body.genero ),
     'edad': (typeof body.edad === 'undefined' ? '' : body.edad ), 
+    'costo': (typeof body.costo === 'undefined' ? 0 : body.costo),
   }
   codigoService.agregarCodigo(nuevo_codigo,
     (id)=>{

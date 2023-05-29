@@ -39,8 +39,14 @@ const obtener_codigos = (callback) => {
 }
 
 const agregar_codigo = (data,callback) => {
-    const _genero = typeof data.genero === 'undefined' ? '' : data.genero;
-    const _edad = typeof data.edad === 'undefined' ? '' : data.edad;
+
+    var _genero = typeof data.genero === 'undefined' ? '' : data.genero;
+    var _edad = typeof data.edad === 'undefined' ? '' : data.edad;
+    var _costo = typeof data.costo === 'undefined' ? 0 : data.costo;
+    _genero = _genero == null ? '':_genero;
+    _edad = _edad == null ? '': _edad;
+    _costo = _costo == null ? '': _costo;
+
     const connection = mysql_connection.getConnection();
     connection.connect();
     var sql = `insert ignore into codigo (
@@ -48,8 +54,9 @@ const agregar_codigo = (data,callback) => {
         descripcion,
         subgrupo_idsubgrupo,
         genero,
-        edad
-        ) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo},'${_genero}','${_edad}')`;
+        edad,
+        costo
+        ) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo},'${_genero}','${_edad}',${_costo})`;
 
     console.log(sql)
 
