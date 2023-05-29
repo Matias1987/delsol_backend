@@ -39,9 +39,17 @@ const obtener_codigos = (callback) => {
 }
 
 const agregar_codigo = (data,callback) => {
+    const _genero = typeof data.genero === 'undefined' ? '' : data.genero;
+    const _edad = typeof data.edad === 'undefined' ? '' : data.edad;
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = `insert ignore into codigo (codigo, descripcion,subgrupo_idsubgrupo) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo})`;
+    var sql = `insert ignore into codigo (
+        codigo, 
+        descripcion,
+        subgrupo_idsubgrupo,
+        genero,
+        edad
+        ) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo},'${_genero}','${_edad}')`;
 
     console.log(sql)
 

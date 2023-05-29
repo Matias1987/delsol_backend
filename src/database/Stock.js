@@ -138,7 +138,7 @@ const obtener_detalle_stock_sucursal_v2 = (idsucursal, idcodigo,callback) => {
 
     const sql = `SELECT 
                 CONCAT(f.nombre_corto, '/ ' , sf.nombre_corto, '/ ', g.nombre_corto, '/ ', sg.nombre_corto, '/ ') AS 'ruta',
-                c.codigo, c.costo, s.cantidad, c.descripcion, c.idcodigo,
+                c.codigo, c.costo, s.cantidad, c.descripcion, c.idcodigo,c.genero, c.edad,
                 sg.multiplicador
                 FROM 
                 stock s, codigo c,
