@@ -79,6 +79,12 @@ const descontar_cantidad_por_codigo = (data, callback)=>{
   })
 }
 
+const obtener_lista_stock_filtros = (data,callback)=>{
+  StockDB.obtener_lista_stock_filtros(data,(rows)=>{
+    return callback(rows);
+  })
+}
+
 
 module.exports = {
     obtenerListaStock,
@@ -95,4 +101,5 @@ module.exports = {
     stock_codigo_sucursales,
     search_stock_envio,
     descontar_cantidad_por_codigo,
+    obtener_lista_stock_filtros,
   };

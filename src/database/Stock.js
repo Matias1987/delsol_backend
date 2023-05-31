@@ -376,8 +376,64 @@ const agregar_stock = (data,callback) =>{
             connection.end();
         })
 
-        
-        
+
+    }
+
+    const obtener_lista_stock_filtros = (data, callback)=>{
+            
+        var order = '';
+
+        if(typeof data.order !== 'undefined'){
+            switch(data.order){
+                case 'alf_asc': order=' order by c.codigo asc';break;
+                case 'alf_desc': order=' order by c.codigo desc';break;
+                case 'precio_desc': order=' order by c.precio desc';break;
+                case 'precio_asc': order=' order by c.precio asc';break;
+                case 'cantidad_asc': order=' order by c.cantidad asc';break;
+                case 'cantidad_desc': order=' order by c.cantidad desc';break;
+            }
+        }
+
+        const _query = `SELECT c.* FROM 
+        (
+            SELECT 
+            s.cantidad,
+            _c.idcodigo,
+            _c.codigo,
+            _c.descripcion, 
+            _c.edad,
+            _c.genero,
+            sg.multiplicador,
+            (ROUND((_c.costo * sg.multiplicador)/100)*100) AS 'precio'
+            FROM subgrupo sg, stock s, codigo _c WHERE 
+            _c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
+            _c.idcodigo = s.codigo_idcodigo AND
+            s.sucursal_idsucursal = 1
+        ) AS c
+         WHERE
+        (case when '${data.codigo_contenga_a}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
+        (case when '${data.codigo_igual_a}' <> '' then c.codigo = '${data.codigo_igual_a}' else true end) and
+        (case when '${data.precio_mayor_a}' <> '' then c.precio > '${data.precio_mayor_a}' else true end) and
+        (case when '${data.precio_menor_a}' <> '' then c.precio < '${data.precio_menor_a}' else true end) and
+        (case when '${data.precio_igual_a}' <> '' then c.precio = '${data.precio_igual_a}' else true end) and
+        (case when '${data.cantidad_igual_a}' <> '' then c.cantidad = '${data.cantidad_igual_a}' else true end) and
+        (case when '${data.cantidad_mayor_a}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
+        (case when '${data.cantidad_menor_a}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
+        (case when '${data.sexo}' <> '' then c.genero like '%${data.sexo}%' else true end) and
+        (case when '${data.edad}' <> '' then c.edad like '%${data.edad}%' else true end) 
+        ${order}
+        ;
+        `;
+        console.log(_query);
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+
+        connection.query(_query,(err,rows)=>{
+            callback(rows)
+        });
+
+        connection.end();
+
     }
 
 module.exports = {
@@ -394,4 +450,5 @@ module.exports = {
     stock_codigo_sucursales,
     search_stock_envio,
     descontar_cantidad_por_codigo,
+    obtener_lista_stock_filtros,
 }

@@ -149,6 +149,13 @@ const descontar_cantidad_por_codigo = (req,res)=>{
   })
 }
 
+const obtener_lista_stock_filtros = (req,res)=>{
+  const {body} = req;
+  stockService.obtener_lista_stock_filtros(body, (rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
 const editarStock = (req, res) => {}
 
 
@@ -166,4 +173,5 @@ module.exports = {
     stock_codigo_sucursales,
     search_stock_envio,
     descontar_cantidad_por_codigo,
+    obtener_lista_stock_filtros,
   };

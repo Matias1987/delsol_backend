@@ -62,4 +62,8 @@ router.post("/agregar_stock/lote/", (req, res) => {
   stockController.agregar_stock_lote(req,res);
 });
 
+router.post("/filtro_stock/", (req, res) => {
+  stockController.obtener_lista_stock_filtros(req,res);
+});
+
 module.exports = router;
