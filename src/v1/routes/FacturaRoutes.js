@@ -8,8 +8,11 @@ router.get("/", (req, res) => {
     facturaController.obtener_facturas(req,res)
 });
 
-router.get("/:proveedorId", (req, res) => {
-  res.send("obtener una familia con id");
+router.get("/:idfactura", (req, res) => {
+  facturaController.detalle_factura(req,res);
+});
+router.get("/elementos/:idfactura", (req, res) => {
+  facturaController.lista_elementos_factura(req,res);
 });
 
 router.post("/", (req, res) => {

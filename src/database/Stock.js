@@ -19,7 +19,7 @@ const incrementar_cantidad = (data, callback) => {
                 factura_idfactura,
                 cantidad,
                 costo)
-                VALUES (${data.idcodigo}, ${data.fkfactura}, ${data.cantidad}, ${data.costo})`;
+                VALUES (${data.idcodigo}, ${data.fkfactura}, ${data.cantidad}, ${data.costo < 0 ? 0 : data.costo})`;
 
                 connection.query(query_str);
         }

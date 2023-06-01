@@ -27,6 +27,20 @@ const agregar_factura = (req,res) => {
 
 }
 
+const detalle_factura = (req,res)=>{
+    const {params:{idfactura}} = req;
+    facturaService.detalle_factura(idfactura,(rows)=>{
+        res.status(201).send({status:'OK', data:rows})
+    })
+}
+
+const lista_elementos_factura = (req,res)=>{
+    const {params:{idfactura}} = req;
+    facturaService.lista_elementos_factura(idfactura,(rows)=>{
+        res.status(201).send({status:'OK', data:rows})
+    })
+}
+
 module.exports = {
-    obtener_facturas,agregar_factura,
+    obtener_facturas,agregar_factura,detalle_factura,lista_elementos_factura,
 }
