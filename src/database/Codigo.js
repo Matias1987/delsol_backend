@@ -32,7 +32,7 @@ const obtener_codigo = (idcodigo,callback) => {
 const obtener_codigos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from codigo",(err,rows,fields)=>{
+    connection.query("SELECT c.*, sg.multiplicador from codigo c, subgrupo sg WHERE c.subgrupo_idsubgrupo = sg.idsubgrupo;",(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
@@ -83,6 +83,28 @@ const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{
     connection.end();
 }
 
+const obtener_codigos_categoria = (idfamilia,idsubfamilia,idgrupo,idsubgrupo,callback) => {
+    const _query = `SELECT c.*, sg.multiplicador FROM 
+    codigo c, 
+    subgrupo sg, grupo g, subfamilia sf
+    WHERE 
+    c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+    sg.grupo_idgrupo = g.idgrupo AND 
+    g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+    (case when '-1' <> '${idsubgrupo}' then sg.idsubgrupo = '${idsubgrupo}' ELSE TRUE END ) AND 
+    (case when '-1' <> '${idgrupo}' then g.idgrupo = '${idgrupo}' ELSE TRUE END) AND 
+    (case when '-1' <> '${idsubfamilia}' then sf.idsubfamilia = '${idsubfamilia}' ELSE TRUE END) AND 
+    (case when '-1' <> '${idfamilia}' then sf.familia_idfamilia = '${idfamilia}' ELSE TRUE END)
+    ;`;
+    console.log(_query)
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(_query, (err,rows)=>{
+        callback(rows);
+    });
+    connection.end();
+}
+
 module.exports = {
     obtener_codigos,
     agregar_codigo,
@@ -90,4 +112,5 @@ module.exports = {
     search_codigos,
     obtener_codigo_por_id,
     obtener_codigo,
+    obtener_codigos_categoria,
 }

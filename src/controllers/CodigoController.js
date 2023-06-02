@@ -80,6 +80,13 @@ const obtener_codigos_bysubgrupo_opt = (req,res) =>{
 
 }
 
+const obtener_codigos_categoria = (req,res)=>{
+  const {params:{idfamilia,idsubfamilia,idgrupo,idsubgrupo}} = req;
+  codigoService.obtener_codigos_categoria(idfamilia,idsubfamilia,idgrupo,idsubgrupo,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
 
 module.exports = {
     obtenerCodigoPorId,
@@ -89,4 +96,5 @@ module.exports = {
     editarCodigo,
     obtener_codigos_bysubgrupo_opt,
     search_codigos,
+    obtener_codigos_categoria,
   };

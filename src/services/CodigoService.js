@@ -35,6 +35,12 @@ const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{
   })
 }
 
+const obtener_codigos_categoria = (idfamilia,idsubfamilia,idgrupo,idsubgrupo,callback) => {
+  CodigoDB.obtener_codigos_categoria(idfamilia,idsubfamilia,idgrupo,idsubgrupo,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
     obtenerCodigoPorID,
     obtenerCodigos,
@@ -43,4 +49,5 @@ module.exports = {
     obtener_codigos_bysubgrupo_opt,
     search_codigos,
     obtenerCodigo,
+    obtener_codigos_categoria,
   };
