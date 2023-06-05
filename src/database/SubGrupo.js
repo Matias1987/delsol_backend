@@ -6,7 +6,7 @@ const modificar_multiplicador_grupos = (categoria, id, value,incrementar, callba
     
     const _q = (incrementar == 1) ? `
                 UPDATE subgrupo sg, grupo g, subfamilia sf 
-                SET sg.multiplicador = (sg.multiplicador * ${value})
+                SET sg.multiplicador = if(sg.multiplicador = 0, TRUNCATE(${value},2),TRUNCATE(sg.multiplicador * ${value},2))
                 WHERE 
                 sg.grupo_idgrupo = g.idgrupo AND
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
