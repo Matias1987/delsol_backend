@@ -1,9 +1,21 @@
 const mysql_connection = require("../lib/mysql_connection")
 
-const modificar_multiplicador_grupos = (categoria, id, value, callback) => {
+const modificar_multiplicador_grupos = (categoria, id, value,incrementar, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const _q = `
+    
+    const _q = (incrementar == 1) ? `
+                UPDATE subgrupo sg, grupo g, subfamilia sf 
+                SET sg.multiplicador = (sg.multiplicador * ${value})
+                WHERE 
+                sg.grupo_idgrupo = g.idgrupo AND
+                g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+                (case when '${categoria=="subgrupo"? id: ''}' <> '' then sg.idsubgrupo = '${categoria=="subgrupo"? id: ''}'  ELSE TRUE END) AND
+                (case when '${categoria=="grupo"? id: ''}' <> '' then g.idgrupo = '${categoria=="grupo"? id: ''}' ELSE TRUE END) AND
+                (case when '${categoria=="subfamilia"? id: ''}' <> '' then sf.idsubfamilia = '${categoria=="subfamilia"? id: ''}' ELSE TRUE END) AND 
+                (case when '${categoria=="familia"? id: ''}' <> '' then sf.familia_idfamilia = '${categoria=="familia"? id: ''}' ELSE TRUE END);`
+    :
+    `
                 UPDATE subgrupo sg, grupo g, subfamilia sf 
                 SET sg.multiplicador = ${value}
                 WHERE 

@@ -22,10 +22,10 @@ const agregarSubgrupo = (data,callback) => {
 
 const editarSubgrupo = (req, res) => {}
 
-const modificar_multiplicador = (categoria, id, value, callback) => {
+const modificar_multiplicador = (categoria, id, value, incrementar, callback) => {
   console.log("modificar mult. SERVICE")
 
-  SubGrupoDB.modificar_multiplicador_grupos(categoria, id, value, (data)=>{
+  SubGrupoDB.modificar_multiplicador_grupos(categoria, id, value, incrementar, (data)=>{
     callback(data)
   })
 }

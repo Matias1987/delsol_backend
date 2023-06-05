@@ -60,7 +60,7 @@ const modificar_multiplicador = (req, res) => {
   console.log("modificar mult. CONTROLLER")
   console.log(JSON.stringify(body))
 
-  subgrupoService.modificar_multiplicador(body.categoria, body.id, body.value, (data)=>{
+  subgrupoService.modificar_multiplicador(body.categoria, body.id, body.value, body.incrementar, (data)=>{
     res.status(201).send({status:'OK', data:data});
   })
 
