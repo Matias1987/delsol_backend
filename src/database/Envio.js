@@ -118,8 +118,8 @@ const lista_envios = (callback) => {
 }
 
 const obtener_envios_codigo = (idcodigo,callback) => {
-    const query = `SELECT ehs.envio_idenvio AS 'nroenvio', ehs.cantidad 
-    FROM envio_has_stock ehs WHERE ehs.codigo_idcodigo = ${idcodigo};`;
+    const query = `SELECT ehs.envio_idenvio AS 'nroenvio', ehs.cantidad , s.nombre as 'sucursal'
+    FROM envio_has_stock ehs, sucursal s, envio e WHERE ehs.codigo_idcodigo = ${idcodigo} and ehs.envio_idenvio = e.idenvio and e.sucursal_idsucursal = s.idsucursal ;`;
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
