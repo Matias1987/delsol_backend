@@ -408,7 +408,7 @@ const agregar_stock = (data,callback) =>{
             FROM subgrupo sg, stock s, codigo _c WHERE 
             _c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
             _c.idcodigo = s.codigo_idcodigo AND
-            s.sucursal_idsucursal = 1
+            s.sucursal_idsucursal = ${data.sucursal}
         ) AS c
          WHERE
         (case when '${data.codigo_contenga_a}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
