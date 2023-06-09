@@ -156,6 +156,21 @@ const obtener_lista_stock_filtros = (req,res)=>{
   })
 }
 
+const obtener_stock_ventas = (req,res)=>{
+  const {body} = req;
+  stockService.obtener_stock_ventas(body, (rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+
+}
+
+const obtener_stock_detalles_venta = (req,res)=>{
+  const {params:{idsucursal,idcodigo}} = req;
+  stockService.obtener_stock_detalles_venta({idsucursal:idsucursal, idcodigo: idcodigo},(rows)=>{
+    res.status(201).send({status: 'OK', data: rows});
+  })
+}
+
 const editarStock = (req, res) => {}
 
 
@@ -174,4 +189,6 @@ module.exports = {
     search_stock_envio,
     descontar_cantidad_por_codigo,
     obtener_lista_stock_filtros,
+    obtener_stock_ventas,
+    obtener_stock_detalles_venta,
   };

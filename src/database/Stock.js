@@ -436,6 +436,56 @@ const agregar_stock = (data,callback) =>{
 
     }
 
+    const obtener_stock_ventas = (filters, callback) => {
+        //temporary!
+        var str = "";
+        var _values = [1,2];// filters.filtroFamilias;
+        _values.forEach(i=>{str+=`${(str.length>0 ? ',' : '') + i}`
+        })
+
+        const _query = `SELECT 
+        c.idcodigo, 
+        c.codigo, 
+        c.descripcion
+        FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
+        s.codigo_idcodigo = c.idcodigo AND c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+        sg.grupo_idgrupo = g.idgrupo AND g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+        sf.familia_idfamilia IN (${_values}) and s.sucursal_idsucursal=${filters.idSucursal} and (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%');`;
+
+        //console.log(_query)
+
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        connection.query(_query,(err,rows)=>{
+            console.log(JSON.stringify(rows))
+            callback(rows)
+        })
+        connection.end();
+
+    }
+    const obtener_stock_detalles_venta = (data, callback) =>{
+        const _query  = `SELECT 
+        c.idcodigo,
+        s.cantidad, 
+        c.codigo, 
+        round((sg.multiplicador * c.costo) /100)  * 100 AS 'precio', 
+        c.descripcion,
+        c.costo,
+        sg.multiplicador
+        FROM stock s , codigo c, subgrupo sg
+        WHERE 
+        s.codigo_idcodigo = c.idcodigo AND 
+        c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
+        c.idcodigo = ${data.idcodigo} AND
+        s.sucursal_idsucursal = ${data.idsucursal};`;
+
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        connection.query(_query,(err,rows)=>{
+            callback(rows)
+        })
+        connection.end();
+    }
 module.exports = {
     agregar_stock,
     obtener_stock,
@@ -451,4 +501,6 @@ module.exports = {
     search_stock_envio,
     descontar_cantidad_por_codigo,
     obtener_lista_stock_filtros,
+    obtener_stock_ventas,
+    obtener_stock_detalles_venta,
 }

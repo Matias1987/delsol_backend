@@ -37,8 +37,16 @@ router.get("/exists/:idsucursal/:idcodigo", (req,res)=>{
   stockController.obtener_stock_sucursal(req,res)
 })
 
+router.get("/detalle_stock_venta/:idsucursal/:idcodigo", (req,res)=>{
+  stockController.obtener_stock_detalles_venta(req,res)
+})
+
 router.post("/", (req, res) => {
   stockController.agregarStock(req,res);
+});
+
+router.post("/obtener_stock_ventas/", (req, res) => {
+  stockController.obtener_stock_ventas(req,res);
 });
 
 router.post("/m/incrementar_cantidad/", (req, res) => {
