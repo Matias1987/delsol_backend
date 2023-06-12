@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:subgrupoId", (req, res) => {
-  res.send("Get an existing workout");
+  subGrupoController.obtener_detalle_subgrupo(req,res)
 });
 
 router.get("/optionsforgrupo/:grupoId", (req, res) => {

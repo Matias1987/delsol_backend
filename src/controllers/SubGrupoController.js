@@ -67,6 +67,13 @@ const modificar_multiplicador = (req, res) => {
 
 }
 
+const obtener_detalle_subgrupo = (req, res) => {
+  const {params:{subgrupoId}} = req;
+  subgrupoService.obtener_detalle_subgrupo(subgrupoId,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+} 
+
 const editarSubgrupo = (req, res) => {}
 
 
@@ -77,4 +84,5 @@ module.exports = {
     editarSubgrupo,
     obtener_subgrupos_bygrupo_opt,
     modificar_multiplicador,
+    obtener_detalle_subgrupo,
   };
