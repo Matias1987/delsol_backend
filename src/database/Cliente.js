@@ -32,7 +32,7 @@ const obtener_lista_clientes = (callback) => {
     connection.connect();
 
     connection.query(
-        queries.queryObteneListaClientes(),
+        queries.queryObtenerListaClientes(),
         (err,results,fields) =>{
             callback(results)
         }

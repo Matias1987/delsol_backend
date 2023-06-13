@@ -139,6 +139,7 @@ const obtener_detalle_stock_sucursal_v2 = (idsucursal, idcodigo,callback) => {
     const sql = `SELECT 
                 CONCAT(f.nombre_corto, '/ ' , sf.nombre_corto, '/ ', g.nombre_corto, '/ ', sg.nombre_corto, '/ ') AS 'ruta',
                 c.codigo, c.costo, s.cantidad, c.descripcion, c.idcodigo,c.genero, c.edad,
+                (ROUND((c.costo * sg.multiplicador)/100)*100) AS 'precio',
                 sg.multiplicador
                 FROM 
                 stock s, codigo c,
@@ -237,7 +238,7 @@ const agregar_stock = (data,callback) =>{
                 cantidad,
                 costo)
                 VALUES (${data.codigo_idcodigo}, ${data.factura_idfactura}, ${data.cantidad}, ${data.costo})`;
-                console.log(query_str)
+                //console.log(query_str)
                 connection.query(query_str);
         }
 
@@ -351,11 +352,11 @@ const agregar_stock = (data,callback) =>{
         connection.query(`SELECT c.idcodigo FROM stock s, codigo c WHERE c.idcodigo = s.codigo_idcodigo AND 
         c.codigo = '${data.codigo}'`,(err,_res)=>{
 
-            console.log(" codigo existe?", JSON.stringify(_res))
+            //console.log(" codigo existe?", JSON.stringify(_res))
 
             if(_res.length>0){
                 //stock exists
-                console.log("el codigo existe")
+                //console.log("el codigo existe")
                 const query = `UPDATE stock s, codigo c 
                 SET s.cantidad = (s.cantidad - ${data.cantidad} )
                 WHERE 
@@ -369,7 +370,7 @@ const agregar_stock = (data,callback) =>{
             }
             else{
                 //stock doesn't exists
-                console.log("EL CODIGO NO EXISTE")
+                //console.log("EL CODIGO NO EXISTE")
                 callback(-1)
             }
 
@@ -404,8 +405,15 @@ const agregar_stock = (data,callback) =>{
             _c.edad,
             _c.genero,
             sg.multiplicador,
-            (ROUND((_c.costo * sg.multiplicador)/100)*100) AS 'precio'
-            FROM subgrupo sg, stock s, codigo _c WHERE 
+            (ROUND((_c.costo * sg.multiplicador)/100)*100) AS 'precio',
+            sg.idsubgrupo,
+            g.idgrupo,
+            sf.idsubfamilia,
+            f.idfamilia
+            FROM familia f, subfamilia sf, grupo g, subgrupo sg, stock s, codigo _c WHERE 
+            sg.grupo_idgrupo = g.idgrupo AND
+            g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+            sf.familia_idfamilia = f.idfamilia AND
             _c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
             _c.idcodigo = s.codigo_idcodigo AND
             s.sucursal_idsucursal = ${data.sucursal}
@@ -420,7 +428,12 @@ const agregar_stock = (data,callback) =>{
         (case when '${data.cantidad_mayor_a}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
         (case when '${data.cantidad_menor_a}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
         (case when '${data.sexo}' <> '' then c.genero like '%${data.sexo}%' else true end) and
-        (case when '${data.edad}' <> '' then c.edad like '%${data.edad}%' else true end) 
+        (case when '${data.edad}' <> '' then c.edad like '%${data.edad}%' else true end) and 
+        (case when '${data.descripcion}' <> '' then c.descripcion like '%${data.descripcion}%' else true end) and
+        (case when '${data.subgrupo}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
+        (case when '${data.grupo}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
+        (case when '${data.subfamilia}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
+        (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) 
         ${order}
         ;
         `;
@@ -436,6 +449,56 @@ const agregar_stock = (data,callback) =>{
 
     }
 
+    const obtener_stock_ventas = (filters, callback) => {
+        //temporary!
+        var str = "";
+        var _values = [1,2];// filters.filtroFamilias;
+        _values.forEach(i=>{str+=`${(str.length>0 ? ',' : '') + i}`
+        })
+
+        const _query = `SELECT 
+        c.idcodigo, 
+        c.codigo, 
+        c.descripcion
+        FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
+        s.codigo_idcodigo = c.idcodigo AND c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+        sg.grupo_idgrupo = g.idgrupo AND g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+        sf.familia_idfamilia IN (${_values}) and s.sucursal_idsucursal=${filters.idSucursal} and (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%');`;
+
+        //console.log(_query)
+
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        connection.query(_query,(err,rows)=>{
+            //console.log(JSON.stringify(rows))
+            callback(rows)
+        })
+        connection.end();
+
+    }
+    const obtener_stock_detalles_venta = (data, callback) =>{
+        const _query  = `SELECT 
+        c.idcodigo,
+        s.cantidad, 
+        c.codigo, 
+        round((sg.multiplicador * c.costo) /100)  * 100 AS 'precio', 
+        c.descripcion,
+        c.costo,
+        sg.multiplicador
+        FROM stock s , codigo c, subgrupo sg
+        WHERE 
+        s.codigo_idcodigo = c.idcodigo AND 
+        c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
+        c.idcodigo = ${data.idcodigo} AND
+        s.sucursal_idsucursal = ${data.idsucursal};`;
+
+        const connection = mysql_connection.getConnection();
+        connection.connect();
+        connection.query(_query,(err,rows)=>{
+            callback(rows)
+        })
+        connection.end();
+    }
 module.exports = {
     agregar_stock,
     obtener_stock,
@@ -451,4 +514,6 @@ module.exports = {
     search_stock_envio,
     descontar_cantidad_por_codigo,
     obtener_lista_stock_filtros,
+    obtener_stock_ventas,
+    obtener_stock_detalles_venta,
 }

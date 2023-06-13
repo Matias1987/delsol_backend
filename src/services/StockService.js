@@ -85,6 +85,18 @@ const obtener_lista_stock_filtros = (data,callback)=>{
   })
 }
 
+const obtener_stock_ventas = (filters, callback) =>{
+    StockDB.obtener_stock_ventas(filters, (rows)=>{
+      return callback(rows);
+    })
+}
+
+const obtener_stock_detalles_venta = (data, callback) => {
+  StockDB.obtener_stock_detalles_venta(data,(rows)=>{
+    return callback(rows);
+  })
+}
+
 
 module.exports = {
     obtenerListaStock,
@@ -102,4 +114,6 @@ module.exports = {
     search_stock_envio,
     descontar_cantidad_por_codigo,
     obtener_lista_stock_filtros,
+    obtener_stock_ventas,
+    obtener_stock_detalles_venta,
   };

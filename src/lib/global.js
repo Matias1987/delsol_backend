@@ -10,7 +10,6 @@ const connection_data = {
 //    password: "admin",
 //    host: "testdatabase.cogxzxmytpda.us-east-1.rds.amazonaws.com",
 //    database: "optdelsol_25"
-//
 //} 
 
 module.exports = {

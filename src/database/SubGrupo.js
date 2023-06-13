@@ -48,7 +48,9 @@ const obtener_subgrupos_bygrupo_opt = (grupoid,callback)=>{
 const obtener_subgrupos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from subgrupo",(err,rows,fields)=>{
+    connection.query(`select CONCAT(f.nombre_corto , ' / ', sf.nombre_corto, '  / ', g.nombre_corto , ' / ') AS 'ruta', sg.* from subgrupo sg, grupo g, subfamilia sf, familia f WHERE
+    sg.grupo_idgrupo = g.idgrupo AND g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+    sf.familia_idfamilia = f.idfamilia;`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
@@ -85,9 +87,20 @@ const agregar_subgrupo = (data,callback) => {
     
 }
 
+const obtener_detalle_subgrupo = (id,callback)=>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const query = `SELECT sg.* FROM subgrupo sg WHERE sg.idsubgrupo=${id};`;
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end();
+}
+
 module.exports = {
     obtener_subgrupos,
     agregar_subgrupo,
     obtener_subgrupos_bygrupo_opt,
     modificar_multiplicador_grupos,
+    obtener_detalle_subgrupo,
 }

@@ -30,6 +30,12 @@ const modificar_multiplicador = (categoria, id, value, incrementar, callback) =>
   })
 }
 
+const obtener_detalle_subgrupo = (id,callback) => {
+  SubGrupoDB.obtener_detalle_subgrupo(id,(rows)=>{
+    callback(rows)
+  })
+}
+
 
 module.exports = {
     obtenerSubgrupos,
@@ -38,4 +44,5 @@ module.exports = {
     editarSubgrupo,
     obtener_subgrupos_bygrupo_opt,
     modificar_multiplicador,
+    obtener_detalle_subgrupo,
   };
