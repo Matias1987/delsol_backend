@@ -63,7 +63,7 @@ const search_stock = (search_value, idsucursal, callback) => {
     connection.end();
 }
 
-const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino, callback) => {
+const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino, idcodigo, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     
@@ -89,7 +89,8 @@ const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino,
                 sg.grupo_idgrupo = g.idgrupo AND
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
                 sf.familia_idfamilia = f.idfamilia AND
-                c.codigo LIKE '%${search_value}%';`
+                (case when '${search_value}' <> 'null' then c.codigo LIKE '%${search_value}%' else true end) AND
+                (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end);`
     console.log(_sql)
     connection.query(_sql,(err,rows)=>{
         callback(rows);
