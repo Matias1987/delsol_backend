@@ -63,7 +63,8 @@ const search_stock = (search_value, idsucursal, callback) => {
     connection.end();
 }
 
-const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino, idcodigo, callback) => {
+const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino, idcodigo, callback) => {
+    const search_value = decodeURIComponent(_search_value);
     const connection = mysql_connection.getConnection();
     connection.connect();
     
