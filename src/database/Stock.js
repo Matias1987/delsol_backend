@@ -5,28 +5,39 @@ const mysql_connection = require("../lib/mysql_connection")
 */
 
 const incrementar_cantidad = (data, callback) => {
+    var codigos = "";
+    data.codigos.forEach(c=>{
+        codigos += `${ (codigos.length>0 ? ',':'') + c.idcodigo}`;
+    })
     const connection = mysql_connection.getConnection();
     connection.connect();
     const sql = `UPDATE stock s SET s.cantidad = (s.cantidad + ${data.cantidad}) 
-    WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo=${data.idcodigo};`;
+    WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo  in (${codigos});`;
     connection.query(sql,(err,response)=>{
         callback(response)
         //if idfactura exists..
         if(data.fkfactura!=-1)
         {
-            let query_str = `INSERT INTO codigo_factura (
+            /*let query_str = `INSERT INTO codigo_factura (
                 stock_codigo_idcodigo,
                 factura_idfactura,
                 cantidad,
                 costo)
-                VALUES (${data.idcodigo}, ${data.fkfactura}, ${data.cantidad}, ${data.costo < 0 ? 0 : data.costo})`;
-
+                VALUES (${data.idcodigo}, ${data.fkfactura}, ${data.cantidad}, ${data.costo < 0 ? 0 : data.costo})`;*/
+            let query_str = `INSERT INTO codigo_factura (
+                stock_codigo_idcodigo,
+                factura_idfactura,
+                cantidad,
+                costo)(
+					 SELECT c.idcodigo, '${data.fkfactura}', '${data.cantidad}', '${data.costo < 0 ? 0 : data.costo}' 
+					 FROM codigo c WHERE c.idcodigo IN (${codigos}))`
+                console.log(query_str)
                 connection.query(query_str);
         }
-        //update codigo
-        console.log(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
-        if(data.costo>-1){
-            connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
+        //update costo
+        //console.log(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
+        if(data.costo>0){
+            connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
         }        
         connection.end();
     })

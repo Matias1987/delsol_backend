@@ -10,7 +10,7 @@ const incrementar_cantidad = (req, res) => {
   
   stockService.incrementar_cantidad(
     {
-      idcodigo: body.idcodigo, 
+      codigos: body.codigos,//<--array 
     
       idsucursal: body.idsucursal, 
     

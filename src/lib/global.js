@@ -2,7 +2,7 @@ const connection_data = {
     user: "root",
     password: "root",
     host: "localhost",
-    database: "optdelsol_23"
+    database: "optdelsol_27"
 } 
 
 //const connection_data = {
