@@ -18,7 +18,9 @@ const incrementar_cantidad = (req, res) => {
     
       fkfactura: (typeof body.factura_idfactura === 'undefined' ? -1 : body.factura_idfactura),
       
-      costo: (typeof body.costo === 'undefined' ? 0 : body.costo),
+      costo: (typeof body.costo === 'undefined' ? -1 : body.costo),
+
+      descripcion: body.descripcion,
     }
     ,
     (data)=>{

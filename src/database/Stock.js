@@ -38,7 +38,10 @@ const incrementar_cantidad = (data, callback) => {
         //console.log(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
         if(data.costo>0){
             connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
-        }        
+        }      
+        if(typeof data.descripcion!=='undefined'){
+            connection.query(`UPDATE codigo c SET c.descripcion = '${data.descripcion}' WHERE c.idcodigo in (${codigos});`)
+        }  
         connection.end();
     })
     
