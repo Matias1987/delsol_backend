@@ -40,7 +40,10 @@ const incrementar_cantidad = (data, callback) => {
             connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
         }      
         if(typeof data.descripcion!=='undefined'){
-            connection.query(`UPDATE codigo c SET c.descripcion = '${data.descripcion}' WHERE c.idcodigo in (${codigos});`)
+            if( (data.descripcion.trim()).length > 0)
+            {
+                connection.query(`UPDATE codigo c SET c.descripcion = '${data.descripcion}' WHERE c.idcodigo in (${codigos});`)
+            }
         }  
         connection.end();
     })
