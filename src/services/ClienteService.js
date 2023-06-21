@@ -12,9 +12,20 @@ const agregarCliente = (data, callback) => {
   })
 }
 
-const obtenerCliente = (data, callback) => {
+const obtenerClienteDNI = (data, callback) => {
   ClienteDB.detalle_cliente_dni(data, (row) => {
     return callback(row);
+  })
+}
+const obtenerClienteID = (data, callback) => {
+  ClienteDB.detalle_cliente(data, (row) => {
+    return callback(row);
+  })
+}
+
+const buscarCliente = (data, callback) => {
+  ClienteDB.buscar_cliente(data, (rows) => {
+    return callback(rows);
   })
 }
 
@@ -26,7 +37,9 @@ const editarCliente = (req, res) => {}
 module.exports = {
     obtenerClientes,
     agregarCliente,
-    obtenerCliente,
+    obtenerClienteDNI,
+    obtenerClienteID,
     obtenerFichaCliente,
     editarCliente,
+    buscarCliente,
   };

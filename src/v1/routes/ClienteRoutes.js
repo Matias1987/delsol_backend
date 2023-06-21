@@ -4,15 +4,23 @@ const router = express.Router();
 const clienteController = require("../../controllers/ClienteController")
 
 router.get("/", (req, res) => {
-  clienteController.obtenerClientes();
+  clienteController.obtenerClientes(req,res);
+});
+
+router.get("/buscar/:values", (req, res) => {
+  clienteController.buscarCliente(req,res);
 });
 
 router.get("/:clienteId", (req, res) => {
-  res.send("Get an existing workout");
+ clienteController.obtenerClientePorID(req,res)
 });
 
 router.post("/", (req, res) => {
   clienteController.agregarCliente(req,res);
+});
+
+router.post("/getPorDNI/", (req, res) => {
+  clienteController.obtenerClientePorDNI(req,res);
 });
 
 router.patch("/:clienteId", (req, res) => {

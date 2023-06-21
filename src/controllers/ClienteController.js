@@ -1,18 +1,22 @@
 const clienteService = require("../services/ClienteService")
 
-const obtenerClientes = (req, res) => {}
+const obtenerClientes = (req, res) => {
+  clienteService.obtenerClientes((rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
 
 const agregarCliente = (req, res) => {
   const {body} = req;
 
   const nuevo_cliente = {
-    'localidad_idlocalidad' : body.localidad_idlocalidad,
-    'nombre' : body.nombre,
-    'apellido' : body.apellido,
-    'direccion' : body.direccion,
+    'localidad_idlocalidad' : null,// body.localidad_idlocalidad,
+    'nombre' : body.nombres,
+    'apellido' : body.apellidos,
+    'direccion' : body.domicilio,
     'dni' : body.dni,
-    'telefono1' : body.telefono1,
-    'telefono2' : body.telefono2,
+    'telefono1' : body.telefono,
+    'telefono2' : ""//body.telefono2,
   }
 
   clienteService.agregarCliente(nuevo_cliente,
@@ -23,18 +27,16 @@ const agregarCliente = (req, res) => {
 
 const obtenerClientePorDNI = (req, res) => {
   const {body} = req;
-  const id = body.id;
-  clienteService.obtenerCliente(
-    id,(rows)=>{
+  clienteService.obtenerClienteDNI(
+    body.dni,(rows)=>{
       res.status(201).send({status:'OK',data:rows});
     }
   );
 }
 const obtenerClientePorID = (req, res) => {
-  const {body} = req;
-  const id = body.id;
-  clienteService.obtenerCliente(
-    id,(rows)=>{
+  const {params:{clienteId}} = req;
+  clienteService.obtenerClienteID(
+    clienteId,(rows)=>{
       res.status(201).send({status:'OK',data:rows});
     }
   );
@@ -49,6 +51,13 @@ const obtenerClientePorNombre = (req, res) => {
   );  
 }
 
+const buscarCliente = (req,res) =>{
+  const {params:{values}} = req;
+  clienteService.buscarCliente(values, (rows)=>{
+    res.status(201).send({status:'OK',data:rows});
+  })
+}
+
 const obtenerFichaCliente = (req, res) => {}
 
 const editarCliente = (req, res) => {}
@@ -61,4 +70,5 @@ module.exports = {
     obtenerClientePorNombre,
     obtenerFichaCliente,
     editarCliente,
+    buscarCliente,
   };

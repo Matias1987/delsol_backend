@@ -1,18 +1,18 @@
 const queryObtenerClientebyDNI =(dni)=>{
     return `SELECT c.*, 
-    CONCAT(cl.apellido,', ', cl.nombre) AS 'nombre_completo' 
+    CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo' 
     FROM cliente c WHERE c.dni='${dni}';`;
 } 
 
 const queryObtenerClientebyID =(id)=>{
     return `SELECT c.*, 
-    CONCAT(cl.apellido,', ', cl.nombre) AS 'nombre_completo'
+    CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
      FROM cliente c WHERE c.idcliente=${id};`;
 } 
 
 const queryObtenerListaClientes = () => {
     return `SELECT c.*, 
-    CONCAT(cl.apellido,', ', cl.nombre) AS 'nombre_completo'
+    CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
      FROM cliente c;`;
 }
 
