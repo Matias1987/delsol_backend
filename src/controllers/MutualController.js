@@ -1,8 +1,27 @@
 const mutualService = require("../services/MutualService");
 
-const obtenerMutuales = (req,res) => {}
+const buscarMutual = (req,res) => {
+    const {params:{value}} = req;
+    mutualService.buscarMutual(
+        value,
+        (rows)=>{
+            res.status(201).send({status:'OK', data:rows});
+        }
+    )
+}
 
-const obtenerMutual = (req,res) => {}
+const obtenerMutuales = (req,res) => {
+    mutualService.obtenerMutuales((rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
+
+const obtenerMutual = (req,res) => {
+    const {params:{idmutual}} = req;
+    mutualService.obtenerMutual(idmutual,(rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
 
 const agregarMutual = (req,res) => {
     const {body} =req;
@@ -21,5 +40,6 @@ module.exports = {
     obtenerMutual,
     obtenerMutuales,
     agregarMutual,
-    editarMutual
+    editarMutual,
+    buscarMutual,
 }

@@ -1,10 +1,22 @@
 const MedicoDB = require("../database/Medico");
 
-const obtenerMedicos = (req,res) => {
-
+const buscarMedico = (value, callback) => {
+    MedicoDB.buscar_medico(value,(rows)=>{
+        return callback(rows)
+    })
 }
 
-const obtenerMedico = (req,res) => {}
+const obtenerMedicos = (callback) => {
+    MedicoDB.obtener_medicos((rows)=>{
+        return callback(rows)
+    })
+}
+
+const obtenerMedico = (id,callback) => {
+    MedicoDB.obtener_medico(id,(rows)=>{
+        return callback(rows)
+    })
+}
 
 const agregarMedico = (data,callback) => {
     MedicoDB.agregar_medico(data,(medico_id)=>{
@@ -17,5 +29,6 @@ module.exports = {
     obtenerMedico,
     obtenerMedicos,
     agregarMedico,
-    editarMedico
+    editarMedico,
+    buscarMedico,
 }

@@ -1,7 +1,21 @@
 const MutualDB = require("../database/Mutual")
 
-const obtenerMutuales = (req,res) => {}
-const obtenerMutual = (req,res) => {}
+const buscarMutual = (value,callback)=>{
+    MutualDB.buscar_mutual(value,(rows)=>{
+        callback(rows)
+    })
+}
+
+const obtenerMutuales = (callback) => {
+    MutualDB.obtener_mutuales((rows)=>{
+        callback(rows)
+    })
+}
+const obtenerMutual = (id, callback) => {
+    MutualDB.obtener_mutual(id,(rows)=>{
+        callback(rows)
+    })
+}
 const agregarMutual = (data,callback) => {
 
     MutualDB.agregar_mutual(data,(id)=>{
@@ -15,5 +29,6 @@ module.exports = {
     obtenerMutual,
     obtenerMutuales,
     agregarMutual,
-    editarMutual
+    editarMutual,
+    buscarMutual,
 }

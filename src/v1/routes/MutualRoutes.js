@@ -3,11 +3,14 @@ const mutualController = require("../../controllers/MutualController");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.send("Obtener todos los clientes");
+  mutualController.obtenerMutuales(req,res);
 });
 
-router.get("/:clienteId", (req, res) => {
-  res.send("Get an existing workout");
+router.get("/:idmutual", (req, res) => {
+  mutualController.obtenerMutual(req,res)
+});
+router.get("/buscar/:value", (req, res) => {
+  mutualController.buscarMutual(req,res)
 });
 
 router.post("/", (req, res) => {

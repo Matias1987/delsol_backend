@@ -3,15 +3,18 @@ const medicoController = require("../../controllers/MedicoController");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.send("Obtener todo los clientes");
+  medicoController.obtenerMedicos(req,res)
 });
 
-router.get("/:clienteId", (req, res) => {
-  res.send("Get an existing workout");
+router.get("/:idmedico", (req, res) => {
+  medicoController.obtenerMedico(req,res)
+});
+
+router.get("/buscar/:value", (req, res) => {
+  medicoController.buscarMedico(req,res)
 });
 
 router.post("/", (req, res) => {
-  
   medicoController.agregarMedico(req,res);
 });
 

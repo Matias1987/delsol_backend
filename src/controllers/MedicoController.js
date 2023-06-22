@@ -1,7 +1,23 @@
 const medicoService = require("../services/MedicoService");
 
-const obtenerMedicos = (req,res) => {}
-const obtenerMedico = (req,res) => {}
+const buscarMedico = (req,res) =>{
+    const {params:{value}} = req;
+    medicoService.buscarMedico(value,(rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
+
+const obtenerMedicos = (req,res) => {
+    medicoService.obtenerMedicos((rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
+const obtenerMedico = (req,res) => {
+    const {params:{idmedico}} = req;
+    medicoService.obtenerMedico(idmedico,(rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
 const agregarMedico = (req,res) => {
     const {body} = req;
     const nuevo_medico = {
@@ -22,5 +38,6 @@ module.exports = {
     obtenerMedico,
     obtenerMedicos,
     agregarMedico,
-    editarMedico
+    editarMedico,
+    buscarMedico,
 }
