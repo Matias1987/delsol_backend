@@ -59,8 +59,23 @@ const obtener_envios_codigo = (req,res) => {
 
 }
 
+const obtener_envios_pendientes_sucursal = (req,res) => {
+    const {params:{idsucursal}} = req;
+    envioService.obtener_envios_pendientes_sucursal(idsucursal,(rows)=>{
+        res.status(201).send({status:'OK', data: rows});
+    })
+}
+
+const cargarEnvio = (req, res) => {
+    const {body} = req;
+    envioService.cargarEnvio(body.idenvio, body.idsucursal,(resp)=>{
+        res.status(201).send({status:'OK', data: resp});
+    })
+}
 
 module.exports = {
+    cargarEnvio,
+    obtener_envios_pendientes_sucursal,
     obtenerEnvio,
     obtenerEnvios,
     agregarEnvio,

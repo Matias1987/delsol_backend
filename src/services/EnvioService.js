@@ -28,8 +28,22 @@ const obtener_envios_codigo = (idcodigo, callback) => {
     })
 }
 
+const obtener_envios_pendientes_sucursal = (idsucursal, callback) => {
+    EnvioDB.obtener_envios_pendientes_sucursal(idsucursal,(rows)=>{
+        return callback(rows)
+    })
+}
+
+const cargarEnvio = (idenvio, idsucursal, callback) => {
+    EnvioDB.cargarEnvio(idenvio, idsucursal,(resp)=>{
+        return callback(resp)
+    })
+}
+
 
 module.exports = {
+    cargarEnvio,
+    obtener_envios_pendientes_sucursal,
     obtenerEnvio,
     obtenerEnvios,
     agregarEnvio,

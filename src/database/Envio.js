@@ -95,6 +95,7 @@ const detalle_envio = (idenvio,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     console.log("getting details of envio: " + idenvio)
+    console.log(envio_queries.queryDetalleEnvio(idenvio))
     connection.query(
         envio_queries.queryDetalleEnvio(idenvio),
         (err,results)=>{
@@ -131,8 +132,37 @@ const obtener_envios_codigo = (idcodigo,callback) => {
     connection.end();
 }
 
+const obtener_envios_pendientes_sucursal = (idsucursal, callback) => {
+    const query = `SELECT e.idenvio, e.cantidad_total , DATE_FORMAT(e.fecha, '%d-%m-%Y')  as 'fecha' 
+    FROM envio e WHERE e.sucursal_idsucursal=${idsucursal} AND e.estado<>'INGRESADO';`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end();
+}
+//cargar envio en la sucursal destino
+const cargarEnvio = (idenvio, idsucursal, callback) =>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`INSERT ignore INTO stock (codigo_idcodigo,sucursal_idsucursal,cantidad)
+    ( SELECT ehs.codigo_idcodigo, ${idsucursal} , 0 FROM envio_has_stock ehs WHERE ehs.envio_idenvio =${idenvio} ) `,
+    (err,resp)=>{
+        connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
+        WHERE ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`, (err,resp)=>{
+            callback(resp);
+            connection.query(`update envio e set e.estado = 'INGRESADO' where e.idenvio = ${idenvio};`)
+            connection.end();
+        })
+        
+    })
+}
+
 
 module.exports = {
+    cargarEnvio,
+    obtener_envios_pendientes_sucursal,
     agregar_envio,
     detalle_envio,
     lista_envios,

@@ -16,13 +16,11 @@ const queryListaEnvioStock = (idenvio) => {
 const queryDetalleEnvio = (id) => {
     return `SELECT 
     e.idenvio,
-	e.cantidad_total,
-	DATE_FORMAT(e.fecha,'%d-%m-%Y') AS 'fecha',
-	s.nombre AS 'sucursal',
-	u.nombre AS 'usuario' 
-    FROM envio e, sucursal s, usuario u WHERE 
+        e.cantidad_total,
+        DATE_FORMAT(e.fecha,'%d-%m-%Y') AS 'fecha',
+        s.nombre AS 'sucursal'
+    FROM envio e, sucursal s WHERE 
     e.sucursal_idsucursal=s.idsucursal AND
-    e.usuario_idusuario = u.idusuario AND 
     e.idenvio=${id};`;
 }
 const queryListaEnvios = () => {
@@ -39,6 +37,8 @@ const queryAgregarEnvio = () => {
         cantidad_total)
         values (?)`;
 }
+
+
 
 module.exports = {
     queryAgregarEnvio,
