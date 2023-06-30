@@ -1,4 +1,90 @@
-const queryAgregarVenta = () => {
+const parse_venta_data = (body)=> ( {
+	cliente_idcliente: body?.fkcliente,
+	sucursal_idsucursal: body?.fkdestinatario,
+	medico_idmedico: body?.fkmedico||null,
+	caja_idcaja: body?.fkcaja||null,
+	usuario_idusuario: body?.fkusuario,
+	monto_total: body?.total,
+	descuento: body?.descuento,
+	fecha_retiro: body?.fechaRetiro,//<--missing in db
+	comentarios: body?.comentarios||"",//<--missing in db
+	subtotal: body?.subtotal,
+})
+
+const venta_insert_query = (data) => ` 
+INSERT INTO venta 
+(
+	cliente_idcliente, 
+	sucursal_idsucursal, 
+	caja_idcaja, 
+	usuario_idusuario, 
+	medico_idmedico, 
+	monto_total, 
+	descuento, 
+	subtotal, 
+	comentarios, 
+	debe, 
+	haber, 
+	saldo, 
+	fecha_retiro
+) 
+VALUES (
+	'${data.cliente_idcliente}', 
+	'${data.sucursal_idsucursal}', 
+	'${data.caja_idcaja}', 
+	'${data.usuario_idusuario}', 
+	'${data.medico_idmedico}', 
+	'${data.monto_total}', 
+	'${data.descuento}', 
+	'${data.subtotal}', 
+	'${data.comentarios}', 
+	'${data.fecha_retiro}'
+);
+`;
+const query_mp = `INSERT INTO venta_has_modo_pago 
+					(
+					venta_idventa, 
+					modo_pago_idmodo_pago, 
+					banco_idbanco, 
+					mutual_idmutual,
+					monto, 
+					monto_int, 
+					cant_cuotas, 
+					monto_cuota) VALUES (?) `;
+					
+const query_items = `INSERT INTO venta_has_stock 
+					(
+					venta_idventa, 
+					stock_sucursal_idsucursal, 
+					stock_codigo_idcodigo, 
+					cantidad, 
+					esf, 
+					cil, 
+					eje) 
+					VALUES (?)`;
+
+const get_mp = (data, idventa) => {
+	var _items_mp = [];
+	if(data?.mp?.efectivo_monto!==0){
+		_items_mp.push([idventa,'1',null,null,data.mp.efectivo_monto,0,0,0])
+	}
+	if(data?.mp?.tarjeta_monto!==0){
+		_items_mp.push([idventa,'1',null,null,data.mp.tarjeta_monto,0,0,0])
+	}
+	if(data?.mp?.ctacte_monto!==0){
+		_items_mp.push([idventa,'1',null,null,data.mp.ctacte_monto,0,0,0])
+	}
+	if(data?.mp?.cheque_monto!==0){
+		_items_mp.push([idventa,'1',null,null,data.mp.cheque_monto,0,0,0])
+	}
+	if(data?.mp?.mutual_monto!==0){
+		_items_mp.push([idventa,'1',null,null,data.mp.mutual_monto,0,0,0])
+	}
+	return _items_mp;
+	
+}
+
+/*const queryAgregarVenta = () => {
 	return ` insert into venta 
 	(   cliente_idcliente,
 		sucursal_idsucursal,
@@ -15,7 +101,7 @@ const queryAgregarVenta = () => {
 		fecha,
 		fecha_alta
 		) values (?)`;
-}
+}*/
 
 const queryDetalleVenta = (id) =>{
     return `SELECT v.*,
@@ -109,5 +195,10 @@ module.exports = {
     queryListaVentaModoPago,
     queryListaVentasTotal,
     queryListaVentasSucursal,
-	queryAgregarVenta,
+	//queryAgregarVenta,
+	venta_insert_query,
+	query_mp,
+	query_items,
+	get_mp,
+	parse_venta_data,
 }

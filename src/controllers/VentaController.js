@@ -2,8 +2,10 @@ const ventaService = require("../services/VentaService")
 
 const agregarVenta = (req, res) => {
   const {body} = req;
-  
-  const nueva_venta = {
+  ventaService.agregarVenta(body,(res)=>{
+    res.status(201).send({status:'OK', data:res})
+  })
+  /*const nueva_venta = {
     'cliente_idcliente' : body.cliente_idcliente,
     'sucursal_idsucursal' : body.sucursal_idsucursal,
     'vendedor_idvendedor' : body.vendedor_idvendedor,
@@ -22,7 +24,7 @@ const agregarVenta = (req, res) => {
 
   ventaService.agregarVenta(nueva_venta,(id)=>{
     res.status(201).send({status:'OK', data:id})
-  })
+  })*/
 
 }
 
