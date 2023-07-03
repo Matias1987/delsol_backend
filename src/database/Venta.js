@@ -1,17 +1,53 @@
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
-const insert_venta = (data,callabck) => {
+const insert_venta = (data,callback) => {
 
-    do_push = (arr,val) => (val||0) === 0 ? arr : [...arr,val]
+    const do_push = (arr,val) => (val||0) === 0 ? arr : [...arr,val]
+
+    var venta_id = -1;
 
     const get_venta_directa_items = (data) => {
-        
+        return data.productos.map(p=>([
+            p.codigo,
+            p.cantidad,
+            p.precio,
+            p.total,
+        ]))
     }
 
-    const get_lclab_items = (data) => {}
+    const get_lclab_items = (data) => {
+        const _arr = [];
+        do_push(_arr,data.productos.oi)
+        do_push(_arr,data.productos.od)
+        do_push(_arr,data.productos.insumo)
+        return _arr.map((e)=>([
+            venta_id,
+			e.fkcodigo,
+			e.cantidad,
+            e.precio,
+			(typeof e.esf === 'undefined' ? 0 : e.esf),
+			(typeof e.cil === 'undefined' ? 0 : e.cil),
+			(typeof e.eje === 'undefined' ? 0 : e.eje)
+        ]))
+    }
 
     const get_lclstock_items = (data) => {
+        const _arr = [];
+        do_push(_arr,data.productos.oi)
+        do_push(_arr,data.productos.od)
+        do_push(_arr,data.productos.insumo)
+        return _arr.map((e)=>([
+            venta_id,
+			e.fkcodigo,
+			e.cantidad,
+            e.precio,
+            e.total,
+        ]))
+
+    }
+
+    const get_monoflab_items = (data) => {
         const _arr = [];
         do_push(_arr,data.productos.lejos_armazon)
         do_push(_arr,data.productos.lejos_od)
@@ -21,10 +57,11 @@ const insert_venta = (data,callabck) => {
         do_push(_arr,data.productos.cerca_od)
         do_push(_arr,data.productos.cerca_oi)
         do_push(_arr,data.productos.cerca_tratamiento)
-        return __arr.map((e)=>([
+        return _arr.map((e)=>([
             venta_id,
 			e.fkcodigo,
 			e.cantidad,
+            e.precio,
 			(typeof e.esf === 'undefined' ? 0 : e.esf),
 			(typeof e.cil === 'undefined' ? 0 : e.cil),
 			(typeof e.eje === 'undefined' ? 0 : e.eje)
@@ -32,20 +69,81 @@ const insert_venta = (data,callabck) => {
 
     }
 
-    const get_monoflab_items = (data) => {
-        
-
-    }
-
     const get_multiflab_items = (data) => {
-        
+        const _arr = [];
+        do_push(_arr,data.productos.armazon)
+        do_push(_arr,data.productos.od)
+        do_push(_arr,data.productos.oi)
+        do_push(_arr,data.productos.tratamiento)
+        return _arr.map((e)=>([
+            venta_id,
+			e.fkcodigo,
+			e.cantidad,
+            e.precio,
+			(typeof e.esf === 'undefined' ? 0 : e.esf),
+			(typeof e.cil === 'undefined' ? 0 : e.cil),
+			(typeof e.eje === 'undefined' ? 0 : e.eje)
+        ]))
 
     }
 
     const get_recstock_items = (data) => {
-        
+        const _arr = [];
+        do_push(_arr,data.productos.lejos_armazon)
+        do_push(_arr,data.productos.lejos_od)
+        do_push(_arr,data.productos.lejos_oi)
+        do_push(_arr,data.productos.lejos_tratamiento)
+        do_push(_arr,data.productos.cerca_armazon)
+        do_push(_arr,data.productos.cerca_od)
+        do_push(_arr,data.productos.cerca_oi)
+        do_push(_arr,data.productos.cerca_tratamiento)
+        return _arr.map((e)=>([
+            venta_id,
+			e.fkcodigo,
+			e.cantidad,
+            e.precio,
+			(typeof e.esf === 'undefined' ? 0 : e.esf),
+			(typeof e.cil === 'undefined' ? 0 : e.cil),
+			(typeof e.eje === 'undefined' ? 0 : e.eje)
+        ]))
 
     }
+
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
+    (err,resp) => {
+        venta_id = parseInt(resp.data);
+        connection.query(venta_queries.query_mp, venta_queries.get_mp(data,venta_id),(err,resp)=>{
+            const _items_data = null;
+            switch(data.tipo_venta){
+                case 1:
+                    _items_data = get_venta_directa_items(data)
+                break;
+                case 2:
+                    _items_data = get_lclab_items(data)
+                break;
+                case 3:
+                    _items_data = get_lclstock_items(data)
+                break;
+                case 4:
+                    _items_data = get_monoflab_items(data)
+                break;
+                case 5:
+                    _items_data = get_multiflab_items(data)
+                break;
+                case 6:
+                    _items_data = get_recstock_items(data)
+                break;
+            }
+            connection.query(venta_queries.query_items, _items_data,(err,resp)=>{
+                console.log(JSON.stringify(resp))
+                callback(resp)
+                connection.end();
+            }) 
+        })
+
+    })
 }
 
 /*const agregar_venta = (data,callback) => {
@@ -112,8 +210,8 @@ const lista_ventas_sucursal = (data,callback) => {
 }
 
 module.exports = {
+insert_venta,
 //agregar_venta,
-agregar_venta,
 detalle_venta,
 lista_ventas,
 lista_ventas_sucursal}
