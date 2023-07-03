@@ -12,7 +12,7 @@ const obtenerVentasSucursal = (data, callback) => {
 }
 
 const agregarVenta = (data,callback) => {
-  ventaDB.agregar_venta(data, (id) => {
+  ventaDB.insert_venta(data, (id) => {
     return callback(id);
   })
 }

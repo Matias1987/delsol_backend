@@ -3,12 +3,15 @@ const venta_queries = require("./queries/ventaQueries");
 
 const insert_venta = (data,callback) => {
 
-    const do_push = (arr,val) => (val||0) === 0 ? arr : [...arr,val]
+    console.log(JSON.stringify(data))
+
+    const do_push = (arr,val,tipo) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo}]
 
     var venta_id = -1;
 
-    const get_venta_directa_items = (data) => {
-        return data.productos.map(p=>([
+    const get_venta_directa_items = (__data) => {
+        return __data.productos.map(p=>([
+            e.tipo,
             p.codigo,
             p.cantidad,
             p.precio,
@@ -16,12 +19,13 @@ const insert_venta = (data,callback) => {
         ]))
     }
 
-    const get_lclab_items = (data) => {
-        const _arr = [];
-        do_push(_arr,data.productos.oi)
-        do_push(_arr,data.productos.od)
-        do_push(_arr,data.productos.insumo)
+    const get_lclab_items = (__data) => {
+        var _arr = [];
+        do_push(_arr,__data.productos.oi, "oi")
+        do_push(_arr,__data.productos.od, "od")
+        do_push(_arr,__data.productos.insumo, "insumo")
         return _arr.map((e)=>([
+            e.tipo,
             venta_id,
 			e.fkcodigo,
 			e.cantidad,
@@ -32,12 +36,13 @@ const insert_venta = (data,callback) => {
         ]))
     }
 
-    const get_lclstock_items = (data) => {
-        const _arr = [];
-        do_push(_arr,data.productos.oi)
-        do_push(_arr,data.productos.od)
-        do_push(_arr,data.productos.insumo)
+    const get_lclstock_items = (__data) => {
+        var _arr = [];
+        _arr = do_push(_arr,__data.productos.oi, "oi")
+        _arr = do_push(_arr,__data.productos.od, "od")
+        _arr = do_push(_arr,__data.productos.insumo, "insumo")
         return _arr.map((e)=>([
+            e.tipo,
             venta_id,
 			e.fkcodigo,
 			e.cantidad,
@@ -47,17 +52,18 @@ const insert_venta = (data,callback) => {
 
     }
 
-    const get_monoflab_items = (data) => {
-        const _arr = [];
-        do_push(_arr,data.productos.lejos_armazon)
-        do_push(_arr,data.productos.lejos_od)
-        do_push(_arr,data.productos.lejos_oi)
-        do_push(_arr,data.productos.lejos_tratamiento)
-        do_push(_arr,data.productos.cerca_armazon)
-        do_push(_arr,data.productos.cerca_od)
-        do_push(_arr,data.productos.cerca_oi)
-        do_push(_arr,data.productos.cerca_tratamiento)
+    const get_monoflab_items = (__data) => {
+        var _arr = [];
+        _arr = do_push(_arr,__data.productos.lejos_armazon,"lejos_armazon")
+        _arr = do_push(_arr,__data.productos.lejos_od,"lejos_od")
+        _arr = do_push(_arr,__data.productos.lejos_oi,"lejos_oi")
+        _arr = do_push(_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
+        _arr = do_push(_arr,__data.productos.cerca_armazon,"cerca_armazon")
+        _arr = do_push(_arr,__data.productos.cerca_od,"cerca_od")
+        _arr = do_push(_arr,__data.productos.cerca_oi,"cerca_oi")
+        _arr = do_push(_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
         return _arr.map((e)=>([
+            e.tipo,
             venta_id,
 			e.fkcodigo,
 			e.cantidad,
@@ -69,13 +75,14 @@ const insert_venta = (data,callback) => {
 
     }
 
-    const get_multiflab_items = (data) => {
-        const _arr = [];
-        do_push(_arr,data.productos.armazon)
-        do_push(_arr,data.productos.od)
-        do_push(_arr,data.productos.oi)
-        do_push(_arr,data.productos.tratamiento)
+    const get_multiflab_items = (__data) => {
+        var _arr = [];
+        _arr = do_push(_arr,__data.productos.armazon,"armazon")
+        _arr = do_push(_arr,__data.productos.od,"od")
+        _arr = do_push(_arr,__data.productos.oi,"oi")
+        _arr = do_push(_arr,__data.productos.tratamiento,"tratamiento")
         return _arr.map((e)=>([
+            e.tipo,
             venta_id,
 			e.fkcodigo,
 			e.cantidad,
@@ -87,17 +94,18 @@ const insert_venta = (data,callback) => {
 
     }
 
-    const get_recstock_items = (data) => {
-        const _arr = [];
-        do_push(_arr,data.productos.lejos_armazon)
-        do_push(_arr,data.productos.lejos_od)
-        do_push(_arr,data.productos.lejos_oi)
-        do_push(_arr,data.productos.lejos_tratamiento)
-        do_push(_arr,data.productos.cerca_armazon)
-        do_push(_arr,data.productos.cerca_od)
-        do_push(_arr,data.productos.cerca_oi)
-        do_push(_arr,data.productos.cerca_tratamiento)
+    const get_recstock_items = (__data) => {
+        var _arr = [];
+        _arr = do_push(_arr,__data.productos.lejos_armazon,"lejos_armazon")
+        _arr = do_push(_arr,__data.productos.lejos_od,"lejos_od")
+        _arr = do_push(_arr,__data.productos.lejos_oi,"lejos_oi")
+        _arr = do_push(_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
+        _arr = do_push(_arr,__data.productos.cerca_armazon,"cerca_armazon")
+        _arr = do_push(_arr,__data.productos.cerca_od,"cerca_od")
+        _arr = do_push(_arr,__data.productos.cerca_oi,"cerca_oi")
+        _arr = do_push(_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
         return _arr.map((e)=>([
+            e.tipo,
             venta_id,
 			e.fkcodigo,
 			e.cantidad,
@@ -109,6 +117,12 @@ const insert_venta = (data,callback) => {
 
     }
 
+    console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
+    console.log(JSON.stringify(venta_queries.get_mp(data,venta_id)))
+    console.log("--------------")
+    console.log(JSON.stringify(get_recstock_items(data,venta_id)))
+    //console.log()
+/*
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
@@ -143,7 +157,7 @@ const insert_venta = (data,callback) => {
             }) 
         })
 
-    })
+    })*/
 }
 
 /*const agregar_venta = (data,callback) => {

@@ -1,6 +1,6 @@
 const parse_venta_data = (body)=> ( {
 	cliente_idcliente: body?.fkcliente,
-	sucursal_idsucursal: body?.fkdestinatario,
+	sucursal_idsucursal: body?.fksucursal,
 	medico_idmedico: body?.fkmedico||null,
 	caja_idcaja: body?.fkcaja||null,
 	usuario_idusuario: body?.fkusuario,
@@ -9,6 +9,9 @@ const parse_venta_data = (body)=> ( {
 	fecha_retiro: body?.fechaRetiro,//<--missing in db
 	comentarios: body?.comentarios||"",//<--missing in db
 	subtotal: body?.subtotal,
+	fk_destinatario: body?.fkdestinatario,
+	fk_os: body?.fkos,
+
 })
 
 const venta_insert_query = (data) => ` 
@@ -23,22 +26,23 @@ INSERT INTO venta
 	descuento, 
 	subtotal, 
 	comentarios, 
-	debe, 
-	haber, 
-	saldo, 
-	fecha_retiro
+	fecha_retiro,
+	fk_destinatario,
+	fk_os,
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
 	'${data.sucursal_idsucursal}', 
-	'${data.caja_idcaja}', 
-	'${data.usuario_idusuario}', 
-	'${data.medico_idmedico}', 
+	${data.caja_idcaja}, 
+	${data.usuario_idusuario}, 
+	${data.medico_idmedico}, 
 	'${data.monto_total}', 
 	'${data.descuento}', 
 	'${data.subtotal}', 
 	'${data.comentarios}', 
-	'${data.fecha_retiro}'
+	'${data.fecha_retiro}',
+	${data.fk_destinatario},
+	${data.fk_os}
 );
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
