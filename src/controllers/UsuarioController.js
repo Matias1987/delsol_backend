@@ -51,13 +51,16 @@ const login = (req,res)=>{
         }
       );
 
-      usuarioService.addToken({nombre: body.nombre, password: body.password, token: token},(resp)=>{
+      usuarioService.addToken({nombre: body.nombre, password: body.password, token: token},(_resp)=>{
         res.status(201).send({
           status:'OK', 
-          data: {success: true,
-            loged: 1,
+          data: {
+            success: true,
+            logged: 1,
+            uid: resp.uid,
             message: 'Authentication successful!',
-            token: token
+            token: token,
+            
           }
         });
       })
@@ -65,7 +68,7 @@ const login = (req,res)=>{
       
     }
     else{
-      res.status(403).send({status:'OK', data: {success: false, message: 'Authentication failed! stupid!'}});
+      res.status(403).send({status:'OK', data: {success: false, message: 'Authentication failed!'}});
     }
 
   })

@@ -14,7 +14,7 @@ const mysql_connection = require("../lib/mysql_connection")
                     _logged=1;
                 }
             }
-            return callback({logged:_logged})
+            return callback({logged:_logged, uid: res[0].idusuario})
         })
         connection.end()
     }
@@ -47,8 +47,8 @@ const validar_usuario_login = (data,callback) => {
     connection.query( q ,(err,rows,fields)=>{
         if(rows.length>0){
             let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
-            connection.query(_q,(err,rows)=>{
-                callback({logged:1});
+            connection.query(_q,(err,_rows)=>{
+                callback({logged:1, uid: rows[0].idusuario });
                 connection.end();
 
             })

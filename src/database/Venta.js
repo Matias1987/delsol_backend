@@ -12,6 +12,7 @@ const insert_venta = (data,callback) => {
     const get_venta_directa_items = (__data) => {
         return __data.productos.map(p=>([
             e.tipo,
+            venta_id,
             p.codigo,
             p.cantidad,
             p.precio,
@@ -122,7 +123,7 @@ const insert_venta = (data,callback) => {
     console.log("--------------")
     console.log(JSON.stringify(get_recstock_items(data,venta_id)))
     //console.log()
-/*
+
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
@@ -135,7 +136,7 @@ const insert_venta = (data,callback) => {
                     _items_data = get_venta_directa_items(data)
                 break;
                 case 2:
-                    _items_data = get_lclab_items(data)
+                    _items_data = get_recstock_items(data)
                 break;
                 case 3:
                     _items_data = get_lclstock_items(data)
@@ -147,7 +148,7 @@ const insert_venta = (data,callback) => {
                     _items_data = get_multiflab_items(data)
                 break;
                 case 6:
-                    _items_data = get_recstock_items(data)
+                    _items_data = get_lclab_items(data)
                 break;
             }
             connection.query(venta_queries.query_items, _items_data,(err,resp)=>{
@@ -157,7 +158,7 @@ const insert_venta = (data,callback) => {
             }) 
         })
 
-    })*/
+    })
 }
 
 /*const agregar_venta = (data,callback) => {
