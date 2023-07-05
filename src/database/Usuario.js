@@ -14,7 +14,7 @@ const mysql_connection = require("../lib/mysql_connection")
                     _logged=1;
                 }
             }
-            return callback({logged:_logged, uid: res[0].idusuario})
+            return callback({logged:_logged})
         })
         connection.end()
     }

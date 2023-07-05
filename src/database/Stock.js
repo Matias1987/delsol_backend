@@ -428,7 +428,11 @@ const agregar_stock = (data,callback) =>{
             sg.idsubgrupo,
             g.idgrupo,
             sf.idsubfamilia,
-            f.idfamilia
+            f.idfamilia,
+            f.nombre_corto as 'familia',
+            sf.nombre_corto as 'subfamilia',
+            g.nombre_corto as 'grupo',
+            sg.nombre_corto as 'subgrupo'
             FROM familia f, subfamilia sf, grupo g, subgrupo sg, stock s, codigo _c WHERE 
             sg.grupo_idgrupo = g.idgrupo AND
             g.subfamilia_idsubfamilia = sf.idsubfamilia AND
