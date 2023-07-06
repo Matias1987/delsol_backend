@@ -28,7 +28,7 @@ INSERT INTO venta
 	comentarios, 
 	fecha_retiro,
 	fk_destinatario,
-	fk_os,
+	fk_os
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -40,7 +40,7 @@ VALUES (
 	'${data.descuento}', 
 	'${data.subtotal}', 
 	'${data.comentarios}', 
-	'${data.fecha_retiro}',
+	STR_TO_DATE('${data.fecha_retiro}','%d-%m-%Y'),
 	${data.fk_destinatario},
 	${data.fk_os}
 );
@@ -54,7 +54,7 @@ const query_mp = `INSERT INTO venta_has_modo_pago
 					monto, 
 					monto_int, 
 					cant_cuotas, 
-					monto_cuota) VALUES (?) `;
+					monto_cuota) VALUES `;
 					
 const query_items = `INSERT INTO venta_has_stock 
 					(
@@ -65,9 +65,9 @@ const query_items = `INSERT INTO venta_has_stock
 					esf, 
 					cil, 
 					eje) 
-					VALUES (?)`;
+					VALUES `;
 
-const get_mp = (data, idventa) => {
+/*const get_mp = (data, idventa) => {
 	var _items_mp = [];
 	if(data?.mp?.efectivo_monto!==0){
 		_items_mp.push([idventa,'1',null,null,data.mp.efectivo_monto,0,0,0])
@@ -84,6 +84,69 @@ const get_mp = (data, idventa) => {
 	if(data?.mp?.mutual_monto!==0){
 		_items_mp.push([idventa,'1',null,null,data.mp.mutual_monto,0,0,0])
 	}
+	return _items_mp;
+	
+}*/
+
+const get_mp = (data, idventa) => {
+	var _items_mp = [];
+	if(data?.mp?.efectivo_monto!==0){
+		_items_mp.push({
+			venta_idventa:idventa,
+			modo_pago_idmodo_pago:'1',
+			banco_idbanco:null,
+			mutual_idmutual:null,
+			monto:data.mp.efectivo_monto,
+			monto_int:0,
+			cant_cuotas:0,
+			monto_cuota:0})
+	}
+	if(data?.mp?.tarjeta_monto!==0){
+		_items_mp.push({
+			venta_idventa:idventa,
+			modo_pago_idmodo_pago:'2',
+			banco_idbanco:null,
+			mutual_idmutual:null,
+			monto:data.mp.tarjeta_monto,
+			monto_int:0,
+			cant_cuotas:0,
+			monto_cuota:0})
+	}
+	if(data?.mp?.ctacte_monto!==0){
+		_items_mp.push({
+			venta_idventa:idventa,
+			modo_pago_idmodo_pago:'3',
+			banco_idbanco:null,
+			mutual_idmutual:null,
+			monto:data.mp.ctacte_monto,
+			monto_int:0,
+			cant_cuotas:0,
+			monto_cuota:0})
+	}
+	if(data?.mp?.cheque_monto!==0){
+		_items_mp.push({
+			venta_idventa:idventa,
+			modo_pago_idmodo_pago:'4',
+			banco_idbanco:null,
+			mutual_idmutual:null,
+			monto:data.mp.cheque_monto,
+			monto_int:0,
+			cant_cuotas:0,
+			monto_cuota:0})
+	}
+	if(data?.mp?.mutual_monto!==0){
+		_items_mp.push({
+			venta_idventa:idventa,
+			modo_pago_idmodo_pago:'5',
+			banco_idbanco:null,
+			mutual_idmutual:null,
+			monto:data.mp.mutual_monto,
+			monto_int:0,
+			cant_cuotas:0,
+			monto_cuota:0})
+	}
+	
+	
 	return _items_mp;
 	
 }
