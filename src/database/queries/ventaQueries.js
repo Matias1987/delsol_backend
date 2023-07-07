@@ -11,6 +11,7 @@ const parse_venta_data = (body)=> ( {
 	subtotal: body?.subtotal,
 	fk_destinatario: body?.fkdestinatario,
 	fk_os: body?.fkos,
+	tipo: body?.tipo, 
 
 })
 
@@ -28,7 +29,8 @@ INSERT INTO venta
 	comentarios, 
 	fecha_retiro,
 	fk_destinatario,
-	fk_os
+	fk_os,
+	tipo
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -42,7 +44,8 @@ VALUES (
 	'${data.comentarios}', 
 	STR_TO_DATE('${data.fecha_retiro}','%d-%m-%Y'),
 	${data.fk_destinatario},
-	${data.fk_os}
+	${data.fk_os},
+	${data.tipo}
 );
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
@@ -62,6 +65,9 @@ const query_items = `INSERT INTO venta_has_stock
 					stock_sucursal_idsucursal, 
 					stock_codigo_idcodigo, 
 					cantidad, 
+					tipo,
+					precio,
+					total,
 					esf, 
 					cil, 
 					eje) 

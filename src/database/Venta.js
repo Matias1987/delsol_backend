@@ -13,7 +13,17 @@ const insert_venta = (data,callback) => {
         var _str = ""
         items.forEach(e=>{
             _str += (_str.length>0? ",":"") + 
-            `(tipo: ${e.tipo},venta_idventa: ${venta_id},stock_codigo_idcodigo: ${e.fkcodigo},cantidad: ${e.cantidad},precio: ${e.precio},total: ${e.total},esf: ${(typeof e.esf === 'undefined' ? 0 : e.esf)},cil: ${(typeof e.cil === 'undefined' ? 0 : e.cil)},eje: ${(typeof e.eje === 'undefined' ? 0 : e.eje)})`
+            `(
+            ${venta_id},
+            '${data.fksucursal}', 
+            ${e.idcodigo},
+            ${e.cantidad},
+            '${e.tipo}',
+            ${e.precio},
+            ${(typeof e.total === 'undefined' ? e.precio : e.total)}, 
+            '${(typeof e.esf === 'undefined' ? 0 : e.esf)}', 
+            '${(typeof e.cil === 'undefined' ? 0 : e.cil)}', 
+            '${(typeof e.eje === 'undefined' ? 0 : e.eje)}')`
         })
         return _str;
     }
@@ -24,9 +34,9 @@ const insert_venta = (data,callback) => {
 
     const get_lclab_items = (__data) => {
         var _arr = [];
-        do_push(_arr,__data.productos.oi, "oi")
-        do_push(_arr,__data.productos.od, "od")
-        do_push(_arr,__data.productos.insumo, "insumo")
+        _arr = do_push(_arr,__data.productos.oi, "oi")
+        _arr = do_push(_arr,__data.productos.od, "od")
+        _arr = do_push(_arr,__data.productos.insumo, "insumo")
         return get_query_str(_arr)
     }
 
@@ -77,10 +87,11 @@ const insert_venta = (data,callback) => {
 
     }
 
-    console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
-    console.log(JSON.stringify(venta_queries.get_mp(data,venta_id)))
-    console.log("--------------")
-    console.log(JSON.stringify(get_recstock_items(data,venta_id)))
+    //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
+    //console.log(JSON.stringify(venta_queries.get_mp(data,venta_id)))
+    //console.log("--------------")
+    //console.log(JSON.stringify(get_recstock_items(data,venta_id)))
+    //console.log(venta_queries.query_items +get_recstock_items(data));
   
 
     const connection = mysql_connection.getConnection();
@@ -95,8 +106,8 @@ const insert_venta = (data,callback) => {
             mp+= (mp.length>0 ? ",":"")  + `(${venta_id},${p.modo_pago_idmodo_pago},${p.banco_idbanco},${p.mutual_idmutual},${p.monto},${p.monto_int},${p.cant_cuotas},${p.monto_cuota})`;
         });
         connection.query(venta_queries.query_mp + mp, (err,resp)=>{
-            const _items_data = null;
-            switch(data.tipo){
+            var _items_data = null;
+            switch(+data.tipo){
                 case 1:
                     _items_data = get_venta_directa_items(data)
                 break;
@@ -113,6 +124,7 @@ const insert_venta = (data,callback) => {
                     _items_data = get_multiflab_items(data)
                 break;
                 case 6:
+                    console.log("ACA ENTRAAAAAAA")
                     _items_data = get_lclab_items(data)
                 break;
             }
