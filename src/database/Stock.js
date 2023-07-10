@@ -474,8 +474,9 @@ const agregar_stock = (data,callback) =>{
 
     const obtener_stock_ventas = (filters, callback) => {
         //temporary!
-        var str = "";
-        var _values = [1,2];// filters.filtroFamilias;
+        var str = "-1";
+        console.log("FILTRO DE FAMILIAS: " + JSON.stringify(filters))
+        var _values = filters.filtroFamilias;
         _values.forEach(i=>{str+=`${(str.length>0 ? ',' : '') + i}`
         })
 
@@ -486,9 +487,9 @@ const agregar_stock = (data,callback) =>{
         FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
         s.codigo_idcodigo = c.idcodigo AND c.subgrupo_idsubgrupo = sg.idsubgrupo AND
         sg.grupo_idgrupo = g.idgrupo AND g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-        sf.familia_idfamilia IN (${_values}) and s.sucursal_idsucursal=${filters.idSucursal} and (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%');`;
+        (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and s.sucursal_idsucursal=${filters.idSucursal} and (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%');`;
 
-        //console.log(_query)
+        console.log(_query)
 
         const connection = mysql_connection.getConnection();
         connection.connect();
