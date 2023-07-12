@@ -8,6 +8,22 @@ const insert_venta = (data,callback) => {
     const do_push = (arr,val,tipo) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo}]
 
     var venta_id = -1;
+    var _arr = [];
+    var _quantities =  []
+
+    const prepare_qtty_array = elements => {
+        //accum by idcodigo
+        elements.forEach(e=>{
+            if(typeof _quantities[e.idcodigo] === 'undefined')
+            {
+                _quantities = {..._quantities, [e.idcodigo]:{cantidad: e.cantidad, idcodigo: e.idcodigo}}
+            } else{
+                _quantities[e.idcodigo].cantidad += e.cantidad
+            }
+        })
+        }
+
+    
 
     const get_query_str = items => {
         var _str = ""
@@ -28,29 +44,24 @@ const insert_venta = (data,callback) => {
         return _str;
     }
 
-    const get_venta_directa_items = (__data) => {
-        return get_query_str(__data.productos)
+    const prepare_venta_directa_items = (__data) => {
+        _arr = __data.productos;
     }
 
-    const get_lclab_items = (__data) => {
-        var _arr = [];
+    const prepare_lclab_items = (__data) => {
         _arr = do_push(_arr,__data.productos.oi, "oi")
         _arr = do_push(_arr,__data.productos.od, "od")
         _arr = do_push(_arr,__data.productos.insumo, "insumo")
-        return get_query_str(_arr)
     }
 
-    const get_lclstock_items = (__data) => {
-        var _arr = [];
+    const prepare_lclstock_items = (__data) => {
         _arr = do_push(_arr,__data.productos.oi, "oi")
         _arr = do_push(_arr,__data.productos.od, "od")
         _arr = do_push(_arr,__data.productos.insumo, "insumo")
-        return get_query_str(_arr);
 
     }
 
-    const get_monoflab_items = (__data) => {
-        var _arr = [];
+    const prepare_monoflab_items = (__data) => {
         _arr = do_push(_arr,__data.productos.lejos_armazon,"lejos_armazon")
         _arr = do_push(_arr,__data.productos.lejos_od,"lejos_od")
         _arr = do_push(_arr,__data.productos.lejos_oi,"lejos_oi")
@@ -59,22 +70,16 @@ const insert_venta = (data,callback) => {
         _arr = do_push(_arr,__data.productos.cerca_od,"cerca_od")
         _arr = do_push(_arr,__data.productos.cerca_oi,"cerca_oi")
         _arr = do_push(_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
-        return get_query_str(_arr)
-
     }
 
-    const get_multiflab_items = (__data) => {
-        var _arr = [];
+    const prepare_multiflab_items = (__data) => {
         _arr = do_push(_arr,__data.productos.armazon,"armazon")
         _arr = do_push(_arr,__data.productos.od,"od")
         _arr = do_push(_arr,__data.productos.oi,"oi")
         _arr = do_push(_arr,__data.productos.tratamiento,"tratamiento")
-        return get_query_str(_arr)
-
     }
 
-    const get_recstock_items = (__data) => {
-        var _arr = [];
+    const prepare_recstock_items = (__data) => {
         _arr = do_push(_arr,__data.productos.lejos_armazon,"lejos_armazon")
         _arr = do_push(_arr,__data.productos.lejos_od,"lejos_od")
         _arr = do_push(_arr,__data.productos.lejos_oi,"lejos_oi")
@@ -83,8 +88,6 @@ const insert_venta = (data,callback) => {
         _arr = do_push(_arr,__data.productos.cerca_od,"cerca_od")
         _arr = do_push(_arr,__data.productos.cerca_oi,"cerca_oi")
         _arr = do_push(_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
-        return get_query_str(_arr)
-
     }
 
     //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
@@ -92,46 +95,78 @@ const insert_venta = (data,callback) => {
     //console.log("--------------")
     //console.log(JSON.stringify(get_recstock_items(data,venta_id)))
     //console.log(venta_queries.query_items +get_recstock_items(data));
-  
 
+    switch(+data.tipo){
+                case 1:
+                    prepare_venta_directa_items(data)
+                break;
+                case 2:
+                    prepare_recstock_items(data)
+                break;
+                case 3:
+                    prepare_lclstock_items(data)
+                break;
+                case 4:
+                    prepare_monoflab_items(data)
+                break;
+                case 5:
+                    prepare_multiflab_items(data)
+                break;
+                case 6:
+                    prepare_lclab_items(data)
+                break;
+            }
+    
+    //check quantities
+
+    prepare_qtty_array(_arr)
+    console.log("##########quantities########")
+
+    console.log(JSON.stringify(_quantities))
+
+    var _ids = "";
+    _quantities.forEach(q=>{_ids = (_ids.length>0 ? ",":"")+q.idcodigo})
+    
     const connection = mysql_connection.getConnection();
     connection.connect();
+    //check quantities
+
+    
+
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
+
     (err,resp) => {
+
         console.log("-----ID: "+JSON.stringify(resp))
+
         venta_id = parseInt(resp.insertId);
+
         console.log("venta guardada con id " + resp.insertId)
+
         var mp = ""; 
+
         venta_queries.get_mp(data,venta_id).forEach(p=>{
             mp+= (mp.length>0 ? ",":"")  + `(${venta_id},${p.modo_pago_idmodo_pago},${p.banco_idbanco},${p.mutual_idmutual},${p.monto},${p.monto_int},${p.cant_cuotas},${p.monto_cuota})`;
         });
+
         connection.query(venta_queries.query_mp + mp, (err,resp)=>{
-            var _items_data = null;
-            switch(+data.tipo){
-                case 1:
-                    _items_data = get_venta_directa_items(data)
-                break;
-                case 2:
-                    _items_data = get_recstock_items(data)
-                break;
-                case 3:
-                    _items_data = get_lclstock_items(data)
-                break;
-                case 4:
-                    _items_data = get_monoflab_items(data)
-                break;
-                case 5:
-                    _items_data = get_multiflab_items(data)
-                break;
-                case 6:
-                    console.log("ACA ENTRAAAAAAA")
-                    _items_data = get_lclab_items(data)
-                break;
-            }
+
+            var _items_data = get_query_str(_arr);
+            
             console.log(venta_queries.query_items + _items_data)
+            
             connection.query(venta_queries.query_items + _items_data,(err,resp)=>{
+
                 console.log(JSON.stringify(resp))
+
                 callback(resp)
+
+                connection.query(`update stock s SET s.cantidad = s.cantidad-1 where s.codigo_idcodigo IN (${_ids}) AND s.sucursal_idsucursal = ${data.fksucursal}; `,
+                (err,resp)=>{
+
+
+                })
+
                 connection.end();
             })
         })

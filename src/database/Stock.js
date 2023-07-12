@@ -523,6 +523,64 @@ const agregar_stock = (data,callback) =>{
         })
         connection.end();
     }
+
+
+
+    const verificar_cantidades_stock_sucursal = (data, callback) =>{
+        var _quantities =  []
+        const prepare_qtty_array = elements => {
+        //accum by idcodigo
+        elements.forEach(e=>{
+            if(typeof _quantities[e.idcodigo] === 'undefined')
+            {
+                _quantities = {..._quantities, [e.idcodigo]:{cantidad: e.cantidad, idcodigo: e.idcodigo}}
+            } else{
+                _quantities[e.idcodigo].cantidad += e.cantidad
+            }
+        })
+        }
+
+        var _ids = "";
+        _quantities.forEach(q=>{_ids = (_ids.length>0 ? ",":"")+q.idcodigo})
+        
+        const query = `SELECT  
+        s.codigo_idcodigo, 
+        s.cantidad, 
+        c.codigo 
+        FROM 
+        stock s, 
+        codigo c  
+        where s.codigo_idcodigo = c.idcodigo AND 
+        s.codigo_idcodigo IN (${_ids}) 
+        AND s.sucursal_idsucursal = ${data.idsucursal};`
+        
+        console.log(query)
+
+        const connection = mysql_connection.getConnection();
+        
+        connection.connect();
+        
+        connection.query(query,(err,rows)=>{
+            var data = []
+
+            rows.forEach(r=>{
+                if(_quantities[r.idcodigo].cantidad<r.cantidad)
+                {
+                    data.push({
+                        msg:"error",
+                        codigo: r.codigo, //<---add in query!
+                        idcodigo: r.idcodigo,
+                        request_qtty: _quantities[r.idcodigo],
+                        existing_qtty: r.cantidad,
+                    })
+                }
+            })
+            
+            callback(data)
+        })
+        connection.end();
+    }
+
 module.exports = {
     agregar_stock,
     obtener_stock,
