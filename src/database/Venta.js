@@ -202,11 +202,11 @@ const insert_venta = (data,callback) => {
     connection.end();
 }*/
 
-const detalle_venta = (data,callback) => {
+const detalle_venta = (idventa,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        venta_queries.queryDetalleVenta(data.id),
+        venta_queries.queryDetalleVenta(idventa),
         (err,results)=>{
             return callback(results)
         }
@@ -238,12 +238,22 @@ const lista_ventas_sucursal = (data,callback) => {
     connection.end();
 }
 
+const lista_venta_mp = (idventa, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`SELECT * FROM venta_has_modo_pago vmp WHERE vmp.venta_idventa = 0;`,(err,rows)=>{
+        return callback(rows)
+    })
+}
+
 module.exports = {
 insert_venta,
 //agregar_venta,
 detalle_venta,
 lista_ventas,
-lista_ventas_sucursal}
+lista_ventas_sucursal,
+lista_venta_mp,
+}
 
 
 /*

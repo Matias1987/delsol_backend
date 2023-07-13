@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `cliente` (
   CONSTRAINT `fk_cliente_localidad1` FOREIGN KEY (`localidad_idlocalidad`) REFERENCES `localidad` (`idlocalidad`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.cliente: ~14 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.cliente: ~17 rows (aproximadamente)
 DELETE FROM `cliente`;
 INSERT INTO `cliente` (`idcliente`, `localidad_idlocalidad`, `nombre`, `apellido`, `direccion`, `dni`, `telefono1`, `telefono2`, `bloqueado`, `fecha_nacimiento`) VALUES
 	(1, NULL, 'eeee', 'eeee', 'DFGSDG', '33353172', 'SDFG', '', 0, NULL),
@@ -142,6 +142,7 @@ CREATE TABLE IF NOT EXISTS `cobro` (
   `fecha` datetime DEFAULT NULL,
   `monto` varchar(45) DEFAULT NULL,
   `tipo` varchar(8) DEFAULT 'CIE_OP',
+  `fkpago` int DEFAULT NULL,
   PRIMARY KEY (`idcobro`),
   KEY `fk_cobro_caja1_idx` (`caja_idcaja`),
   KEY `fk_cobro_usuario1_idx` (`usuario_idusuario`),
@@ -166,6 +167,7 @@ CREATE TABLE IF NOT EXISTS `cobro_has_modo_pago` (
   `cant_cuotas` varchar(45) DEFAULT NULL,
   `monto_cuota` varchar(45) DEFAULT NULL,
   `total_int` varchar(45) DEFAULT NULL,
+  `fkventa` int DEFAULT NULL,
   PRIMARY KEY (`cobro_idcobro`,`modo_pago_idmodo_pago`),
   KEY `fk_cobro_has_modo_pago_modo_pago1_idx` (`modo_pago_idmodo_pago`),
   KEY `fk_cobro_has_modo_pago_cobro1_idx` (`cobro_idcobro`),
@@ -195,9 +197,9 @@ CREATE TABLE IF NOT EXISTS `codigo` (
   UNIQUE KEY `codigo` (`codigo`),
   KEY `fk_codigo_subgrupo1_idx` (`subgrupo_idsubgrupo`),
   CONSTRAINT `fk_codigo_subgrupo1` FOREIGN KEY (`subgrupo_idsubgrupo`) REFERENCES `subgrupo` (`idsubgrupo`)
-) ENGINE=InnoDB AUTO_INCREMENT=2197 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2203 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.codigo: ~1,414 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.codigo: ~1,434 rows (aproximadamente)
 DELETE FROM `codigo`;
 INSERT INTO `codigo` (`idcodigo`, `subgrupo_idsubgrupo`, `codigo_base`, `codigo`, `descripcion`, `costo`, `activo`, `genero`, `edad`) VALUES
 	(130, 671, NULL, 'NX1COL3', 'RECETA', '9500', 1, '', ''),
@@ -1633,7 +1635,13 @@ INSERT INTO `codigo` (`idcodigo`, `subgrupo_idsubgrupo`, `codigo_base`, `codigo`
 	(2193, 1344, NULL, 'INSUMO2', 'INSUMO2', '9000', 1, 'femenino', 'adulto'),
 	(2194, 1346, NULL, 'TRATAMIENTO_1', 'TRATAMIENTO_1', '100', 1, 'femenino', 'adulto'),
 	(2195, 1346, NULL, 'TRATAMIENTO_2', 'TRATAMIENTO_2', '100', 1, 'femenino', 'adulto'),
-	(2196, 1346, NULL, 'TRATAMIENTO_3', 'TRATAMIENTO_3', '100', 1, 'femenino', 'adulto');
+	(2196, 1346, NULL, 'TRATAMIENTO_3', 'TRATAMIENTO_3', '100', 1, 'femenino', 'adulto'),
+	(2197, 1348, NULL, 'LC_COD1', 'LC_COD1', '1000', 1, 'femenino', 'adulto'),
+	(2198, 1348, NULL, 'LC_COD2', 'LC_COD2', '1000', 1, 'femenino', 'adulto'),
+	(2199, 1348, NULL, 'LC_COD3', 'LC_COD3', '1000', 1, 'femenino', 'adulto'),
+	(2200, 1348, NULL, 'LC_COD4', 'LC_COD4', '1000', 1, 'femenino', 'adulto'),
+	(2201, 1348, NULL, 'LC_COD5', 'LC_COD5', '1000', 1, 'femenino', 'adulto'),
+	(2202, 1348, NULL, 'LC_COD6', 'LC_COD6', '1000', 1, 'femenino', 'adulto');
 
 -- Volcando estructura para tabla optdelsol_27.codigo_factura
 CREATE TABLE IF NOT EXISTS `codigo_factura` (
@@ -1788,9 +1796,9 @@ CREATE TABLE IF NOT EXISTS `grupo` (
   UNIQUE KEY `unique` (`subfamilia_idsubfamilia`,`nombre_corto`),
   KEY `fk_grupo_subfamilia1_idx` (`subfamilia_idsubfamilia`),
   CONSTRAINT `fk_grupo_subfamilia1` FOREIGN KEY (`subfamilia_idsubfamilia`) REFERENCES `subfamilia` (`idsubfamilia`)
-) ENGINE=InnoDB AUTO_INCREMENT=389 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=391 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.grupo: ~272 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.grupo: ~282 rows (aproximadamente)
 DELETE FROM `grupo`;
 INSERT INTO `grupo` (`idgrupo`, `subfamilia_idsubfamilia`, `nombre_corto`, `nombre_largo`) VALUES
 	(52, 3, 'CAVALER', 'CAVALER'),
@@ -2073,7 +2081,9 @@ INSERT INTO `grupo` (`idgrupo`, `subfamilia_idsubfamilia`, `nombre_corto`, `nomb
 	(385, 19, 'INSUMO_GRUPO1', 'INSUMO_GRUPO1'),
 	(386, 19, 'INSUMO_GRUPO2', 'INSUMO_GRUPO2'),
 	(387, 21, 'TRATAMIENTO_GRUPO_1', 'TRATAMIENTO_GRUPO_1'),
-	(388, 21, 'TRATAMIENTO_GRUPO_2', 'TRATAMIENTO_GRUPO_2');
+	(388, 21, 'TRATAMIENTO_GRUPO_2', 'TRATAMIENTO_GRUPO_2'),
+	(389, 13, 'LC_GRUPO1', 'LC_GRUPO1'),
+	(390, 13, 'LC_GRUPO2', 'LC_GRUPO2');
 
 -- Volcando estructura para tabla optdelsol_27.localidad
 CREATE TABLE IF NOT EXISTS `localidad` (
@@ -2094,7 +2104,7 @@ CREATE TABLE IF NOT EXISTS `medico` (
   UNIQUE KEY `_matricula` (`matricula`)
 ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.medico: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.medico: ~8 rows (aproximadamente)
 DELETE FROM `medico`;
 INSERT INTO `medico` (`idmedico`, `nombre`, `matricula`) VALUES
 	(26, 'a test medico', 'assasasas'),
@@ -2129,7 +2139,7 @@ CREATE TABLE IF NOT EXISTS `mutual` (
   PRIMARY KEY (`idmutual`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.mutual: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.mutual: ~3 rows (aproximadamente)
 DELETE FROM `mutual`;
 INSERT INTO `mutual` (`idmutual`, `nombre`) VALUES
 	(2, 'mutual_prueba'),
@@ -3610,7 +3620,7 @@ CREATE TABLE IF NOT EXISTS `stock` (
   CONSTRAINT `fk_sucursal_has_codigo_sucursal1` FOREIGN KEY (`sucursal_idsucursal`) REFERENCES `sucursal` (`idsucursal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.stock: ~1,414 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.stock: ~1,434 rows (aproximadamente)
 DELETE FROM `stock`;
 INSERT INTO `stock` (`sucursal_idsucursal`, `codigo_idcodigo`, `cantidad`) VALUES
 	(6, 303, 33),
@@ -5050,7 +5060,13 @@ INSERT INTO `stock` (`sucursal_idsucursal`, `codigo_idcodigo`, `cantidad`) VALUE
 	(13, 2193, 2000),
 	(13, 2194, 1000),
 	(13, 2195, 1000),
-	(13, 2196, 1000);
+	(13, 2196, 1000),
+	(13, 2197, 12100),
+	(13, 2198, 12100),
+	(13, 2199, 12100),
+	(13, 2200, 12100),
+	(13, 2201, 12100),
+	(13, 2202, 12100);
 
 -- Volcando estructura para tabla optdelsol_27.subfamilia
 CREATE TABLE IF NOT EXISTS `subfamilia` (
@@ -5064,7 +5080,7 @@ CREATE TABLE IF NOT EXISTS `subfamilia` (
   CONSTRAINT `fk_subfamilia_familia1` FOREIGN KEY (`familia_idfamilia`) REFERENCES `familia` (`idfamilia`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.subfamilia: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.subfamilia: ~15 rows (aproximadamente)
 DELETE FROM `subfamilia`;
 INSERT INTO `subfamilia` (`idsubfamilia`, `familia_idfamilia`, `nombre_corto`, `nombre_largo`) VALUES
 	(3, 2, 'SOL', 'SOL'),
@@ -5094,9 +5110,9 @@ CREATE TABLE IF NOT EXISTS `subgrupo` (
   UNIQUE KEY `unique` (`grupo_idgrupo`,`nombre_corto`),
   KEY `fk_subgrupo_grupo1_idx` (`grupo_idgrupo`),
   CONSTRAINT `fk_subgrupo_grupo1` FOREIGN KEY (`grupo_idgrupo`) REFERENCES `grupo` (`idgrupo`)
-) ENGINE=InnoDB AUTO_INCREMENT=1348 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1350 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.subgrupo: ~626 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.subgrupo: ~638 rows (aproximadamente)
 DELETE FROM `subgrupo`;
 INSERT INTO `subgrupo` (`idsubgrupo`, `grupo_idgrupo`, `nombre_corto`, `nombre_largo`, `multiplicador`) VALUES
 	(123, 120, '360 1', '360 1300', '1'),
@@ -5737,26 +5753,31 @@ INSERT INTO `subgrupo` (`idsubgrupo`, `grupo_idgrupo`, `nombre_corto`, `nombre_l
 	(1344, 385, 'INSUMO_SUBGRUPO1', 'INSUMO_SUBGRUPO1', '1'),
 	(1345, 385, 'INSUMO_SUBGRUPO2', 'INSUMO_SUBGRUPO2', '1'),
 	(1346, 387, 'TRATAMIENTO_SUBGRUPO_1', 'TRATAMIENTO_SUBGRUPO_1', '1'),
-	(1347, 387, 'TRATAMIENTO_SUBGRUPO_2', 'TRATAMIENTO_SUBGRUPO_2', '1');
+	(1347, 387, 'TRATAMIENTO_SUBGRUPO_2', 'TRATAMIENTO_SUBGRUPO_2', '1'),
+	(1348, 389, 'LC_SUBGRUPO1', 'LC_SUBGRUPO1', '1'),
+	(1349, 389, 'LC_SUBGRUPO2', 'LC_SUBGRUPO2', '1');
 
 -- Volcando estructura para tabla optdelsol_27.sucursal
 CREATE TABLE IF NOT EXISTS `sucursal` (
   `idsucursal` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) DEFAULT NULL,
+  `denominacion` varchar(50) DEFAULT NULL,
+  `direccion` varchar(50) DEFAULT NULL,
+  `telefono` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`idsucursal`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Volcando datos para la tabla optdelsol_27.sucursal: ~8 rows (aproximadamente)
 DELETE FROM `sucursal`;
-INSERT INTO `sucursal` (`idsucursal`, `nombre`) VALUES
-	(6, 'ALBERDI'),
-	(7, 'COLON'),
-	(8, 'BARRANQUERAS'),
-	(9, 'CORRIENTES'),
-	(10, 'RICHARD'),
-	(11, 'FONTANA'),
-	(12, 'PARANA'),
-	(13, 'DEPOSITO');
+INSERT INTO `sucursal` (`idsucursal`, `nombre`, `denominacion`, `direccion`, `telefono`) VALUES
+	(6, 'ALBERDI', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000'),
+	(7, 'COLON', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000'),
+	(8, 'BARRANQUERAS', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000'),
+	(9, 'CORRIENTES', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000'),
+	(10, 'RICHARD', 'Optica Richard', 'ameghino y alberdi', '0-0000-000'),
+	(11, 'FONTANA', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000'),
+	(12, 'PARANA', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000'),
+	(13, 'DEPOSITO', 'Optica del Sol', 'ameghino y alberdi', '0-0000-000');
 
 -- Volcando estructura para tabla optdelsol_27.tipo_permisos
 CREATE TABLE IF NOT EXISTS `tipo_permisos` (
@@ -5781,7 +5802,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 -- Volcando datos para la tabla optdelsol_27.usuario: ~0 rows (aproximadamente)
 DELETE FROM `usuario`;
 INSERT INTO `usuario` (`idusuario`, `nombre`, `password`, `logged`, `token`) VALUES
-	(3, 'deposito', 'deposito', 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlcG9zaXRvIiwiaWF0IjoxNjg5MTA5MTAwLCJleHAiOjE2ODkxMTI3MDB9.yh39cQT_nQFcbsxVEZb8c3vtia81_DJoyqzBpioFm4c'),
+	(3, 'deposito', 'deposito', 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlcG9zaXRvIiwiaWF0IjoxNjg5MjgxNDkwLCJleHAiOjE2ODkyODUwOTB9.POZ8fe1IFG7mLYHy8YDF2eRMsz-WftgEkDo78KiKkTY'),
 	(4, 'user', 'user', 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIiLCJpYXQiOjE2ODg2Nzc2NTcsImV4cCI6MTY4ODY4MTI1N30.Q9eHKWZF4ZzwCmmeMntNi1A_9KnwPbf9A3MFtLbIwS8');
 
 -- Volcando estructura para tabla optdelsol_27.usuario_has_tipo_permisos
@@ -5808,7 +5829,6 @@ CREATE TABLE IF NOT EXISTS `venta` (
   `medico_idmedico` int DEFAULT NULL,
   `monto_total` varchar(45) DEFAULT NULL,
   `descuento` varchar(45) DEFAULT NULL,
-  `monto_inicial` varchar(45) DEFAULT NULL,
   `debe` varchar(45) DEFAULT NULL,
   `haber` varchar(45) DEFAULT NULL,
   `saldo` varchar(45) DEFAULT NULL,
@@ -5820,6 +5840,8 @@ CREATE TABLE IF NOT EXISTS `venta` (
   `subtotal` varchar(50) DEFAULT NULL,
   `comentarios` varchar(50) DEFAULT NULL,
   `tipo` varchar(50) DEFAULT NULL,
+  `estado` varchar(50) DEFAULT NULL,
+  `hora_retiro` time DEFAULT NULL,
   PRIMARY KEY (`idventa`),
   KEY `fk_venta_cliente_idx` (`cliente_idcliente`),
   KEY `fk_venta_sucursal1_idx` (`sucursal_idsucursal`),
@@ -5831,25 +5853,35 @@ CREATE TABLE IF NOT EXISTS `venta` (
   CONSTRAINT `fk_venta_medico1` FOREIGN KEY (`medico_idmedico`) REFERENCES `medico` (`idmedico`),
   CONSTRAINT `fk_venta_sucursal1` FOREIGN KEY (`sucursal_idsucursal`) REFERENCES `sucursal` (`idsucursal`),
   CONSTRAINT `fk_venta_usuario1` FOREIGN KEY (`usuario_idusuario`) REFERENCES `usuario` (`idusuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.venta: ~14 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.venta: ~24 rows (aproximadamente)
 DELETE FROM `venta`;
-INSERT INTO `venta` (`idventa`, `cliente_idcliente`, `sucursal_idsucursal`, `caja_idcaja`, `usuario_idusuario`, `medico_idmedico`, `monto_total`, `descuento`, `monto_inicial`, `debe`, `haber`, `saldo`, `fecha`, `fecha_alta`, `fk_os`, `fecha_retiro`, `fk_destinatario`, `subtotal`, `comentarios`, `tipo`) VALUES
-	(25, 1, 13, 1, 3, 27, '76000', '0', NULL, NULL, NULL, NULL, '2023-07-07 19:32:41', '2023-07-07 19:32:41', 2, '2023-07-15 00:00:00', 2, '76000', 'fdsdfgs', NULL),
-	(26, 1, 13, 1, 3, 27, '76000', '0', NULL, NULL, NULL, NULL, '2023-07-07 19:37:18', '2023-07-07 19:37:18', 2, '2023-07-15 00:00:00', 2, '76000', 'fdsdfgs', NULL),
-	(27, 1, 13, 1, 3, 27, '76000', '0', NULL, NULL, NULL, NULL, '2023-07-07 19:37:50', '2023-07-07 19:37:50', 2, '2023-07-15 00:00:00', 2, '76000', 'fdsdfgs', NULL),
-	(28, 1, 13, 1, 3, 28, '9500', '0', NULL, NULL, NULL, NULL, '2023-07-07 19:50:15', '2023-07-07 19:50:15', 2, '2023-07-15 00:00:00', 2, '0', 'ngfsfhdgfshf', NULL),
-	(29, 1, 13, 1, 3, 28, '9500', '0', NULL, NULL, NULL, NULL, '2023-07-07 19:56:59', '2023-07-07 19:56:59', 3, '2023-07-14 00:00:00', 2, '0', 'xdasfdsdgsd', '5'),
-	(30, 1, 13, 1, 3, 28, '19000', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:00:49', '2023-07-07 20:00:49', 2, '2023-07-14 00:00:00', 2, '0', 'tfthtrt', '3'),
-	(31, 1, 13, 1, 3, 28, '19000', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:11:04', '2023-07-07 20:11:04', 2, '2023-07-14 00:00:00', 2, '0', 'tfthtrt', '3'),
-	(32, 1, 13, 1, 3, 27, '19000', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:11:54', '2023-07-07 20:11:54', 3, '2023-07-14 00:00:00', 2, '0', 'fdsgsdg', '3'),
-	(33, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:17:35', '2023-07-07 20:17:35', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6'),
-	(34, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:20:01', '2023-07-07 20:20:01', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6'),
-	(35, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:25:00', '2023-07-07 20:25:00', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6'),
-	(36, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, NULL, '2023-07-07 20:26:25', '2023-07-07 20:26:25', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6'),
-	(37, 1, 13, 1, 3, 26, '23200', '0', NULL, NULL, NULL, NULL, '2023-07-10 18:48:53', '2023-07-10 18:48:53', 2, '2023-07-11 00:00:00', 2, '23200', 'fdfdfdgfgf', '2'),
-	(38, 1, 13, 1, 3, 28, '1700', '300', NULL, NULL, NULL, NULL, '2023-07-11 20:23:18', '2023-07-11 20:23:18', 2, '2023-07-20 00:00:00', 2, '2000', '465464645', '2');
+INSERT INTO `venta` (`idventa`, `cliente_idcliente`, `sucursal_idsucursal`, `caja_idcaja`, `usuario_idusuario`, `medico_idmedico`, `monto_total`, `descuento`, `debe`, `haber`, `saldo`, `fecha`, `fecha_alta`, `fk_os`, `fecha_retiro`, `fk_destinatario`, `subtotal`, `comentarios`, `tipo`, `estado`, `hora_retiro`) VALUES
+	(25, 1, 13, 1, 3, 27, '76000', '0', NULL, NULL, NULL, '2023-07-07 19:32:41', '2023-07-07 19:32:41', 2, '2023-07-15 00:00:00', 2, '76000', 'fdsdfgs', NULL, NULL, NULL),
+	(26, 1, 13, 1, 3, 27, '76000', '0', NULL, NULL, NULL, '2023-07-07 19:37:18', '2023-07-07 19:37:18', 2, '2023-07-15 00:00:00', 2, '76000', 'fdsdfgs', NULL, NULL, NULL),
+	(27, 1, 13, 1, 3, 27, '76000', '0', NULL, NULL, NULL, '2023-07-07 19:37:50', '2023-07-07 19:37:50', 2, '2023-07-15 00:00:00', 2, '76000', 'fdsdfgs', NULL, NULL, NULL),
+	(28, 1, 13, 1, 3, 28, '9500', '0', NULL, NULL, NULL, '2023-07-07 19:50:15', '2023-07-07 19:50:15', 2, '2023-07-15 00:00:00', 2, '0', 'ngfsfhdgfshf', NULL, NULL, NULL),
+	(29, 1, 13, 1, 3, 28, '9500', '0', NULL, NULL, NULL, '2023-07-07 19:56:59', '2023-07-07 19:56:59', 3, '2023-07-14 00:00:00', 2, '0', 'xdasfdsdgsd', '5', NULL, NULL),
+	(30, 1, 13, 1, 3, 28, '19000', '0', NULL, NULL, NULL, '2023-07-07 20:00:49', '2023-07-07 20:00:49', 2, '2023-07-14 00:00:00', 2, '0', 'tfthtrt', '3', NULL, NULL),
+	(31, 1, 13, 1, 3, 28, '19000', '0', NULL, NULL, NULL, '2023-07-07 20:11:04', '2023-07-07 20:11:04', 2, '2023-07-14 00:00:00', 2, '0', 'tfthtrt', '3', NULL, NULL),
+	(32, 1, 13, 1, 3, 27, '19000', '0', NULL, NULL, NULL, '2023-07-07 20:11:54', '2023-07-07 20:11:54', 3, '2023-07-14 00:00:00', 2, '0', 'fdsgsdg', '3', NULL, NULL),
+	(33, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, '2023-07-07 20:17:35', '2023-07-07 20:17:35', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6', NULL, NULL),
+	(34, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, '2023-07-07 20:20:01', '2023-07-07 20:20:01', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6', NULL, NULL),
+	(35, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, '2023-07-07 20:25:00', '2023-07-07 20:25:00', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6', NULL, NULL),
+	(36, 1, 13, 1, 3, 26, '28500', '0', NULL, NULL, NULL, '2023-07-07 20:26:25', '2023-07-07 20:26:25', 2, '2023-07-21 00:00:00', 2, '0', 'ffffffffff', '6', NULL, NULL),
+	(37, 1, 13, 1, 3, 26, '23200', '0', NULL, NULL, NULL, '2023-07-10 18:48:53', '2023-07-10 18:48:53', 2, '2023-07-11 00:00:00', 2, '23200', 'fdfdfdgfgf', '2', NULL, NULL),
+	(38, 1, 13, 1, 3, 28, '1700', '300', NULL, NULL, NULL, '2023-07-11 20:23:18', '2023-07-11 20:23:18', 2, '2023-07-20 00:00:00', 2, '2000', '465464645', '2', NULL, NULL),
+	(43, 1, 13, 1, 3, 26, '13000', '25000', NULL, NULL, NULL, '2023-07-12 18:06:01', '2023-07-12 18:06:01', 3, '2023-07-20 00:00:00', 2, '0', 'fhdghdfh', '1', NULL, NULL),
+	(44, 1, 13, 1, 3, 28, '700', '11000', NULL, NULL, NULL, '2023-07-12 18:09:18', '2023-07-12 18:09:18', 4, '2023-07-20 00:00:00', 2, '11700', 'gfgsdfgsdfg', '2', NULL, NULL),
+	(45, 1, 13, 1, 3, 28, '20000', '03200', NULL, NULL, NULL, '2023-07-12 18:12:22', '2023-07-12 18:12:22', 3, '2023-07-19 00:00:00', 2, '0', 'ssasdfasdf', '4', NULL, NULL),
+	(46, 1, 13, 1, 3, 28, '10000', '1600', NULL, NULL, NULL, '2023-07-12 18:15:33', '2023-07-12 18:15:33', 3, '2023-07-20 00:00:00', 2, '0', 'fghdghdfh', '5', NULL, NULL),
+	(47, 1, 13, 1, 3, 26, '1000', '1000', NULL, NULL, NULL, '2023-07-12 18:25:07', '2023-07-12 18:25:07', 3, '2023-07-13 00:00:00', 2, '0', 'sfasfdas', '3', NULL, NULL),
+	(48, 1, 13, 1, 3, 28, '2000', '0200', NULL, NULL, NULL, '2023-07-12 18:26:22', '2023-07-12 18:26:22', 4, '2023-07-19 00:00:00', 2, '0', 'fdgdsd', '6', NULL, NULL),
+	(50, 3, 13, 1, 3, 26, '8500', '20000', NULL, NULL, NULL, '2023-07-12 18:31:25', '2023-07-12 18:31:25', 2, '2023-07-19 00:00:00', 2, '0', 'sdfdgff', '1', NULL, NULL),
+	(51, 1, 13, 1, 3, 27, '4200', '0', NULL, NULL, NULL, '2023-07-12 19:52:05', '2023-07-12 19:52:05', 4, '2023-07-13 00:00:00', 1, '4200', '', '2', NULL, NULL),
+	(52, 1, 13, 1, 3, 27, '4200', '0', NULL, NULL, NULL, '2023-07-12 19:53:05', '2023-07-12 19:53:05', 4, '2023-07-13 00:00:00', 1, '4200', '', '2', NULL, NULL),
+	(53, 1, 13, 1, 3, 27, '4200', '0', NULL, NULL, NULL, '2023-07-12 19:53:53', '2023-07-12 19:53:53', 4, '2023-07-13 00:00:00', 1, '4200', '', '2', NULL, NULL);
 
 -- Volcando estructura para tabla optdelsol_27.venta_has_modo_pago
 CREATE TABLE IF NOT EXISTS `venta_has_modo_pago` (
@@ -5873,9 +5905,9 @@ CREATE TABLE IF NOT EXISTS `venta_has_modo_pago` (
   CONSTRAINT `fk_venta_has_modo_pago_modo_pago1` FOREIGN KEY (`modo_pago_idmodo_pago`) REFERENCES `modo_pago` (`idmodo_pago`),
   CONSTRAINT `fk_venta_has_modo_pago_mutual1` FOREIGN KEY (`mutual_idmutual`) REFERENCES `mutual` (`idmutual`),
   CONSTRAINT `fk_venta_has_modo_pago_venta1` FOREIGN KEY (`venta_idventa`) REFERENCES `venta` (`idventa`)
-) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=159 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.venta_has_modo_pago: ~65 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.venta_has_modo_pago: ~108 rows (aproximadamente)
 DELETE FROM `venta_has_modo_pago`;
 INSERT INTO `venta_has_modo_pago` (`id_modopago`, `venta_idventa`, `modo_pago_idmodo_pago`, `banco_idbanco`, `mutual_idmutual`, `monto`, `monto_int`, `Columna 7`, `cant_cuotas`, `monto_cuota`, `Columna 9`) VALUES
 	(51, 26, 1, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
@@ -5942,7 +5974,50 @@ INSERT INTO `venta_has_modo_pago` (`id_modopago`, `venta_idventa`, `modo_pago_id
 	(112, 38, 2, NULL, NULL, '300', '0', NULL, '0', '0', NULL),
 	(113, 38, 3, NULL, NULL, '500', '0', NULL, '0', '0', NULL),
 	(114, 38, 4, NULL, NULL, '100', '0', NULL, '0', '0', NULL),
-	(115, 38, 5, NULL, NULL, '200', '0', NULL, '0', '0', NULL);
+	(115, 38, 5, NULL, NULL, '200', '0', NULL, '0', '0', NULL),
+	(116, 43, 1, NULL, NULL, '10000', '0', NULL, '0', '0', NULL),
+	(117, 43, 2, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(118, 43, 3, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(119, 43, 4, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(120, 44, 1, NULL, NULL, '100', '0', NULL, '0', '0', NULL),
+	(121, 44, 2, NULL, NULL, '100', '0', NULL, '0', '0', NULL),
+	(122, 44, 3, NULL, NULL, '100', '0', NULL, '0', '0', NULL),
+	(123, 44, 4, NULL, NULL, '100', '0', NULL, '0', '0', NULL),
+	(124, 44, 5, NULL, NULL, '300', '0', NULL, '0', '0', NULL),
+	(125, 45, 1, NULL, NULL, '1500', '0', NULL, '0', '0', NULL),
+	(126, 45, 2, NULL, NULL, '8500', '0', NULL, '0', '0', NULL),
+	(127, 45, 3, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(128, 45, 4, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(129, 45, 5, NULL, NULL, '8000', '0', NULL, '0', '0', NULL),
+	(130, 46, 1, NULL, NULL, '5000', '0', NULL, '0', '0', NULL),
+	(131, 46, 2, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(132, 46, 3, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(133, 46, 4, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(134, 46, 5, NULL, NULL, '2000', '0', NULL, '0', '0', NULL),
+	(135, 47, 1, NULL, NULL, '200', '0', NULL, '0', '0', NULL),
+	(136, 47, 2, NULL, NULL, '200', '0', NULL, '0', '0', NULL),
+	(137, 47, 3, NULL, NULL, '200', '0', NULL, '0', '0', NULL),
+	(138, 47, 4, NULL, NULL, '200', '0', NULL, '0', '0', NULL),
+	(139, 47, 5, NULL, NULL, '200', '0', NULL, '0', '0', NULL),
+	(140, 48, 1, NULL, NULL, '400', '0', NULL, '0', '0', NULL),
+	(141, 48, 2, NULL, NULL, '400', '0', NULL, '0', '0', NULL),
+	(142, 48, 3, NULL, NULL, '400', '0', NULL, '0', '0', NULL),
+	(143, 48, 4, NULL, NULL, '400', '0', NULL, '0', '0', NULL),
+	(144, 48, 5, NULL, NULL, '400', '0', NULL, '0', '0', NULL),
+	(145, 50, 1, NULL, NULL, '5000', '0', NULL, '0', '0', NULL),
+	(146, 50, 2, NULL, NULL, '1500', '0', NULL, '0', '0', NULL),
+	(147, 50, 3, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(148, 50, 4, NULL, NULL, '1000', '0', NULL, '0', '0', NULL),
+	(149, 52, 1, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(150, 52, 2, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(151, 52, 3, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(152, 52, 4, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(153, 52, 5, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(154, 53, 1, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(155, 53, 2, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(156, 53, 3, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(157, 53, 4, NULL, NULL, '1', '0', NULL, '0', '0', NULL),
+	(158, 53, 5, NULL, NULL, '1', '0', NULL, '0', '0', NULL);
 
 -- Volcando estructura para tabla optdelsol_27.venta_has_stock
 CREATE TABLE IF NOT EXISTS `venta_has_stock` (
@@ -5962,9 +6037,9 @@ CREATE TABLE IF NOT EXISTS `venta_has_stock` (
   KEY `fk_venta_has_stock_venta1_idx` (`venta_idventa`),
   CONSTRAINT `fk_venta_has_stock_stock1` FOREIGN KEY (`stock_sucursal_idsucursal`, `stock_codigo_idcodigo`) REFERENCES `stock` (`sucursal_idsucursal`, `codigo_idcodigo`),
   CONSTRAINT `fk_venta_has_stock_venta1` FOREIGN KEY (`venta_idventa`) REFERENCES `venta` (`idventa`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla optdelsol_27.venta_has_stock: ~41 rows (aproximadamente)
+-- Volcando datos para la tabla optdelsol_27.venta_has_stock: ~79 rows (aproximadamente)
 DELETE FROM `venta_has_stock`;
 INSERT INTO `venta_has_stock` (`idventaitem`, `venta_idventa`, `stock_sucursal_idsucursal`, `stock_codigo_idcodigo`, `cantidad`, `tipo`, `esf`, `cil`, `eje`, `precio`, `total`) VALUES
 	(1, 26, 13, 131, 1, 'lejos_armazon', '0', '0', '0', '9500', '9500'),
@@ -6007,7 +6082,45 @@ INSERT INTO `venta_has_stock` (`idventaitem`, `venta_idventa`, `stock_sucursal_i
 	(50, 37, 13, 2190, 1, 'cerca_oi', '0', '0', '-1', '1000', '1000'),
 	(51, 37, 13, 2195, 1, 'cerca_tratamiento', '0', '0', '0', '100', '100'),
 	(52, 38, 13, 2189, 1, 'lejos_od', '0', '0', '-1', '1000', '1000'),
-	(53, 38, 13, 2188, 1, 'lejos_oi', '0', '0', '-1', '1000', '1000');
+	(53, 38, 13, 2188, 1, 'lejos_oi', '0', '0', '-1', '1000', '1000'),
+	(54, 43, 13, 131, 2, 'vdir', '0', '0', '0', '9500', '19000'),
+	(55, 43, 13, 132, 2, 'vdir', '0', '0', '0', '9500', '19000'),
+	(56, 44, 13, 131, 1, 'lejos_armazon', '0', '0', '0', '9500', '9500'),
+	(57, 44, 13, 2188, 1, 'lejos_oi', '0', '0', '-1', '1000', '1000'),
+	(58, 44, 13, 2195, 1, 'lejos_tratamiento', '0', '0', '0', '100', '100'),
+	(59, 44, 13, 2190, 1, 'cerca_oi', '0', '0', '-1', '1000', '1000'),
+	(60, 44, 13, 2194, 1, 'cerca_tratamiento', '0', '0', '0', '100', '100'),
+	(61, 45, 13, 130, 1, 'lejos_armazon', '0', '0', '0', '9500', '9500'),
+	(62, 45, 13, 2190, 1, 'lejos_od', '-1', '-1', '-1', '1000', '1000'),
+	(63, 45, 13, 2188, 1, 'lejos_oi', '-1', '-1', '-1', '1000', '1000'),
+	(64, 45, 13, 2195, 1, 'lejos_tratamiento', '0', '0', '0', '100', '100'),
+	(65, 45, 13, 132, 1, 'cerca_armazon', '0', '0', '0', '9500', '9500'),
+	(66, 45, 13, 2188, 1, 'cerca_od', '-1', '-1', '-1', '1000', '1000'),
+	(67, 45, 13, 2189, 1, 'cerca_oi', '-1', '-1', '-1', '1000', '1000'),
+	(68, 45, 13, 2196, 1, 'cerca_tratamiento', '0', '0', '0', '100', '100'),
+	(69, 46, 13, 130, 1, 'armazon', '0', '0', '0', '9500', '9500'),
+	(70, 46, 13, 2189, 1, 'od', '-1', '-1', '-1', '1000', '1000'),
+	(71, 46, 13, 2188, 1, 'oi', '-1', '-1', '-1', '1000', '1000'),
+	(72, 46, 13, 2196, 1, 'tratamiento', '0', '0', '0', '100', '100'),
+	(73, 47, 13, 2197, 1, 'oi', '0', '0', '-1', '1000', '1000'),
+	(74, 47, 13, 2197, 1, 'od', '0', '0', '-1', '1000', '1000'),
+	(75, 47, 13, 2183, 1, 'insumo', '0', '0', '0', '200', '200'),
+	(76, 48, 13, 2198, 1, 'oi', '0', '0', '0', '1000', '1000'),
+	(77, 48, 13, 2197, 1, 'od', '0', '0', '0', '1000', '1000'),
+	(78, 48, 13, 2184, 1, 'insumo', '0', '0', '0', '200', '200'),
+	(79, 50, 13, 131, 3, 'vdir', '0', '0', '0', '9500', '28500'),
+	(80, 52, 13, 2188, 1, 'lejos_od', '0', '0', '-1', '1000', '1000'),
+	(81, 52, 13, 2188, 1, 'lejos_oi', '0', '0', '-1', '1000', '1000'),
+	(82, 52, 13, 2194, 1, 'lejos_tratamiento', '0', '0', '0', '100', '100'),
+	(83, 52, 13, 2189, 1, 'cerca_od', '0', '0', '-1', '1000', '1000'),
+	(84, 52, 13, 2191, 1, 'cerca_oi', '0', '0', '-1', '1000', '1000'),
+	(85, 52, 13, 2194, 1, 'cerca_tratamiento', '0', '0', '0', '100', '100'),
+	(86, 53, 13, 2188, 1, 'lejos_od', '0', '0', '-1', '1000', '1000'),
+	(87, 53, 13, 2188, 1, 'lejos_oi', '0', '0', '-1', '1000', '1000'),
+	(88, 53, 13, 2194, 1, 'lejos_tratamiento', '0', '0', '0', '100', '100'),
+	(89, 53, 13, 2189, 1, 'cerca_od', '0', '0', '-1', '1000', '1000'),
+	(90, 53, 13, 2191, 1, 'cerca_oi', '0', '0', '-1', '1000', '1000'),
+	(91, 53, 13, 2194, 1, 'cerca_tratamiento', '0', '0', '0', '100', '100');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

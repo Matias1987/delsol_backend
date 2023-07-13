@@ -42,9 +42,15 @@ const obtenerVentasSucursal = (req, res) => {
 }
 
 const obtenerVenta = (req, res) => {
-  const {body} = req;
-  const id = body.id;
-  ventaService.obtenerVenta(id,(row)=>{
+  const {params:{ventaId}} = req;
+  ventaService.obtenerVenta(ventaId,(row)=>{
+    res.status(201).send({status:'OK', data:row})
+  })
+}
+
+const obtenerVentaMP = (req, res) => {
+  const {params:{ventaId}} = req;
+  ventaService.obtenerVentaMP(ventaId,(row)=>{
     res.status(201).send({status:'OK', data:row})
   })
 }
@@ -57,4 +63,5 @@ module.exports = {
     agregarVenta,
     obtenerVenta,
     editarVenta,
+    obtenerVentaMP,
   };

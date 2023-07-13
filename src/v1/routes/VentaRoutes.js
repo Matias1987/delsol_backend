@@ -10,6 +10,10 @@ router.get("/:ventaId", (req, res) => {
   ventaController.obtenerVenta(req,res)
 });
 
+router.get("/get_venta_mp/:ventaId", (req, res) => {
+  ventaController.obtenerVentaMP(req,res)
+});
+
 router.post("/", (req, res) => {
   ventaController.agregarVenta(req,res)
 });

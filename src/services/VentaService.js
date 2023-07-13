@@ -21,6 +21,12 @@ const obtenerVenta = (data,callback) => {
     return callback(row);
   })
 }
+
+const obtenerVentaMP = (idventa,callback) => {
+  ventaDB.lista_venta_mp(idventa,(row)=>{
+    return callback(row);
+  })
+}
 const editarVenta = (req, res) => {}
 
 module.exports = {
@@ -29,4 +35,5 @@ module.exports = {
     agregarVenta,
     obtenerVenta,
     editarVenta,
+    obtenerVentaMP,
   };
