@@ -27,6 +27,13 @@ const obtenerVentaMP = (idventa,callback) => {
     return callback(row);
   })
 }
+
+const lista_venta_sucursal_estado = (data,callback) => {
+  ventaDB.lista_venta_sucursal_estado(data,(rows)=>{
+    return callback(rows)
+  })
+}
+
 const editarVenta = (req, res) => {}
 
 module.exports = {
@@ -36,4 +43,5 @@ module.exports = {
     obtenerVenta,
     editarVenta,
     obtenerVentaMP,
+    lista_venta_sucursal_estado,
   };

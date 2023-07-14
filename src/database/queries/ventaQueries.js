@@ -178,22 +178,22 @@ const get_mp = (data, idventa) => {
 
 const queryDetalleVenta = (id) =>{
     return `SELECT v.*,
-	cl.dni AS 'cliente_dni',  
-	CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre',
+	c.dni AS 'cliente_dni',
+	CONCAT(c.apellido,', ', c.nombre) AS 'cliente_nombre',
 	m.nombre AS 'medico_nombre',
 	s.nombre AS 'sucursal_nombre',
 	u.nombre AS 'usuario_nombre'
- FROM 
-	venta v , 
+FROM
+	venta v ,
 	cliente c,
 	medico m,
 	sucursal s,
 	usuario u
-	WHERE 
-	c.idcliente = v.cliente_idcliente and 
+	WHERE
+	c.idcliente = v.cliente_idcliente and
 	m.idmedico = v.medico_idmedico and
 	s.idsucursal = v.sucursal_idsucursal and
-	u.idusuario = v.vendedor_idvendedor and
+	u.idusuario = v.usuario_idusuario and
 	v.idventa = ${id};`;
 }
 
@@ -239,6 +239,24 @@ const queryListaVentasSucursal  = (idSucursal) =>
     s.idsucursal = ${idSucursal};`;
 }
 
+const queryListaVentasSucursalEstado = (idsucursal="", estado="", tipo="") => (
+	`SELECT 
+	v.idventa, 
+	CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
+	u.nombre AS 'vendedor',
+	v.estado,
+	v.monto_total as 'monto',
+	date_format(v.fecha, '%d-%m-%y') AS 'fecha',
+	DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
+	v.sucursal_idsucursal
+	FROM venta v, cliente c, usuario u WHERE
+	v.cliente_idcliente = c.idcliente AND
+	v.usuario_idusuario = u.idusuario AND
+	v.sucursal_idsucursal = ${idsucursal} AND 
+	(case when '${estado}'<>'' then v.estado = '${estado}' ELSE TRUE END) AND
+	(case when '${tipo}'<>'' then v.tipo = '${tipo}' ELSE TRUE END)`
+)
+
 const queryListaVentaStock = (ventaId) =>{
     return `SELECT vhs.cantidad , c.codigo, c.descripcion
     FROM 
@@ -270,8 +288,7 @@ module.exports = {
     queryListaVentasSucursal,
 	//queryAgregarVenta,
 	venta_insert_query,
-	query_mp,
-	query_items,
 	get_mp,
 	parse_venta_data,
+	queryListaVentasSucursalEstado,
 }

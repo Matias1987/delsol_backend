@@ -205,6 +205,7 @@ const insert_venta = (data,callback) => {
 const detalle_venta = (idventa,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
+    console.log(venta_queries.queryDetalleVenta(idventa))
     connection.query(
         venta_queries.queryDetalleVenta(idventa),
         (err,results)=>{
@@ -238,6 +239,27 @@ const lista_ventas_sucursal = (data,callback) => {
     connection.end();
 }
 
+const lista_venta_sucursal_estado = (data,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    console.log(venta_queries.queryListaVentasSucursalEstado(
+        data.idsucursal,
+        (typeof data.estado === 'undefined' ? "" : data.estado),
+        (typeof data.fecha === 'undefined' ? "" : data.fecha),
+        ))
+    connection.query(
+        venta_queries.queryListaVentasSucursalEstado(
+            data.idsucursal,
+            (typeof data.estado === 'undefined' ? "" : data.estado),
+            (typeof data.fecha === 'undefined' ? "" : data.fecha),
+            ),(err,data) => {
+                callback(data)
+            }
+    )
+    connection.end();
+
+}
+
 const lista_venta_mp = (idventa, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -253,6 +275,7 @@ detalle_venta,
 lista_ventas,
 lista_ventas_sucursal,
 lista_venta_mp,
+lista_venta_sucursal_estado,
 }
 
 

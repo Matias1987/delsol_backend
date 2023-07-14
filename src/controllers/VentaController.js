@@ -55,6 +55,13 @@ const obtenerVentaMP = (req, res) => {
   })
 }
 
+const lista_venta_sucursal_estado = (req, res) => {
+  const {body} = req;
+  ventaService.lista_venta_sucursal_estado(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
+
 const editarVenta = (req, res) => {}
 
 module.exports = {
@@ -64,4 +71,5 @@ module.exports = {
     obtenerVenta,
     editarVenta,
     obtenerVentaMP,
+    lista_venta_sucursal_estado,
   };

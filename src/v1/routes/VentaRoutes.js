@@ -18,6 +18,10 @@ router.post("/", (req, res) => {
   ventaController.agregarVenta(req,res)
 });
 
+router.post("/venta_estado_sucursal/", (req, res) => {
+  ventaController.lista_venta_sucursal_estado(req,res)
+});
+
 router.patch("/:ventaId", (req, res) => {
   ventaController.editarVenta(req,any)
 });
