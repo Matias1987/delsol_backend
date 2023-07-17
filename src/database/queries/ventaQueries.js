@@ -245,6 +245,7 @@ const queryListaVentasSucursalEstado = (idsucursal="", estado="", tipo="") => (
 	CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
 	u.nombre AS 'vendedor',
 	v.estado,
+	v.tipo,
 	v.monto_total as 'monto',
 	date_format(v.fecha, '%d-%m-%y') AS 'fecha',
 	DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
@@ -258,13 +259,19 @@ const queryListaVentasSucursalEstado = (idsucursal="", estado="", tipo="") => (
 )
 
 const queryListaVentaStock = (ventaId) =>{
-    return `SELECT vhs.cantidad , c.codigo, c.descripcion
-    FROM 
-    venta_has_stock vhs, 
-    codigo c 
-    WHERE
-    vhs.stock_codigo_idcodigo = c.idcodigo and
-    vhs.venta_idventa = ${ventaId}
+    return `SELECT 
+	vhs.tipo, 
+	vhs.esf, 
+	vhs.cil, 
+	vhs.eje, 
+	vhs.precio, 
+	vhs.cantidad,
+	vhs.total,
+	c.codigo, 
+	c.descripcion
+	FROM venta_has_stock vhs, codigo c WHERE 
+	c.idcodigo = vhs.stock_codigo_idcodigo AND 
+	vhs.venta_idventa=${ventaId};
     ;`;
 }
 

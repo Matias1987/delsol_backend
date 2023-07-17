@@ -36,7 +36,14 @@ const lista_venta_sucursal_estado = (data,callback) => {
 
 const editarVenta = (req, res) => {}
 
+const lista_venta_item = (idventa, callback) => {
+  ventaDB.lista_venta_item(idventa,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
+    lista_venta_item ,
     obtenerVentas,
     obtenerVentasSucursal,
     agregarVenta,

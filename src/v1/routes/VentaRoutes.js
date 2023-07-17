@@ -10,6 +10,10 @@ router.get("/:ventaId", (req, res) => {
   ventaController.obtenerVenta(req,res)
 });
 
+router.get("/get_venta_items/:ventaId", (req, res) => {
+  ventaController.lista_venta_item(req,res)
+});
+
 router.get("/get_venta_mp/:ventaId", (req, res) => {
   ventaController.obtenerVentaMP(req,res)
 });
