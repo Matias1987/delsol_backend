@@ -85,10 +85,44 @@ const buscar_cliente = (value, callback) =>{
 
 }
 
+const operaciones_cliente = (idcliente,callback) => {
+    const query = `select * from
+    (
+        select 
+        c.fecha as 'fecha',
+        'PAGO' as 'tipo',
+        0 as 'debe',
+        c.monto as 'haber'
+         from cobro c where c.cliente_idcliente=${idcliente}
+        union
+        select 
+        v.fecha as 'fecha',
+        'VENTA'  as 'tipo',
+        v.monto_total as 'debe',
+        0 as 'haber'
+         from venta v where v.cliente_idcliente=${idcliente}
+        union
+        select 
+         cm.fecha as 'fecha',
+         'CARGA MANUAL' as 'tipo',
+         cm.monto as 'debe',
+         0 as 'haber'
+          from carga_manual cm  where cm.cliente_idcliente=${idcliente}
+     ) as ops order by ops.fecha asc;`;
+     const connection = mysql_connection.getConnection();
+    connection.connect();
+    
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+
+}
+
 module.exports = {
     agregar_cliente, 
     obtener_lista_clientes, 
     detalle_cliente_dni,
     detalle_cliente,
     buscar_cliente,
+    operaciones_cliente,
 };

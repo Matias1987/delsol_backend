@@ -33,6 +33,12 @@ const obtenerFichaCliente = (req, res) => {}
 
 const editarCliente = (req, res) => {}
 
+const operaciones_cliente = (data, callback) => {
+  ClienteDB.operaciones_cliente(data, (rows) => {
+    return callback(rows);
+  })
+}
+
 
 module.exports = {
     obtenerClientes,
@@ -42,4 +48,5 @@ module.exports = {
     obtenerFichaCliente,
     editarCliente,
     buscarCliente,
+    operaciones_cliente,
   };

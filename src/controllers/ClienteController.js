@@ -62,6 +62,17 @@ const obtenerFichaCliente = (req, res) => {}
 
 const editarCliente = (req, res) => {}
 
+const operaciones_cliente = (req, res) => {
+
+  const {params:{clienteId}} = req;
+
+  clienteService.operaciones_cliente(clienteId, (rows)=>{
+
+    res.status(201).send({status:'OK',data:rows});
+    
+  })
+}
+
 module.exports = {
     obtenerClientes,
     agregarCliente,
@@ -71,4 +82,5 @@ module.exports = {
     obtenerFichaCliente,
     editarCliente,
     buscarCliente,
+    operaciones_cliente,
   };

@@ -14,6 +14,9 @@ router.get("/buscar/:values", (req, res) => {
 router.get("/:clienteId", (req, res) => {
  clienteController.obtenerClientePorID(req,res)
 });
+router.get("/operaciones/:clienteId", (req, res) => {
+ clienteController.obtenerClientePorID(req,res)
+});
 
 router.post("/", (req, res) => {
   clienteController.agregarCliente(req,res);
