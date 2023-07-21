@@ -84,7 +84,10 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
     const search_value = decodeURIComponent(_search_value);
     const connection = mysql_connection.getConnection();
     connection.connect();
-    
+    /**
+     * se debe pasar el metodo a POST en el cliente, se debe incluir array de ids de familias
+     * para limitar la respuesta del servidor 
+     */
     const _sql = `SELECT 
                     c.idcodigo,
                     c.codigo AS 'codigo',
@@ -107,6 +110,7 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 sg.grupo_idgrupo = g.idgrupo AND
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
                 sf.familia_idfamilia = f.idfamilia AND
+                fl
                 (case when '${search_value}' <> 'null' then c.codigo LIKE '%${search_value}%' else true end) AND
                 (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end);`
     console.log(_sql)
