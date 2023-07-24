@@ -242,16 +242,27 @@ const lista_ventas_sucursal = (data,callback) => {
 const lista_venta_sucursal_estado = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
+    console.log(JSON.stringify(data))
     console.log(venta_queries.queryListaVentasSucursalEstado(
         data.idsucursal,
         (typeof data.estado === 'undefined' ? "" : data.estado),
-        (typeof data.fecha === 'undefined' ? "" : data.fecha),
+        (typeof data.tipo === 'undefined' ? "" : data.tipo),
+        (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
+        (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
+        (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
+        (typeof data.id === 'undefined' ? "" : data.id),
+       
         ))
     connection.query(
         venta_queries.queryListaVentasSucursalEstado(
             data.idsucursal,
             (typeof data.estado === 'undefined' ? "" : data.estado),
-            (typeof data.fecha === 'undefined' ? "" : data.fecha),
+        (typeof data.tipo === 'undefined' ? "" : data.tipo),
+        (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
+        (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
+        (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
+        (typeof data.id === 'undefined' ? "" : data.id),
+           
             ),(err,data) => {
                 callback(data)
             }
