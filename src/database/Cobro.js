@@ -9,7 +9,9 @@ const agregar_cobro  = (data,callback) => {
         si adelanto: idventa
     */
 
-    const add = (arr,val,idx) => (arr||0) == 0 ? arr : {...arr,[idx]: val}
+    console.log(JSON.stringify(data))
+
+    const add = (arr,val,idx) => val == 0 ? arr : {...arr,[idx]: val}
     const get_obj = vars => ({
         monto: vars.monto,
         tipo: vars.tipo,
@@ -21,111 +23,120 @@ const agregar_cobro  = (data,callback) => {
 
     })
 
+    console.log(`insert into cobro (            
+        caja_idcaja,
+        usuario_idusuario,
+        cliente_idcliente,
+        venta_idventa,
+        monto,
+        tipo) values (
+        ${data.caja_idcaja}, 
+        ${data.usuario_idusuario}, 
+        ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
+        ${typeof data.iventa === 'undefined' ? 'null' : data.iventa}, 
+        ${data.monto}, 
+        '${data.tipo}')`)
+
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        cobro_queries.queryAgregarCobro(),
-        [[
-            data.caja_idcaja,
-            data.usuario_idusuario,
-            typeof data.cliente_idcliente === 'undefined' ? null : data.cliente_idcliente,
-            typeof data.venta_idventa === 'undefined' ? null : data.venta_idventa,
-            data.monto,
-            data.tipo
-        ]],
+        `insert into cobro (            
+            caja_idcaja,
+            usuario_idusuario,
+            cliente_idcliente,
+            venta_idventa,
+            monto,
+            tipo) values (
+            ${data.caja_idcaja}, 
+            ${data.usuario_idusuario}, 
+            ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
+            ${typeof data.iventa === 'undefined' ? 'null' : data.iventa}, 
+            ${data.monto}, 
+            '${data.tipo}')`,
         (err,results)=>{
+            console.log(results)
         const idcobro = results.insertId
-            /*
-                modo de pago structure:
-                    efectivo_monto: 0,
-                    tarjeta_monto: 0,
-                    tarjeta_tarjeta: 0,
-                    ctacte_monto: 0,
-                    ctacte_cuotas: 0,
-                    ctacte_monto_cuotas: 0,
-                    cheque_monto: 0,
-                    mutual_monto: 0,
-                    mutual_mutual: 0,
-                    total: 0,
-            */
-            
-            var _mp = []
-            
-            _mp = add(
-                _mp,
-                get_obj({
-                    monto: data.mp.efectivo_monto, 
-                    tipo: 'efectivo'
-                }),
-                "efectivo_monto")
+       console.log("payment saved with id: " + idcobro);
 
-            _mp = add(
-                _mp,
-                get_obj({
-                    monto: data.mp.tarjeta_monto,
-                    tipo: 'tarjeta',
-                    tarjeta: data.mp.tarjeta_tarjeta,
-                }),
-                "tarjeta_monto")
-            _mp = add(
-                _mp,
-                get_obj({
-                    monto:data.mp.efectivo_monto,
-                    tipo: 'ctacte',
-                    cant_cuotas: data.mp.cant_cuotas,
-                    monto_cuota: data.mp.monto_cuota,
-                }),
-                "ctacte_monto")
-            _mp = add(
-                _mp,
-                get_obj({
-                    monto:data.mp.mutual_monto,
-                    tipo: 'mutual',
-                    fkmutual: null
-                }),
-                "mutual_monto"
-                )
-            _mp = add(
-                _mp,
-                get_obj({
-                    monto: data.mp.cheque_monto,
-                    tipo: 'cheque',
-                    fkbanco: null
-                }),
-                "cheque_monto")
+        var _mp = []
+        
+        _mp = add(
+            _mp,
+            get_obj({
+                monto: +data.mp.efectivo_monto, 
+                tipo: 'efectivo'
+            }),
+            "efectivo_monto")
 
-            var _q = ``
-            _mp.forEach((mp)=>{
-                _q +=  (_q.length>0 ? ',': '') +
-                `(${idcobro},
-                  ${1},
-                  ${mp.fkbanco},
-                  ${mp.fkmutual},
-                  '${mp.monto}',
-                 '${mp.cant_cuotas}',
-                 '${mp.monto_cuota}', 
-                '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}')`
-            })
+        _mp = add(
+            _mp,
+            get_obj({
+                monto: +data.mp.tarjeta_monto,
+                tipo: 'tarjeta',
+                tarjeta: data.mp.tarjeta_tarjeta,
+            }),
+            "tarjeta_monto")
+        _mp = add(
+            _mp,
+            get_obj({
+                monto:+data.mp.efectivo_monto,
+                tipo: 'ctacte',
+                cant_cuotas: data.mp.cant_cuotas,
+                monto_cuota: data.mp.monto_cuota,
+            }),
+            "ctacte_monto")
+        _mp = add(
+            _mp,
+            get_obj({
+                monto:+data.mp.mutual_monto,
+                tipo: 'mutual',
+                fkmutual: null
+            }),
+            "mutual_monto"
+            )
+        _mp = add(
+            _mp,
+            get_obj({
+                monto: data.mp.cheque_monto,
+                tipo: 'cheque',
+                fkbanco: null
+            }),
+            "cheque_monto")
 
-            var __query = `INSERT INTO cobro_has_modo_pago 
-            (
-                cobro_idcobro,
-                modo_pago_idmodo_pago, 
-                banco_idbanco, 
-                mutual_idmutual, 
-                monto, 
-                cant_cuotas, 
-                monto_cuota, 
-                total_int
-            ) VALUES ` + _q;
+            console.log("ALL MP:  "  + JSON.stringify(_mp))
+
+        var _q = ``
+        _mp.forEach((mp)=>{
+            _q +=  (_q.length>0 ? ',': '') +
+            `(${idcobro},
+            ${1},
+            ${mp.fkbanco},
+            ${mp.fkmutual},
+            '${mp.monto}',
+            '${mp.cant_cuotas}',
+            '${mp.monto_cuota}', 
+            '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}')`
+        })
+
+        var __query = `INSERT INTO cobro_has_modo_pago 
+        (
+            cobro_idcobro,
+            modo_pago_idmodo_pago, 
+            banco_idbanco, 
+            mutual_idmutual, 
+            monto, 
+            cant_cuotas, 
+            monto_cuota, 
+            total_int
+        ) VALUES ` + _q;
 
 
-            console.log(__query)
+        console.log(__query)
 
-            connection.query(__query,(err,_results)=>{
-                return callback(idcobro);
-            })
-            connection.end();            
+        connection.query(__query,(err,_results)=>{
+            return callback(idcobro);
+        })
+        connection.end();            
         }
     );
     
