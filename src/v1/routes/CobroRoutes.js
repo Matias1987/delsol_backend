@@ -7,11 +7,15 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:cobroId", (req, res) => {
-  res.send("Get an existing workout");
+  cobroController.obtenerCobro(req,res)
 });
 
 router.post("/", (req, res) => {
   cobroController.agregarCobro(req,res);
+});
+
+router.post("/lista/", (req, res) => {
+  cobroController.obtenerCobros(req,res);
 });
 
 router.patch("/:cobroId", (req, res) => {

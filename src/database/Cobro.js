@@ -11,7 +11,7 @@ const agregar_cobro  = (data,callback) => {
 
     console.log(JSON.stringify(data))
 
-    const add = (arr,val,idx) => val == 0 ? arr : {...arr,[idx]: val}
+    const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     const get_obj = vars => ({
         monto: vars.monto,
         tipo: vars.tipo,
@@ -63,7 +63,7 @@ const agregar_cobro  = (data,callback) => {
         _mp = add(
             _mp,
             get_obj({
-                monto: +data.mp.efectivo_monto, 
+                monto: data.mp.efectivo_monto, 
                 tipo: 'efectivo'
             }),
             "efectivo_monto")
@@ -71,7 +71,7 @@ const agregar_cobro  = (data,callback) => {
         _mp = add(
             _mp,
             get_obj({
-                monto: +data.mp.tarjeta_monto,
+                monto: data.mp.tarjeta_monto,
                 tipo: 'tarjeta',
                 tarjeta: data.mp.tarjeta_tarjeta,
             }),
@@ -79,7 +79,7 @@ const agregar_cobro  = (data,callback) => {
         _mp = add(
             _mp,
             get_obj({
-                monto:+data.mp.efectivo_monto,
+                monto:data.mp.ctacte_monto,
                 tipo: 'ctacte',
                 cant_cuotas: data.mp.cant_cuotas,
                 monto_cuota: data.mp.monto_cuota,
@@ -88,7 +88,7 @@ const agregar_cobro  = (data,callback) => {
         _mp = add(
             _mp,
             get_obj({
-                monto:+data.mp.mutual_monto,
+                monto:data.mp.mutual_monto,
                 tipo: 'mutual',
                 fkmutual: null
             }),
@@ -109,7 +109,7 @@ const agregar_cobro  = (data,callback) => {
         _mp.forEach((mp)=>{
             _q +=  (_q.length>0 ? ',': '') +
             `(${idcobro},
-            ${1},
+            '${mp.tipo}',
             ${mp.fkbanco},
             ${mp.fkmutual},
             '${mp.monto}',
@@ -121,7 +121,7 @@ const agregar_cobro  = (data,callback) => {
         var __query = `INSERT INTO cobro_has_modo_pago 
         (
             cobro_idcobro,
-            modo_pago_idmodo_pago, 
+            modo_pago, 
             banco_idbanco, 
             mutual_idmutual, 
             monto, 
@@ -142,18 +142,38 @@ const agregar_cobro  = (data,callback) => {
     
 }
 
-const lista_cobros = (callback) => {
+const lista_cobros = (data, callback) => {
+    const _idcliente = typeof data.idcliente === 'undefined' ? '' : data.idcliente
+
+    console.log(`SELECT 
+    c.* , 
+    cl.dni AS 'cliente_dni',  
+    CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
+    FROM cobro c, cliente cl 
+    WHERE 
+    c.cliente_idcliente = cl.idcliente and
+    (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end)
+    order by c.idcobro desc;`)
+
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        cobro_queries.queryListaCobros(),
+        `SELECT 
+        c.* , 
+        cl.dni AS 'cliente_dni',  
+        CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
+        FROM cobro c, cliente cl 
+        WHERE 
+        c.cliente_idcliente = cl.idcliente and
+        (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end)
+        order by c.idcobro desc;`,
         (err,results)=>{
-            return callback(results);
+            callback(results);
         }
     );
     connection.end();
 }
-
+/*
 const lista_cobros_sucursal = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -164,13 +184,13 @@ const lista_cobros_sucursal = (data,callback) => {
         }
     );
     connection.end();
-}
+}*/
 
 const detalle_cobro = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        cobro_queries.queryDetalleCobro(data.id),(err,results)=>{
+        cobro_queries.queryDetalleCobro(idcobro),(err,results)=>{
             return callback(results);
         }
     );
@@ -180,6 +200,5 @@ const detalle_cobro = (data, callback) => {
 module.exports = {
     agregar_cobro,
     lista_cobros,
-    lista_cobros_sucursal,
     detalle_cobro
 }

@@ -1,7 +1,10 @@
 const cobroService = require("../services/CobroService")
 
 const obtenerCobros = (req, res) => {
-  cobroService.obtenerCobros()
+  const {body} = req;
+  cobroService.obtenerCobros(body,(rows)=>{
+    res.status(201).send({status:'OK' , data: rows});
+  })
 }
 
 const agregarCobro = (req, res) => {
@@ -21,7 +24,13 @@ const agregarCobro = (req, res) => {
 
 }
 
-const obtenerCobro = (req, res) => {}
+const obtenerCobro = (req, res) => {
+  const {params:{cobroId}} = req;
+  cobroService.obtenerCobro(cobroId,(row)=>{
+    res.status(201).send({status:'OK' , data: row});
+  })
+
+}
 
 const editarCobro = (req, res) => {}
 
