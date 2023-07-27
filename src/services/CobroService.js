@@ -18,6 +18,12 @@ const obtenerCobro = (idcobro, callback) => {
   })
 }
 
+const lista_mp_cobro = (idcobro, callback) => {
+  CobroDB.lista_mp_cobro(idcobro,(rows)=>{
+    return callback(rows)
+  })
+}
+
 const editarCobro = (req, res) => {}
 
 module.exports = {
@@ -25,4 +31,5 @@ module.exports = {
     agregarCobro,
     obtenerCobro,
     editarCobro,
+    lista_mp_cobro,
   };

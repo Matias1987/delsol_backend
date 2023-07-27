@@ -32,6 +32,13 @@ const obtenerCobro = (req, res) => {
 
 }
 
+const lista_mp_cobro = (req,res) => {
+  const {params:{cobroId}} = req;
+  cobroService.lista_mp_cobro(cobroId,(rows)=>{
+    res.status(201).send({status:'OK' , data: rows});
+  })
+}
+
 const editarCobro = (req, res) => {}
 
 
@@ -40,4 +47,5 @@ module.exports = {
     agregarCobro,
     obtenerCobro,
     editarCobro,
+    lista_mp_cobro,
   };

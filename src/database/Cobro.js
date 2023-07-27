@@ -186,9 +186,10 @@ const lista_cobros_sucursal = (data,callback) => {
     connection.end();
 }*/
 
-const detalle_cobro = (data, callback) => {
+const detalle_cobro = (idcobro, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
+    console.log(cobro_queries.queryDetalleCobro(idcobro))
     connection.query(
         cobro_queries.queryDetalleCobro(idcobro),(err,results)=>{
             return callback(results);
@@ -197,8 +198,22 @@ const detalle_cobro = (data, callback) => {
     connection.end();
 }
 
+const lista_mp_cobro = (idcobro, callback) => {
+    const query = `SELECT cmp.* FROM cobro_has_modo_pago cmp WHERE cmp.cobro_idcobro=${idcobro};`
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    console.log(query)
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end();
+
+}
+
+
 module.exports = {
     agregar_cobro,
     lista_cobros,
-    detalle_cobro
+    detalle_cobro,
+    lista_mp_cobro,
 }

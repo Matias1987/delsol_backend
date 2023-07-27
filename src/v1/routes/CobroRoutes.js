@@ -10,6 +10,10 @@ router.get("/:cobroId", (req, res) => {
   cobroController.obtenerCobro(req,res)
 });
 
+router.get("/mp/:cobroId", (req, res) => {
+  cobroController.lista_mp_cobro(req,res)
+});
+
 router.post("/", (req, res) => {
   cobroController.agregarCobro(req,res);
 });
