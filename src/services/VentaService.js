@@ -1,5 +1,10 @@
 const ventaDB = require("../database/Venta")
 
+const cambiar_estado_venta = (data,callback) => {
+  ventaDB.cambiar_estado_venta(data,(results)=>{
+    callback(results)
+  })
+}
 const obtenerVentas = (callback) => {
   ventaDB.lista_ventas((rows)=>{
     callback(rows)
@@ -51,4 +56,5 @@ module.exports = {
     editarVenta,
     obtenerVentaMP,
     lista_venta_sucursal_estado,
+    cambiar_estado_venta,
   };

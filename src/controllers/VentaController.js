@@ -1,5 +1,12 @@
 const ventaService = require("../services/VentaService")
 
+const cambiar_estado_venta = (req,res) => {
+  const {body} = req;
+  ventaService.cambiar_estado_venta(body,(result)=>{
+    res.status(201).send({status:'OK', data:resp})
+  })
+}
+
 const agregarVenta = (req, res) => {
   const {body} = req;
   ventaService.agregarVenta(body,(resp)=>{
@@ -80,4 +87,5 @@ module.exports = {
     obtenerVentaMP,
     lista_venta_sucursal_estado,
     lista_venta_item,
+    cambiar_estado_venta,
   };

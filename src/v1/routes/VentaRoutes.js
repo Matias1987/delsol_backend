@@ -14,12 +14,18 @@ router.get("/get_venta_items/:ventaId", (req, res) => {
   ventaController.lista_venta_item(req,res)
 });
 
+
+
 router.get("/get_venta_mp/:ventaId", (req, res) => {
   ventaController.obtenerVentaMP(req,res)
 });
 
 router.post("/", (req, res) => {
   ventaController.agregarVenta(req,res)
+});
+
+router.post("/cambiar_estado/", (req, res) => {
+  ventaController.cambiar_estado_venta(req,res)
 });
 
 router.post("/venta_estado_sucursal/", (req, res) => {

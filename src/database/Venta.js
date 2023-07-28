@@ -1,6 +1,15 @@
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
+const cambiar_estado_venta = (data, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`UPDATE venta v SET v.estado = '${data.estado}' WHERE v.idventa=${data.idventa};`,(err,results)=>{
+        callback(results)
+    })
+    connection.end();
+}
+
 const insert_venta = (data,callback) => {
 
     console.log(JSON.stringify(data))
@@ -300,6 +309,7 @@ lista_ventas_sucursal,
 lista_venta_mp,
 lista_venta_sucursal_estado,
 lista_venta_item,
+cambiar_estado_venta,
 }
 
 
