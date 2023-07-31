@@ -3,7 +3,7 @@ const router = express.Router();
 const conceptoGastoController = require("../../controllers/ConceptoGastoController");
 
 router.get("/", (req, res) => {
-  res.send("Obtener todos los conceptos de gastos");
+  conceptoGastoController.obtenerConceptosGastos(req,res)
 });
 
 router.get("/:clienteId", (req, res) => {

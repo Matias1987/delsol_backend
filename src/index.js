@@ -108,6 +108,9 @@ app.use("/api/v1/enviostock",envioStockRoutes);
 const bajaDesperfectoRoutes = require("./v1/routes/BajaDesperfectoRoutes");
 app.use("/api/v1/bajadesperfecto",bajaDesperfectoRoutes);
 
+const gastosRoutes = require("./v1/routes/GastoRoutes");
+app.use("/api/v1/gastos",gastosRoutes);
+
 
 
 

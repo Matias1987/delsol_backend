@@ -1,7 +1,11 @@
 const GastoDB = require("../database/Gasto")
 
 
-const obtenerGastos = (req,res) => {}
+const obtenerGastos = (callback) => {
+    GastoDB.obtener_gastos((rows)=>{
+        return callback(rows)
+    })
+}
 
 const obtenerGasto = (req,res) => {}
 

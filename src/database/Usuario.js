@@ -42,13 +42,13 @@ const logout = (token,callback) => {
 const validar_usuario_login = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    let q = `SELECT u.idusuario from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' `
+    let q = `SELECT u.permisos, u.idusuario from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' `
     console.log(q)
     connection.query( q ,(err,rows,fields)=>{
         if(rows.length>0){
             let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
             connection.query(_q,(err,_rows)=>{
-                callback({logged:1, uid: rows[0].idusuario });
+                callback({logged:1, uid: rows[0].idusuario, permisos: rows[0].permisos });
                 connection.end();
 
             })

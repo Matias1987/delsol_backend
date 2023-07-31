@@ -1,6 +1,10 @@
 const ConceptoGastoService = require("../services/ConceptoGastoService");
 
-const obtenerConceptosGastos = (req,res) => {}
+const obtenerConceptosGastos = (req,res) => {
+    ConceptoGastoService.obtenerConceptosGastos((rows)=>{
+        res.status(201).send({status: 'OK', data: rows});
+    })
+}
 
 const agregarConceptoGasto = (req,res) => {
 

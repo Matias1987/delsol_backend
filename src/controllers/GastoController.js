@@ -1,6 +1,10 @@
 const gastoService = require("../services/GastoService");
 
-const obtenerGastos = (req,res) => {}
+const obtenerGastos = (req,res) => {
+    gastoService.obtenerGastos((rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
 
 const obtenerGasto = (req,res) => {}
 

@@ -23,6 +23,8 @@ const agregar_cobro  = (data,callback) => {
 
     })
 
+    //check if 
+
     console.log(`insert into cobro (            
         caja_idcaja,
         usuario_idusuario,
