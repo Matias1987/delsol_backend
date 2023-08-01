@@ -12,7 +12,7 @@ const cambiar_estado_venta = (data, callback) => {
 
 const insert_venta = (data,callback) => {
 
-    console.log(JSON.stringify(data))
+    console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
 
     const do_push = (arr,val,tipo) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo}]
 
@@ -140,7 +140,7 @@ const insert_venta = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     //check quantities
-
+    console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
 
     (err,resp) => {
@@ -157,12 +157,14 @@ const insert_venta = (data,callback) => {
             mp+= (mp.length>0 ? ",":"")  + `(${venta_id},${p.modo_pago_idmodo_pago},${p.banco_idbanco},${p.mutual_idmutual},${p.monto},${p.monto_int},${p.cant_cuotas},${p.monto_cuota})`;
         });
 
+        var _items_data = get_query_str(_arr);
+
+        console.log(venta_queries.query_items + _items_data)
+
+        if(mp.length>0)
+        {
         connection.query(venta_queries.query_mp + mp, (err,_resp)=>{
 
-            var _items_data = get_query_str(_arr);
-            
-            console.log(venta_queries.query_items + _items_data)
-            
             connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
 
                 console.log(JSON.stringify(resp))
@@ -178,6 +180,30 @@ const insert_venta = (data,callback) => {
                 connection.end();
             })
         })
+
+        }
+        else{
+            if(_arr.length>0){
+                connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
+
+                    console.log(JSON.stringify(resp))
+    
+                    callback(venta_id)
+    
+                    /*connection.query(`update stock s SET s.cantidad = s.cantidad-1 where s.codigo_idcodigo IN (${_ids}) AND s.sucursal_idsucursal = ${data.fksucursal}; `,
+                    (err,resp)=>{
+    
+    
+                    })*/
+    
+                    connection.end();
+                })
+            }
+            else{
+                callback(venta_id)
+                connection.end();
+            }
+        }
 
     })
     

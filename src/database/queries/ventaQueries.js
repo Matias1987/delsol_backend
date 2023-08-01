@@ -1,3 +1,5 @@
+const { parse_date_for_mysql } = require("../../lib/helpers");
+
 const parse_venta_data = (body)=> ( {
 	cliente_idcliente: body?.fkcliente,
 	sucursal_idsucursal: body?.fksucursal,
@@ -6,12 +8,13 @@ const parse_venta_data = (body)=> ( {
 	usuario_idusuario: body?.fkusuario,
 	monto_total: body?.total,
 	descuento: body?.descuento,
-	fecha_retiro: body?.fechaRetiro,//<--missing in db
+	fecha_retiro: parse_date_for_mysql( body?.fechaRetiro ),//<--missing in db
 	comentarios: body?.comentarios||"",//<--missing in db
 	subtotal: body?.subtotal,
-	fk_destinatario: body?.fkdestinatario,
+	fk_destinatario: body?.fkdestinatario||null,
 	fk_os: body?.fkos,
 	tipo: body?.tipo, 
+	horaRetiro: body?.horaRetiro
 
 })
 
@@ -32,7 +35,8 @@ INSERT INTO venta
 	fk_os,
 	tipo,
 	debe,
-	saldo
+	saldo,
+	hora_retiro
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -44,12 +48,13 @@ VALUES (
 	'${data.descuento}', 
 	'${data.subtotal}', 
 	'${data.comentarios}', 
-	STR_TO_DATE('${data.fecha_retiro}','%d-%m-%Y'),
+	'${data.fecha_retiro}',
 	${data.fk_destinatario},
 	${data.fk_os},
 	${data.tipo},
 	${data.monto_total},
-	${data.monto_total}
+	${data.monto_total},
+	'${data.horaRetiro}'
 );
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
@@ -186,7 +191,9 @@ const queryDetalleVenta = (id) =>{
 	CONCAT(c.apellido,', ', c.nombre) AS 'cliente_nombre',
 	m.nombre AS 'medico_nombre',
 	s.nombre AS 'sucursal_nombre',
-	u.nombre AS 'usuario_nombre'
+	u.nombre AS 'usuario_nombre',
+	date_format(v.fecha, '%d-%m-%Y') as 'fecha_formated',
+	date_format(v.fecha_retiro, '%d-%m-%Y') as 'fecha_entrega_formated'
 FROM
 	venta v ,
 	cliente c,

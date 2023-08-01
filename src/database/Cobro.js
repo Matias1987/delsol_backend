@@ -35,7 +35,7 @@ const agregar_cobro  = (data,callback) => {
         ${data.caja_idcaja}, 
         ${data.usuario_idusuario}, 
         ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
-        ${typeof data.iventa === 'undefined' ? 'null' : data.iventa}, 
+        ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
         ${data.monto}, 
         '${data.tipo}')`)
 
@@ -52,7 +52,7 @@ const agregar_cobro  = (data,callback) => {
             ${data.caja_idcaja}, 
             ${data.usuario_idusuario}, 
             ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
-            ${typeof data.iventa === 'undefined' ? 'null' : data.iventa}, 
+            ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
             ${data.monto}, 
             '${data.tipo}')`,
         (err,results)=>{
@@ -145,7 +145,8 @@ const agregar_cobro  = (data,callback) => {
             return callback(idcobro);
         })
 
-        if(typeof data.iventa !== 'undefined'){
+        if(typeof data.idventa !== 'undefined'){
+            console.log(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - (v.haber + ${total}) WHERE v.idventa=${data.idventa};`)
             connection.query(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - (v.haber + ${total}) WHERE v.idventa=${data.idventa};`)
         }
 
