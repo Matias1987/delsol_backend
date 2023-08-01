@@ -108,6 +108,7 @@ const agregar_cobro  = (data,callback) => {
             console.log("ALL MP:  "  + JSON.stringify(_mp))
 
         var _q = ``
+        var total = 0;
         _mp.forEach((mp)=>{
             _q +=  (_q.length>0 ? ',': '') +
             `(${idcobro},
@@ -118,6 +119,11 @@ const agregar_cobro  = (data,callback) => {
             '${mp.cant_cuotas}',
             '${mp.monto_cuota}', 
             '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}')`
+            if(mp.tipo!='ctacte')
+            {
+                total+=parseFloat(mp.monto);
+            }
+
         })
 
         var __query = `INSERT INTO cobro_has_modo_pago 
@@ -138,6 +144,11 @@ const agregar_cobro  = (data,callback) => {
         connection.query(__query,(err,_results)=>{
             return callback(idcobro);
         })
+
+        if(typeof data.iventa !== 'undefined'){
+            connection.query(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - (v.haber + ${total}) WHERE v.idventa=${data.idventa};`)
+        }
+
         connection.end();            
         }
     );

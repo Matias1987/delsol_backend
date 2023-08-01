@@ -30,7 +30,9 @@ INSERT INTO venta
 	fecha_retiro,
 	fk_destinatario,
 	fk_os,
-	tipo
+	tipo,
+	debe,
+	saldo
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -45,7 +47,9 @@ VALUES (
 	STR_TO_DATE('${data.fecha_retiro}','%d-%m-%Y'),
 	${data.fk_destinatario},
 	${data.fk_os},
-	${data.tipo}
+	${data.tipo},
+	${data.monto_total},
+	${data.monto_total}
 );
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
@@ -311,4 +315,7 @@ module.exports = {
 	get_mp,
 	parse_venta_data,
 	queryListaVentasSucursalEstado,
+	query_items,
+	query_mp,
+
 }

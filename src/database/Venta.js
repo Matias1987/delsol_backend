@@ -18,7 +18,8 @@ const insert_venta = (data,callback) => {
 
     var venta_id = -1;
     var _arr = [];
-    var _quantities =  []
+    var _quantities =  {}
+    var idx = [];
 
     const prepare_qtty_array = elements => {
         //accum by idcodigo
@@ -26,13 +27,12 @@ const insert_venta = (data,callback) => {
             if(typeof _quantities[e.idcodigo] === 'undefined')
             {
                 _quantities = {..._quantities, [e.idcodigo]:{cantidad: e.cantidad, idcodigo: e.idcodigo}}
+                idx.push(e.idcodigo)
             } else{
                 _quantities[e.idcodigo].cantidad += e.cantidad
             }
         })
         }
-
-    
 
     const get_query_str = items => {
         var _str = ""
@@ -133,14 +133,13 @@ const insert_venta = (data,callback) => {
 
     console.log(JSON.stringify(_quantities))
 
-    var _ids = "";
-    _quantities.forEach(q=>{_ids = (_ids.length>0 ? ",":"")+q.idcodigo})
+    //this is for updating the stock quantities, it is not finished yet.
+    /*var _ids = "";
+    idx.forEach(q=>{_ids = (_ids.length>0 ? ",":"")+q.idcodigo})*/
     
     const connection = mysql_connection.getConnection();
     connection.connect();
     //check quantities
-
-    
 
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
 
@@ -158,23 +157,23 @@ const insert_venta = (data,callback) => {
             mp+= (mp.length>0 ? ",":"")  + `(${venta_id},${p.modo_pago_idmodo_pago},${p.banco_idbanco},${p.mutual_idmutual},${p.monto},${p.monto_int},${p.cant_cuotas},${p.monto_cuota})`;
         });
 
-        connection.query(venta_queries.query_mp + mp, (err,resp)=>{
+        connection.query(venta_queries.query_mp + mp, (err,_resp)=>{
 
             var _items_data = get_query_str(_arr);
             
             console.log(venta_queries.query_items + _items_data)
             
-            connection.query(venta_queries.query_items + _items_data,(err,resp)=>{
+            connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
 
                 console.log(JSON.stringify(resp))
 
-                callback(resp)
+                callback(venta_id)
 
-                connection.query(`update stock s SET s.cantidad = s.cantidad-1 where s.codigo_idcodigo IN (${_ids}) AND s.sucursal_idsucursal = ${data.fksucursal}; `,
+                /*connection.query(`update stock s SET s.cantidad = s.cantidad-1 where s.codigo_idcodigo IN (${_ids}) AND s.sucursal_idsucursal = ${data.fksucursal}; `,
                 (err,resp)=>{
 
 
-                })
+                })*/
 
                 connection.end();
             })
