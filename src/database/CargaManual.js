@@ -6,18 +6,18 @@ const agregarCargaManual= (data,callback) =>
 
     connection.connect();
 
-    const sql = "insert into carga_manual (caja_idcaja,usuario_idusuario,cliente_idcliente,sucursal_idsucursal,monto,concepto) values (?)"
-    values = [[
-        data.caja_idcaja,
-        data.usuario_idusuario, 
-        data.cliente_idcliente, 
-        data.sucursal_idsucursal, 
-        data.monto, 
-        data.concepto, 
-        ]];
+    const sql = `insert into carga_manual (
+        caja_idcaja,
+        usuario_idusuario,
+        cliente_idcliente,
+        sucursal_idsucursal,
+        monto,
+        concepto) 
+    values (${data.caja_idcaja},${data.usuario_idusuario},${data.cliente_idcliente},${data.sucursal_idsucursal},${data.monto},'${data.concepto}')`
+    
+    console.log(sql)
 
-
-    connection.query(sql,values,(err,result,fields)=>{
+    connection.query(sql,(err,result,fields)=>{
         return callback(result.insertId);
     })
 

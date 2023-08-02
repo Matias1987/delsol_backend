@@ -1,5 +1,12 @@
 const cajaService = require("../services/CajaService");
 
+const obtener_caja = (req, res) =>{
+    const {params:{idsucursal}} = req;
+    cajaService.obtener_caja(idsucursal,(resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+}
+
 const obtenerCajas = (req,res)=>{}
 
 const agregarCaja = (req,res)=>{
@@ -21,5 +28,6 @@ const cerrarCaja = (req,res) => {}
 module.exports={
     obtenerCajas,
     agregarCaja,
-    cerrarCaja
+    cerrarCaja,
+    obtener_caja
 }

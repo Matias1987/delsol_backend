@@ -4,6 +4,9 @@ const cajaController = require("../../controllers/CajaController")
 router.get("/", (req, res) => {
   cajaController.obtenerCajas(req,res)
 });
+router.get("/c/:idsucursal", (req, res) => {
+  cajaController.obtener_caja(req,res)
+});
 
 router.get("/:clienteId", (req, res) => {
   cajaController.obtenerCajas(req,res)

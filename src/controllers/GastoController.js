@@ -11,15 +11,7 @@ const obtenerGasto = (req,res) => {}
 const agregarGasto = (req,res) => {
     const {body} = req;
 
-    const nuevo_gasto = {
-        'caja_idcaja':body.caja_idcaja,
-        'usuario_idusuario':body.usuario_idusuario,
-        'concepto_gasto_idconcepto_gasto':body.concepto_gasto_idconcepto_gasto,
-        'monto':body.monto,
-        'sucursal_idsucursal':body.sucursal_idsucursal,
-    }
-
-    gastoService.agregarGasto(nuevo_gasto,(id)=>{
+    gastoService.agregarGasto(body,(id)=>{
         res.status(201).send({status:'OK', data:id});
     })
 }

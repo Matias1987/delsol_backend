@@ -89,21 +89,27 @@ const operaciones_cliente = (idcliente,callback) => {
     const query = `select * from
     (
         select 
+        c.idcobro as 'id',
         c.fecha as 'fecha',
+        date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
         'PAGO' as 'tipo',
         0 as 'debe',
         c.monto as 'haber'
          from cobro c where c.cliente_idcliente=${idcliente}
         union
         select 
+        v.idventa as 'id',
         v.fecha as 'fecha',
+        date_format(v.fecha  , '%d-%m-%y') as 'fecha_f',
         'VENTA'  as 'tipo',
         v.monto_total as 'debe',
         0 as 'haber'
          from venta v where v.cliente_idcliente=${idcliente}
         union
         select 
-         cm.fecha as 'fecha',
+        cm.idcarga_manual as 'id',
+        cm.fecha as 'fecha',
+         date_format(cm.fecha , '%d-%m-%y')  as 'fecha_f',
          'CARGA MANUAL' as 'tipo',
          cm.monto as 'debe',
          0 as 'haber'

@@ -161,6 +161,7 @@ const lista_cobros = (data, callback) => {
 
     console.log(`SELECT 
     c.* , 
+    date_format(c.fecha,'%d-%m-%Y') as 'fecha_formatted',
     cl.dni AS 'cliente_dni',  
     CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
     FROM cobro c, cliente cl 
@@ -174,6 +175,7 @@ const lista_cobros = (data, callback) => {
     connection.query(
         `SELECT 
         c.* , 
+        date_format(c.fecha,'%d-%m-%Y') as 'fecha_formatted',
         cl.dni AS 'cliente_dni',  
         CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
         FROM cobro c, cliente cl 

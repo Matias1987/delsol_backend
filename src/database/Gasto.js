@@ -4,7 +4,7 @@ const obtener_gastos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`SELECT 
-    g.*, cg.nombre AS 'concepto_gasto'
+    g.*, date_format(g.fecha,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
     ORDER BY g.idgasto DESC;
     `,(err,rows)=>{
@@ -25,17 +25,25 @@ const obtener_gasto = (callback) => {
 const agregar_gasto = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into medico (caja_idcaja, usuario_idusuario,concepto_gasto_idconcepto_gasto,monto,sucursal_idsucursal) values (?)";
+    var sql = `insert into gasto (
+        caja_idcaja, 
+        usuario_idusuario,
+        concepto_gasto_idconcepto_gasto,
+        monto,
+        sucursal_idsucursal,
+        comentarios
+        ) values (
+        ${data.caja_idcaja},
+        ${data.usuario_idusuario},
+        ${data.idmotivo},
+        ${data.monto},
+        ${data.sucursal_idsucursal},
+        '${data.comentarios}'
+    )`;
 
-    var values = [[
-        data.caja_idcaja,
-        data.usuario_idusuario,
-        data.concepto_gasto_idconcepto_gasto,
-        data.monto,
-        data.sucursal_idsucursal,
-    ]];
+    console.log(sql)
 
-    connection.query(sql,values, (err,result) => {
+    connection.query(sql, (err,result) => {
             return callback(result.insertId)
         });
     connection.end();

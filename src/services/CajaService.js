@@ -1,5 +1,10 @@
 const CajaDB = require("../database/Caja")
 
+const obtener_caja = (idsucursal, callback) =>{
+    CajaDB.obtener_caja(idsucursal,(resp)=>{
+        callback(resp)
+    })
+}
 
 const obtenerCajas = (req,res)=>{}
 
@@ -15,5 +20,6 @@ const cerrarCaja = (req,res) => {}
 module.exports={
     obtenerCajas,
     agregarCaja,
-    cerrarCaja
+    cerrarCaja,
+    obtener_caja,
 }

@@ -17,4 +17,21 @@ const agregarCaja = (data,callback) =>
     connection.end();
 }
 
-module.exports = {agregarCaja,}
+const obtener_caja = (idsucursal, callback) =>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const sql = ``;
+    connection.query(sql,(err,rows)=>{
+        if(rows.length<1)
+        {
+            callback({...rows[0],status:'ok'})
+        }
+        else{
+            callback({message:'error, no se encontro', status: 'error'})
+        }
+        
+    })
+    connection.end();
+}
+
+module.exports = {agregarCaja,obtener_caja,}
