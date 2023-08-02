@@ -24,37 +24,30 @@ const agregar_cobro  = (data,callback) => {
     })
 
     //check if 
-
-    console.log(`insert into cobro (            
+    const __query = `insert into cobro (            
         caja_idcaja,
         usuario_idusuario,
         cliente_idcliente,
         venta_idventa,
         monto,
-        tipo) values (
+        tipo,
+        sucursal_idsucursal
+        ) values (
         ${data.caja_idcaja}, 
         ${data.usuario_idusuario}, 
         ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
         ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
         ${data.monto}, 
-        '${data.tipo}')`)
+        '${data.tipo}',
+        ${data.sucursal_idsucursal}
+        )`;
+
+    console.log(__query)
 
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        `insert into cobro (            
-            caja_idcaja,
-            usuario_idusuario,
-            cliente_idcliente,
-            venta_idventa,
-            monto,
-            tipo) values (
-            ${data.caja_idcaja}, 
-            ${data.usuario_idusuario}, 
-            ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
-            ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
-            ${data.monto}, 
-            '${data.tipo}')`,
+        __query,
         (err,results)=>{
             console.log(results)
         const idcobro = results.insertId
