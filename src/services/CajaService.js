@@ -14,7 +14,14 @@ const agregarCaja = (data,callback)=>{
     })
 }
 
-const cerrarCaja = (req,res) => {}
+const cerrarCaja = (idcaja, callback) => {
+    CajaDB.cerrarCaja(idcaja,(resp)=>{
+        return callback(resp)
+    })
+
+}
+
+
 
 
 module.exports={

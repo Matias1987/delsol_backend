@@ -1,5 +1,17 @@
 const mysql_connection = require("../lib/mysql_connection");
 
+const cerrarCaja = (idcaja, callback) => {
+    const connection = mysql_connection.getConnection();
+
+    connection.connect();
+
+    connection.query(`UPDATE caja c SET c.estado='CERRADO' WHERE c.idcaja=${idcaja}`,(err,resp)=>{
+        callback(resp)
+    })
+
+    connection.end();
+}
+
 const agregarCaja = (data,callback) =>
 {
     const connection = mysql_connection.getConnection();
@@ -36,4 +48,4 @@ const obtener_caja = (idsucursal, callback) =>{
     connection.end();
 }
 
-module.exports = {agregarCaja,obtener_caja,}
+module.exports = {agregarCaja,obtener_caja,cerrarCaja,}

@@ -12,17 +12,19 @@ const obtenerCajas = (req,res)=>{}
 const agregarCaja = (req,res)=>{
     const {body} = req;
 
-    const nueva_caja = {
-        'sucursal_idsucursal': body.sucursal_idsucursal,
-        'monto_inicial': body.monto_inicial,
-    }
-
-    cajaService.agregarCaja(nueva_caja,(id)=>{
+    cajaService.agregarCaja(body,(id)=>{
         res.status(201).send({status:'OK', data:id});
     })
 }
 
-const cerrarCaja = (req,res) => {}
+const cerrarCaja = (req,res) => {
+    const {params:{idcaja}} = req;
+
+    cajaService.cerrarCaja(idcaja, (resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+
+}
 
 
 module.exports={

@@ -12,7 +12,8 @@ const agregar_cobro  = (data,callback) => {
     console.log(JSON.stringify(data))
 
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
-    const get_obj = vars => ({
+
+    const get_mp_obj = vars => ({
         monto: vars.monto,
         tipo: vars.tipo,
         tarjeta: typeof vars.tarjeta === 'undefined' ? null : vars.tarjeta,
@@ -22,6 +23,23 @@ const agregar_cobro  = (data,callback) => {
         monto_cuota: typeof vars.monto_cuota === 'undefined' ? 0 : vars.monto_cuota,
 
     })
+    /**
+     * FALTA CREAR EL OBJETO PARA VENTA MODO PAGO CUANDO EXISTE EL ID VENTA !!!!!!!
+     */
+
+    
+
+    /* 
+    `(
+    ${venta_id},
+    ${p.modo_pago_idmodo_pago},
+    ${p.banco_idbanco},
+    ${p.mutual_idmutual},
+    ${p.monto},
+    ${p.monto_int},
+    ${p.cant_cuotas},
+    ${p.monto_cuota})`
+    */
 
     //check if 
     const __query = `insert into cobro (            
@@ -57,7 +75,7 @@ const agregar_cobro  = (data,callback) => {
         
         _mp = add(
             _mp,
-            get_obj({
+            get_mp_obj({
                 monto: data.mp.efectivo_monto, 
                 tipo: 'efectivo'
             }),
@@ -65,7 +83,7 @@ const agregar_cobro  = (data,callback) => {
 
         _mp = add(
             _mp,
-            get_obj({
+            get_mp_obj({
                 monto: data.mp.tarjeta_monto,
                 tipo: 'tarjeta',
                 tarjeta: data.mp.tarjeta_tarjeta,
@@ -73,7 +91,7 @@ const agregar_cobro  = (data,callback) => {
             "tarjeta_monto")
         _mp = add(
             _mp,
-            get_obj({
+            get_mp_obj({
                 monto:data.mp.ctacte_monto,
                 tipo: 'ctacte',
                 cant_cuotas: data.mp.cant_cuotas,
@@ -82,7 +100,7 @@ const agregar_cobro  = (data,callback) => {
             "ctacte_monto")
         _mp = add(
             _mp,
-            get_obj({
+            get_mp_obj({
                 monto:data.mp.mutual_monto,
                 tipo: 'mutual',
                 fkmutual: null
@@ -91,7 +109,7 @@ const agregar_cobro  = (data,callback) => {
             )
         _mp = add(
             _mp,
-            get_obj({
+            get_mp_obj({
                 monto: data.mp.cheque_monto,
                 tipo: 'cheque',
                 fkbanco: null
@@ -100,10 +118,12 @@ const agregar_cobro  = (data,callback) => {
 
             console.log("ALL MP:  "  + JSON.stringify(_mp))
 
-        var _q = ``
+        var _cobro_mp_item = ``
+        var _venta_mp_item = ``
         var total = 0;
         _mp.forEach((mp)=>{
-            _q +=  (_q.length>0 ? ',': '') +
+
+            _cobro_mp_item +=  (_cobro_mp_item.length>0 ? ',': '') +
             `(${idcobro},
             '${mp.tipo}',
             ${mp.fkbanco},
@@ -119,6 +139,23 @@ const agregar_cobro  = (data,callback) => {
 
         })
 
+        if(typeof data.idventa !== 'undefined'){
+            _mp.forEach((mp)=>{
+                _venta_mp_item +=  (_venta_mp_item.length>0 ? ',': '') +`
+                (
+                    ${data.idventa},
+                    ${mp.tipo},
+                    ${mp.fkbanco},
+                    ${mp.fkmutual},
+                    ${mp.monto},
+                    ${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}, 
+                    ${mp.cant_cuotas},
+                    ${mp.monto_cuota})
+                `;
+
+            })
+        }
+
         var __query = `INSERT INTO cobro_has_modo_pago 
         (
             cobro_idcobro,
@@ -129,7 +166,19 @@ const agregar_cobro  = (data,callback) => {
             cant_cuotas, 
             monto_cuota, 
             total_int
-        ) VALUES ` + _q;
+        ) VALUES ` + _cobro_mp_item;
+
+        const __query_venta_mp = `INSERT INTO venta_has_modo_pago 
+        (
+            venta_idventa, 
+            modo_pago_idmodo_pago, 
+            banco_idbanco, 
+            mutual_idmutual,
+            monto, 
+            monto_int, 
+            cant_cuotas, 
+            monto_cuota
+            ) VALUES ` + _venta_mp_item;
 
 
         console.log(__query)
@@ -139,8 +188,13 @@ const agregar_cobro  = (data,callback) => {
         })
 
         if(typeof data.idventa !== 'undefined'){
-            console.log(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - (v.haber + ${total}) WHERE v.idventa=${data.idventa};`)
-            connection.query(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - (v.haber + ${total}) WHERE v.idventa=${data.idventa};`)
+            //hope this works!!
+            connection.query(__query_venta_mp,(err,___results)=>{
+                //return callback(idcobro);
+            })
+
+            console.log(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+            connection.query(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
         }
 
         connection.end();            

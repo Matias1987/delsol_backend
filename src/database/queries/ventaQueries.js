@@ -189,20 +189,20 @@ const queryDetalleVenta = (id) =>{
     return `SELECT v.*,
 	c.dni AS 'cliente_dni',
 	CONCAT(c.apellido,', ', c.nombre) AS 'cliente_nombre',
-	m.nombre AS 'medico_nombre',
+	if(m.idmedico is NULL , '', m.nombre) AS 'medico_nombre',
 	s.nombre AS 'sucursal_nombre',
 	u.nombre AS 'usuario_nombre',
 	date_format(v.fecha, '%d-%m-%Y') as 'fecha_formated',
 	date_format(v.fecha_retiro, '%d-%m-%Y') as 'fecha_entrega_formated'
 FROM
-	venta v ,
+	
 	cliente c,
-	medico m,
 	sucursal s,
-	usuario u
+	usuario u,
+	venta v LEFT JOIN 
+	medico m ON m.idmedico = v.medico_idmedico
 	WHERE
 	c.idcliente = v.cliente_idcliente and
-	m.idmedico = v.medico_idmedico and
 	s.idsucursal = v.sucursal_idsucursal and
 	u.idusuario = v.usuario_idusuario and
 	v.idventa = ${id};`;
