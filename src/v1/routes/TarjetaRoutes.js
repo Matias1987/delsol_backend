@@ -3,7 +3,7 @@ const router = express.Router();
 const tarjetaController = require("../../controllers/TarjetaController")
 
 router.get("/", (req, res) => {
-  res.send("Get all workouts");
+  tarjetaController.obtenerTarjetas(req,res)
 });
 
 router.get("/:sucursalId", (req, res) => {

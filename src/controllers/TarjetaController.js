@@ -1,6 +1,10 @@
 const tarjetaService = require("../services/TarjetaService");
 
-const obtenerTarjetas = (req,res) => {}
+const obtenerTarjetas = (req,res) => {
+    tarjetaService.obtenerTarjetas((rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
 
 const obtenerTarjeta = (req,res) => {}
 

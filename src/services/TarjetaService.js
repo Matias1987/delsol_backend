@@ -1,6 +1,8 @@
 const TarjetaDB = require("../database/Tarjeta")
 
-const obtenerTarjetas = (req,res) => {}
+const obtenerTarjetas = (callback) => {
+    TarjetaDB.obtener_tarjetas((rows)=>{return callback(rows)})
+}
 
 const obtenerTarjeta = (req,res) => {}
 
