@@ -6,8 +6,14 @@ const cambiar_estado_venta = (data, callback) => {
     connection.connect();
     connection.query(`UPDATE venta v SET v.estado = '${data.estado}' WHERE v.idventa=${data.idventa};`,(err,results)=>{
         callback(results)
+        if(typeof data.removeMPRows !== null){
+            if(+data.removeMPRows == 1){
+                connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
+            }
+        }
+        connection.end();
     })
-    connection.end();
+    
 }
 
 const insert_venta = (data,callback) => {

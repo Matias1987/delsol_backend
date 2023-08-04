@@ -4,10 +4,16 @@ const cobro_queries = require("./queries/cobroQueries");
 const agregar_cobro  = (data,callback) => {
 
     /*
+    params:
         tipo: cuota, adelanto
         si cuota: idcliente (id venta is null or undefined --todo?)
         si adelanto: idventa
     */
+
+    /**
+     * En el caso del ingreso, los modo de pago de la venta deben 
+     * eliminarse y luego volver a crearse. ToDo
+     */
 
     console.log(JSON.stringify(data))
 
@@ -26,22 +32,7 @@ const agregar_cobro  = (data,callback) => {
     /**
      * FALTA CREAR EL OBJETO PARA VENTA MODO PAGO CUANDO EXISTE EL ID VENTA !!!!!!!
      */
-
-    
-
-    /* 
-    `(
-    ${venta_id},
-    ${p.modo_pago_idmodo_pago},
-    ${p.banco_idbanco},
-    ${p.mutual_idmutual},
-    ${p.monto},
-    ${p.monto_int},
-    ${p.cant_cuotas},
-    ${p.monto_cuota})`
-    */
-
-    //check if 
+ 
     const __query = `insert into cobro (            
         caja_idcaja,
         usuario_idusuario,
@@ -64,12 +55,19 @@ const agregar_cobro  = (data,callback) => {
 
     const connection = mysql_connection.getConnection();
     connection.connect();
+    /* REMOVE OLD MP ROWS! (ONLY IF NECESSARY) */
+    if(typeof data.removeMPRows !== null){
+            if(+data.removeMPRows == 1){
+                connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
+            }
+        }
     connection.query(
         __query,
         (err,results)=>{
             console.log(results)
         const idcobro = results.insertId
-       console.log("payment saved with id: " + idcobro);
+        //PAGO GUARDADO, PREPARAR MODOS DE PAGOS Y VENTA MODO PAGO
+       console.log("Payment saved with id: " + idcobro);
 
         var _mp = []
         
@@ -155,7 +153,7 @@ const agregar_cobro  = (data,callback) => {
 
             })
         }
-
+        //FIN DE PREPARACION...
         var __query = `INSERT INTO cobro_has_modo_pago 
         (
             cobro_idcobro,
@@ -186,7 +184,7 @@ const agregar_cobro  = (data,callback) => {
         connection.query(__query,(err,_results)=>{
             return callback(idcobro);
         })
-
+        //SAVE VENTA MP!, THESE HAVE BEEN DELETED BEFORE... (ONLY IN INGRESO)
         if(typeof data.idventa !== 'undefined'){
             //hope this works!!
             connection.query(__query_venta_mp,(err,___results)=>{
@@ -194,6 +192,7 @@ const agregar_cobro  = (data,callback) => {
             })
 
             console.log(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+            //UPDATE DEBE AND HABER FIELDS IN VENTA
             connection.query(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
         }
 
