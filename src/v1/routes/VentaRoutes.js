@@ -20,6 +20,10 @@ router.get("/get_venta_mp/:ventaId", (req, res) => {
   ventaController.obtenerVentaMP(req,res)
 });
 
+router.get("/get_venta_mp_ctacte/:ventaId", (req, res) => {
+  ventaController.obtenerVentaMPCtaCte(req,res)
+});
+
 router.post("/", (req, res) => {
   ventaController.agregarVenta(req,res)
 });

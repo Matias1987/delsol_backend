@@ -308,8 +308,17 @@ const lista_venta_sucursal_estado = (data,callback) => {
 const lista_venta_mp = (idventa, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`SELECT vmp.*, mp.nombre FROM venta_has_modo_pago vmp, modo_pago mp 
-    WHERE vmp.modo_pago_idmodo_pago = mp.idmodo_pago AND
+    connection.query(`SELECT vmp.* FROM venta_has_modo_pago vmp  
+    WHERE     vmp.venta_idventa = ${idventa};`,(err,rows)=>{
+        return callback(rows)
+    })
+    connection.end()
+}
+const lista_venta_mp_cta_cte = (idventa, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`SELECT vmp.*  FROM venta_has_modo_pago vmp
+    WHERE vmp.modo_pago = 'ctacte'  AND
      vmp.venta_idventa = ${idventa};`,(err,rows)=>{
         return callback(rows)
     })
@@ -325,6 +334,8 @@ const lista_venta_item = (idventa, callback) => {
     connection.end()
 }
 
+
+
 module.exports = {
 insert_venta,
 //agregar_venta,
@@ -335,6 +346,7 @@ lista_venta_mp,
 lista_venta_sucursal_estado,
 lista_venta_item,
 cambiar_estado_venta,
+lista_venta_mp_cta_cte,
 }
 
 

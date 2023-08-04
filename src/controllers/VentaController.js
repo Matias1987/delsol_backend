@@ -61,6 +61,12 @@ const obtenerVentaMP = (req, res) => {
     res.status(201).send({status:'OK', data:row})
   })
 }
+const obtenerVentaMPCtaCte = (req, res) => {
+  const {params:{ventaId}} = req;
+  ventaService.obtenerVentaMPCtaCte(ventaId,(row)=>{
+    res.status(201).send({status:'OK', data:row})
+  })
+}
 
 const lista_venta_sucursal_estado = (req, res) => {
   const {body} = req;
@@ -88,4 +94,5 @@ module.exports = {
     lista_venta_sucursal_estado,
     lista_venta_item,
     cambiar_estado_venta,
+    obtenerVentaMPCtaCte,
   };

@@ -144,7 +144,7 @@ const agregar_cobro  = (data,callback) => {
                 _venta_mp_item +=  (_venta_mp_item.length>0 ? ',': '') +`
                 (
                     ${data.idventa},
-                    ${mp.tipo},
+                    '${mp.tipo}',
                     ${mp.fkbanco},
                     ${mp.fkmutual},
                     ${mp.monto},
@@ -171,7 +171,7 @@ const agregar_cobro  = (data,callback) => {
         const __query_venta_mp = `INSERT INTO venta_has_modo_pago 
         (
             venta_idventa, 
-            modo_pago_idmodo_pago, 
+            modo_pago, 
             banco_idbanco, 
             mutual_idmutual,
             monto, 
@@ -181,7 +181,7 @@ const agregar_cobro  = (data,callback) => {
             ) VALUES ` + _venta_mp_item;
 
 
-        console.log(__query)
+        console.log(__query_venta_mp)
 
         connection.query(__query,(err,_results)=>{
             return callback(idcobro);
