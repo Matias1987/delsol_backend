@@ -79,7 +79,8 @@ const query_items = `INSERT INTO venta_has_stock
 					total,
 					esf, 
 					cil, 
-					eje) 
+					eje,
+					orden) 
 					VALUES `;
 
 /*const get_mp = (data, idventa) => {
@@ -295,7 +296,7 @@ const queryListaVentaStock = (ventaId) =>{
 	c.descripcion
 	FROM venta_has_stock vhs, codigo c WHERE 
 	c.idcodigo = vhs.stock_codigo_idcodigo AND 
-	vhs.venta_idventa=${ventaId};
+	vhs.venta_idventa=${ventaId} order by vhs.orden;
     ;`;
 }
 

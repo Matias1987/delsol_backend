@@ -20,7 +20,7 @@ const insert_venta = (data,callback) => {
 
     console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
 
-    const do_push = (arr,val,tipo) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo}]
+    const do_push = (orden,arr,val,tipo) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo, orden: orden}]
 
     var venta_id = -1;
     var _arr = [];
@@ -54,7 +54,8 @@ const insert_venta = (data,callback) => {
             ${(typeof e.total === 'undefined' ? e.precio : e.total)}, 
             '${(typeof e.esf === 'undefined' ? 0 : e.esf)}', 
             '${(typeof e.cil === 'undefined' ? 0 : e.cil)}', 
-            '${(typeof e.eje === 'undefined' ? 0 : e.eje)}')`
+            '${(typeof e.eje === 'undefined' ? 0 : e.eje)}',
+            ${e.orden})`
         })
         return _str;
     }
@@ -64,45 +65,46 @@ const insert_venta = (data,callback) => {
     }
 
     const prepare_lclab_items = (__data) => {
-        _arr = do_push(_arr,__data.productos.oi, "oi")
-        _arr = do_push(_arr,__data.productos.od, "od")
-        _arr = do_push(_arr,__data.productos.insumo, "insumo")
+        _arr = do_push(0,_arr,__data.productos.oi, "oi")
+        _arr = do_push(1,_arr,__data.productos.od, "od")
+        _arr = do_push(2,_arr,__data.productos.insumo, "insumo")
     }
 
     const prepare_lclstock_items = (__data) => {
-        _arr = do_push(_arr,__data.productos.oi, "oi")
-        _arr = do_push(_arr,__data.productos.od, "od")
-        _arr = do_push(_arr,__data.productos.insumo, "insumo")
+        _arr = do_push(0,_arr,__data.productos.oi, "oi")
+        _arr = do_push(1,_arr,__data.productos.od, "od")
+        _arr = do_push(2,_arr,__data.productos.insumo, "insumo")
 
     }
 
     const prepare_monoflab_items = (__data) => {
-        _arr = do_push(_arr,__data.productos.lejos_armazon,"lejos_armazon")
-        _arr = do_push(_arr,__data.productos.lejos_od,"lejos_od")
-        _arr = do_push(_arr,__data.productos.lejos_oi,"lejos_oi")
-        _arr = do_push(_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
-        _arr = do_push(_arr,__data.productos.cerca_armazon,"cerca_armazon")
-        _arr = do_push(_arr,__data.productos.cerca_od,"cerca_od")
-        _arr = do_push(_arr,__data.productos.cerca_oi,"cerca_oi")
-        _arr = do_push(_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
+        _arr = do_push(2,_arr,__data.productos.lejos_armazon,"lejos_armazon")
+        _arr = do_push(1,_arr,__data.productos.lejos_od,"lejos_od")
+        _arr = do_push(0,_arr,__data.productos.lejos_oi,"lejos_oi")
+        _arr = do_push(3,_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
+        _arr = do_push(6,_arr,__data.productos.cerca_armazon,"cerca_armazon")
+        _arr = do_push(5,_arr,__data.productos.cerca_od,"cerca_od")
+        _arr = do_push(4,_arr,__data.productos.cerca_oi,"cerca_oi")
+        _arr = do_push(7,_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
     }
 
     const prepare_multiflab_items = (__data) => {
-        _arr = do_push(_arr,__data.productos.armazon,"armazon")
-        _arr = do_push(_arr,__data.productos.od,"od")
-        _arr = do_push(_arr,__data.productos.oi,"oi")
-        _arr = do_push(_arr,__data.productos.tratamiento,"tratamiento")
+        _arr = do_push(2,_arr,__data.productos.armazon,"armazon")
+        _arr = do_push(1,_arr,__data.productos.od,"od")
+        _arr = do_push(0,_arr,__data.productos.oi,"oi")
+        _arr = do_push(3,_arr,__data.productos.tratamiento,"tratamiento")
     }
 
     const prepare_recstock_items = (__data) => {
-        _arr = do_push(_arr,__data.productos.lejos_armazon,"lejos_armazon")
-        _arr = do_push(_arr,__data.productos.lejos_od,"lejos_od")
-        _arr = do_push(_arr,__data.productos.lejos_oi,"lejos_oi")
-        _arr = do_push(_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
-        _arr = do_push(_arr,__data.productos.cerca_armazon,"cerca_armazon")
-        _arr = do_push(_arr,__data.productos.cerca_od,"cerca_od")
-        _arr = do_push(_arr,__data.productos.cerca_oi,"cerca_oi")
-        _arr = do_push(_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
+        _arr = do_push(2,_arr,__data.productos.lejos_armazon,"lejos_armazon")
+        _arr = do_push(1,_arr,__data.productos.lejos_od,"lejos_od")
+        _arr = do_push(0,_arr,__data.productos.lejos_oi,"lejos_oi")
+        _arr = do_push(3,_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
+
+        _arr = do_push(6,_arr,__data.productos.cerca_armazon,"cerca_armazon")
+        _arr = do_push(5,_arr,__data.productos.cerca_od,"cerca_od")
+        _arr = do_push(4,_arr,__data.productos.cerca_oi,"cerca_oi")
+        _arr = do_push(7,_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
     }
 
     //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))

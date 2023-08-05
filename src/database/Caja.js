@@ -32,7 +32,7 @@ const agregarCaja = (data,callback) =>
 const obtener_caja = (idsucursal, callback) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `SELECT c.* FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} AND c.estado='ABIERTA';`;
+    const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} AND c.estado='ABIERTA';`;
     connection.query(sql,(err,rows)=>{
         
         if(rows.length>0)
