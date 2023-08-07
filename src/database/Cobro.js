@@ -55,12 +55,20 @@ const agregar_cobro  = (data,callback) => {
 
     const connection = mysql_connection.getConnection();
     connection.connect();
+
     /* REMOVE OLD MP ROWS! (ONLY IF NECESSARY) */
-    if(typeof data.removeMPRows !== null){
+    if(typeof data.removeMPRows !== 'undefined'){
             if(+data.removeMPRows == 1){
                 connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
             }
         }
+        
+    if(typeof data.removeCtaCteRow !== 'undefined'){
+        if(+data.removeCtaCteRow == 1){
+            connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`)
+        }
+    }
+
     connection.query(
         __query,
         (err,results)=>{
