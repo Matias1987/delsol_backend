@@ -162,7 +162,18 @@ const insert_venta = (data,callback) => {
         var mp = ""; 
 
         venta_queries.get_mp(data,venta_id).forEach(p=>{
-            mp+= (mp.length>0 ? ",":"")  + `(${venta_id},${p.modo_pago_idmodo_pago},${p.banco_idbanco},${p.mutual_idmutual},${p.monto},${p.monto_int},${p.cant_cuotas},${p.monto_cuota})`;
+            mp+= (mp.length>0 ? ",":"")  + `(
+                ${venta_id},
+                ${p.modo_pago_idmodo_pago},
+                ${p.banco_idbanco},
+                ${p.mutual_idmutual},
+                ${p.monto},
+                ${p.monto_int},
+                ${p.cant_cuotas},
+                ${p.monto_cuota},
+                ${p.fk_tarjeta},
+                '${p.modo_pago}'
+                )`;
         });
 
         var _items_data = get_query_str(_arr);

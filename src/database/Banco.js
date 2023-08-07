@@ -8,7 +8,7 @@ const obtenerBancos = (callback) => {
     connection.connect();
 
     connection.query("select * from banco", (err,rows,fields)=>{
-        return callback(rows);
+        callback(rows);
     })
 
     connection.end();

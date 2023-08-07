@@ -1,6 +1,6 @@
 const BancoDB = require("../database/Banco");
 const obtenerBancos = (req, res, callback) => {
-    const bancos = BancoDB.obtenerBancos(
+    BancoDB.obtenerBancos(
         (rows)=>{
             callback(rows)
         }

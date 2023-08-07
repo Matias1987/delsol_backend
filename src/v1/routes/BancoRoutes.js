@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:bancoId", (req, res) => {
-  bancoController.obtenerBancos(req,res)
+  //bancoController.obtenerBancos(req,res)
 });
 
 router.post("/", (req, res) => {
