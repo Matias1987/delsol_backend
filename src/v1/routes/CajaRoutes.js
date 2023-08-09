@@ -13,6 +13,10 @@ router.get("/cerrar/:idcaja", (req, res) => {
   cajaController.cerrarCaja(req,res)
 });
 
+router.get("/inf/:idcaja", (req, res) => {
+  cajaController.informe_caja(req,res)
+});
+
 router.get("/:clienteId", (req, res) => {
   cajaController.obtenerCajas(req,res)
 });

@@ -88,23 +88,36 @@ const buscar_cliente = (value, callback) =>{
 const operaciones_cliente = (idcliente,callback) => {
     const query = `select * from
     (
+		SELECT 
+		c.idcobro as 'id',
+		c.fecha as 'fecha',
+		date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
+		'ENTREGA' as 'tipo',
+		0 as 'debe',
+		c.monto as 'haber'
+		FROM cobro c, venta_has_modo_pago vhmp WHERE
+		c.venta_idventa = vhmp.venta_idventa AND 
+		vhmp.modo_pago='ctacte' AND 
+		c.cliente_idcliente=${idcliente}
+		UNION
         select 
         c.idcobro as 'id',
         c.fecha as 'fecha',
         date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
-        'PAGO' as 'tipo',
+        'PAGO CUOTA' as 'tipo',
         0 as 'debe',
         c.monto as 'haber'
-         from cobro c where c.cliente_idcliente=${idcliente}
+         from cobro c where c.cliente_idcliente=${idcliente} AND c.tipo = 'cuota'
         union
         select 
         v.idventa as 'id',
         v.fecha as 'fecha',
         date_format(v.fecha  , '%d-%m-%y') as 'fecha_f',
         'VENTA'  as 'tipo',
-        v.monto_total as 'debe',
+        (vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
         0 as 'haber'
-         from venta v where v.cliente_idcliente=${idcliente}
+         from venta v INNER JOIN venta_has_modo_pago vhmp ON vhmp.venta_idventa = v.idventa AND  
+			v.cliente_idcliente=${idcliente} AND v.estado = 'ENTREGADO'
         union
         select 
         cm.idcarga_manual as 'id',
@@ -114,8 +127,8 @@ const operaciones_cliente = (idcliente,callback) => {
          cm.monto as 'debe',
          0 as 'haber'
           from carga_manual cm  where cm.cliente_idcliente=${idcliente}
-     ) as ops order by ops.fecha asc;`;
-     const connection = mysql_connection.getConnection();
+     ) as ops order by ops.fecha asc;`
+    const connection = mysql_connection.getConnection();
     connection.connect();
     
     connection.query(query,(err,rows)=>{

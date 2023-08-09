@@ -21,7 +21,12 @@ const cerrarCaja = (idcaja, callback) => {
 
 }
 
+const informe_caja = (idcaja, callback) => {
+    CajaDB.informe_caja(idcaja,(resp)=>{
+        return callback(resp)
+    })
 
+}
 
 
 module.exports={
@@ -29,4 +34,5 @@ module.exports={
     agregarCaja,
     cerrarCaja,
     obtener_caja,
+    informe_caja,
 }

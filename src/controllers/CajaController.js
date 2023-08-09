@@ -26,10 +26,20 @@ const cerrarCaja = (req,res) => {
 
 }
 
+const informe_caja = (req,res) => {
+    const {params:{idcaja}} = req;
+
+    cajaService.informe_caja(idcaja, (resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+
+}
+
 
 module.exports={
     obtenerCajas,
     agregarCaja,
     cerrarCaja,
-    obtener_caja
+    obtener_caja,
+    informe_caja,
 }

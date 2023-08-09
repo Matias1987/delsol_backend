@@ -48,4 +48,60 @@ const obtener_caja = (idsucursal, callback) =>{
     connection.end();
 }
 
-module.exports = {agregarCaja,obtener_caja,cerrarCaja,}
+
+const informe_caja = (idcaja, callback) =>{
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const sql = `SELECT 
+    ops.monto,
+    ops.operacion,
+    ops.cliente,
+    ops.recibo,
+    if(ops.modo_pago = 'efectivo',ops.monto,0) AS 'efectivo',
+    if(ops.modo_pago = 'tarjeta',ops.monto,0) AS 'tarjeta',
+    if(ops.modo_pago = 'mutual',ops.monto,0) AS 'mutual',
+    if(ops.modo_pago = 'cheque',ops.monto,0) AS 'cheque',
+    if(ops.modo_pago = 'ctacte',ops.monto,0) AS 'cuotas',
+    if(ops.modo_pago = 'cuota',ops.monto,0) AS 'ctacte'
+    from
+    (
+        SELECT 
+        chmp.monto,
+        chmp.modo_pago,
+        chmp.fkventa AS 'operacion',
+        CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+        chmp.cobro_idcobro AS 'recibo'
+         FROM 
+        cobro_has_modo_pago chmp,
+        cobro c,
+        cliente cl
+        WHERE 
+        c.cliente_idcliente = cl.idcliente AND 
+        chmp.cobro_idcobro = c.idcobro AND
+        c.caja_idcaja=${idcaja}
+        UNION
+        SELECT 
+        vhmp.monto ,
+        'cuota' AS 'modo_pago',
+        vhmp.venta_idventa AS 'operacion',
+        CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+        '' AS 'recibo'
+         FROM 
+        venta_has_modo_pago vhmp,
+        venta v,
+        cliente cl
+        WHERE 
+        v.cliente_idcliente = cl.idcliente AND 
+        vhmp.modo_pago = 'ctacte' AND 
+        vhmp.venta_idventa = v.idventa AND 
+        v.caja_idcaja=${idcaja}
+    ) AS ops;`;
+    connection.query(sql,(err,rows)=>{
+        
+        callback(rows)
+        
+    })
+    connection.end();
+}
+
+module.exports = {agregarCaja,obtener_caja,cerrarCaja,informe_caja,}
