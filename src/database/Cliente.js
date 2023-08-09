@@ -93,6 +93,7 @@ const operaciones_cliente = (idcliente,callback) => {
 		c.fecha as 'fecha',
 		date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
 		'ENTREGA' as 'tipo',
+		'ENTREGA' as 'detalle',
 		0 as 'debe',
 		c.monto as 'haber'
 		FROM cobro c, venta_has_modo_pago vhmp WHERE
@@ -105,6 +106,7 @@ const operaciones_cliente = (idcliente,callback) => {
         c.fecha as 'fecha',
         date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
         'PAGO CUOTA' as 'tipo',
+        'PAGO CUOTA' as 'detalle',
         0 as 'debe',
         c.monto as 'haber'
          from cobro c where c.cliente_idcliente=${idcliente} AND c.tipo = 'cuota'
@@ -114,6 +116,7 @@ const operaciones_cliente = (idcliente,callback) => {
         v.fecha as 'fecha',
         date_format(v.fecha  , '%d-%m-%y') as 'fecha_f',
         'VENTA'  as 'tipo',
+        concat('VENTA cuotas:', vhmp.cant_cuotas, ' monto: ', vhmp.monto_cuota)   as 'detalle',
         (vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
         0 as 'haber'
          from venta v INNER JOIN venta_has_modo_pago vhmp ON vhmp.venta_idventa = v.idventa AND  
@@ -124,6 +127,7 @@ const operaciones_cliente = (idcliente,callback) => {
         cm.fecha as 'fecha',
          date_format(cm.fecha , '%d-%m-%y')  as 'fecha_f',
          'CARGA MANUAL' as 'tipo',
+         'CARGA MANUAL' as 'detalle',
          cm.monto as 'debe',
          0 as 'haber'
           from carga_manual cm  where cm.cliente_idcliente=${idcliente}

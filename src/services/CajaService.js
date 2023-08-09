@@ -6,7 +6,11 @@ const obtener_caja = (idsucursal, callback) =>{
     })
 }
 
-const obtenerCajas = (req,res)=>{}
+const obtenerCajasSucursal = (idsucursal,callback)=>{
+    CajaDB.obtener_lista_cajas_sucursal(idsucursal,(rows)=>{
+        return callback(rows)
+    })
+}
 
 const agregarCaja = (data,callback)=>{
     CajaDB.agregarCaja(data,(id)=>{
@@ -30,9 +34,10 @@ const informe_caja = (idcaja, callback) => {
 
 
 module.exports={
-    obtenerCajas,
+    
     agregarCaja,
     cerrarCaja,
     obtener_caja,
     informe_caja,
+    obtenerCajasSucursal
 }

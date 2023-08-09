@@ -1,5 +1,14 @@
 const mysql_connection = require("../lib/mysql_connection");
 
+const obtener_lista_cajas_sucursal = (idsucursal, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect()
+    connection.query(`SELECT * FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} ORDER BY c.idcaja desc`,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const cerrarCaja = (idcaja, callback) => {
     const connection = mysql_connection.getConnection();
 
@@ -104,4 +113,4 @@ const informe_caja = (idcaja, callback) =>{
     connection.end();
 }
 
-module.exports = {agregarCaja,obtener_caja,cerrarCaja,informe_caja,}
+module.exports = {agregarCaja,obtener_caja,cerrarCaja,informe_caja,obtener_lista_cajas_sucursal,}

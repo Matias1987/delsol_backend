@@ -7,7 +7,12 @@ const obtener_caja = (req, res) =>{
     })
 }
 
-const obtenerCajas = (req,res)=>{}
+const obtenerCajasSucursal = (req,res)=>{
+    const {params:{idsucursal}} = req;
+    cajaService.obtenerCajasSucursal(idsucursal,(rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
 
 const agregarCaja = (req,res)=>{
     const {body} = req;
@@ -37,7 +42,7 @@ const informe_caja = (req,res) => {
 
 
 module.exports={
-    obtenerCajas,
+    obtenerCajasSucursal,
     agregarCaja,
     cerrarCaja,
     obtener_caja,
