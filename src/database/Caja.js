@@ -78,6 +78,7 @@ const informe_caja = (idcaja, callback) =>{
     ops.operacion,
     ops.cliente,
     ops.recibo,
+    ops.detalle,
     if(ops.modo_pago = 'efectivo',ops.monto,0) AS 'efectivo',
     if(ops.modo_pago = 'tarjeta',ops.monto,0) AS 'tarjeta',
     if(ops.modo_pago = 'mutual',ops.monto,0) AS 'mutual',
@@ -86,36 +87,57 @@ const informe_caja = (idcaja, callback) =>{
     if(ops.modo_pago = 'cuota',ops.monto,0) AS 'ctacte'
     from
     (
-        SELECT 
-        chmp.monto,
-        chmp.modo_pago,
-        chmp.fkventa AS 'operacion',
-        CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
-        chmp.cobro_idcobro AS 'recibo'
-         FROM 
-        cobro_has_modo_pago chmp,
-        cobro c,
-        cliente cl
-        WHERE 
-        c.cliente_idcliente = cl.idcliente AND 
-        chmp.cobro_idcobro = c.idcobro AND
-        c.caja_idcaja=${idcaja}
+            SELECT 
+            chmp.monto,
+            'ctacte' AS 'modo_pago',
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'PAGO CUOTA' as 'detalle'
+            FROM 
+            cobro_has_modo_pago chmp,
+            cobro c,
+            cliente cl
+            WHERE 
+            c.cliente_idcliente = cl.idcliente AND 
+            chmp.cobro_idcobro = c.idcobro AND
+            c.caja_idcaja=${idcaja} AND 
+            c.tipo='cuota'
         UNION
-        SELECT 
-        vhmp.monto ,
-        'cuota' AS 'modo_pago',
-        vhmp.venta_idventa AS 'operacion',
-        CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
-        '' AS 'recibo'
-         FROM 
-        venta_has_modo_pago vhmp,
-        venta v,
-        cliente cl
-        WHERE 
-        v.cliente_idcliente = cl.idcliente AND 
-        vhmp.modo_pago = 'ctacte' AND 
-        vhmp.venta_idventa = v.idventa AND 
-        v.caja_idcaja=${idcaja}
+            SELECT 
+            chmp.monto,
+            chmp.modo_pago,
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'CIERRE OP.' as 'detalle'
+            FROM 
+            cobro_has_modo_pago chmp,
+            cobro c,
+            cliente cl
+            WHERE 
+            c.cliente_idcliente = cl.idcliente AND 
+            chmp.cobro_idcobro = c.idcobro AND
+            c.caja_idcaja=${idcaja} AND 
+            c.tipo <> 'cuota'
+        UNION
+            SELECT 
+            vhmp.monto ,
+            'cuota' AS 'modo_pago',
+            vhmp.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            '' AS 'recibo',
+            'PAGO EN CTA. CTE.' as 'detalle'
+            FROM 
+            venta_has_modo_pago vhmp,
+            venta v,
+            cliente cl
+            WHERE 
+            v.estado='ENTREGADO' AND
+            v.cliente_idcliente = cl.idcliente AND 
+            vhmp.modo_pago = 'ctacte' AND 
+            vhmp.venta_idventa = v.idventa AND 
+            v.caja_idcaja=${idcaja}
     ) AS ops;`;
     connection.query(sql,(err,rows)=>{
         

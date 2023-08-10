@@ -212,6 +212,7 @@ const agregar_cobro  = (data,callback) => {
 
 const lista_cobros = (data, callback) => {
     const _idcliente = typeof data.idcliente === 'undefined' ? '' : data.idcliente
+    const _idventa = typeof data.idventa === 'undefined' ? '' : data.idventa
 
     console.log(`SELECT 
     c.* , 
@@ -221,7 +222,8 @@ const lista_cobros = (data, callback) => {
     FROM cobro c, cliente cl 
     WHERE 
     c.cliente_idcliente = cl.idcliente and
-    (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end)
+    (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
+    (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) 
     order by c.idcobro desc;`)
 
     const connection = mysql_connection.getConnection();
@@ -235,7 +237,8 @@ const lista_cobros = (data, callback) => {
         FROM cobro c, cliente cl 
         WHERE 
         c.cliente_idcliente = cl.idcliente and
-        (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end)
+        (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
+        (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) 
         order by c.idcobro desc;`,
         (err,results)=>{
             callback(results);
