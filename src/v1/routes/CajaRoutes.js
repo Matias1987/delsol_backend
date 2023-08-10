@@ -20,8 +20,8 @@ router.get("/inf/:idcaja", (req, res) => {
   cajaController.informe_caja(req,res)
 });
 
-router.get("/:clienteId", (req, res) => {
-  cajaController.obtenerCajas(req,res)
+router.get("/:idcaja", (req, res) => {
+  cajaController.obtener_caja_id(req,res)
 });
 
 router.post("/", (req, res) => {

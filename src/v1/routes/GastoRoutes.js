@@ -3,7 +3,14 @@ const router = express.Router();
 const gastoController = require("../../controllers/GastoController")
 
 router.get("/", (req, res) => {
-  gastoController.obtenerGastos(req,res)
+  res.send("Get an existing workout");
+});
+
+router.get("/g_s/:idsucursal", (req, res) => {
+  gastoController.obtenerGastosSucursal(req,res)
+});
+router.get("/g_c/:idcaja", (req, res) => {
+  gastoController.obtenerGastosCaja(req,res)
 });
 
 router.get("/:clienteId", (req, res) => {

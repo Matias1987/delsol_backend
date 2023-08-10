@@ -1,8 +1,15 @@
 const GastoDB = require("../database/Gasto")
 
 
-const obtenerGastos = (callback) => {
-    GastoDB.obtener_gastos((rows)=>{
+const obtenerGastosSucursal = (idsucursal, callback) => {
+    GastoDB.obtener_gastos_sucursal(idsucursal,(rows)=>{
+        return callback(rows)
+    })
+}
+
+
+const obtenerGastosCaja = (idcaja, callback) => {
+    GastoDB.obtener_gastos_caja(idcaja,(rows)=>{
         return callback(rows)
     })
 }
@@ -18,9 +25,11 @@ const agregarGasto = (data,callback) => {
 const editarGasto = (req,res) => {}
 
 
+
 module.exports = {
     obtenerGasto,
-    obtenerGastos,
+    obtenerGastosSucursal,
     agregarGasto,
-    editarGasto
+    editarGasto,
+    obtenerGastosCaja,
 }

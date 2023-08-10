@@ -32,6 +32,12 @@ const informe_caja = (idcaja, callback) => {
 
 }
 
+const obtener_caja_id = (idcaja, callback)=>{
+    CajaDB.obtener_caja_id(idcaja,(rows)=>{
+        return callback(rows);
+    })
+}
+
 
 module.exports={
     
@@ -39,5 +45,6 @@ module.exports={
     cerrarCaja,
     obtener_caja,
     informe_caja,
-    obtenerCajasSucursal
+    obtenerCajasSucursal,
+    obtener_caja_id
 }

@@ -57,6 +57,18 @@ const obtener_caja = (idsucursal, callback) =>{
     connection.end();
 }
 
+const obtener_caja_id = (idcaja, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const sql = `SELECT c.* FROM caja c WHERE c.idcaja=${idcaja};`;
+    connection.query(sql,(err,rows)=>{
+        
+        callback(rows)
+        
+    })
+    connection.end();
+}
+
 
 const informe_caja = (idcaja, callback) =>{
     const connection = mysql_connection.getConnection();
@@ -113,4 +125,11 @@ const informe_caja = (idcaja, callback) =>{
     connection.end();
 }
 
-module.exports = {agregarCaja,obtener_caja,cerrarCaja,informe_caja,obtener_lista_cajas_sucursal,}
+module.exports = {
+    agregarCaja,
+    obtener_caja,
+    cerrarCaja,
+    informe_caja,
+    obtener_lista_cajas_sucursal,
+    obtener_caja_id,
+}

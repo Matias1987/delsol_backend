@@ -1,7 +1,17 @@
 const gastoService = require("../services/GastoService");
 
-const obtenerGastos = (req,res) => {
-    gastoService.obtenerGastos((rows)=>{
+const obtenerGastosSucursal = (req,res) => {
+    const {params:{idsucursal}} = req;
+
+    gastoService.obtenerGastosSucursal(idsucursal,(_rows)=>{
+        res.status(201).send({status:'OK', data:_rows});
+    })
+}
+
+const obtenerGastosCaja = (req,res) => {
+    const {params:{idcaja}} = req;
+
+    gastoService.obtenerGastosCaja(idcaja,(rows)=>{
         res.status(201).send({status:'OK', data:rows});
     })
 }
@@ -21,7 +31,8 @@ const editarGasto = (req,res) => {}
 
 module.exports = {
     obtenerGasto,
-    obtenerGastos,
+    obtenerGastosSucursal,
     agregarGasto,
-    editarGasto
+    editarGasto,
+    obtenerGastosCaja,
 }
