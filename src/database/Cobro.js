@@ -214,24 +214,12 @@ const lista_cobros = (data, callback) => {
     const _idcliente = typeof data.idcliente === 'undefined' ? '' : data.idcliente
     const _idventa = typeof data.idventa === 'undefined' ? '' : data.idventa
 
-    console.log(`SELECT 
-    c.* , 
-    date_format(c.fecha,'%d-%m-%Y') as 'fecha_formatted',
-    cl.dni AS 'cliente_dni',  
-    CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
-    FROM cobro c, cliente cl 
-    WHERE 
-    c.cliente_idcliente = cl.idcliente and
-    (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
-    (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) 
-    order by c.idcobro desc;`)
-
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
         `SELECT 
         c.* , 
-        date_format(c.fecha,'%d-%m-%Y') as 'fecha_formatted',
+        date_format(c.fecha,'%d-%m-%Y') as 'fecha_formated',
         cl.dni AS 'cliente_dni',  
         CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
         FROM cobro c, cliente cl 

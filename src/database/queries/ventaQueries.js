@@ -276,7 +276,9 @@ const queryListaVentasSucursalEstado = (
 	medico_idmedico="",
 	fk_destinatario="",
 	cliente_idcliente="", 
-	id="") => (
+	id="",
+	en_laboratorio=""
+	) => (
 	`SELECT 
 	v.idventa, 
 	CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
@@ -297,7 +299,8 @@ const queryListaVentasSucursalEstado = (
 	(case when '${cliente_idcliente}'<>'' then v.cliente_idcliente = '${cliente_idcliente}' ELSE TRUE END) AND
 	(case when '${fk_destinatario}'<>'' then v.fk_destinatario = '${fk_destinatario}' ELSE TRUE END) AND
 	(case when '${medico_idmedico}'<>'' then v.medico_idmedico = '${medico_idmedico}' ELSE TRUE END) AND
-	(case when '${id}'<>'' then v.idventa = '${id}' ELSE TRUE END)
+	(case when '${id}'<>'' then v.idventa = '${id}' ELSE TRUE END) AND
+	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END)
 	`
 )
 

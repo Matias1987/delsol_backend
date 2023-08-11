@@ -16,6 +16,16 @@ const cambiar_estado_venta = (data, callback) => {
     
 }
 
+const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback)=>{
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    console.log(`UPDATE venta v SET v.en_laboratorio = ${en_laboratorio} WHERE v.idventa=${idventa};`)
+    connection.query(`UPDATE venta v SET v.en_laboratorio = ${en_laboratorio} WHERE v.idventa=${idventa};`, (err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 const insert_venta = (data,callback) => {
 
     console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
@@ -304,6 +314,8 @@ const lista_venta_sucursal_estado = (data,callback) => {
         (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
         (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
         (typeof data.id === 'undefined' ? "" : data.id),
+        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio)
+           
        
         ))
     connection.query(
@@ -315,6 +327,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
         (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
         (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
         (typeof data.id === 'undefined' ? "" : data.id),
+        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio)
            
             ),(err,data) => {
                 callback(data)
@@ -366,6 +379,7 @@ lista_venta_sucursal_estado,
 lista_venta_item,
 cambiar_estado_venta,
 lista_venta_mp_cta_cte,
+cambiar_venta_sucursal_deposito,
 }
 
 

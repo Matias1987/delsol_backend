@@ -84,6 +84,13 @@ const lista_venta_item = (req,res) => {
 
 const editarVenta = (req, res) => {}
 
+const cambiar_venta_sucursal_deposito = (req,res)=>{
+  const {body} = req;
+  ventaService.cambiar_venta_sucursal_deposito(body.en_laboratorio, body.idventa, (resp)=>{
+    res.status(201).send({status:'OK', data:resp})
+  } )
+}
+
 module.exports = {
     obtenerVentas,
     obtenerVentasSucursal,
@@ -95,4 +102,5 @@ module.exports = {
     lista_venta_item,
     cambiar_estado_venta,
     obtenerVentaMPCtaCte,
+    cambiar_venta_sucursal_deposito,
   };

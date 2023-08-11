@@ -52,6 +52,12 @@ const lista_venta_item = (idventa, callback) => {
   })
 }
 
+const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) =>{
+  ventaDB.cambiar_venta_sucursal_deposito(en_laboratorio,idventa,(resp)=>{
+    return callback(resp)
+  })
+}
+
 module.exports = {
     lista_venta_item ,
     obtenerVentas,
@@ -62,5 +68,6 @@ module.exports = {
     obtenerVentaMP,
     lista_venta_sucursal_estado,
     cambiar_estado_venta,
-    obtenerVentaMPCtaCte
+    obtenerVentaMPCtaCte,
+    cambiar_venta_sucursal_deposito,
   };
