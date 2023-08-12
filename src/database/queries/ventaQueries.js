@@ -83,7 +83,8 @@ const query_items = `INSERT INTO venta_has_stock
 					esf, 
 					cil, 
 					eje,
-					orden) 
+					orden,
+					descontable) 
 					VALUES `;
 
 /*const get_mp = (data, idventa) => {

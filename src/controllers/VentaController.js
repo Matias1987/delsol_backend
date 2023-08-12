@@ -90,6 +90,18 @@ const cambiar_venta_sucursal_deposito = (req,res)=>{
     res.status(201).send({status:'OK', data:resp})
   } )
 }
+const inc_cantidades_stock_venta = (req,res)=>{
+  const {body} = req;
+  ventaService.inc_cantidades_stock_venta(body, (resp)=>{
+    res.status(201).send({status:'OK', data:resp})
+  } )
+}
+const desc_cantidades_stock_venta = (req,res)=>{
+  const {body} = req;
+  ventaService.desc_cantidades_stock_venta(body, (resp)=>{
+    res.status(201).send({status:'OK', data:resp})
+  } )
+}
 
 module.exports = {
     obtenerVentas,
@@ -103,4 +115,7 @@ module.exports = {
     cambiar_estado_venta,
     obtenerVentaMPCtaCte,
     cambiar_venta_sucursal_deposito,
+    inc_cantidades_stock_venta,
+    desc_cantidades_stock_venta,
+    
   };

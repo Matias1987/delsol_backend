@@ -5,6 +5,16 @@ const cambiar_estado_venta = (data,callback) => {
     callback(results)
   })
 }
+const desc_cantidades_stock_venta = (data,callback) => {
+  ventaDB.desc_cantidades_stock_venta(data,(results)=>{
+    callback(results)
+  })
+}
+const inc_cantidades_stock_venta = (data,callback) => {
+  ventaDB.inc_cantidades_stock_venta(data,(results)=>{
+    callback(results)
+  })
+}
 const obtenerVentas = (callback) => {
   ventaDB.lista_ventas((rows)=>{
     callback(rows)
@@ -70,4 +80,6 @@ module.exports = {
     cambiar_estado_venta,
     obtenerVentaMPCtaCte,
     cambiar_venta_sucursal_deposito,
+    desc_cantidades_stock_venta,
+    inc_cantidades_stock_venta,
   };

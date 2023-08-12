@@ -1,6 +1,55 @@
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
+const anular_venta = (data, callback) => {
+    /**
+     * restaurar stock y marcar venta como anulada
+     */
+}
+
+const desc_cantidades_stock_venta = (data,callback) =>
+{
+    const query = `UPDATE stock s, 
+    (
+        SELECT 
+        vhs.stock_sucursal_idsucursal AS 'idsucursal',
+        vhs.stock_codigo_idcodigo AS 'idcodigo', 
+        vhs.cantidad 
+        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}
+    ) AS vs
+    SET s.cantidad = s.cantidad - vs.cantidad WHERE
+    s.codigo_idcodigo = vs.idcodigo AND 
+    s.sucursal_idsucursal = vs.idsucursal;`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end();
+    
+}
+const inc_cantidades_stock_venta = (data,callback) =>
+{
+    const query = `UPDATE stock s, 
+    (
+        SELECT 
+        vhs.stock_sucursal_idsucursal AS 'idsucursal',
+        vhs.stock_codigo_idcodigo AS 'idcodigo', 
+        vhs.cantidad 
+        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}
+    ) AS vs
+    SET s.cantidad = s.cantidad - vs.cantidad WHERE
+    s.codigo_idcodigo = vs.idcodigo AND 
+    s.sucursal_idsucursal = vs.idsucursal;`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end();
+    
+}
+
 const cambiar_estado_venta = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -30,10 +79,10 @@ const insert_venta = (data,callback) => {
 
     console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
 
-    const do_push = (orden,arr,val,tipo) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo, orden: orden}]
+    const do_push = (orden,arr,val,tipo,descontable) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo, orden: orden, descontable: descontable}]
 
     var venta_id = -1;
-    var _arr = [];
+    var _arr_items = [];
     var _quantities =  {}
     var idx = [];
 
@@ -65,56 +114,58 @@ const insert_venta = (data,callback) => {
             '${(typeof e.esf === 'undefined' ? 0 : e.esf)}', 
             '${(typeof e.cil === 'undefined' ? 0 : e.cil)}', 
             '${(typeof e.eje === 'undefined' ? 0 : e.eje)}',
-            ${e.orden})`
+            ${e.orden},
+            ${e.descontable}
+            )`
         })
         return _str;
     }
 
     const prepare_venta_directa_items = (__data) => {
-        _arr = __data.productos;
+        _arr_items = __data.productos;
     }
 
     const prepare_lclab_items = (__data) => {
-        _arr = do_push(0,_arr,__data.productos.oi, "oi")
-        _arr = do_push(1,_arr,__data.productos.od, "od")
-        _arr = do_push(2,_arr,__data.productos.insumo, "insumo")
+        _arr_items = do_push(0,_arr_items,__data.productos.oi, "oi",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.od, "od",1)
+        _arr_items = do_push(2,_arr_items,__data.productos.insumo, "insumo",1)
     }
 
     const prepare_lclstock_items = (__data) => {
-        _arr = do_push(0,_arr,__data.productos.oi, "oi")
-        _arr = do_push(1,_arr,__data.productos.od, "od")
-        _arr = do_push(2,_arr,__data.productos.insumo, "insumo")
+        _arr_items = do_push(0,_arr_items,__data.productos.oi, "oi",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.od, "od",1)
+        _arr_items = do_push(2,_arr_items,__data.productos.insumo, "insumo",1)
 
     }
 
     const prepare_monoflab_items = (__data) => {
-        _arr = do_push(2,_arr,__data.productos.lejos_armazon,"lejos_armazon")
-        _arr = do_push(1,_arr,__data.productos.lejos_od,"lejos_od")
-        _arr = do_push(0,_arr,__data.productos.lejos_oi,"lejos_oi")
-        _arr = do_push(3,_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
-        _arr = do_push(6,_arr,__data.productos.cerca_armazon,"cerca_armazon")
-        _arr = do_push(5,_arr,__data.productos.cerca_od,"cerca_od")
-        _arr = do_push(4,_arr,__data.productos.cerca_oi,"cerca_oi")
-        _arr = do_push(7,_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
+        _arr_items = do_push(2,_arr_items,__data.productos.lejos_armazon,"lejos_armazon",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.lejos_od,"lejos_od",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.lejos_oi,"lejos_oi",1)
+        _arr_items = do_push(3,_arr_items,__data.productos.lejos_tratamiento,"lejos_tratamiento",1)
+        _arr_items = do_push(6,_arr_items,__data.productos.cerca_armazon,"cerca_armazon",1)
+        _arr_items = do_push(5,_arr_items,__data.productos.cerca_od,"cerca_od",1)
+        _arr_items = do_push(4,_arr_items,__data.productos.cerca_oi,"cerca_oi",1)
+        _arr_items = do_push(7,_arr_items,__data.productos.cerca_tratamiento,"cerca_tratamiento",1)
     }
 
     const prepare_multiflab_items = (__data) => {
-        _arr = do_push(2,_arr,__data.productos.armazon,"armazon")
-        _arr = do_push(1,_arr,__data.productos.od,"od")
-        _arr = do_push(0,_arr,__data.productos.oi,"oi")
-        _arr = do_push(3,_arr,__data.productos.tratamiento,"tratamiento")
+        _arr_items = do_push(2,_arr_items,__data.productos.armazon,"armazon",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.od,"od",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.oi,"oi",1)
+        _arr_items = do_push(3,_arr_items,__data.productos.tratamiento,"tratamiento",1)
     }
 
     const prepare_recstock_items = (__data) => {
-        _arr = do_push(2,_arr,__data.productos.lejos_armazon,"lejos_armazon")
-        _arr = do_push(1,_arr,__data.productos.lejos_od,"lejos_od")
-        _arr = do_push(0,_arr,__data.productos.lejos_oi,"lejos_oi")
-        _arr = do_push(3,_arr,__data.productos.lejos_tratamiento,"lejos_tratamiento")
+        _arr_items = do_push(2,_arr_items,__data.productos.lejos_armazon,"lejos_armazon",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.lejos_od,"lejos_od",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.lejos_oi,"lejos_oi",1)
+        _arr_items = do_push(3,_arr_items,__data.productos.lejos_tratamiento,"lejos_tratamiento",1)
 
-        _arr = do_push(6,_arr,__data.productos.cerca_armazon,"cerca_armazon")
-        _arr = do_push(5,_arr,__data.productos.cerca_od,"cerca_od")
-        _arr = do_push(4,_arr,__data.productos.cerca_oi,"cerca_oi")
-        _arr = do_push(7,_arr,__data.productos.cerca_tratamiento,"cerca_tratamiento")
+        _arr_items = do_push(6,_arr_items,__data.productos.cerca_armazon,"cerca_armazon",1)
+        _arr_items = do_push(5,_arr_items,__data.productos.cerca_od,"cerca_od",1)
+        _arr_items = do_push(4,_arr_items,__data.productos.cerca_oi,"cerca_oi",1)
+        _arr_items = do_push(7,_arr_items,__data.productos.cerca_tratamiento,"cerca_tratamiento",1)
     }
 
     //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
@@ -146,7 +197,7 @@ const insert_venta = (data,callback) => {
     
     //check quantities
 
-    prepare_qtty_array(_arr)
+    prepare_qtty_array(_arr_items)
     console.log("##########quantities########")
 
     console.log(JSON.stringify(_quantities))
@@ -186,7 +237,7 @@ const insert_venta = (data,callback) => {
                 )`;
         });
 
-        var _items_data = get_query_str(_arr);
+        var _items_data = get_query_str(_arr_items);
 
         console.log(venta_queries.query_items + _items_data)
 
@@ -200,30 +251,18 @@ const insert_venta = (data,callback) => {
 
                 callback(venta_id)
 
-                /*connection.query(`update stock s SET s.cantidad = s.cantidad-1 where s.codigo_idcodigo IN (${_ids}) AND s.sucursal_idsucursal = ${data.fksucursal}; `,
-                (err,resp)=>{
-
-
-                })*/
-
                 connection.end();
             })
         })
 
         }
         else{
-            if(_arr.length>0){
+            if(_arr_items.length>0){
                 connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
 
                     console.log(JSON.stringify(resp))
     
                     callback(venta_id)
-    
-                    /*connection.query(`update stock s SET s.cantidad = s.cantidad-1 where s.codigo_idcodigo IN (${_ids}) AND s.sucursal_idsucursal = ${data.fksucursal}; `,
-                    (err,resp)=>{
-    
-    
-                    })*/
     
                     connection.end();
                 })
@@ -380,6 +419,8 @@ lista_venta_item,
 cambiar_estado_venta,
 lista_venta_mp_cta_cte,
 cambiar_venta_sucursal_deposito,
+desc_cantidades_stock_venta,
+inc_cantidades_stock_venta,
 }
 
 

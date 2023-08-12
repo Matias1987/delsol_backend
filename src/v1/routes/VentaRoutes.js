@@ -32,6 +32,14 @@ router.post("/cambiar_estado/", (req, res) => {
   ventaController.cambiar_estado_venta(req,res)
 });
 
+router.post("/desc_cantidades_stock_venta/", (req, res) => {
+  ventaController.desc_cantidades_stock_venta(req,res)
+});
+
+router.post("/inc_cantidades_stock_venta/", (req, res) => {
+  ventaController.inc_cantidades_stock_venta(req,res)
+});
+
 router.post("/cambiar_venta_sucursal_deposito/", (req, res) => {
   ventaController.cambiar_venta_sucursal_deposito(req,res)
 });
