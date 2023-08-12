@@ -15,7 +15,7 @@ const desc_cantidades_stock_venta = (data,callback) =>
         vhs.stock_sucursal_idsucursal AS 'idsucursal',
         vhs.stock_codigo_idcodigo AS 'idcodigo', 
         vhs.cantidad 
-        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}
+        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}  AND vhs.descontable=1
     ) AS vs
     SET s.cantidad = s.cantidad - vs.cantidad WHERE
     s.codigo_idcodigo = vs.idcodigo AND 
@@ -36,7 +36,7 @@ const inc_cantidades_stock_venta = (data,callback) =>
         vhs.stock_sucursal_idsucursal AS 'idsucursal',
         vhs.stock_codigo_idcodigo AS 'idcodigo', 
         vhs.cantidad 
-        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}
+        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}  AND vhs.descontable=1
     ) AS vs
     SET s.cantidad = s.cantidad - vs.cantidad WHERE
     s.codigo_idcodigo = vs.idcodigo AND 
