@@ -60,6 +60,7 @@ const login = (req,res)=>{
             uid: resp.uid,
             message: 'Authentication successful!',
             token: token,
+            udata: resp.udata
             
           }
         });
