@@ -114,8 +114,8 @@ const insert_venta = (data,callback) => {
             '${(typeof e.esf === 'undefined' ? 0 : e.esf)}', 
             '${(typeof e.cil === 'undefined' ? 0 : e.cil)}', 
             '${(typeof e.eje === 'undefined' ? 0 : e.eje)}',
-            ${e.orden},
-            ${e.descontable}
+            ${typeof e.orden === 'undefined' ? 0 : e.orden},
+            ${typeof e.descontable === 'undefined'? 1 : e.descontable }
             )`
         })
         return _str;
