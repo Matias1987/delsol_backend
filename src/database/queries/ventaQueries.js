@@ -8,7 +8,7 @@ const parse_venta_data = (body)=> ( {
 	usuario_idusuario: body?.fkusuario,
 	monto_total: body?.total,
 	descuento: body?.descuento,
-	fecha_retiro: parse_date_for_mysql( body?.fechaRetiro ),//<--missing in db
+	fecha_retiro: parse_date_for_mysql( body.fechaRetiro  ),//<--missing in db
 	comentarios: body?.comentarios||"",//<--missing in db
 	subtotal: body?.subtotal,
 	fk_destinatario: body?.fkdestinatario||null,
@@ -110,77 +110,78 @@ const query_items = `INSERT INTO venta_has_stock
 
 const get_mp = (data, idventa) => {
 	var _items_mp = [];
-	if(data?.mp?.efectivo_monto!==0){
-		_items_mp.push({
-			venta_idventa:idventa,
-			modo_pago_idmodo_pago:'1',
-			banco_idbanco:null,
-			mutual_idmutual:null,
-			monto:data.mp.efectivo_monto,
-			monto_int:0,
-			cant_cuotas:0,
-			monto_cuota:0,
-			fk_tarjeta: null,
-			modo_pago: 'efectivo',
-		})
+	if(data.mp!=null){
+		if(data?.mp?.efectivo_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'1',
+				banco_idbanco:null,
+				mutual_idmutual:null,
+				monto:data.mp.efectivo_monto,
+				monto_int:0,
+				cant_cuotas:0,
+				monto_cuota:0,
+				fk_tarjeta: null,
+				modo_pago: 'efectivo',
+			})
+		}
+		if(data?.mp?.tarjeta_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'2',
+				banco_idbanco:null,
+				mutual_idmutual:null,
+				monto:data.mp.tarjeta_monto,
+				monto_int:0,
+				cant_cuotas:0,
+				monto_cuota:0,
+				fk_tarjeta: data.mp.fk_tarjeta,
+				modo_pago: 'tarjeta',
+			})
+		}
+		if(data?.mp?.ctacte_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'3',
+				banco_idbanco:null,
+				mutual_idmutual:null,
+				monto:data.mp.ctacte_monto,
+				monto_int:0,
+				cant_cuotas:data.mp.ctacte_cuotas,
+				monto_cuota:data.mp.ctacte_monto_cuotas,
+				fk_tarjeta: null,
+				modo_pago: 'ctacte',
+			})
+		}
+		if(data?.mp?.cheque_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'4',
+				banco_idbanco:data.mp.fk_banco,
+				mutual_idmutual:null,
+				monto:data.mp.cheque_monto,
+				monto_int:0,
+				cant_cuotas:0,
+				monto_cuota:0,
+				fk_tarjeta: null,
+				modo_pago: 'cheque',
+			})
+		}
+		if(data?.mp?.mutual_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'5',
+				banco_idbanco:null,
+				mutual_idmutual:null,
+				monto:data.mp.mutual_monto,
+				monto_int:0,
+				cant_cuotas:0,
+				monto_cuota:0,
+				fk_tarjeta: null,
+				modo_pago: 'mutual',
+			})
+		}
 	}
-	if(data?.mp?.tarjeta_monto!==0){
-		_items_mp.push({
-			venta_idventa:idventa,
-			modo_pago_idmodo_pago:'2',
-			banco_idbanco:null,
-			mutual_idmutual:null,
-			monto:data.mp.tarjeta_monto,
-			monto_int:0,
-			cant_cuotas:0,
-			monto_cuota:0,
-			fk_tarjeta: data.mp.fk_tarjeta,
-			modo_pago: 'tarjeta',
-		})
-	}
-	if(data?.mp?.ctacte_monto!==0){
-		_items_mp.push({
-			venta_idventa:idventa,
-			modo_pago_idmodo_pago:'3',
-			banco_idbanco:null,
-			mutual_idmutual:null,
-			monto:data.mp.ctacte_monto,
-			monto_int:0,
-			cant_cuotas:data.mp.ctacte_cuotas,
-			monto_cuota:data.mp.ctacte_monto_cuotas,
-			fk_tarjeta: null,
-			modo_pago: 'ctacte',
-		})
-	}
-	if(data?.mp?.cheque_monto!==0){
-		_items_mp.push({
-			venta_idventa:idventa,
-			modo_pago_idmodo_pago:'4',
-			banco_idbanco:data.mp.fk_banco,
-			mutual_idmutual:null,
-			monto:data.mp.cheque_monto,
-			monto_int:0,
-			cant_cuotas:0,
-			monto_cuota:0,
-			fk_tarjeta: null,
-			modo_pago: 'cheque',
-		})
-	}
-	if(data?.mp?.mutual_monto!==0){
-		_items_mp.push({
-			venta_idventa:idventa,
-			modo_pago_idmodo_pago:'5',
-			banco_idbanco:null,
-			mutual_idmutual:null,
-			monto:data.mp.mutual_monto,
-			monto_int:0,
-			cant_cuotas:0,
-			monto_cuota:0,
-			fk_tarjeta: null,
-			modo_pago: 'mutual',
-		})
-	}
-	
 	
 	return _items_mp;
 	
