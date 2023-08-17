@@ -1,3 +1,4 @@
+const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
@@ -77,7 +78,14 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback)=>{
 
 const insert_venta = (data,callback) => {
 
-    console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
+    //console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
+
+    const __now = new Date();
+
+    if(data.fechaRetiro == null){
+        data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;//parse_date_for_mysql(`${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}` )
+
+    }
 
     const do_push = (orden,arr,val,tipo,descontable) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo, orden: orden, descontable: descontable}]
 
@@ -209,7 +217,7 @@ const insert_venta = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     //check quantities
-    console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
+    console.log("*************** "+venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
 
     (err,resp) => {
