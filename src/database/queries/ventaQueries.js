@@ -291,7 +291,8 @@ const queryListaVentasSucursalEstado = (
 	date_format(v.fecha, '%d-%m-%y') AS 'fecha',
 	DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
 	v.sucursal_idsucursal,
-	v.cliente_idcliente
+	v.cliente_idcliente,
+	v.en_laboratorio
 	FROM venta v, cliente c, usuario u WHERE
 	v.cliente_idcliente = c.idcliente AND
 	v.usuario_idusuario = u.idusuario AND

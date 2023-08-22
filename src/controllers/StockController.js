@@ -175,22 +175,32 @@ const obtener_stock_detalles_venta = (req,res)=>{
 
 const editarStock = (req, res) => {}
 
+const obtener_subgrupo_full = (req,res) => {
+
+  stockService.obtener_subgrupo_full((rows)=>{
+
+    res.status(201).send({status: 'OK', data: rows});
+    
+  })
+
+}
 
 module.exports = {
-    obtenerListaStock,
-    agregarStock,
-    editarStock,
-    obtener_stock_por_subgrupo,
-    obtener_detalle_stock_sucursal,
-    search_stock,
-    incrementar_cantidad,
-    obtener_codigos_sin_stock_sucursal,
-    agregar_stock_lote,
-    obtener_stock_sucursal,
-    stock_codigo_sucursales,
-    search_stock_envio,
-    descontar_cantidad_por_codigo,
-    obtener_lista_stock_filtros,
-    obtener_stock_ventas,
-    obtener_stock_detalles_venta,
+  obtener_subgrupo_full,
+  obtenerListaStock,
+  agregarStock,
+  editarStock,
+  obtener_stock_por_subgrupo,
+  obtener_detalle_stock_sucursal,
+  search_stock,
+  incrementar_cantidad,
+  obtener_codigos_sin_stock_sucursal,
+  agregar_stock_lote,
+  obtener_stock_sucursal,
+  stock_codigo_sucursales,
+  search_stock_envio,
+  descontar_cantidad_por_codigo,
+  obtener_lista_stock_filtros,
+  obtener_stock_ventas,
+  obtener_stock_detalles_venta,
   };

@@ -585,7 +585,33 @@ const agregar_stock = (data,callback) =>{
         connection.end();
     }
 
+
+    const obtener_subgrupo_full = (callback) => {
+
+        const query = `SELECT 
+        f.nombre_corto AS 'familia',
+        sf.nombre_corto AS 'subfamilia',
+        g.nombre_corto AS 'grupo',
+        sg.nombre_corto AS 'subgrupo',
+        f.idfamilia,
+        sf.idsubfamilia, 
+        g.idgrupo,
+        sg.idsubgrupo
+        FROM familia f, subfamilia sf, grupo g, subgrupo sg WHERE
+        sg.grupo_idgrupo = g.idgrupo AND
+        g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+        sf.familia_idfamilia = f.idfamilia;`
+
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        connection.query(query,(err,rows)=>{
+            callback(rows)
+        })
+        connection.end()
+    }
+
 module.exports = {
+    obtener_subgrupo_full,
     agregar_stock,
     obtener_stock,
     obtener_stock_por_subgrupo,

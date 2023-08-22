@@ -6,6 +6,10 @@ router.get("/:idsucursal", (req, res) => {
   stockController.obtenerListaStock(req,res)
 });
 
+router.get("/subgrupos_full/", (req, res) => {
+  stockController.obtener_subgrupo_full(req,res)
+});
+
 
 router.get("/porsubgrupo/:idsubgrupo", (req, res) => {
   stockController.obtener_stock_por_subgrupo(req,res)
