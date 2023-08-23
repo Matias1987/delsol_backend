@@ -110,7 +110,6 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 sg.grupo_idgrupo = g.idgrupo AND
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
                 sf.familia_idfamilia = f.idfamilia AND
-                fl
                 (case when '${search_value}' <> 'null' then c.codigo LIKE '%${search_value}%' else true end) AND
                 (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end);`
     console.log(_sql)
