@@ -2,7 +2,7 @@ const StockDB = require("../database/Stock")
 
 const obtener_subgrupo_full = (callback) => {
   StockDB.obtener_subgrupo_full((rows)=>{
-    callback(rows)
+    return callback(rows)
   })
 }
 

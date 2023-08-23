@@ -605,6 +605,7 @@ const agregar_stock = (data,callback) =>{
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,rows)=>{
+            console.log(rows)
             callback(rows)
         })
         connection.end()

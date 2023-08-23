@@ -176,7 +176,7 @@ const obtener_stock_detalles_venta = (req,res)=>{
 const editarStock = (req, res) => {}
 
 const obtener_subgrupo_full = (req,res) => {
-
+  console.log("lalalala")
   stockService.obtener_subgrupo_full((rows)=>{
 
     res.status(201).send({status: 'OK', data: rows});
