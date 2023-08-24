@@ -62,11 +62,23 @@ const obtenerFichaCliente = (req, res) => {}
 
 const editarCliente = (req, res) => {}
 
+
 const operaciones_cliente = (req, res) => {
 
   const {params:{clienteId}} = req;
 
   clienteService.operaciones_cliente(clienteId, (rows)=>{
+
+    res.status(201).send({status:'OK',data:rows});
+    
+  })
+}
+
+const obtener_saldo_ctacte = (req, res) => {
+
+  const {params:{clienteId}} = req;
+
+  clienteService.obtener_saldo_ctacte(clienteId, (rows)=>{
 
     res.status(201).send({status:'OK',data:rows});
     
@@ -83,4 +95,5 @@ module.exports = {
     editarCliente,
     buscarCliente,
     operaciones_cliente,
+    obtener_saldo_ctacte,
   };

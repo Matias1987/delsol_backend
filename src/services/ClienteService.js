@@ -38,6 +38,11 @@ const operaciones_cliente = (data, callback) => {
     return callback(rows);
   })
 }
+const obtener_saldo_ctacte = (data, callback) => {
+  ClienteDB.obtener_saldo_ctacte(data, (rows) => {
+    return callback(rows);
+  })
+}
 
 
 module.exports = {
@@ -49,4 +54,5 @@ module.exports = {
     editarCliente,
     buscarCliente,
     operaciones_cliente,
+    obtener_saldo_ctacte,
   };

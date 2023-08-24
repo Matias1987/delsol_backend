@@ -141,6 +141,35 @@ const operaciones_cliente = (idcliente,callback) => {
 
 }
 
+
+const obtener_saldo_ctacte = (idcliente,callback) => {
+    const query  = `SELECT SUM(op.debe) AS 'debe', SUM(op.haber) AS 'haber' FROM
+    (
+        SELECT 
+        0 AS 'haber', 
+        vmp.monto AS 'debe'
+        FROM venta_has_modo_pago vmp, venta v WHERE v.idventa = vmp.venta_idventa AND vmp.modo_pago='ctacte' AND v.cliente_idcliente=${idcliente}
+        union
+        SELECT 
+        0 AS 'haber', 
+        cm.monto AS 'debe'
+        FROM carga_manual cm WHERE cm.cliente_idcliente=${idcliente}
+        union
+        SELECT 
+        c.monto AS 'haber',
+        0 AS 'debe'
+         FROM cobro c WHERE c.tipo = 'cuota' AND c.cliente_idcliente=${idcliente}
+    ) AS op
+    ;`
+
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+}
+
 module.exports = {
     agregar_cliente, 
     obtener_lista_clientes, 
@@ -148,4 +177,5 @@ module.exports = {
     detalle_cliente,
     buscar_cliente,
     operaciones_cliente,
+    obtener_saldo_ctacte,
 };

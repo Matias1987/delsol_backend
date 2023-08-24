@@ -27,11 +27,11 @@ const agregarCaja = (data,callback) =>
 
     connection.connect();
 
-    const sql = "insert into caja (sucursal_idsucursal,monto_inicial,estado) values (?)"
-    values = [[data.sucursal_idsucursal, data.monto_inicial, "ABIERTA"]];
+    const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado) values (${data.sucursal_idsucursal},${data.monto_inicial},'${"ABIERTA"}')`
+    //values = [[data.sucursal_idsucursal, data.monto_inicial, "ABIERTA"]];
+    console.log(sql)
 
-
-    connection.query(sql,values,(err,result,fields)=>{
+    connection.query(sql,(err,result,fields)=>{
         return callback(result.insertId);
     })
 

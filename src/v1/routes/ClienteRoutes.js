@@ -17,6 +17,9 @@ router.get("/:clienteId", (req, res) => {
 router.get("/operaciones/:clienteId", (req, res) => {
  clienteController.operaciones_cliente(req,res)
 });
+router.get("/saldo/ctacte/:clienteId", (req, res) => {
+ clienteController.obtener_saldo_ctacte(req,res)
+});
 
 router.post("/", (req, res) => {
   clienteController.agregarCliente(req,res);
