@@ -99,6 +99,7 @@ const operaciones_cliente = (idcliente,callback) => {
 		FROM cobro c, venta_has_modo_pago vhmp WHERE
 		c.venta_idventa = vhmp.venta_idventa AND 
 		vhmp.modo_pago='ctacte' AND 
+        c.tipo<>'cuota' AND
 		c.cliente_idcliente=${idcliente}
 		UNION
         select 
@@ -143,11 +144,21 @@ const operaciones_cliente = (idcliente,callback) => {
 
 
 const obtener_saldo_ctacte = (idcliente,callback) => {
+    //FALTAN CONDICIONES EN LA CONSULTA, COMO POR  EJ. TENER EN CTA. QUE LA VENTA NO ESTE ANULADA
     const query  = `SELECT SUM(op.debe) AS 'debe', SUM(op.haber) AS 'haber' FROM
     (
         SELECT 
+        c.monto AS 'haber',
+        0 AS 'debe'
+        FROM cobro c,venta_has_modo_pago vmp WHERE 
+        vmp.modo_pago = 'ctacte' AND 
+        c.venta_idventa = vmp.venta_idventa  AND
+        c.tipo <> 'cuota' AND
+        c.cliente_idcliente=${idcliente}
+        union
+        SELECT 
         0 AS 'haber', 
-        vmp.monto AS 'debe'
+        vmp.monto_cuota * vmp.cant_cuotas AS 'debe'
         FROM venta_has_modo_pago vmp, venta v WHERE v.idventa = vmp.venta_idventa AND vmp.modo_pago='ctacte' AND v.cliente_idcliente=${idcliente}
         union
         SELECT 
