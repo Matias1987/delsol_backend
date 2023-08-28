@@ -111,6 +111,9 @@ app.use("/api/v1/bajadesperfecto",bajaDesperfectoRoutes);
 const gastosRoutes = require("./v1/routes/GastoRoutes");
 app.use("/api/v1/gastos",gastosRoutes);
 
+const transferenciaRoutes = require("./v1/routes/TransferenciaRoutes");
+app.use("/api/v1/transferencias",transferenciaRoutes);
+
 
 
 
