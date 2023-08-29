@@ -120,9 +120,6 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
 }
 
 
-
-
-
 const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -488,9 +485,15 @@ const agregar_stock = (data,callback) =>{
         c.codigo, 
         c.descripcion
         FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
-        s.codigo_idcodigo = c.idcodigo AND c.subgrupo_idsubgrupo = sg.idsubgrupo AND
-        sg.grupo_idgrupo = g.idgrupo AND g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-        (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and s.sucursal_idsucursal=${filters.idSucursal} and (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%');`;
+        s.codigo_idcodigo = c.idcodigo AND 
+        c.subgrupo_idsubgrupo = sg.idsubgrupo AND
+        sg.grupo_idgrupo = g.idgrupo AND 
+        g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+        (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and 
+        s.sucursal_idsucursal=${filters.idSucursal} and 
+        (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%')
+        LIMIT 100
+        ;`;
 
         console.log(_query)
 

@@ -248,11 +248,13 @@ const insert_venta = (data,callback) => {
         var _items_data = get_query_str(_arr_items);
 
         console.log(venta_queries.query_items + _items_data)
+        console.log("*****VENTA MODO DE PAGO*******************")
+        console.log(venta_queries.query_mp + mp)
 
         if(mp.length>0)
         {
         connection.query(venta_queries.query_mp + mp, (err,_resp)=>{
-
+            
             connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
 
                 console.log(JSON.stringify(resp))
@@ -387,8 +389,15 @@ const lista_venta_sucursal_estado = (data,callback) => {
 const lista_venta_mp = (idventa, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`SELECT vmp.* FROM venta_has_modo_pago vmp  
-    WHERE     vmp.venta_idventa = ${idventa};`,(err,rows)=>{
+    connection.query(`SELECT vmp.*,
+                    if(t.idtarjeta IS NULL , '' , t.nombre) AS 'nombre_tarjeta',
+                    if(b.idbanco IS NULL ,'', b.nombre) AS 'nombre_banco'
+                    FROM 
+                    venta_has_modo_pago vmp 
+                        left  JOIN tarjeta t ON vmp.fk_tarjeta = t.idtarjeta
+                        
+                        LEFT JOIN banco  b ON b.idbanco = vmp.banco_idbanco 
+                    WHERE vmp.venta_idventa = ${idventa};`,(err,rows)=>{
         return callback(rows)
     })
     connection.end()

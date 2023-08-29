@@ -214,7 +214,8 @@ const queryDetalleVenta = (id) =>{
 	s.nombre AS 'sucursal_nombre',
 	u.nombre AS 'usuario_nombre',
 	date_format(v.fecha, '%d-%m-%Y') as 'fecha_formated',
-	date_format(v.fecha_retiro, '%d-%m-%Y') as 'fecha_entrega_formated'
+	date_format(v.fecha_retiro, '%d-%m-%Y') as 'fecha_entrega_formated',
+	date_format(v.fecha, '%H:%i') as 'hora'
 FROM
 	
 	cliente c,
