@@ -37,6 +37,7 @@ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Ty
     'nombre_largo' : body.nombre_largo,
     'grupo_idgrupo' : body.grupo_idgrupo,
     'multiplicador': body.multiplicador,
+    'precio_defecto': body.precio_defecto,
   }
 
   subgrupoService.agregarSubgrupo(nuevo_subgrupo,(id)=>{

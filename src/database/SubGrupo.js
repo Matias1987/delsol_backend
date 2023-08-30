@@ -66,16 +66,19 @@ const agregar_subgrupo = (data,callback) => {
             return callback(-1)
         }
         else{
-            var sql = "insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador) values (?)";
+            var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador, precio_defecto) values (
+                '${data.nombre_corto}','${data.nombre_largo}',${data.grupo_idgrupo},${data.multiplicador},${data.precio_defecto}
+            )`;
 
-            var values = [[
+            /*var values = [[
                 data.nombre_corto,
                 data.nombre_largo,
                 data.grupo_idgrupo,
                 data.multiplicador,
-            ]];
-        
-            connection.query(sql,values, (err,result) => {
+                data.precio_defecto,
+            ]];*/
+            console.log(sql)
+            connection.query(sql, (err,result) => {
                     return callback(result.insertId)
                 });
         }
