@@ -50,6 +50,7 @@ const agregarCodigo = (req, res) => {
     'codigo': body.codigo,
     'descripcion': body.descripcion,
     'subgrupo_idsubgrupo': body.subgrupo_idsubgrupo,
+    'modo_precio': (typeof body.modo_precio=='undefined' ? 0 : body.modo_precio),
     'genero': (typeof body.genero === 'undefined' ? '' : body.genero ),
     'edad': (typeof body.edad === 'undefined' ? '' : body.edad ), 
     'costo': (typeof body.costo === 'undefined' ? 0 : body.costo),

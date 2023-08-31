@@ -55,8 +55,9 @@ const agregar_codigo = (data,callback) => {
         subgrupo_idsubgrupo,
         genero,
         edad,
-        costo
-        ) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo},'${_genero}','${_edad}',${_costo})`;
+        costo,
+        modo_precio
+        ) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo},'${_genero}','${_edad}',${_costo}, ${data.modo_precio})`;
 
     console.log(sql)
 
