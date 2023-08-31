@@ -51,6 +51,7 @@ const agregarCodigo = (req, res) => {
     'descripcion': body.descripcion,
     'subgrupo_idsubgrupo': body.subgrupo_idsubgrupo,
     'modo_precio': (typeof body.modo_precio=='undefined' ? 0 : body.modo_precio),
+    'precio': (typeof body.precio=='undefined' ? 0 : body.precio),
     'genero': (typeof body.genero === 'undefined' ? '' : body.genero ),
     'edad': (typeof body.edad === 'undefined' ? '' : body.edad ), 
     'costo': (typeof body.costo === 'undefined' ? 0 : body.costo),
