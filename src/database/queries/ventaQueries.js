@@ -297,7 +297,7 @@ const queryListaVentasSucursalEstado = (
 	FROM venta v, cliente c, usuario u WHERE
 	v.cliente_idcliente = c.idcliente AND
 	v.usuario_idusuario = u.idusuario AND
-	v.sucursal_idsucursal = ${idsucursal} AND 
+	(case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end) AND 
 	(case when '${estado}'<>'' then v.estado = '${estado}' ELSE TRUE END) AND
 	(case when '${tipo}'<>'' then v.tipo = '${tipo}' ELSE TRUE END) AND
 	(case when '${cliente_idcliente}'<>'' then v.cliente_idcliente = '${cliente_idcliente}' ELSE TRUE END) AND

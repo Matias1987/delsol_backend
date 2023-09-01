@@ -56,7 +56,7 @@ const cambiar_estado_venta = (data, callback) => {
     connection.connect();
     connection.query(`UPDATE venta v SET v.estado = '${data.estado}' WHERE v.idventa=${data.idventa};`,(err,results)=>{
         callback(results)
-        if(typeof data.removeMPRows !== null){
+        if(typeof data.removeMPRows !== 'undefined'){
             if(+data.removeMPRows == 1){
                 connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
             }
@@ -356,7 +356,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
     connection.connect();
     console.log(JSON.stringify(data))
     console.log(venta_queries.queryListaVentasSucursalEstado(
-        data.idsucursal,
+        (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),
         (typeof data.estado === 'undefined' ? "" : data.estado),
         (typeof data.tipo === 'undefined' ? "" : data.tipo),
         (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
