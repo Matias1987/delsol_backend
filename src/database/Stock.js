@@ -132,7 +132,8 @@ const obtener_detalle_stock_sucursal = (idsucursal, idcodigo,callback) => {
                     g.nombre_corto,' / ',sg.nombre_corto, ' / '
                 ) AS 'ruta',
                 s.cantidad,
-                c.costo
+                c.costo,
+                if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
             FROM 
             familia f, subfamilia sf, grupo g, subgrupo sg,
             codigo c, stock s WHERE
@@ -158,8 +159,9 @@ const obtener_detalle_stock_sucursal_v2 = (idsucursal, idcodigo,callback) => {
     const sql = `SELECT 
                 CONCAT(f.nombre_corto, '/ ' , sf.nombre_corto, '/ ', g.nombre_corto, '/ ', sg.nombre_corto, '/ ') AS 'ruta',
                 c.codigo, c.costo, s.cantidad, c.descripcion, c.idcodigo,c.genero, c.edad,
-                (ROUND((c.costo * sg.multiplicador)/100)*100) AS 'precio',
-                sg.multiplicador
+                if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
+                sg.multiplicador,
+                c.modo_precio
                 FROM 
                 stock s, codigo c,
                 grupo g, subgrupo sg, familia f, subfamilia sf 
@@ -424,7 +426,7 @@ const agregar_stock = (data,callback) =>{
             _c.edad,
             _c.genero,
             sg.multiplicador,
-            (ROUND((_c.costo * sg.multiplicador)/100)*100) AS 'precio',
+            if(_c.modo_precio=0, (ROUND((_c.costo * sg.multiplicador)/100)*100),if(_c.modo_precio = 1,sg.precio_defecto,_c.precio)) AS 'precio',
             sg.idsubgrupo,
             g.idgrupo,
             sf.idsubfamilia,
@@ -511,7 +513,7 @@ const agregar_stock = (data,callback) =>{
         c.idcodigo,
         s.cantidad, 
         c.codigo, 
-        round((sg.multiplicador * c.costo) /100)  * 100 AS 'precio', 
+        if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
         c.descripcion,
         c.costo,
         sg.multiplicador
