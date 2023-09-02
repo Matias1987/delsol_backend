@@ -293,8 +293,15 @@ const queryListaVentasSucursalEstado = (
 	DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
 	v.sucursal_idsucursal,
 	v.cliente_idcliente,
-	v.en_laboratorio
-	FROM venta v, cliente c, usuario u WHERE
+	v.en_laboratorio,
+	s.nombre as 'sucursal'
+	FROM 
+	venta v, 
+	cliente c, 
+	usuario u, 
+	sucursal s
+	WHERE
+	s.idsucursal = v.sucursal_idsucursal AND 
 	v.cliente_idcliente = c.idcliente AND
 	v.usuario_idusuario = u.idusuario AND
 	(case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end) AND 
