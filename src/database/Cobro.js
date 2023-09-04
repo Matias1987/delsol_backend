@@ -1,6 +1,54 @@
 const mysql_connection = require("../lib/mysql_connection");
 const cobro_queries = require("./queries/cobroQueries");
 
+
+const agregar_venta_mp_ctacte = (data,callback) =>
+{
+     const __query_venta_mp = `INSERT INTO venta_has_modo_pago 
+        (
+            venta_idventa, 
+            modo_pago, 
+            banco_idbanco, 
+            mutual_idmutual,
+            monto, 
+            monto_int, 
+            cant_cuotas, 
+            monto_cuota
+            ) VALUES (
+                ${data.idventa},
+                '${'ctacte'}',
+                ${null},
+                ${null},
+                ${data.mp.ctacte_monto},
+                ${parseFloat(data.mp.ctacte_cuotas) * parseFloat(data.mp.ctacte_monto_cuotas)}, 
+                ${data.mp.ctacte_cuotas},
+                ${data.mp.ctacte_monto_cuotas})` ;
+
+    const connection = mysql_connection.getConnection();
+    connection.connect()
+
+    if(typeof data.removeMPRows !== 'undefined'){
+        if(+data.removeMPRows == 1){
+            connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
+        }
+    }
+
+    if(typeof data.removeCtaCteRow !== 'undefined'){
+        if(+data.removeCtaCteRow == 1){
+            connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`)
+        }
+    }
+
+    connection.query(__query_venta_mp,(err,resp)=>{
+        callback(0);
+    })
+
+    connection.end()
+
+
+    
+}
+
 const agregar_cobro  = (data,callback) => {
 
     /*
@@ -8,17 +56,32 @@ const agregar_cobro  = (data,callback) => {
         tipo: cuota, adelanto
         si cuota: idcliente (id venta is null or undefined --todo?)
         si adelanto: idventa
+
+        @removeMPRows: if defined, the 'modo de pago' rows are deleted
+        @removeCtaCteRow: if defined, only the 'ctacte' type of 'modo de pago' are removed.
+
     */
 
     /**
      * En el caso del ingreso, los modo de pago de la venta deben 
      * eliminarse y luego volver a crearse. ToDo
+     * 
+     * <!>Es posible que el modo de pago sea solo cta cte, en ese caso no deberia crearse un registro de cobro 
+     * y solamente deberia crearse un registro de modo de pago...
      */
 
     console.log(JSON.stringify(data))
-
+    console.log("########")
+    console.log(
+        JSON.stringify({
+            monto_ctacte: data.mp.ctacte_monto,
+            monto_cuotas: data.mp.ctacte_monto_cuotas,
+            cant_cuotas: data.mp.ctacte_cuotas,
+        })
+    )
+    //for later use
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
-
+    
     const get_mp_obj = vars => ({
         monto: vars.monto,
         tipo: vars.tipo,
@@ -29,9 +92,19 @@ const agregar_cobro  = (data,callback) => {
         monto_cuota: typeof vars.monto_cuota === 'undefined' ? 0 : vars.monto_cuota,
 
     })
-    /**
-     * FALTA CREAR EL OBJETO PARA VENTA MODO PAGO CUANDO EXISTE EL ID VENTA !!!!!!!
-     */
+
+    /* solo si es modo de pago cta cte */
+
+    if(data.monto == data.mp.ctacte_monto && data.mp.ctacte_monto>0){
+        /**
+         * en este caso, insertar venta modo de pago y retornar -1 al cliente
+         * 
+         */
+
+        agregar_venta_mp_ctacte(data,callback)
+
+        return;//nothing else to do
+    }
  
     const __query = `insert into cobro (            
         caja_idcaja,
@@ -46,7 +119,7 @@ const agregar_cobro  = (data,callback) => {
         ${data.usuario_idusuario}, 
         ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
         ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
-        ${data.monto}, 
+        ${data.monto - data.mp.ctacte_monto /* subtract ctacte monto */}, 
         '${data.tipo}',
         ${data.sucursal_idsucursal}
         )`;
@@ -100,8 +173,8 @@ const agregar_cobro  = (data,callback) => {
             get_mp_obj({
                 monto:data.mp.ctacte_monto,
                 tipo: 'ctacte',
-                cant_cuotas: data.mp.cant_cuotas,
-                monto_cuota: data.mp.monto_cuota,
+                cant_cuotas: data.mp.ctacte_cuotas,
+                monto_cuota: data.mp.ctacte_monto_cuotas,
             }),
             "ctacte_monto")
         _mp = add(

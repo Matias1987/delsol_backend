@@ -118,10 +118,10 @@ const operaciones_cliente = (idcliente,callback) => {
         date_format(v.fecha  , '%d-%m-%y') as 'fecha_f',
         'VENTA'  as 'tipo',
         concat('VENTA cuotas:', vhmp.cant_cuotas, ' monto: ', vhmp.monto_cuota)   as 'detalle',
-        (vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
+        ((v.monto_total - vhmp.monto) + vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
         0 as 'haber'
          from venta v INNER JOIN venta_has_modo_pago vhmp ON vhmp.venta_idventa = v.idventa AND  
-			v.cliente_idcliente=${idcliente} AND v.estado = 'ENTREGADO'
+			v.cliente_idcliente=${idcliente} AND v.estado = 'ENTREGADO'  AND vhmp.modo_pago='ctacte'
         union
         select 
         cm.idcarga_manual as 'id',
