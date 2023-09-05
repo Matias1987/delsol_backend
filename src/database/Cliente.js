@@ -96,7 +96,9 @@ const operaciones_cliente = (idcliente,callback) => {
 		'ENTREGA' as 'detalle',
 		0 as 'debe',
 		c.monto as 'haber'
-		FROM cobro c, venta_has_modo_pago vhmp WHERE
+		FROM cobro c, venta_has_modo_pago vhmp, venta v  WHERE
+        vhmp.venta_idventa = v.idventa AND 
+        v.estado = 'ENTREGADO' AND 
 		c.venta_idventa = vhmp.venta_idventa AND 
 		vhmp.modo_pago='ctacte' AND 
         c.tipo<>'cuota' AND
