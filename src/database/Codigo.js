@@ -85,18 +85,24 @@ const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{
     connection.end();
 }
 
-const obtener_codigos_categoria = (idfamilia,idsubfamilia,idgrupo,idsubgrupo,callback) => {
-    const _query = `SELECT c.*, sg.multiplicador FROM 
+const obtener_codigos_categoria = (data,callback) => {
+    const _query = `
+    SELECT c.*, 
+    if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
+    sg.multiplicador, 
+    sg.precio_defecto 
+    FROM 
     codigo c, 
     subgrupo sg, grupo g, subfamilia sf
     WHERE 
     c.subgrupo_idsubgrupo = sg.idsubgrupo AND
     sg.grupo_idgrupo = g.idgrupo AND 
     g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
-    (case when '-1' <> '${idsubgrupo}' then sg.idsubgrupo = '${idsubgrupo}' ELSE TRUE END ) AND 
-    (case when '-1' <> '${idgrupo}' then g.idgrupo = '${idgrupo}' ELSE TRUE END) AND 
-    (case when '-1' <> '${idsubfamilia}' then sf.idsubfamilia = '${idsubfamilia}' ELSE TRUE END) AND 
-    (case when '-1' <> '${idfamilia}' then sf.familia_idfamilia = '${idfamilia}' ELSE TRUE END)
+    (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = '${data.idsubgrupo}' ELSE TRUE END ) AND 
+    (case when '-1' <> '${data.idgrupo}' then g.idgrupo = '${data.idgrupo}' ELSE TRUE END) AND 
+    (case when '-1' <> '${data.idsubfamilia}' then sf.idsubfamilia = '${data.idsubfamilia}' ELSE TRUE END) AND 
+    (case when '-1' <> '${data.idfamilia}' then sf.familia_idfamilia = '${data.idfamilia}' ELSE TRUE END) AND 
+    (case when '-1' <> '${data.modo_precio}' then c.modo_precio=${data.modo_precio} else true end)
     ;`;
     console.log(_query)
     const connection = mysql_connection.getConnection();

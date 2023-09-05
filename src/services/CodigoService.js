@@ -35,8 +35,8 @@ const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{
   })
 }
 
-const obtener_codigos_categoria = (idfamilia,idsubfamilia,idgrupo,idsubgrupo,callback) => {
-  CodigoDB.obtener_codigos_categoria(idfamilia,idsubfamilia,idgrupo,idsubgrupo,(rows)=>{
+const obtener_codigos_categoria = (data,callback) => {
+  CodigoDB.obtener_codigos_categoria(data,(rows)=>{
     return callback(rows)
   })
 }

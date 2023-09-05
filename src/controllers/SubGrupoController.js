@@ -78,6 +78,15 @@ const obtener_detalle_subgrupo = (req, res) => {
 const editarSubgrupo = (req, res) => {}
 
 
+const modificar_precios_defecto = (req, res) => {
+  const {body} = req
+
+  subgrupoService.modificar_precios_defecto(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
+
 module.exports = {
     obtenerSubgrupos,
     obtenerSubgrupo,
@@ -86,4 +95,5 @@ module.exports = {
     obtener_subgrupos_bygrupo_opt,
     modificar_multiplicador,
     obtener_detalle_subgrupo,
+    modificar_precios_defecto,
   };

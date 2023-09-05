@@ -83,8 +83,16 @@ const obtener_codigos_bysubgrupo_opt = (req,res) =>{
 }
 
 const obtener_codigos_categoria = (req,res)=>{
-  const {params:{idfamilia,idsubfamilia,idgrupo,idsubgrupo}} = req;
-  codigoService.obtener_codigos_categoria(idfamilia,idsubfamilia,idgrupo,idsubgrupo,(rows)=>{
+  const {params:{idfamilia,idsubfamilia,idgrupo,idsubgrupo,modo_precio}} = req;
+  codigoService.obtener_codigos_categoria(
+    {
+      idfamilia:idfamilia,
+      idsubfamilia:idsubfamilia,
+      idgrupo:idgrupo,
+      idsubgrupo:idsubgrupo,
+      modo_precio:modo_precio
+    }
+    ,(rows)=>{
     res.status(201).send({status:'OK', data:rows});
   })
 }

@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
 router.get("/:codigoId", (req, res) => {
   codigoController.obtenerCodigoPorId(req,res)
 });
-router.get("/lista_por_categoria/:idfamilia/:idsubfamilia/:idgrupo/:idsubgrupo", (req, res) => {
+router.get("/lista_por_categoria/:idfamilia/:idsubfamilia/:idgrupo/:idsubgrupo/:modo_precio", (req, res) => {
   codigoController.obtener_codigos_categoria(req,res)
 });
 

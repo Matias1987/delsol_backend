@@ -1,5 +1,44 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const modificar_precios_defecto = (data,callback) => {
+    if(
+        data.idfamilia<0 &&
+        data.idsubfamilia<0 &&
+        data.idgrupo<0 &&
+        data.idsubgrupo<0
+        )
+        {
+            /* ERROR */
+            console.log("ERROR, AL VALUES ARE LESS THAN 1. FILTER REQUIRED")
+            return;
+        }
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+
+    const query = `update
+    subgrupo sg,
+    grupo g,
+    subfamilia sf, 
+    familia f
+    SET sg.precio_defecto = (sg.precio_defecto * ${parseFloat(data.multiplicador)} ) + ${parseFloat(data.valor)}
+    WHERE 
+    sg.grupo_idgrupo=g.idgrupo AND
+    g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+    sf.familia_idfamilia = f.idfamilia AND
+    (case when '-1' <> '${data.idfamilia}' then f.idfamilia = ${data.idfamilia} ELSE TRUE END) AND 
+    (case when '-1' <> '${data.idsubfamilia}' then sf.idsubfamilia = ${data.idsubfamilia} ELSE TRUE END) AND 
+    (case when '-1' <> '${data.idgrupo}' then g.idgrupo = ${data.idgrupo} ELSE TRUE END) AND 
+    (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = ${data.idsubgrupo} ELSE TRUE END);`
+
+
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+
+    connection.end()
+
+}
+
 const modificar_multiplicador_grupos = (categoria, id, value,incrementar, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -106,4 +145,5 @@ module.exports = {
     obtener_subgrupos_bygrupo_opt,
     modificar_multiplicador_grupos,
     obtener_detalle_subgrupo,
+    modificar_precios_defecto,
 }
