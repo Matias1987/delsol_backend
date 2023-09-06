@@ -36,6 +36,11 @@ const agregarUsuario = (data,callback) => {
 
 const editarUsuario = (req, res) => {}
 
+const obtener_detalle_vendedor = (data,callback) =>{
+  UsuarioDB.obtener_detalle_vendedor(data,(row)=>{
+    return callback(row)
+  })
+}
 
 module.exports = {
     obtenerUsuarios,
@@ -45,5 +50,6 @@ module.exports = {
     validarLogin,
     logout,
     addToken,
-    checkIfUserLoggedIn
+    checkIfUserLoggedIn,
+    obtener_detalle_vendedor,
   };

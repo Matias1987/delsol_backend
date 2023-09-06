@@ -109,6 +109,14 @@ const agregarUsuario = (req, res) => {
 const editarUsuario = (req, res) => {}
 
 
+const obtener_detalle_vendedor = (req, res) => {
+  const {params:{usuarioId}} = req;
+  usuarioService.obtener_detalle_vendedor(usuarioId,(rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
+
+
 module.exports = {
     obtenerUsuarios,
     obtenerUsuario,
@@ -117,4 +125,5 @@ module.exports = {
     login,
     logout,
     user_is_logged,
+    obtener_detalle_vendedor,
   };

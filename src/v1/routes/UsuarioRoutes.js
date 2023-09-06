@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:usuarioId", (req, res) => {
-  res.send("Get an existing workout");
+  usuarioController.obtener_detalle_vendedor(req,res)
 });
 router.get("/l/logout/:token", (req, res) => {
   usuarioController.logout(req,res)
