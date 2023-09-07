@@ -1,6 +1,15 @@
 const queries = require("./queries/clienteQueries")
 const mysql_connection = require("../lib/mysql_connection")
 
+const agregar_destinatario = (data,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(query,(err,resp)=>{
+        callback(resp.insertId)
+    })
+    connection.end();
+}
+
 const agregar_cliente = (data, callback) => {
     
     //create connection 
@@ -191,4 +200,5 @@ module.exports = {
     buscar_cliente,
     operaciones_cliente,
     obtener_saldo_ctacte,
+    agregar_destinatario,
 };

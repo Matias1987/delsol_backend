@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const obtener_lista_cajas_sucursal = (idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    connection.query(`SELECT * FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} ORDER BY c.idcaja desc`,(err,rows)=>{
+    connection.query(`SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f'  FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} ORDER BY c.idcaja desc`,(err,rows)=>{
         callback(rows)
     })
     connection.end()
@@ -60,7 +60,7 @@ const obtener_caja = (idsucursal, callback) =>{
 const obtener_caja_id = (idcaja, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `SELECT c.* FROM caja c WHERE c.idcaja=${idcaja};`;
+    const sql = `SELECT c.*,  date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.idcaja=${idcaja};`;
     connection.query(sql,(err,rows)=>{
         
         callback(rows)
@@ -88,7 +88,7 @@ const informe_caja = (idcaja, callback) =>{
     from
     (
             SELECT 
-            chmp.monto,
+            replace(format(chmp.monto,2),',','') as 'monto',
             'ctacte' AS 'modo_pago',
             c.venta_idventa AS 'operacion',
             CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
@@ -105,7 +105,7 @@ const informe_caja = (idcaja, callback) =>{
             c.tipo='cuota'
         UNION
             SELECT 
-            chmp.monto,
+            replace(format(chmp.monto,2),',','') as 'monto',
             chmp.modo_pago,
             c.venta_idventa AS 'operacion',
             CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
@@ -122,7 +122,7 @@ const informe_caja = (idcaja, callback) =>{
             c.tipo <> 'cuota'
         UNION
             SELECT 
-            vhmp.monto ,
+            replace(format(vhmp.monto,2),',','') as  'monto' ,
             'cuota' AS 'modo_pago',
             vhmp.venta_idventa AS 'operacion',
             CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
