@@ -8,15 +8,15 @@ const agregar_transferencia = (req,res) => {
 }
 
 const obtener_transferencias_enviadas = (req,res) => {
-    const {params:{idsucursal}} = req;
-    transferenciaService.obtener_transferencias_enviadas(idsucursal,(rows)=>{
+    const {params:{idsucursal,idcaja}} = req;
+    transferenciaService.obtener_transferencias_enviadas({idsucursal, idcaja},(rows)=>{
         res.status(201).send({status:'OK', data:rows});
     })
 }
 
 const obtener_transferencias_recibidas = (req,res) => {
-    const {params:{idsucursal}} = req;
-    transferenciaService.obtener_transferencias_recibidas(idsucursal,(rows)=>{
+    const {params:{idsucursal,idcaja}} = req;
+    transferenciaService.obtener_transferencias_recibidas({idsucursal, idcaja},(rows)=>{
         res.status(201).send({status:'OK', data:rows});
     })
 }

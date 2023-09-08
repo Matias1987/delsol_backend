@@ -12,20 +12,32 @@ const agregar_transferencia = (data,callback) => {
     connection.end();
 }
 
-const obtener_transferencias_enviadas = (idsucursal, callback) => {
+const obtener_transferencias_enviadas = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`SELECT t.*, s.nombre AS 'sucursal_destino' 
-    FROM transferencia t, sucursal s WHERE t.fk_origen = ${idsucursal} AND t.fk_destino = s.idsucursal;`,(err,rows,fields)=>{
+    connection.query(`
+    SELECT t.*, s.nombre AS 'sucursal_destino' 
+    FROM 
+    transferencia t, 
+    sucursal s 
+    WHERE 
+    (case when '${data.idcaja}'<>'-1' then ${data.idcaja}=t.fk_caja else true end) and 
+    t.fk_origen = ${data.idsucursal} AND t.fk_destino = s.idsucursal;`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
 }
-const obtener_transferencias_recibidas = (idsucursal, callback) => {
+const obtener_transferencias_recibidas = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`SELECT t.*, s.nombre AS 'sucursal_origen' 
-    FROM transferencia t , sucursal s WHERE t.fk_destino = ${idsucursal} AND t.fk_origen = s.idsucursal;`,(err,rows,fields)=>{
+    connection.query(`
+    SELECT t.*, s.nombre AS 'sucursal_origen' 
+    FROM 
+    transferencia t , 
+    sucursal s 
+    WHERE 
+    (case when '${data.idcaja}'<>'-1' then ${data.idcaja}=t.fk_caja else true end) and 
+    t.fk_destino = ${data.idsucursal} AND t.fk_origen = s.idsucursal;`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
