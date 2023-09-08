@@ -14,7 +14,7 @@ const queryObtenerClientebyID =(id)=>{
 const queryObtenerListaClientes = () => {
     return `SELECT c.*, 
     CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
-     FROM cliente c;`;
+     FROM cliente c where c.destinatario=0;`;
 }
 
 const queryAgregarCliente = () => {
@@ -25,7 +25,8 @@ const queryAgregarCliente = () => {
         direccion, 
         dni, 
         telefono1, 
-        telefono2) values (?)`;
+        telefono2,
+        destinatario) values (?)`;
 }
 
 module.exports = {

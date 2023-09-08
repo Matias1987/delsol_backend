@@ -25,7 +25,8 @@ const agregar_cliente = (data, callback) => {
             data.direccion,
             data.dni,
             data.telefono1,
-            data.telefono2
+            data.telefono2,
+            data.destinatario
         ]],
         (err,results,fields) => {
             return callback(results.insertId)
