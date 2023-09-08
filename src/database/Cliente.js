@@ -102,10 +102,16 @@ const operaciones_cliente = (idcliente,callback) => {
 		c.fecha as 'fecha',
 		date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
 		'ENTREGA' as 'tipo',
-		'ENTREGA' as 'detalle',
+		concat('ENTREGA @', s.nombre) as 'detalle',
 		0 as 'debe',
 		c.monto as 'haber'
-		FROM cobro c, venta_has_modo_pago vhmp, venta v  WHERE
+		FROM 
+        cobro c, 
+        venta_has_modo_pago vhmp, 
+        venta v,
+        sucursal s
+        WHERE
+        s.idsucursal = c.sucursal_idsucursal and 
         vhmp.venta_idventa = v.idventa AND 
         v.estado = 'ENTREGADO' AND 
 		c.venta_idventa = vhmp.venta_idventa AND 
@@ -118,31 +124,47 @@ const operaciones_cliente = (idcliente,callback) => {
         c.fecha as 'fecha',
         date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
         'PAGO CUOTA' as 'tipo',
-        'PAGO CUOTA' as 'detalle',
+        concat('PAGO CUOTA  @',s.nombre) as 'detalle',
         0 as 'debe',
         c.monto as 'haber'
-         from cobro c where c.cliente_idcliente=${idcliente} AND c.tipo = 'cuota'
+         from 
+         cobro c, 
+         sucursal s 
+         where 
+         s.idsucursal = c.sucursal_idsucursal and 
+         c.cliente_idcliente=${idcliente} 
+         AND c.tipo = 'cuota'
         union
         select 
         v.idventa as 'id',
         v.fecha as 'fecha',
         date_format(v.fecha  , '%d-%m-%y') as 'fecha_f',
         'VENTA'  as 'tipo',
-        concat('VENTA cuotas:', vhmp.cant_cuotas, ' monto: ', vhmp.monto_cuota)   as 'detalle',
+        concat('VENTA Cuotas:', vhmp.cant_cuotas, ' Monto: ', format(vhmp.monto_cuota,2) , '  @', s.nombre)   as 'detalle',
         ((v.monto_total - vhmp.monto) + vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
         0 as 'haber'
-         from venta v INNER JOIN venta_has_modo_pago vhmp ON vhmp.venta_idventa = v.idventa AND  
-			v.cliente_idcliente=${idcliente} AND v.estado = 'ENTREGADO'  AND vhmp.modo_pago='ctacte'
+         from 
+         sucursal s, venta v INNER JOIN venta_has_modo_pago vhmp ON 
+         (
+            vhmp.venta_idventa = v.idventa AND  
+			v.cliente_idcliente=${idcliente} AND 
+            v.estado = 'ENTREGADO'  AND 
+            vhmp.modo_pago='ctacte'
+        )
+        where v.sucursal_idsucursal = s.idsucursal 
         union
         select 
         cm.idcarga_manual as 'id',
         cm.fecha as 'fecha',
          date_format(cm.fecha , '%d-%m-%y')  as 'fecha_f',
          'CARGA MANUAL' as 'tipo',
-         'CARGA MANUAL' as 'detalle',
+         concat('CARGA MANUAL "', cm.concepto , '"  @', s.nombre) as 'detalle',
          cm.monto as 'debe',
          0 as 'haber'
-          from carga_manual cm  where cm.cliente_idcliente=${idcliente}
+          from carga_manual cm, sucursal s  
+          where 
+          s.idsucursal = cm.sucursal_idsucursal and
+          cm.cliente_idcliente=${idcliente}
      ) as ops order by ops.fecha asc;`
     const connection = mysql_connection.getConnection();
     connection.connect();
