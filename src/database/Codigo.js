@@ -39,6 +39,8 @@ const obtener_codigos = (callback) => {
 }
 
 const agregar_codigo = (data,callback) => {
+    console.log("SAVING..........")
+    console.log(JSON.stringify(data))
 
     var _genero = typeof data.genero === 'undefined' ? '' : data.genero;
     var _edad = typeof data.edad === 'undefined' ? '' : data.edad;
@@ -46,6 +48,10 @@ const agregar_codigo = (data,callback) => {
     _genero = _genero == null ? '':_genero;
     _edad = _edad == null ? '': _edad;
     _costo = _costo == null ? '': _costo;
+
+    var esf = typeof data.esf === 'undefined' ? '' : data.esf;  
+    var cil = typeof data.cil === 'undefined' ? '' : data.cil;
+    var ad = typeof data.ad === 'undefined' ? '' : data.ad;
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -57,8 +63,23 @@ const agregar_codigo = (data,callback) => {
         edad,
         costo,
         modo_precio,
-        precio
-        ) values ('${data.codigo}', '${data.descripcion}', ${data.subgrupo_idsubgrupo},'${_genero}','${_edad}',${_costo}, ${data.modo_precio}, ${data.precio})`;
+        precio,
+        esf,
+        cil,
+        ad
+        ) values (
+        '${data.codigo}', 
+        '${data.descripcion}', 
+        ${data.subgrupo_idsubgrupo},
+        '${_genero}',
+        '${_edad}',
+        ${_costo}, 
+        ${data.modo_precio}, 
+        ${data.precio},
+        '${esf}',
+        '${cil}',
+        '${ad}'
+        )`;
 
     console.log(sql)
 
