@@ -86,6 +86,20 @@ const obtener_saldo_ctacte = (req, res) => {
   })
 }
 
+const actualizar_saldo_cliente = (req, res) => {
+  const {params: {clienteId}} = req;
+  clienteService.actualizar_saldo_cliente(clienteId,(resp)=>{
+    res.status(201).send({status:'OK',data:resp});
+  })
+}
+
+const actualizar_saldo_en_cobro = (req, res) => {
+  const {params: {idcobro}} = req;
+  clienteService.actualizar_saldo_en_cobro(idcobro,(resp)=>{
+    res.status(201).send({status:'OK',data:resp});
+  })
+}
+
 module.exports = {
     obtenerClientes,
     agregarCliente,
@@ -97,4 +111,6 @@ module.exports = {
     buscarCliente,
     operaciones_cliente,
     obtener_saldo_ctacte,
+    actualizar_saldo_cliente,
+    actualizar_saldo_en_cobro,
   };

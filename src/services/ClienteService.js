@@ -44,6 +44,17 @@ const obtener_saldo_ctacte = (data, callback) => {
   })
 }
 
+const actualizar_saldo_cliente = (idcliente, callback) => {
+  ClienteDB.actualizar_saldo_cliente(idcliente,(resp)=>{
+    return callback(resp)
+  })
+}
+
+const actualizar_saldo_en_cobro = (idcobro, callback) => {
+  ClienteDB.actualizar_saldo_en_cobro(idcobro,(resp)=>{
+    return callback(resp)
+  })
+}
 
 module.exports = {
     obtenerClientes,
@@ -55,4 +66,6 @@ module.exports = {
     buscarCliente,
     operaciones_cliente,
     obtener_saldo_ctacte,
+    actualizar_saldo_cliente,
+    actualizar_saldo_en_cobro,
   };

@@ -14,9 +14,18 @@ router.get("/buscar/:values", (req, res) => {
 router.get("/:clienteId", (req, res) => {
  clienteController.obtenerClientePorID(req,res)
 });
+
 router.get("/operaciones/:clienteId", (req, res) => {
  clienteController.operaciones_cliente(req,res)
 });
+
+router.get("/actualizar_saldo_en_cobro/:idcobro", (req, res) => {
+ clienteController.actualizar_saldo_en_cobro(req,res)
+});
+router.get("/actualizar_saldo_cliente/:clienteId", (req, res) => {
+ clienteController.actualizar_saldo_cliente(req,res)
+});
+
 router.get("/saldo/ctacte/:clienteId", (req, res) => {
  clienteController.obtener_saldo_ctacte(req,res)
 });

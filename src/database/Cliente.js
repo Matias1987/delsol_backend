@@ -174,62 +174,14 @@ const operaciones_cliente = (idcliente,callback) => {
         callback(rows)
     })
 
+    connection.end();
+
 }
 
 
 const obtener_saldo_ctacte = (idcliente,callback) => {
     //FALTAN CONDICIONES EN LA CONSULTA, COMO POR  EJ. TENER EN CTA. QUE LA VENTA NO ESTE ANULADA
-    const query  = `SELECT SUM(op.debe) AS 'debe', SUM(op.haber) AS 'haber'  FROM
-    (
-    	
-        SELECT 
-        CONCAT('a',c.idcobro) as 'id',
-        c.monto AS 'haber',
-        0 AS 'debe'
-        FROM 
-		  cobro c,
-		  venta v,
-		  venta_has_modo_pago vmp 
-		  WHERE 
-		  vmp.venta_idventa = v.idventa AND 
-		  v.estado = 'ENTREGADO' AND 
-        vmp.modo_pago = 'ctacte' AND 
-        c.venta_idventa = vmp.venta_idventa  AND
-        c.tipo <> 'cuota' AND
-        c.cliente_idcliente=${idcliente}
-        union
-        
-		 
-         SELECT 
-         CONCAT('b',c.idcobro) as 'id',
-        c.monto AS 'haber',
-        0 AS 'debe'
-         FROM cobro c WHERE c.tipo = 'cuota' AND c.cliente_idcliente=${idcliente}
-         union
-         
-         
-        SELECT 
-        CONCAT('c',v.idventa) as 'id',
-        0 AS 'haber', 
-        ((v.monto_total - vmp.monto) + vmp.cant_cuotas * vmp.monto_cuota) AS 'debe'
-        FROM 
-		  venta_has_modo_pago vmp, 
-		  venta v 
-		  WHERE 
-		  v.idventa = vmp.venta_idventa AND 
-		  vmp.modo_pago='ctacte' AND 
-		  v.cliente_idcliente=${idcliente} AND 
-		  v.estado='ENTREGADO'
-        union
-        
-        SELECT 
-        CONCAT('d',cm.idcarga_manual) as 'id',
-        0 AS 'haber', 
-        cm.monto AS 'debe'
-        FROM carga_manual cm WHERE cm.cliente_idcliente=${idcliente}
-        
-    ) AS op
-    ;`
+    const query  = queries.queryObtenerBalance(idcliente)
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -238,6 +190,77 @@ const obtener_saldo_ctacte = (idcliente,callback) => {
         callback(rows)
     })
 }
+
+
+const actualizar_saldo_cliente = (idcliente,callback)=>{
+    const query = queries.queryObtenerBalance(idcliente)
+    const connection = mysql_connection.getConnection();
+    
+    connection.connect();
+    connection.query(query,(err,rows)=>{
+        if(rows.length>0){
+
+            const debe = parseFloat(rows[0].debe)
+            const haber = parseFloat(rows[0].haber)
+
+            connection.query(`UPDATE cliente c SET c.saldo =${debe-haber} WHERE c.idcliente=${idcliente};`,
+            (err,resp)=>
+            {
+                return callback(resp)
+            }
+            )
+        }
+    
+        connection.end()
+    })
+}
+const actualizar_saldo_en_cobro = (idcobro,callback)=>{
+    
+    const connection = mysql_connection.getConnection();
+    console.log("###########################################")
+    console.log(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`)
+    
+    connection.connect();
+    connection.query(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`,(__err, __row)=>{
+
+        if(__row.length>0)
+        {
+            const query = queries.queryObtenerBalance(__row[0].cliente_idcliente)
+            console.log(query)
+            connection.query(
+                query,
+                (err,rows)=>{
+                if(rows.length>0){
+        
+                    const debe = parseFloat(rows[0].debe)
+                    const haber = parseFloat(rows[0].haber)
+    
+                    console.log(`UPDATE cobro c SET c.saldo_actual = ${debe-haber} WHERE c.idcobro=${idcobro}`)
+        
+                    connection.query(`UPDATE cobro c SET c.saldo_actual = ${debe-haber} WHERE c.idcobro=${idcobro}`,
+                    (err,resp)=>
+                    {
+                        return callback(resp)
+                    }
+                    )
+                }
+            
+                connection.end()
+            })
+        }
+
+        else{
+            connection.end()
+            callback(null)
+        }
+
+
+
+
+    })
+    
+}
+
 
 module.exports = {
     agregar_cliente, 
@@ -248,4 +271,6 @@ module.exports = {
     operaciones_cliente,
     obtener_saldo_ctacte,
     agregar_destinatario,
+    actualizar_saldo_cliente,
+    actualizar_saldo_en_cobro,
 };
