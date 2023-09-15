@@ -56,7 +56,21 @@ const actualizar_saldo_en_cobro = (idcobro, callback) => {
   })
 }
 
+const bloquear_cuenta = (idcuenta, callback) => {
+  ClienteDB.bloquear_cuenta(idcuenta,(resp)=>{
+    return callback(resp)
+  })
+}
+
+const desbloquear_cuenta = (idcuenta, callback) => {
+  ClienteDB.desbloquear_cuenta(idcuenta,(resp)=>{
+    return callback(resp)
+  })
+}
+
 module.exports = {
+    bloquear_cuenta,
+    desbloquear_cuenta,
     obtenerClientes,
     agregarCliente,
     obtenerClienteDNI,

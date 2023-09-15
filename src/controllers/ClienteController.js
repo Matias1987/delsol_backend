@@ -100,7 +100,24 @@ const actualizar_saldo_en_cobro = (req, res) => {
   })
 }
 
+const bloquear_cuenta = (req, res) => {
+  const {params: {clienteId}} = req;
+  clienteService.bloquear_cuenta(clienteId,(resp)=>{
+    res.status(201).send({status:'OK',data:resp});
+  })
+  
+}
+
+const desbloquear_cuenta = (req, res) => {
+  const {params: {clienteId}} = req;
+  clienteService.desbloquear_cuenta(clienteId,(resp)=>{
+    res.status(201).send({status:'OK',data:resp});
+  })
+}
+
 module.exports = {
+    bloquear_cuenta,
+    desbloquear_cuenta,
     obtenerClientes,
     agregarCliente,
     obtenerClientePorDNI,

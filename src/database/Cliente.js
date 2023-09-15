@@ -261,8 +261,28 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
     
 }
 
+const bloquear_cuenta = (idcliente, callback) =>{
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(`update cliente c set c.bloqueado = 1 where c.idcliente = ${idcliente};`,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
+const desbloquear_cuenta = (idcliente, callback) =>{
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(`update cliente c set c.bloqueado = 0 where c.idcliente = ${idcliente};`,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 
 module.exports = {
+    bloquear_cuenta,
+    desbloquear_cuenta,
     agregar_cliente, 
     obtener_lista_clientes, 
     detalle_cliente_dni,
