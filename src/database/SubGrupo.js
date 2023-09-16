@@ -139,6 +139,16 @@ const obtener_detalle_subgrupo = (id,callback)=>{
     connection.end();
 }
 
+const obtener_descripcion_cat_subgrupo = (id,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const query = `select * from detalle_categoria dc where  dc.fkcategoria=${id};`;
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end();
+}
+
 module.exports = {
     obtener_subgrupos,
     agregar_subgrupo,
@@ -146,4 +156,5 @@ module.exports = {
     modificar_multiplicador_grupos,
     obtener_detalle_subgrupo,
     modificar_precios_defecto,
+    obtener_descripcion_cat_subgrupo,
 }

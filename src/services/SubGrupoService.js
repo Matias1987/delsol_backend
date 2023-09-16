@@ -42,6 +42,12 @@ const modificar_precios_defecto = (data,callback) => {
   })
 }
 
+const obtener_descripcion_cat_subgrupo = (id,callback) => {
+  SubGrupoDB.obtener_descripcion_cat_subgrupo(id,(rows)=>{
+    callback(rows)
+  })
+}
+
 
 module.exports = {
     obtenerSubgrupos,
@@ -52,4 +58,5 @@ module.exports = {
     modificar_multiplicador,
     obtener_detalle_subgrupo,
     modificar_precios_defecto,
+    obtener_descripcion_cat_subgrupo,
   };

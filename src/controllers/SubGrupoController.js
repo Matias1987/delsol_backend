@@ -86,6 +86,13 @@ const modificar_precios_defecto = (req, res) => {
   })
 }
 
+const obtener_descripcion_cat_subgrupo = (req,res) => {
+  const {params:{subgrupoId}} = req;
+  subgrupoService.obtener_descripcion_cat_subgrupo(subgrupoId,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+}
+
 
 module.exports = {
     obtenerSubgrupos,
@@ -96,4 +103,5 @@ module.exports = {
     modificar_multiplicador,
     obtener_detalle_subgrupo,
     modificar_precios_defecto,
+    obtener_descripcion_cat_subgrupo,
   };

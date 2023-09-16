@@ -287,6 +287,7 @@ const lista_cobros = (data, callback) => {
     const _idcliente = typeof data.idcliente === 'undefined' ? '' : data.idcliente
     const _idventa = typeof data.idventa === 'undefined' ? '' : data.idventa
     const _idsucursal = typeof data.idsucursal === 'undefined' ? '' : data.idsucursal
+    const _idcobro = typeof data.idcobro === 'undefined' ? '' : data.idcobro
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -301,7 +302,8 @@ const lista_cobros = (data, callback) => {
         c.cliente_idcliente = cl.idcliente and
         (case when '' <> '${_idsucursal}' then c.sucursal_idsucursal = ${_idsucursal} else true end) and 
         (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
-        (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) 
+        (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) and 
+        (case when '' <> '${_idcobro}' then '${_idcobro}' = c.idcobro ELSE TRUE end) 
         order by c.idcobro desc;`,
         (err,results)=>{
             callback(results);

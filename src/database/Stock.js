@@ -161,7 +161,8 @@ const obtener_detalle_stock_sucursal_v2 = (idsucursal, idcodigo,callback) => {
                 c.codigo, c.costo, s.cantidad, c.descripcion, c.idcodigo,c.genero, c.edad,
                 if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
                 sg.multiplicador,
-                c.modo_precio
+                c.modo_precio,
+                sg.idsubgrupo
                 FROM 
                 stock s, codigo c,
                 grupo g, subgrupo sg, familia f, subfamilia sf 

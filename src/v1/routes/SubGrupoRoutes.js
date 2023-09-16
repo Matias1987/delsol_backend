@@ -13,6 +13,9 @@ router.get("/:subgrupoId", (req, res) => {
 router.get("/optionsforgrupo/:grupoId", (req, res) => {
   subGrupoController.obtener_subgrupos_bygrupo_opt(req,res);
 });
+router.get("/descripcion_cat_subgrupo/:subgrupoId", (req, res) => {
+  subGrupoController.obtener_descripcion_cat_subgrupo(req,res);
+});
 
 router.post("/", (req, res) => {
   subGrupoController.agregarSubgrupo(req,res);
