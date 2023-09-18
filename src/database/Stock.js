@@ -111,7 +111,8 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
                 sf.familia_idfamilia = f.idfamilia AND
                 (case when '${search_value}' <> 'null' then c.codigo LIKE '%${search_value}%' else true end) AND
-                (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end);`
+                (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end)
+                limit 200;`
     console.log(_sql)
     connection.query(_sql,(err,rows)=>{
         callback(rows);
