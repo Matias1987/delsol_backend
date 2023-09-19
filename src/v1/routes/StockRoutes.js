@@ -24,7 +24,7 @@ router.get("/search/:idsucursal/:search_value", (req, res) => {
   stockController.search_stock(req,res)
 });
 
-router.get("/search_stock_envio/:idsucursal/:idsucursal_destino/:search_value/:idcodigo", (req, res) => {
+router.get("/search_stock_envio/:idsucursal/:idsucursal_destino/:search_value/:idcodigo/:idsubgrupo", (req, res) => {
   stockController.search_stock_envio(req,res)
 });
 

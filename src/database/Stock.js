@@ -80,7 +80,7 @@ const search_stock = (search_value, idsucursal, callback) => {
     connection.end();
 }
 
-const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino, idcodigo, callback) => {
+const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino, idcodigo, idsubgrupo,  callback) => {
     const search_value = decodeURIComponent(_search_value);
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -104,6 +104,7 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 LEFT JOIN (SELECT _s.cantidad, _s.codigo_idcodigo FROM stock _s WHERE _s.sucursal_idsucursal = ${idsucursal_destino}) 
                 as s2 ON s2.codigo_idcodigo = s.codigo_idcodigo
                 WHERE
+                s.cantidad > 0 AND 
                 s.sucursal_idsucursal = ${idsucursal_origen} AND
                 s.codigo_idcodigo = c.idcodigo AND
                 c.subgrupo_idsubgrupo = sg.idsubgrupo AND
@@ -111,8 +112,9 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
                 sf.familia_idfamilia = f.idfamilia AND
                 (case when '${search_value}' <> 'null' then c.codigo LIKE '%${search_value}%' else true end) AND
-                (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end)
-                limit 200;`
+                (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end) AND
+                (case when '${idsubgrupo}' <> '-1' then c.subgrupo_idsubgrupo=${idsubgrupo} else true end)
+                limit 1000;`
     console.log(_sql)
     connection.query(_sql,(err,rows)=>{
         callback(rows);
