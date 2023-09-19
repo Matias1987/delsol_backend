@@ -104,7 +104,7 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 LEFT JOIN (SELECT _s.cantidad, _s.codigo_idcodigo FROM stock _s WHERE _s.sucursal_idsucursal = ${idsucursal_destino}) 
                 as s2 ON s2.codigo_idcodigo = s.codigo_idcodigo
                 WHERE
-                s.cantidad > 0 AND 
+                
                 s.sucursal_idsucursal = ${idsucursal_origen} AND
                 s.codigo_idcodigo = c.idcodigo AND
                 c.subgrupo_idsubgrupo = sg.idsubgrupo AND
