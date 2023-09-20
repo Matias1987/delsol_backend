@@ -619,6 +619,36 @@ const agregar_stock = (data,callback) =>{
         connection.end()
     }
 
+    const modificar_cantidad_categoria = (data, callback) => {
+        const query = `UPDATE 
+        stock s, 
+        codigo c, 
+        subgrupo sg,
+        grupo g,
+        subfamilia sf
+        SET s.cantidad = ${data.cantidad}
+        WHERE
+        s.sucursal_idsucursal=${data.idsucursal} AND 
+        s.codigo_idcodigo = c.idcodigo AND
+        c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
+        sg.grupo_idgrupo = g.idgrupo AND 
+        g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+        (case when '-1'<>'${data.idfamilia}' then sf.familia_idfamilia = ${data.idfamilia} ELSE TRUE END ) AND
+        (case when '-1'<>'${data.idsubfamilia}' then sf.idsubfamilia = ${data.idsubfamilia} ELSE TRUE END ) AND 
+        (case when '-1' <> '${data.idgrupo}' then g.idgrupo = ${data.idgrupo} ELSE TRUE END ) AND 
+        (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = ${data.idsubgrupo} ELSE TRUE END )
+        ;
+        `
+        ;
+
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        connection.query(query,(err,resp)=>{
+            callback(resp)
+        })
+        connection.end()
+    }
+
 module.exports = {
     obtener_subgrupo_full,
     agregar_stock,
@@ -637,4 +667,5 @@ module.exports = {
     obtener_lista_stock_filtros,
     obtener_stock_ventas,
     obtener_stock_detalles_venta,
+    modificar_cantidad_categoria,
 }

@@ -63,6 +63,10 @@ router.post("/m/descontar_cantidad_por_codigo/", (req, res) => {
   stockController.descontar_cantidad_por_codigo(req,res);
 });
 
+router.post("/m/modificar_cantidad_categoria/", (req, res) => {
+  stockController.modificar_cantidad_categoria(req,res);
+});
+
 
 router.patch("/:stockId", (req, res) => {
   res.send("Update an existing workout");

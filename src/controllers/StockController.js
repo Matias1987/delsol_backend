@@ -1,5 +1,11 @@
 const stockService = require("../services/StockService")
 
+const modificar_cantidad_categoria = (req, res) => {
+        const {body} = req
+        stockService.modificar_cantidad_categoria(body,(resp)=>{
+          return res.status(201).send({status:'OK', data:resp});
+        })
+}
 
 const incrementar_cantidad = (req, res) => {
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
@@ -203,4 +209,5 @@ module.exports = {
   obtener_lista_stock_filtros,
   obtener_stock_ventas,
   obtener_stock_detalles_venta,
+  modificar_cantidad_categoria,
   };

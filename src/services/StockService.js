@@ -102,6 +102,12 @@ const obtener_stock_detalles_venta = (data, callback) => {
   })
 }
 
+const modificar_cantidad_categoria = (data, callback) => {
+        StockDB.modificar_cantidad_categoria(data,(resp)=>{
+          return callback(resp)
+        })
+}
+
 
 module.exports = {
   obtener_subgrupo_full,
@@ -122,4 +128,5 @@ module.exports = {
   obtener_lista_stock_filtros,
   obtener_stock_ventas,
   obtener_stock_detalles_venta,
+  modificar_cantidad_categoria,
   };
