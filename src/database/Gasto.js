@@ -1,5 +1,20 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const lista_gastos_admin = (callback) => {
+    const query = `SELECT 
+    cg.nombre AS 'concepto',
+    s.nombre AS 'sucursal',
+    g.monto
+    FROM
+    sucursal s,
+    concepto_gasto cg,
+    gasto g 
+    WHERE
+    g.sucursal_idsucursal = s.idsucursal AND 
+    g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto;`;
+
+}
+
 const obtener_gastos_sucursal = (idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -75,4 +90,5 @@ module.exports = {
     agregar_gasto,
     obtener_gastos_sucursal,
     obtener_gastos_caja,
+    lista_gastos_admin,
 }

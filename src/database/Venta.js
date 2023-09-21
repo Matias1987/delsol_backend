@@ -2,6 +2,19 @@ const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
+const lista_ventas_admin = () => {
+    const query = `SELECT
+    CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
+    u.nombre AS 'vendedor', 
+    v.idventa, 
+    v.monto_total, 
+    FROM cliente c, usuario u, venta v, sucursal s 
+    WHERE 
+    v.cliente_idcliente = c.idcliente AND 
+    v.usuario_idusuario = u.idusuario AND 
+    v.sucursal_idsucursal = s.idsucursal;`
+}
+
 const anular_venta = (data, callback) => {
     /**
      * restaurar stock y marcar venta como anulada
@@ -425,19 +438,20 @@ const lista_venta_item = (idventa, callback) => {
 
 
 module.exports = {
-insert_venta,
-//agregar_venta,
-detalle_venta,
-lista_ventas,
-lista_ventas_sucursal,
-lista_venta_mp,
-lista_venta_sucursal_estado,
-lista_venta_item,
-cambiar_estado_venta,
-lista_venta_mp_cta_cte,
-cambiar_venta_sucursal_deposito,
-desc_cantidades_stock_venta,
-inc_cantidades_stock_venta,
+    lista_ventas_admin,
+    insert_venta,
+    //agregar_venta,
+    detalle_venta,
+    lista_ventas,
+    lista_ventas_sucursal,
+    lista_venta_mp,
+    lista_venta_sucursal_estado,
+    lista_venta_item,
+    cambiar_estado_venta,
+    lista_venta_mp_cta_cte,
+    cambiar_venta_sucursal_deposito,
+    desc_cantidades_stock_venta,
+    inc_cantidades_stock_venta,
 }
 
 
