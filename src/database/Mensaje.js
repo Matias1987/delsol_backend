@@ -1,0 +1,23 @@
+const mysql_connection = require("../lib/mysql_connection")
+
+const obtener_mensajes = (callback) => {
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(`SELECT m.*, u.nombre AS 'emisor' FROM mensaje m, usuario u WHERE m.fkemisor = u.idusuario ORDER BY m.idmensaje asc; `,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+    
+}
+
+const agregar_mensaje = (data, callback) => {
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(`insert into mensaje (fkemisor, mensaje) values (${data.fkemisor}, '${data.mensaje}') `,(err,data)=>{
+        callback(data)
+    })
+    connection.end()
+    
+}
+
+module.exports = {obtener_mensajes, agregar_mensaje}

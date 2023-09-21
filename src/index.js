@@ -114,7 +114,11 @@ app.use("/api/v1/gastos",gastosRoutes);
 const transferenciaRoutes = require("./v1/routes/TransferenciaRoutes");
 app.use("/api/v1/transferencias",transferenciaRoutes);
 
+const adminRoutes = require("./v1/routes/AdminRoutes");
+app.use("/api/v1/admin",adminRoutes);
 
+const mensajeRoutes = require("./v1/routes/MensajeRoutes");
+app.use("/api/v1/mensajes",mensajeRoutes)
 
 
 
