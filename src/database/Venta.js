@@ -2,17 +2,28 @@ const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
-const lista_ventas_admin = () => {
+const lista_ventas_admin = (callback) => {
     const query = `SELECT
     CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
     u.nombre AS 'vendedor', 
     v.idventa, 
-    v.monto_total, 
+    v.monto_total
     FROM cliente c, usuario u, venta v, sucursal s 
     WHERE 
     v.cliente_idcliente = c.idcliente AND 
     v.usuario_idusuario = u.idusuario AND 
     v.sucursal_idsucursal = s.idsucursal;`
+    
+    const connection = mysql_connection.getConnection()
+
+    connection.connect()
+    console.log("query ventas admin")
+    connection.query(query,(err,rows)=>{
+        console.log(JSON.stringify(rows))
+        callback(rows)
+    })
+
+    connection.end()
 }
 
 const anular_venta = (data, callback) => {
@@ -34,9 +45,11 @@ const desc_cantidades_stock_venta = (data,callback) =>
     SET s.cantidad = s.cantidad - vs.cantidad WHERE
     s.codigo_idcodigo = vs.idcodigo AND 
     s.sucursal_idsucursal = vs.idsucursal;`
+   
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
+        
         callback(resp)
     })
     connection.end();

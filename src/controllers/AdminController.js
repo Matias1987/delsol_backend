@@ -1,26 +1,27 @@
 const adminService = require("../services/AdminService")
 
-const obtener_lista_ventas_admin = (callback) =>{
+const obtener_lista_ventas_admin = (req,res) =>{
+    console.log("@@@@@@@@@@[ VENTAS ]@@@@@@@@@@@@@@@@@")
     adminService.obtener_lista_ventas_admin((rows)=>{
-        return callback(rows)
+        res.send({status:"OK", data: rows})
     })
 }
 
-const obtener_lista_gastos_admin = (callback) => {
+const obtener_lista_gastos_admin = (req,res) => {
     adminService.obtener_lista_gastos_admin((rows)=>{
-        return callback(rows)
+        res.send({status:"OK", data: rows})
     })
 }
 
-const obtener_lista_cobros_admin = (callback) =>{
+const obtener_lista_cobros_admin = (req,res) =>{
     adminService.obtener_lista_cobros_admin((rows)=>{
-        return callback(rows)
+        res.send({status:"OK", data: rows})
     })
 }
 
-const obtener_lista_envios_admin = (callback) => {
+const obtener_lista_envios_admin = (req,res) => {
     adminService.obtener_lista_envios_admin((rows)=>{
-        return callback(rows)
+        res.send({status:"OK", data: rows})
     })
 }
 

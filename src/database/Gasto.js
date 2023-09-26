@@ -13,6 +13,16 @@ const lista_gastos_admin = (callback) => {
     g.sucursal_idsucursal = s.idsucursal AND 
     g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto;`;
 
+    const connection = mysql_connection.getConnection()
+
+    connection.connect()
+
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+
+    connection.end()
+
 }
 
 const obtener_gastos_sucursal = (idsucursal, callback) => {
