@@ -464,7 +464,7 @@ const agregar_stock = (data,callback) =>{
         (case when '${data.subfamilia}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
         (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) 
         ${order}
-        ;
+         limit 100;
         `;
         console.log(_query);
         const connection = mysql_connection.getConnection();
@@ -497,7 +497,8 @@ const agregar_stock = (data,callback) =>{
         g.subfamilia_idsubfamilia = sf.idsubfamilia AND
         (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and 
         s.sucursal_idsucursal=${filters.idSucursal} and 
-        (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%')
+        (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%') and
+        s.cantidad > 0 
         LIMIT 100
         ;`;
 
