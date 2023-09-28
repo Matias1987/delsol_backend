@@ -4,6 +4,89 @@ const mysql_connection = require("../lib/mysql_connection")
     the server returns a list of stocks rows
 */
 
+const verificar_cantidades_productos = (data) => {
+    
+    const doPush = (idx, obj, _arr) => !obj.hasOwnProperty(idx) ? _arr :  [..._arr,obj[idx]]
+
+    const productos = {
+        lejos_od:{idcodigo:1, cantidad: 1},
+        lejos_oi:{idcodigo:1, cantidad: 1},
+        cerca_od:{idcodigo:2, cantidad: 1},
+        cerca_oi:{idcodigo:3, cantidad: 1},
+        cerca_tratamiento:{idcodigo:3, cantidad: 5},
+        lejos_armazon:{idcodigo:5, cantidad: 1},
+    }
+    var arr=[]
+    arr = doPush('lejos_od', productos, arr)
+    arr = doPush('lejos_oi', productos, arr)
+    arr = doPush('cerca_od', productos, arr)
+    arr = doPush('cerca_oi', productos, arr)
+    arr = doPush('lejos_armazon', productos, arr)
+    arr = doPush('cerca_armazon', productos, arr)
+    arr = doPush('lejos_tratamiento', productos, arr)
+    arr = doPush('cerca_tratamiento', productos, arr)
+    arr = doPush('od', productos, arr)
+    arr = doPush('oi', productos, arr)
+    arr = doPush('tratamiento', productos, arr)
+    arr = doPush('armazon', productos, arr)
+    arr = doPush('insumo', productos, arr)
+
+    console.log(JSON.stringify(arr))
+    var codigos=[]
+    arr.forEach((r)=>{
+        const temp = codigos.find(c=>c.idcodigo == r.idcodigo)
+        if(typeof temp !== 'undefined')
+        {
+            codigos = codigos.map(t=>({...t,cantidad:t.idcodigo==r.idcodigo? t.idcodigo + r.idcodigo : t.cantidad}))
+        }
+        else
+        {
+            codigos.push({idcodigo: r.idcodigo,cantidad: r.cantidad, cantidad_serv: -1})
+        }
+    })
+    console.log(JSON.stringify(codigos))
+
+
+    var ids  = "";
+
+    codigos.forEach((c)=>{ids+= (ids.length>0? ',' : '') + `${c.idcodigo}`})
+
+    const query = `SELECT s.codigo_idcodigo AS 'idcodigo', s.cantidad FROM stock s WHERE s.sucursal_idsucursal = 13 AND s.codigo_idcodigo IN (${ids})`;
+
+    console.log(query)
+
+
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+
+    connection.query(query,(err,rows)=>{
+        /**
+         * check if there are codes with less than the required quantity!
+         */
+        var error = false
+        rows.forEach(r=>{
+            codigos = codigos.map(c=>({...c,cantidad_serv: c.idcodigo == r.idcodigo ? r.cantidad:c.cantidad}))
+        })
+
+        for(let i=0;i<codigos.length;i++)
+        {
+            if(codigos[i].cantidad > codigos[i].cantidad_serv)
+            {
+                error=true;
+                break;
+            }
+        }
+
+    })
+
+    connection.end();
+
+
+
+
+
+}
+
 const incrementar_cantidad = (data, callback) => {
     var codigos = "";
     data.codigos.forEach(c=>{
@@ -651,6 +734,7 @@ const agregar_stock = (data,callback) =>{
     }
 
 module.exports = {
+    verificar_cantidades_productos,
     obtener_subgrupo_full,
     agregar_stock,
     obtener_stock,
