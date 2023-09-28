@@ -1,5 +1,15 @@
 const stockService = require("../services/StockService")
 
+const verificar_cantidades_productos = (req, res) => {
+  const {body} = req;
+  stockService.verificar_cantidades_productos(
+    body,
+    (resp)=>{
+      return res.status(201).send({status:'OK', data:resp});
+    }
+  ) 
+}
+
 const modificar_cantidad_categoria = (req, res) => {
         const {body} = req
         stockService.modificar_cantidad_categoria(body,(resp)=>{
@@ -210,4 +220,5 @@ module.exports = {
   obtener_stock_ventas,
   obtener_stock_detalles_venta,
   modificar_cantidad_categoria,
+  verificar_cantidades_productos,
   };

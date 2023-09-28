@@ -1,5 +1,11 @@
 const StockDB = require("../database/Stock")
 
+const verificar_cantidades_productos = (data,callback) => {
+  StockDB.verificar_cantidades_productos(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 const obtener_subgrupo_full = (callback) => {
   StockDB.obtener_subgrupo_full((rows)=>{
     return callback(rows)
@@ -129,4 +135,5 @@ module.exports = {
   obtener_stock_ventas,
   obtener_stock_detalles_venta,
   modificar_cantidad_categoria,
+  verificar_cantidades_productos,
   };
