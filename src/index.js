@@ -120,6 +120,9 @@ app.use("/api/v1/admin",adminRoutes);
 const mensajeRoutes = require("./v1/routes/MensajeRoutes");
 app.use("/api/v1/mensajes",mensajeRoutes)
 
+const pagareRoutes = require("./v1/routes/PagareRoutes");
+app.use("/api/v1/pagares",pagareRoutes)
+
 
 
 

@@ -1,17 +1,10 @@
 const mysql_connection = require("../lib/mysql_connection")
 
-/* FOR SEARCH PURPOSES, the client sends a code as a parameter for search and
-    the server returns a list of stocks rows
-*/
 
 const verificar_cantidades_productos = (data, callback) => {
     
     const doPush = (idx, obj, _arr) => !obj.hasOwnProperty(idx) ? _arr : (obj[idx]==null ? _arr : [..._arr,obj[idx]])
     const productos = data.productos
-    
-    console.log("######################  VERIFICAR CANTIDADES PRODUCTOS  ############################## " + data.tipo)
-    console.log(JSON.stringify(data))
-    
 
     var arr=[]
     switch(+data.tipo)
@@ -53,7 +46,6 @@ const verificar_cantidades_productos = (data, callback) => {
         break;
     }
     
-    //console.log("arr: " +  JSON.stringify(arr))
     var codigos=[]
     arr.forEach((r)=>{
         const temp = codigos.find(c=>c.idcodigo == r.idcodigo)
@@ -66,9 +58,7 @@ const verificar_cantidades_productos = (data, callback) => {
             codigos.push({idcodigo: r.idcodigo,cantidad: r.cantidad, cantidad_serv: -1})
         }
     })
-    //console.log(JSON.stringify(codigos))
-
-
+    
     var ids  = "";
 
     codigos.forEach((c)=>{ids+= (ids.length>0? ',' : '') + `${c.idcodigo}`})
@@ -78,6 +68,7 @@ const verificar_cantidades_productos = (data, callback) => {
     console.log(query)
 
     const connection = mysql_connection.getConnection();
+
     connection.connect();
 
     connection.query(query,(err,rows)=>{
@@ -93,8 +84,7 @@ const verificar_cantidades_productos = (data, callback) => {
                 }
             }
         })
-        console.log("-------------------------------------------------")
-        console.log(JSON.stringify(codigos))
+        
         var c = null;
         for(let i=0;i<codigos.length;i++)
         {
@@ -128,12 +118,7 @@ const incrementar_cantidad = (data, callback) => {
         //if idfactura exists..
         if(data.fkfactura!=-1)
         {
-            /*let query_str = `INSERT INTO codigo_factura (
-                stock_codigo_idcodigo,
-                factura_idfactura,
-                cantidad,
-                costo)
-                VALUES (${data.idcodigo}, ${data.fkfactura}, ${data.cantidad}, ${data.costo < 0 ? 0 : data.costo})`;*/
+            
             let query_str = `INSERT INTO codigo_factura (
                 stock_codigo_idcodigo,
                 factura_idfactura,
@@ -145,7 +130,6 @@ const incrementar_cantidad = (data, callback) => {
                 connection.query(query_str);
         }
         //update costo
-        //console.log(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo='${data.idcodigo}';`)
         if(data.costo>0){
             connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
         }      
@@ -160,7 +144,9 @@ const incrementar_cantidad = (data, callback) => {
     
 }
 
-
+/* FOR SEARCH PURPOSES, the client sends a code as a parameter for search and
+    the server returns a list of stocks rows
+*/
 const search_stock = (search_value, idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();

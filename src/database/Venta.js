@@ -423,12 +423,72 @@ const lista_venta_item = (idventa, callback) => {
     connection.end()
 }
 
+const obtener_datos_pagare = (data,callback) => {
+    /**
+     * AGREGAR pagare_impreso en tabla venta_has_modo_pago
+     */
+    const query_mp_ctacte = `SELECT 
+    vmp.id_modopago,
+    v.idventa,
+    vmp.monto,
+    vmp.monto_int,
+    vmp.cant_cuotas,
+    vmp.monto_cuota,
+    v.monto_total AS 'vta_monto'
+     FROM 
+    venta_has_modo_pago vmp, 
+    venta v 
+    WHERE v.idventa = ${data} AND 
+    vmp.venta_idventa = v.idventa AND 
+    vmp.modo_pago = 'ctacte';`
+
+    /**
+    get list of 'modopago', because pagos are not done yet, so the only way of 
+    gessing the amount that the client paid, is by getting the list of 'modopago'...
+    */
+    const query_mp = `SELECT sum(vmp.monto) as 'monto_sum' FROM venta_has_modo_pago vmp 
+    WHERE vmp.venta_idventa = ${data}
+    AND vmp.modo_pago <> 'ctacte';`
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query_mp_ctacte,(err,rows)=>{
+        if(rows.length<1)
+        {
+            /** no record found */
+            return callback({err:-1});
+        }
+        else
+        {
+            const r = rows[0]
+            connection.query(query_mp,(_err, _rows)=>{
+                var monto_entrega=0;
+                if(_rows.length>0)
+                {
+                    //entrega found
+                    monto_entrega = parseFloat(_rows[0].monto_sum)
+                }
+                callback({
+                    idventa: r.idventa,
+                    monto: r.monto,//monto mp cta cte sin interes
+                    monto_int: r.monto_int, //monto mp cta cte con interes
+                    cant_cuotas: r.cant_cuotas,
+                    monto_entrega: monto_entrega,
+                    vta_monto: r.vta_monto,
+                    vta_monto_int: parseFloat(r.venta_monto) - r.monto + r.monto_int,
+                })
+            })
+        }
+        
+    })
+    connection.end()
+}
+
 
 
 module.exports = {
     lista_ventas_admin,
     insert_venta,
-    //agregar_venta,
     detalle_venta,
     lista_ventas,
     lista_ventas_sucursal,
@@ -440,5 +500,6 @@ module.exports = {
     cambiar_venta_sucursal_deposito,
     desc_cantidades_stock_venta,
     inc_cantidades_stock_venta,
+    obtener_datos_pagare,
 }
 
