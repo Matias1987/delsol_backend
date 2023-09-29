@@ -14,6 +14,14 @@ router.get("/get_venta_items/:ventaId", (req, res) => {
   ventaController.lista_venta_item(req,res)
 });
 
+router.get("/obtener_datos_pagare/:ventaId", (req, res) => {
+  ventaController.obtener_datos_pagare(req,res)
+});
+
+router.get("/obtener_lista_pagares/:clienteId", (req, res) => {
+  ventaController.obtener_lista_pagares(req,res)
+});
+
 
 
 router.get("/get_venta_mp/:ventaId", (req, res) => {

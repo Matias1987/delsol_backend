@@ -103,6 +103,20 @@ const desc_cantidades_stock_venta = (req,res)=>{
   } )
 }
 
+const obtener_datos_pagare = (req, res) => {
+  const {params:{ventaId}} = req;
+  ventaService.obtener_datos_pagare(ventaId,(resp)=>{
+    res.status(201).send({status:'OK', data:resp})
+  })
+}
+
+const obtener_lista_pagares = (req, res ) => {
+  const {params:{clienteId}} = req
+  ventaService.obtener_lista_pagares(clienteId,(rows)=>{
+    res.status(201).send({status:'OK', data: rows})
+  })
+}
+
 module.exports = {
     obtenerVentas,
     obtenerVentasSucursal,
@@ -117,5 +131,6 @@ module.exports = {
     cambiar_venta_sucursal_deposito,
     inc_cantidades_stock_venta,
     desc_cantidades_stock_venta,
-    
+    obtener_datos_pagare,
+    obtener_lista_pagares,
   };

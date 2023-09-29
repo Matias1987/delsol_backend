@@ -68,6 +68,18 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) =>{
   })
 }
 
+const obtener_datos_pagare = (data, callback) => {
+  ventaDB.obtener_datos_pagare(data,(data)=>{
+    return callback(data)
+  })
+}
+
+const obtener_lista_pagares = (data, callback) => {
+  ventaDB.obtener_lista_pagares(data,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
     lista_venta_item ,
     obtenerVentas,
@@ -82,4 +94,6 @@ module.exports = {
     cambiar_venta_sucursal_deposito,
     desc_cantidades_stock_venta,
     inc_cantidades_stock_venta,
+    obtener_datos_pagare,
+    obtener_lista_pagares,
   };

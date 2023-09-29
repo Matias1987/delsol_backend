@@ -427,9 +427,11 @@ const obtener_datos_pagare = (data,callback) => {
     /**
      * AGREGAR pagare_impreso en tabla venta_has_modo_pago
      */
+    console.log("obteniendo detalles venta: " + data)
     const query_mp_ctacte = `SELECT 
     vmp.id_modopago,
     v.idventa,
+    v.cliente_idcliente,
     vmp.monto,
     vmp.monto_int,
     vmp.cant_cuotas,
@@ -456,13 +458,15 @@ const obtener_datos_pagare = (data,callback) => {
         if(rows.length<1)
         {
             /** no record found */
-            return callback({err:-1});
+            callback({err:-1});
         }
         else
         {
             const r = rows[0]
+            //console.log(query_mp)
             connection.query(query_mp,(_err, _rows)=>{
                 var monto_entrega=0;
+                console.log(JSON.stringify(_rows))
                 if(_rows.length>0)
                 {
                     //entrega found
@@ -470,16 +474,30 @@ const obtener_datos_pagare = (data,callback) => {
                 }
                 callback({
                     idventa: r.idventa,
+                    idcliente: r.cliente_idcliente,
                     monto: r.monto,//monto mp cta cte sin interes
                     monto_int: r.monto_int, //monto mp cta cte con interes
                     cant_cuotas: r.cant_cuotas,
+                    monto_cuota: r.monto_cuota,
                     monto_entrega: monto_entrega,
                     vta_monto: r.vta_monto,
-                    vta_monto_int: parseFloat(r.venta_monto) - r.monto + r.monto_int,
+                    vta_monto_int: parseFloat(r.vta_monto) - r.monto + r.monto_int,
                 })
             })
         }
-        
+        connection.end()
+    })
+    
+}
+
+const obtener_lista_pagares = (data,callback) => {
+    const query = `SELECT v.idventa , vhmp.monto_int AS 'monto', DATE_FORMAT(v.fecha, '%d-%m-%y') AS 'fecha'
+    FROM venta v, venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' 
+    AND vhmp.venta_idventa=v.idventa AND v.cliente_idcliente = ${data};`;
+    const connection = mysql_connection.getConnection();
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
     })
     connection.end()
 }
@@ -501,5 +519,6 @@ module.exports = {
     desc_cantidades_stock_venta,
     inc_cantidades_stock_venta,
     obtener_datos_pagare,
+    obtener_lista_pagares,
 }
 
