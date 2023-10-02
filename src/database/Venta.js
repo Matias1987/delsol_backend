@@ -502,6 +502,17 @@ const obtener_lista_pagares = (data,callback) => {
     connection.end()
 }
 
+const obtener_categorias_productos_venta = (data, callback) => {
+    const query = `SELECT * FROM venta_has_stock vhs,  codigo c, subgrupo sg, grupo g, subfamilia sf, familia f
+                    WHERE vhs vhs.stock_codigo_idcodigo = c.idcodigo and
+                    c.subgrupo_idsubgrupo = sg.idsubgrupo and
+                    sg.grupo_idgrupo = g.idgrupo AND 
+                    g.subfamilia_idsubfamilia = sf.idsubfamilia and
+                    sf.familia_idfamilia = f.idfamilia AND 
+                    vhs.venta_idventa=0`;
+    
+    
+}
 
 
 module.exports = {
