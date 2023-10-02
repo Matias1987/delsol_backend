@@ -80,6 +80,12 @@ const obtener_lista_pagares = (data, callback) => {
   })
 }
 
+const obtener_categorias_productos_venta = (data, callback) => {
+  ventaDB.obtener_categorias_productos_venta(data,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
     lista_venta_item ,
     obtenerVentas,
@@ -96,4 +102,5 @@ module.exports = {
     inc_cantidades_stock_venta,
     obtener_datos_pagare,
     obtener_lista_pagares,
+    obtener_categorias_productos_venta,
   };

@@ -117,6 +117,14 @@ const obtener_lista_pagares = (req, res ) => {
   })
 }
 
+const obtener_categorias_productos_venta = (req, res) => 
+{
+  const {params:{ventaId}} = req
+  ventaService.obtener_categorias_productos_venta(ventaId,(rows)=>{
+    res.status(201).send({status:'OK', data: rows})
+  })
+}
+
 module.exports = {
     obtenerVentas,
     obtenerVentasSucursal,
@@ -133,4 +141,5 @@ module.exports = {
     desc_cantidades_stock_venta,
     obtener_datos_pagare,
     obtener_lista_pagares,
+    obtener_categorias_productos_venta,
   };

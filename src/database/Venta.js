@@ -503,16 +503,27 @@ const obtener_lista_pagares = (data,callback) => {
 }
 
 const obtener_categorias_productos_venta = (data, callback) => {
-    const query = `SELECT * FROM venta_has_stock vhs,  codigo c, subgrupo sg, grupo g, subfamilia sf, familia f
-                    WHERE vhs vhs.stock_codigo_idcodigo = c.idcodigo and
-                    c.subgrupo_idsubgrupo = sg.idsubgrupo and
-                    sg.grupo_idgrupo = g.idgrupo AND 
-                    g.subfamilia_idsubfamilia = sf.idsubfamilia and
-                    sf.familia_idfamilia = f.idfamilia AND 
-                    vhs.venta_idventa=0`;
-    
+    const query = `SELECT distinct * FROM 
+    (
+        SELECT f.nombre_largo FROM venta_has_stock vhs,  codigo c, subgrupo sg, grupo g, subfamilia sf, familia f
+            WHERE 
+                    vhs.stock_codigo_idcodigo = c.idcodigo and
+            c.subgrupo_idsubgrupo = sg.idsubgrupo and
+            sg.grupo_idgrupo = g.idgrupo AND 
+            g.subfamilia_idsubfamilia = sf.idsubfamilia and
+            sf.familia_idfamilia = f.idfamilia AND 
+            vhs.venta_idventa=${data}
+    ) AS t`;
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
     
 }
+
 
 
 module.exports = {
@@ -531,5 +542,6 @@ module.exports = {
     inc_cantidades_stock_venta,
     obtener_datos_pagare,
     obtener_lista_pagares,
+    obtener_categorias_productos_venta,
 }
 

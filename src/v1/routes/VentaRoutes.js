@@ -18,6 +18,10 @@ router.get("/obtener_datos_pagare/:ventaId", (req, res) => {
   ventaController.obtener_datos_pagare(req,res)
 });
 
+router.get("/obtener_categorias_productos_venta/:ventaId", (req, res) => {
+  ventaController.obtener_categorias_productos_venta(req,res)
+});
+
 router.get("/obtener_lista_pagares/:clienteId", (req, res) => {
   ventaController.obtener_lista_pagares(req,res)
 });
