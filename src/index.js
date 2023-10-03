@@ -123,6 +123,9 @@ app.use("/api/v1/mensajes",mensajeRoutes)
 const pagareRoutes = require("./v1/routes/PagareRoutes");
 app.use("/api/v1/pagares",pagareRoutes)
 
+const intcuotaRoutes = require("./v1/routes/InteresCuotaRoutes");
+app.use("/api/v1/ic",intcuotaRoutes)
+
 
 
 
