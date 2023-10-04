@@ -202,11 +202,6 @@ const insert_venta = (data,callback) => {
         _arr_items = do_push(7,_arr_items,__data.productos.cerca_tratamiento,"cerca_tratamiento",1)
     }
 
-    //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
-    //console.log(JSON.stringify(venta_queries.get_mp(data,venta_id)))
-    //console.log("--------------")
-    //console.log(JSON.stringify(get_recstock_items(data,venta_id)))
-    //console.log(venta_queries.query_items +get_recstock_items(data));
 
     switch(+data.tipo){
                 case 1:
@@ -236,11 +231,7 @@ const insert_venta = (data,callback) => {
 
     console.log(JSON.stringify(_quantities))
 
-    //this is for updating the stock quantities, it is not finished yet.
-    /*var _ids = "";
-    idx.forEach(q=>{_ids = (_ids.length>0 ? ",":"")+q.idcodigo})*/
-    
-    const connection = mysql_connection.getConnection();
+     const connection = mysql_connection.getConnection();
     connection.connect();
     //check quantities
     console.log("*************** "+venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))

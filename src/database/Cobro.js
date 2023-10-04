@@ -23,6 +23,8 @@ const agregar_venta_mp_ctacte = (data,callback) =>
                 ${parseFloat(data.mp.ctacte_cuotas) * parseFloat(data.mp.ctacte_monto_cuotas)}, 
                 ${data.mp.ctacte_cuotas},
                 ${data.mp.ctacte_monto_cuotas})` ;
+    
+    console.log(`QUERY: ${__query_venta_mp}`)
 
     const connection = mysql_connection.getConnection();
     connection.connect()
@@ -213,6 +215,7 @@ const agregar_cobro  = (data,callback) => {
             '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}')`
             if(mp.tipo!='ctacte')
             {
+                console.log(`monto to add: ${mp.monto}`)
                 total+=parseFloat(mp.monto);
             }
 
