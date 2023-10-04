@@ -38,6 +38,7 @@ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Ty
     'grupo_idgrupo' : body.grupo_idgrupo,
     'multiplicador': body.multiplicador,
     'precio_defecto': body.precio_defecto,
+    'control_stock': body.control_stock,
   }
 
   subgrupoService.agregarSubgrupo(nuevo_subgrupo,(id)=>{
@@ -47,9 +48,7 @@ res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Ty
     else{
       res.status(201).send({status:'OK', data:id});
     }
-
   })
-
 }
 
 const modificar_multiplicador = (req, res) => {

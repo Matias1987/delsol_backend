@@ -63,7 +63,12 @@ const verificar_cantidades_productos = (data, callback) => {
 
     codigos.forEach((c)=>{ids+= (ids.length>0? ',' : '') + `${c.idcodigo}`})
 
-    const query = `SELECT s.codigo_idcodigo AS 'idcodigo', s.cantidad, c.codigo FROM stock s, codigo c WHERE c.idcodigo = s.codigo_idcodigo and s.sucursal_idsucursal = ${data.idsucursal} AND s.codigo_idcodigo IN (${ids})`;
+    var query = `SELECT s.codigo_idcodigo AS 'idcodigo', s.cantidad, c.codigo FROM stock s, codigo c WHERE c.idcodigo = s.codigo_idcodigo and s.sucursal_idsucursal = ${data.idsucursal} AND s.codigo_idcodigo IN (${ids})`;
+
+    if(ids.length<1)
+    {
+        query = `select true; `
+    }
 
     console.log(query)
 
@@ -76,25 +81,33 @@ const verificar_cantidades_productos = (data, callback) => {
          * check if there are codes with less than the required quantity!
          */
         var error = 0
-        rows.forEach(r=>{
-            for(let i=0;i<codigos.length;i++){
-                if(codigos[i].idcodigo == r.idcodigo){
-                    codigos[i].cantidad_serv = r.cantidad
-                    codigos[i].codigo = r.codigo
+
+        var c = null
+
+        if(typeof rows !== 'undefined')
+        {
+            rows.forEach(r=>{
+                for(let i=0;i<codigos.length;i++){
+                    if(codigos[i].idcodigo == r.idcodigo){
+                        codigos[i].cantidad_serv = r.cantidad
+                        codigos[i].codigo = r.codigo
+                    }
+                }
+            })
+            
+            
+            for(let i=0;i<codigos.length;i++)
+            {
+                if(codigos[i].cantidad > codigos[i].cantidad_serv)
+                {
+                    c = codigos[i]
+                    error=1;
+                    break;
                 }
             }
-        })
-        
-        var c = null;
-        for(let i=0;i<codigos.length;i++)
-        {
-            if(codigos[i].cantidad > codigos[i].cantidad_serv)
-            {
-                c = codigos[i]
-                error=1;
-                break;
-            }
         }
+
+        
 
         callback({error: error, ref: c})
 

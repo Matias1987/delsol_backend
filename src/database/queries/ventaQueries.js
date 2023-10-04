@@ -146,7 +146,7 @@ const get_mp = (data, idventa) => {
 				banco_idbanco:null,
 				mutual_idmutual:null,
 				monto:data.mp.ctacte_monto,
-				monto_int:0,
+				monto_int:parseFloat(data.mp.ctacte_cuotas) * parseFloat(data.mp.ctacte_monto_cuotas),
 				cant_cuotas:data.mp.ctacte_cuotas,
 				monto_cuota:data.mp.ctacte_monto_cuotas,
 				fk_tarjeta: null,

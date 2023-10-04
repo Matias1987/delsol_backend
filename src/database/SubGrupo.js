@@ -96,6 +96,7 @@ const obtener_subgrupos = (callback) => {
 }
 
 const agregar_subgrupo = (data,callback) => {
+    console.log(JSON.stringify(data))
     const connection = mysql_connection.getConnection();
     connection.connect();
 
@@ -105,8 +106,8 @@ const agregar_subgrupo = (data,callback) => {
             return callback(-1)
         }
         else{
-            var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador, precio_defecto) values (
-                '${data.nombre_corto}','${data.nombre_largo}',${data.grupo_idgrupo},${data.multiplicador},${data.precio_defecto}
+            var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador, precio_defecto, no_stock) values (
+                '${data.nombre_corto}','${data.nombre_largo}',${data.grupo_idgrupo},${data.multiplicador},${data.precio_defecto},${+data.control_stock==0 ? 1 : 0}
             )`;
 
             /*var values = [[
