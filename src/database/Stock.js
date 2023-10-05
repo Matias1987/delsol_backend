@@ -2,8 +2,8 @@ const mysql_connection = require("../lib/mysql_connection")
 
 
 const verificar_cantidades_productos = (data, callback) => {
-    
-    const doPush = (idx, obj, _arr) => !obj.hasOwnProperty(idx) ? _arr : (obj[idx]==null ? _arr : [..._arr,obj[idx]])
+    console.log(JSON.stringify(data))
+    const doPush = (idx, obj, _arr) => !obj.hasOwnProperty(idx) ? _arr : (obj[idx]==null ? _arr : ((obj[idx].codigo==null || +obj[idx].idcodigo<0) ? _arr : [..._arr,obj[idx]]) )
     const productos = data.productos
 
     var arr=[]
@@ -58,6 +58,8 @@ const verificar_cantidades_productos = (data, callback) => {
             codigos.push({idcodigo: r.idcodigo,cantidad: r.cantidad, cantidad_serv: -1})
         }
     })
+
+    console.log(JSON.stringify(arr))
     
     var ids  = "";
 

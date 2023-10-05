@@ -104,16 +104,13 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback)=>{
 
 const insert_venta = (data,callback) => {
 
-    //console.log("FECHA RETIRO: "+JSON.stringify(data.fechaRetiro))
-
     const __now = new Date();
 
     if(data.fechaRetiro == null){
         data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;//parse_date_for_mysql(`${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}` )
-
     }
 
-    const do_push = (orden,arr,val,tipo,descontable) => (val||0) === 0 ? arr : [...arr,{...val,tipo:tipo, orden: orden, descontable: descontable}]
+    const do_push = (orden,arr,val,tipo,descontable) => (val||0) === 0 ? arr : (val.codigo == null || val.idcodigo<0 ? arr : [...arr,{...val,tipo:tipo, orden: orden, descontable: descontable}]) 
 
     var venta_id = -1;
     var _arr_items = [];
