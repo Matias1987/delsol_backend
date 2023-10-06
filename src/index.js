@@ -126,6 +126,9 @@ app.use("/api/v1/pagares",pagareRoutes)
 const intcuotaRoutes = require("./v1/routes/InteresCuotaRoutes");
 app.use("/api/v1/ic",intcuotaRoutes)
 
+const localidadRoutes = require("./v1/routes/LocalidadRoutes");
+app.use("/api/v1/localidad",localidadRoutes)
+
 
 
 
