@@ -10,7 +10,7 @@ const agregarCliente = (req, res) => {
   const {body} = req;
 
   const nuevo_cliente = {
-    'localidad_idlocalidad' : null,// body.localidad_idlocalidad,
+    'localidad_idlocalidad' :  body.idlocalidad,
     'nombre' : body.nombres,
     'apellido' : body.apellidos,
     'direccion' : body.domicilio,
