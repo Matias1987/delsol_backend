@@ -312,6 +312,7 @@ const queryListaVentasSucursalEstado = (
 	(case when '${medico_idmedico}'<>'' then v.medico_idmedico = '${medico_idmedico}' ELSE TRUE END) AND
 	(case when '${id}'<>'' then v.idventa = '${id}' ELSE TRUE END) AND
 	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END)
+	ORDER by v.idventa desc
 	`
 )
 

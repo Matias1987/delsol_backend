@@ -119,7 +119,8 @@ const informe_caja = (idcaja, callback) =>{
             c.cliente_idcliente = cl.idcliente AND 
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
-            c.tipo <> 'cuota'
+            c.tipo <> 'cuota' AND 
+            chmp.modo_pago <> 'ctacte'
         UNION
             SELECT 
             replace(format(vhmp.monto,2),',','') as  'monto' ,
