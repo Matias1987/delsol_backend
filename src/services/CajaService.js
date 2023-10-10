@@ -38,6 +38,12 @@ const obtener_caja_id = (idcaja, callback)=>{
     })
 }
 
+const caja_abierta = (idsucursal,callback) => {
+    CajaDB.caja_abierta(idsucursal,(rows)=>{
+        return callback(rows)
+    })
+}
+
 
 module.exports={
     
@@ -46,5 +52,6 @@ module.exports={
     obtener_caja,
     informe_caja,
     obtenerCajasSucursal,
-    obtener_caja_id
+    obtener_caja_id,
+    caja_abierta
 }

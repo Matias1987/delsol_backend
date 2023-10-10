@@ -1,5 +1,21 @@
 const mysql_connection = require("../lib/mysql_connection");
 
+const caja_abierta = (idsucursal,callback) =>{
+    const query = `SELECT c.idcaja AND if(date(c.fecha) = DATE(NOW()),1,0) AS 'actual' FROM caja c WHERE c.estado='ABIERTA' AND c.sucursal_idsucursal=${idsucursal};`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        if(rows.length>0)
+        {
+            callback({abierta:1,current:rows[0].actual == 1 ? 1:0})
+        }
+        else{
+            callback({abierta:0,current:0})
+        }
+    })
+    connection.end()
+}
+
 const obtener_lista_cajas_sucursal = (idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
@@ -155,4 +171,5 @@ module.exports = {
     informe_caja,
     obtener_lista_cajas_sucursal,
     obtener_caja_id,
+    caja_abierta,
 }
