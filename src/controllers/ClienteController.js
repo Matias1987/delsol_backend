@@ -101,8 +101,9 @@ const actualizar_saldo_en_cobro = (req, res) => {
 }
 
 const bloquear_cuenta = (req, res) => {
-  const {params: {clienteId}} = req;
-  clienteService.bloquear_cuenta(clienteId,(resp)=>{
+  //const {params: {clienteId}} = req;
+  const {body} = req
+  clienteService.bloquear_cuenta(body,(resp)=>{
     res.status(201).send({status:'OK',data:resp});
   })
   

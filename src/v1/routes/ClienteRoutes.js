@@ -11,7 +11,12 @@ router.get("/buscar/:values", (req, res) => {
   clienteController.buscarCliente(req,res);
 });
 
+/*
 router.get("/bloquear/:clienteId", (req, res) => {
+  console.log("bloquear")
+  clienteController.bloquear_cuenta(req,res);
+});*/
+router.post("/bloquear/", (req, res) => {
   console.log("bloquear")
   clienteController.bloquear_cuenta(req,res);
 });

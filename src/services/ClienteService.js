@@ -56,8 +56,8 @@ const actualizar_saldo_en_cobro = (idcobro, callback) => {
   })
 }
 
-const bloquear_cuenta = (idcuenta, callback) => {
-  ClienteDB.bloquear_cuenta(idcuenta,(resp)=>{
+const bloquear_cuenta = (data, callback) => {
+  ClienteDB.bloquear_cuenta(data,(resp)=>{
     return callback(resp)
   })
 }

@@ -261,13 +261,19 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
     
 }
 
-const bloquear_cuenta = (idcliente, callback) =>{
+const bloquear_cuenta = (data, callback) =>{
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(`update cliente c set c.bloqueado = 1 where c.idcliente = ${idcliente};`,(err,resp)=>{
+    connection.query(`update cliente c set c.bloqueado = 1 where c.idcliente = ${data.idcliente};`,(err,resp)=>{
         callback(resp)
+        //insert comment
+        connection.query(`INSERT INTO comentario (id_ref, tipo, comentario, fk_sucursal, fk_usuario) VALUES ('${data.idcliente}',  '${'BLOQUEO'}', '${data.comentario}', '${data.idsucursal}', '${data.idusuario}');`,
+        (_err, _resp)=>{
+
+        })
+        connection.end()
     })
-    connection.end()
+    
 }
 
 const desbloquear_cuenta = (idcliente, callback) =>{
