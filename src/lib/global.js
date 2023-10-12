@@ -2,7 +2,7 @@ const connection_data = {
     user: "root",
     password: "root",
     host: "localhost",
-    database: "optica_32"//"optdelsol_28"//"optica_30"
+    database: "optica_30_backup"//"optdelsol_28"//"optica_30"
 } 
 
 //const connection_data = {
