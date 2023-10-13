@@ -295,21 +295,23 @@ const lista_cobros = (data, callback) => {
 
     const connection = mysql_connection.getConnection();
     connection.connect();
+    const _q = `SELECT 
+    c.* , 
+    date_format(c.fecha,'%d-%m-%Y') as 'fecha_formated',
+    cl.dni AS 'cliente_dni',  
+    CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
+    FROM cobro c, cliente cl 
+    WHERE 
+    c.cliente_idcliente = cl.idcliente and
+    (case when '' <> '${_idsucursal}' then c.sucursal_idsucursal = ${_idsucursal} else true end) and 
+    (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
+    (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) and 
+    (case when '' <> '${_idcobro}' then '${_idcobro}' = c.idcobro ELSE TRUE end) and
+    (case when '' <> '${_fecha}' then date('${_fecha=='' ? `1970-01-01` : _fecha}') = date(c.fecha) ELSE TRUE end) 
+    order by c.idcobro desc;`
+    console.log(_q)
     connection.query(
-        `SELECT 
-        c.* , 
-        date_format(c.fecha,'%d-%m-%Y') as 'fecha_formated',
-        cl.dni AS 'cliente_dni',  
-        CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
-        FROM cobro c, cliente cl 
-        WHERE 
-        c.cliente_idcliente = cl.idcliente and
-        (case when '' <> '${_idsucursal}' then c.sucursal_idsucursal = ${_idsucursal} else true end) and 
-        (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
-        (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) and 
-        (case when '' <> '${_idcobro}' then '${_idcobro}' = c.idcobro ELSE TRUE end) 
-        (case when '' <> '${_fecha}' then date('${_fecha}') = date(c.fecha) ELSE TRUE end) 
-        order by c.idcobro desc;`,
+        _q,
         (err,results)=>{
             callback(results);
         }

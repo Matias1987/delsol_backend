@@ -280,7 +280,8 @@ const queryListaVentasSucursalEstado = (
 	fk_destinatario="",
 	cliente_idcliente="", 
 	id="",
-	en_laboratorio=""
+	en_laboratorio="",
+	fecha=""
 	) => (
 	`SELECT 
 	v.idventa, 
@@ -311,7 +312,8 @@ const queryListaVentasSucursalEstado = (
 	(case when '${fk_destinatario}'<>'' then v.fk_destinatario = '${fk_destinatario}' ELSE TRUE END) AND
 	(case when '${medico_idmedico}'<>'' then v.medico_idmedico = '${medico_idmedico}' ELSE TRUE END) AND
 	(case when '${id}'<>'' then v.idventa = '${id}' ELSE TRUE END) AND
-	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END)
+	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END) AND
+	(case when '${fecha}' <> '' then date(v.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end)
 	ORDER by v.idventa desc
 	`
 )

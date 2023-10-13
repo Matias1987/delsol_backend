@@ -352,20 +352,22 @@ const lista_venta_sucursal_estado = (data,callback) => {
         (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
         (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
         (typeof data.id === 'undefined' ? "" : data.id),
-        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio)
+        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
+        (typeof data.fecha === 'undefined'? "" : data.fecha)
            
        
         ))
     connection.query(
         venta_queries.queryListaVentasSucursalEstado(
             data.idsucursal,
-            (typeof data.estado === 'undefined' ? "" : data.estado),
+        (typeof data.estado === 'undefined' ? "" : data.estado),
         (typeof data.tipo === 'undefined' ? "" : data.tipo),
         (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
         (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
         (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
         (typeof data.id === 'undefined' ? "" : data.id),
-        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio)
+        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
+        (typeof data.fecha === 'undefined'? "" : data.fecha)
            
             ),(err,data) => {
                 callback(data)
