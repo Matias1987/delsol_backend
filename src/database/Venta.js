@@ -483,7 +483,7 @@ const obtener_datos_pagare = (data,callback) => {
 const obtener_lista_pagares = (data,callback) => {
     const query = `SELECT v.idventa , vhmp.monto_int AS 'monto', DATE_FORMAT(v.fecha, '%d-%m-%y') AS 'fecha'
     FROM venta v, venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' 
-    AND vhmp.venta_idventa=v.idventa AND v.cliente_idcliente = ${data};`;
+    AND vhmp.venta_idventa=v.idventa AND v.cliente_idcliente = ${data} order by v.idventa desc;`;
     const connection = mysql_connection.getConnection();
     connection.connect()
     connection.query(query,(err,rows)=>{
