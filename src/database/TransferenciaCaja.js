@@ -16,7 +16,7 @@ const obtener_transferencias_enviadas = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`
-    SELECT t.*, s.nombre AS 'sucursal_destino' 
+    SELECT t.*, s.nombre AS 'sucursal_destino' , date_format(t.fecha, '%d-%m-%y') as 'fecha_f' 
     FROM 
     transferencia t, 
     sucursal s 
@@ -31,7 +31,7 @@ const obtener_transferencias_recibidas = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`
-    SELECT t.*, s.nombre AS 'sucursal_origen' 
+    SELECT t.*, s.nombre AS 'sucursal_origen' , date_format(t.fecha, '%d-%m-%y') as 'fecha_f' 
     FROM 
     transferencia t , 
     sucursal s 
