@@ -73,18 +73,21 @@ const query_mp = `INSERT INTO venta_has_modo_pago
 					
 const query_items = `INSERT INTO venta_has_stock 
 					(
-					venta_idventa, 
-					stock_sucursal_idsucursal, 
-					stock_codigo_idcodigo, 
-					cantidad, 
-					tipo,
-					precio,
-					total,
-					esf, 
-					cil, 
-					eje,
-					orden,
-					descontable) 
+						venta_idventa, 
+						stock_sucursal_idsucursal, 
+						stock_codigo_idcodigo, 
+						cantidad, 
+						tipo,
+						precio,
+						total,
+						esf, 
+						cil, 
+						eje,
+						orden,
+						descontable,
+						curva_base,
+						diametro
+					) 
 					VALUES `;
 
 /*const get_mp = (data, idventa) => {
@@ -186,25 +189,6 @@ const get_mp = (data, idventa) => {
 	return _items_mp;
 	
 }
-
-/*const queryAgregarVenta = () => {
-	return ` insert into venta 
-	(   cliente_idcliente,
-		sucursal_idsucursal,
-		vendedor_idvendedor,
-		caja_idcaja,
-		usuario_idusuario,
-		medico_idmedico,
-		monto_total,
-		descuento,
-		monto_inicial,
-		debe,
-		haber,
-		saldo,
-		fecha,
-		fecha_alta
-		) values (?)`;
-}*/
 
 const queryDetalleVenta = (id) =>{
     return `SELECT v.*,
