@@ -592,10 +592,29 @@ const agregar_stock = (data,callback) =>{
     const obtener_stock_ventas = (filters, callback) => {
         //temporary!
         var str = "-1";
+
         console.log("FILTRO DE FAMILIAS: " + JSON.stringify(filters))
+
         var _values = filters.filtroFamilias;
-        _values.forEach(i=>{str+=`${(str.length>0 ? ',' : '') + i}`
+
+        _values.forEach(i=>{str+=`${(str.length>0 ? ',' : '') + i}`})
+
+        const __filtro = typeof filters.filtroCod === 'string' ? filters.filtroCod : ""; 
+
+        //split
+        const __parts = __filtro.split(" ")
+
+        var __filtros_codigo = ""
+        var __filtros_desc = ""
+
+        __parts.forEach(r=>{
+            __filtros_codigo+= (__filtros_codigo.length<1 ? "":" and ") + `c.codigo like '%${r}%' `
         })
+        __parts.forEach(r=>{
+            __filtros_desc+= (__filtros_desc.length<1 ? "":" and ") + `c.descripcion like '%${r}%' `
+        })
+
+        
 
         const _query = `SELECT 
         c.idcodigo, 
@@ -608,7 +627,7 @@ const agregar_stock = (data,callback) =>{
         g.subfamilia_idsubfamilia = sf.idsubfamilia AND
         (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and 
         s.sucursal_idsucursal=${filters.idSucursal} and 
-        (c.codigo like '%${filters.filtroCod}%' or c.descripcion like '%${filters.filtroCod}%') and
+        ${__filtro.length<1 ? "true" : `((${__filtros_codigo}) or (${__filtros_desc}))`} and
         s.cantidad > 0 
         LIMIT 100
         ;`;
