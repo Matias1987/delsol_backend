@@ -275,9 +275,9 @@ const agregar_cobro  = (data,callback) => {
                 //return callback(idcobro);
             })
 
-            console.log(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+            console.log(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
             //UPDATE DEBE AND HABER FIELDS IN VENTA
-            connection.query(`UPDATE venta  v SET v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+            connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
         }
 
         connection.end();            
