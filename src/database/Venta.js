@@ -159,45 +159,45 @@ const insert_venta = (data,callback) => {
     }
 
     const prepare_lclab_items = (__data) => {
-        _arr_items = do_push(0,_arr_items,__data.productos.oi, "oi",1)
-        _arr_items = do_push(1,_arr_items,__data.productos.od, "od",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.oi, "oi",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.od, "od",1)
         _arr_items = do_push(2,_arr_items,__data.productos.insumo, "insumo",1)
     }
 
     const prepare_lclstock_items = (__data) => {
-        _arr_items = do_push(0,_arr_items,__data.productos.oi, "oi",1)
-        _arr_items = do_push(1,_arr_items,__data.productos.od, "od",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.oi, "oi",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.od, "od",1)
         _arr_items = do_push(2,_arr_items,__data.productos.insumo, "insumo",1)
 
     }
 
     const prepare_monoflab_items = (__data) => {
         _arr_items = do_push(2,_arr_items,__data.productos.lejos_armazon,"lejos_armazon",1)
-        _arr_items = do_push(1,_arr_items,__data.productos.lejos_od,"lejos_od",1)
-        _arr_items = do_push(0,_arr_items,__data.productos.lejos_oi,"lejos_oi",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.lejos_od,"lejos_od",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.lejos_oi,"lejos_oi",1)
         _arr_items = do_push(3,_arr_items,__data.productos.lejos_tratamiento,"lejos_tratamiento",1)
         _arr_items = do_push(6,_arr_items,__data.productos.cerca_armazon,"cerca_armazon",1)
-        _arr_items = do_push(5,_arr_items,__data.productos.cerca_od,"cerca_od",1)
-        _arr_items = do_push(4,_arr_items,__data.productos.cerca_oi,"cerca_oi",1)
+        _arr_items = do_push(4,_arr_items,__data.productos.cerca_od,"cerca_od",1)
+        _arr_items = do_push(5,_arr_items,__data.productos.cerca_oi,"cerca_oi",1)
         _arr_items = do_push(7,_arr_items,__data.productos.cerca_tratamiento,"cerca_tratamiento",1)
     }
 
     const prepare_multiflab_items = (__data) => {
         _arr_items = do_push(2,_arr_items,__data.productos.armazon,"armazon",1)
-        _arr_items = do_push(1,_arr_items,__data.productos.od,"od",1)
-        _arr_items = do_push(0,_arr_items,__data.productos.oi,"oi",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.od,"od",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.oi,"oi",1)
         _arr_items = do_push(3,_arr_items,__data.productos.tratamiento,"tratamiento",1)
     }
 
     const prepare_recstock_items = (__data) => {
         _arr_items = do_push(2,_arr_items,__data.productos.lejos_armazon,"lejos_armazon",1)
-        _arr_items = do_push(1,_arr_items,__data.productos.lejos_od,"lejos_od",1)
-        _arr_items = do_push(0,_arr_items,__data.productos.lejos_oi,"lejos_oi",1)
+        _arr_items = do_push(0,_arr_items,__data.productos.lejos_od,"lejos_od",1)
+        _arr_items = do_push(1,_arr_items,__data.productos.lejos_oi,"lejos_oi",1)
         _arr_items = do_push(3,_arr_items,__data.productos.lejos_tratamiento,"lejos_tratamiento",1)
 
         _arr_items = do_push(6,_arr_items,__data.productos.cerca_armazon,"cerca_armazon",1)
-        _arr_items = do_push(5,_arr_items,__data.productos.cerca_od,"cerca_od",1)
-        _arr_items = do_push(4,_arr_items,__data.productos.cerca_oi,"cerca_oi",1)
+        _arr_items = do_push(4,_arr_items,__data.productos.cerca_od,"cerca_od",1)
+        _arr_items = do_push(5,_arr_items,__data.productos.cerca_oi,"cerca_oi",1)
         _arr_items = do_push(7,_arr_items,__data.productos.cerca_tratamiento,"cerca_tratamiento",1)
     }
 

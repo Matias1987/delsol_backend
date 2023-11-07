@@ -629,7 +629,7 @@ const agregar_stock = (data,callback) =>{
         s.sucursal_idsucursal=${filters.idSucursal} and 
         ${__filtro.length<1 ? "true" : `((${__filtros_codigo}) or (${__filtros_desc}))`} and
         s.cantidad > 0 
-        LIMIT 100
+        LIMIT 200
         ;`;
 
         console.log(_query)
