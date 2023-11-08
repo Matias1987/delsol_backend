@@ -199,18 +199,22 @@ const queryDetalleVenta = (id) =>{
 	u.nombre AS 'usuario_nombre',
 	date_format(v.fecha, '%d-%m-%Y') as 'fecha_formated',
 	date_format(v.fecha_retiro, '%d-%m-%Y') as 'fecha_entrega_formated',
-	date_format(v.fecha, '%H:%i') as 'hora'
+	date_format(v.fecha, '%H:%i') as 'hora',
+	if(mut.idmutual IS NULL, '', mut.nombre) AS 'obra_social'
 FROM
 	
 	cliente c,
 	sucursal s,
 	usuario u,
-	venta v LEFT JOIN 
+	venta v 
+	LEFT JOIN 
 	medico m ON m.idmedico = v.medico_idmedico
+	LEFT JOIN 
+	mutual mut ON mut.idmutual = v.fk_os
 	WHERE
 	c.idcliente = v.cliente_idcliente and
 	s.idsucursal = v.sucursal_idsucursal and
-	u.idusuario = v.usuario_idusuario and
+	u.idusuario = v.usuario_idusuario and 
 	v.idventa = ${id};`;
 }
 
