@@ -148,14 +148,17 @@ const informe_caja = (idcaja, callback) =>{
             FROM 
             venta_has_modo_pago vhmp,
             venta v,
+            caja c,
             cliente cl
             WHERE 
+            c.idcaja=${idcaja} AND 
             v.estado='ENTREGADO' AND
             v.cliente_idcliente = cl.idcliente AND 
             vhmp.modo_pago = 'ctacte' AND 
             vhmp.venta_idventa = v.idventa AND 
-            v.caja_idcaja=${idcaja}
+            DATE(v.fecha_retiro) = DATE(c.fecha)
     ) AS ops;`;
+    //v.caja_idcaja=${idcaja}
     connection.query(sql,(err,rows)=>{
         
         callback(rows)

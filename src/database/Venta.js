@@ -80,7 +80,14 @@ const inc_cantidades_stock_venta = (data,callback) =>
 const cambiar_estado_venta = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`UPDATE venta v SET v.estado = '${data.estado}' WHERE v.idventa=${data.idventa};`,(err,results)=>{
+    /**
+     * if estado==entregado, update fecha_retiro
+     */
+    const fr = typeof data.fecha_retiro === 'undefined' ? "": data.fecha_retiro
+
+    const __t = (data.estado=="ENTREGADO" ? `, v.fecha_retiro='${fr}' `: "")
+    
+    connection.query(`UPDATE venta v SET v.estado = '${data.estado}' ${__t} WHERE v.idventa=${data.idventa};`,(err,results)=>{
         callback(results)
         if(typeof data.removeMPRows !== 'undefined'){
             if(+data.removeMPRows == 1){
