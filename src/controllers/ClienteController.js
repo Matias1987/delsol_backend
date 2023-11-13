@@ -18,6 +18,7 @@ const agregarCliente = (req, res) => {
     'telefono1' : body.telefono,
     'telefono2' : "",//body.telefono2,
     'destinatario': typeof body.destinatario === 'undefined' ? 0 : body.destinatario,
+    'fechaNac': body.fechaNac,
   }
 
   clienteService.agregarCliente(nuevo_cliente,

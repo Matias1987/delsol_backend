@@ -26,7 +26,9 @@ const queryAgregarCliente = () => {
         dni, 
         telefono1, 
         telefono2,
-        destinatario) values (?)`;
+        destinatario,
+        fecha_nacimiento
+        ) values (?)`;
 }
 
 const queryObtenerBalance = (idcliente) => {
