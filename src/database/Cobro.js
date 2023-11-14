@@ -199,7 +199,7 @@ const agregar_cobro  = (data,callback) => {
             }),
             "cheque_monto")
 
-            console.log("ALL MP:  "  + JSON.stringify(_mp))
+            //console.log("ALL MP:  "  + JSON.stringify(_mp))
 
         var _cobro_mp_item = ``
         var _venta_mp_item = ``
