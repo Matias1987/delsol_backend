@@ -194,7 +194,7 @@ const queryDetalleVenta = (id) =>{
     return `SELECT v.*,
 	c.dni AS 'cliente_dni',
 	CONCAT(c.apellido,', ', c.nombre) AS 'cliente_nombre',
-	if(m.idmedico is NULL , '', m.nombre) AS 'medico_nombre',
+	if(m.idmedico is NULL , '', m.nombre) AS 'medico',
 	s.nombre AS 'sucursal_nombre',
 	u.nombre AS 'usuario_nombre',
 	date_format(v.fecha, '%d-%m-%Y') as 'fecha_formated',
