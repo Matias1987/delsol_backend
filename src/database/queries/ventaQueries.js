@@ -68,7 +68,8 @@ const query_mp = `INSERT INTO venta_has_modo_pago
 					cant_cuotas, 
 					monto_cuota,
 					fk_tarjeta,
-					modo_pago
+					modo_pago,
+					tarjeta_nro
 					) VALUES `;
 					
 const query_items = `INSERT INTO venta_has_stock 
@@ -126,6 +127,7 @@ const get_mp = (data, idventa) => {
 				monto_cuota:0,
 				fk_tarjeta: null,
 				modo_pago: 'efectivo',
+				tarjeta_nro: null,
 			})
 		}
 		if(data?.mp?.tarjeta_monto!==0){
@@ -136,10 +138,11 @@ const get_mp = (data, idventa) => {
 				mutual_idmutual:null,
 				monto:data.mp.tarjeta_monto,
 				monto_int:0,
-				cant_cuotas:0,
+				cant_cuotas:(typeof data.mp.tarjeta_tarjeta === 'undefined' ? 0 : data.mp.tarjeta_tarjeta),
 				monto_cuota:0,
 				fk_tarjeta: data.mp.fk_tarjeta,
 				modo_pago: 'tarjeta',
+				tarjeta_nro: (typeof data.mp.tarjeta_nro === 'undefined' ? 0 : data.mp.tarjeta_nro)
 			})
 		}
 		if(data?.mp?.ctacte_monto!==0){
@@ -154,6 +157,7 @@ const get_mp = (data, idventa) => {
 				monto_cuota:data.mp.ctacte_monto_cuotas,
 				fk_tarjeta: null,
 				modo_pago: 'ctacte',
+				tarjeta_nro: null,
 			})
 		}
 		if(data?.mp?.cheque_monto!==0){
@@ -168,6 +172,7 @@ const get_mp = (data, idventa) => {
 				monto_cuota:0,
 				fk_tarjeta: null,
 				modo_pago: 'cheque',
+				tarjeta_nro: null,
 			})
 		}
 		if(data?.mp?.mutual_monto!==0){
@@ -182,6 +187,7 @@ const get_mp = (data, idventa) => {
 				monto_cuota:0,
 				fk_tarjeta: null,
 				modo_pago: 'mutual',
+				tarjeta_nro: null,
 			})
 		}
 	}

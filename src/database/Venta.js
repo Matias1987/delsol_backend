@@ -264,7 +264,8 @@ const insert_venta = (data,callback) => {
                 ${p.cant_cuotas},
                 ${p.monto_cuota},
                 ${p.fk_tarjeta},
-                '${p.modo_pago}'
+                '${p.modo_pago}',
+                '${p.tarjeta_nro}'
                 )`;
         });
 
