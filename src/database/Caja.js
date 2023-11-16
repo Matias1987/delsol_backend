@@ -139,7 +139,7 @@ const informe_caja = (idcaja, callback) =>{
             chmp.modo_pago <> 'ctacte'
         UNION
             SELECT 
-            replace(format(vhmp.monto,2),',','') as  'monto' ,
+            replace(format(vhmp.monto_int,2),',','') as  'monto' ,
             'cuota' AS 'modo_pago',
             vhmp.venta_idventa AS 'operacion',
             CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
