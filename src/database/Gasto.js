@@ -30,7 +30,7 @@ const obtener_gastos_sucursal = (idsucursal, callback) => {
     connection.connect();
     
     connection.query(`SELECT 
-    g.*, date_format(g.fecha,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
+    g.*, date_format(g.fecha_alta,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
     and g.sucursal_idsucursal = ${idsucursal}
     ORDER BY g.idgasto DESC;
