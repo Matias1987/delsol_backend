@@ -7,12 +7,15 @@ const lista_ventas_admin = (callback) => {
     CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
     u.nombre AS 'vendedor', 
     v.idventa, 
-    v.monto_total
+    v.monto_total,
+    s.nombre as 'sucursal',
+    s.color
     FROM cliente c, usuario u, venta v, sucursal s 
     WHERE 
+    /*date(v.fecha) = date(now()) and */
     v.cliente_idcliente = c.idcliente AND 
     v.usuario_idusuario = u.idusuario AND 
-    v.sucursal_idsucursal = s.idsucursal;`
+    v.sucursal_idsucursal = s.idsucursal ORDER BY v.fecha desc;`
     
     const connection = mysql_connection.getConnection()
 
