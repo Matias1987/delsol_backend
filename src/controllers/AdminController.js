@@ -1,7 +1,6 @@
 const adminService = require("../services/AdminService")
 
 const obtener_lista_ventas_admin = (req,res) =>{
-    console.log("@@@@@@@@@@[ VENTAS ]@@@@@@@@@@@@@@@@@")
     adminService.obtener_lista_ventas_admin((rows)=>{
         res.send({status:"OK", data: rows})
     })

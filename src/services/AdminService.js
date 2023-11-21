@@ -16,7 +16,7 @@ const obtener_lista_gastos_admin = (callback) => {
 }
 
 const obtener_lista_cobros_admin = (callback) =>{
-
+    
 }
 
 const obtener_lista_envios_admin = (callback) => {

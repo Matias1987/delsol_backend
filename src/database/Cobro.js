@@ -1,7 +1,6 @@
 const mysql_connection = require("../lib/mysql_connection");
 const cobro_queries = require("./queries/cobroQueries");
 
-
 const agregar_venta_mp_ctacte = (data,callback) =>
 {
      const __query_venta_mp = `INSERT INTO venta_has_modo_pago 
@@ -301,11 +300,13 @@ const lista_cobros = (data, callback) => {
     c.* , 
     date_format(c.fecha,'%d-%m-%Y') as 'fecha_formated',
     cl.dni AS 'cliente_dni',  
-    CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'
-    FROM cobro c, cliente cl 
+    CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre',
+    s.nombre as sucursal 
+    FROM cobro c, cliente cl , sucursal s
     WHERE 
+    c.sucursal_idsucursal = s.idsucursal and 
     c.cliente_idcliente = cl.idcliente and
-    (case when '' <> '${_idsucursal}' then c.sucursal_idsucursal = ${_idsucursal} else true end) and 
+    (case when '' <> '${_idsucursal}' then c.sucursal_idsucursal = '${_idsucursal}' else true end) and 
     (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
     (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) and 
     (case when '' <> '${_idcobro}' then '${_idcobro}' = c.idcobro ELSE TRUE end) and

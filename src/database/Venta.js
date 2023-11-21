@@ -9,7 +9,8 @@ const lista_ventas_admin = (callback) => {
     v.idventa, 
     v.monto_total,
     s.nombre as 'sucursal',
-    s.color
+    s.color,
+    v.estado
     FROM cliente c, usuario u, venta v, sucursal s 
     WHERE 
     /*date(v.fecha) = date(now()) and */
@@ -20,9 +21,9 @@ const lista_ventas_admin = (callback) => {
     const connection = mysql_connection.getConnection()
 
     connection.connect()
-    console.log("query ventas admin")
+   // console.log("query ventas admin")
     connection.query(query,(err,rows)=>{
-        console.log(JSON.stringify(rows))
+        //console.log(JSON.stringify(rows))
         callback(rows)
     })
 
