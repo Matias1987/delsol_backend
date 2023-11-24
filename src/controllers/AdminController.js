@@ -1,5 +1,10 @@
 const adminService = require("../services/AdminService")
 
+
+const obtener_resumen_operaciones_sucursal = (req, res) => {
+    adminService.obtener_resumen_operaciones_sucursal
+}
+
 const obtener_lista_ventas_admin = (req,res) =>{
     adminService.obtener_lista_ventas_admin((rows)=>{
         res.send({status:"OK", data: rows})
