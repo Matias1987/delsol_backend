@@ -750,7 +750,15 @@ const agregar_stock = (data,callback) =>{
         connection.end()
     }
 
-    const modificar_cantidad_categoria = (data, callback) => {
+    const modificar_cantidad_categoria = (_data, callback) => {
+        const data = {
+            idfamilia: _data.tipo=='familia'? _data.id : "-1",
+            idsubfamilia: _data.tipo=='subfamilia'? _data.id : "-1",
+            idgrupo: _data.tipo=='grupo'? _data.id : "-1",
+            idsubgrupo: _data.tipo=='subgrupo'? _data.id : "-1",
+            idsucursal: _data.idsucursal,
+            cantidad: _data.cantidad,
+        }
         const query = `UPDATE 
         stock s, 
         codigo c, 
@@ -771,7 +779,7 @@ const agregar_stock = (data,callback) =>{
         ;
         `
         ;
-
+        console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,resp)=>{

@@ -12,6 +12,7 @@ const verificar_cantidades_productos = (req, res) => {
 
 const modificar_cantidad_categoria = (req, res) => {
         const {body} = req
+        console.log(JSON.stringify(body))
         stockService.modificar_cantidad_categoria(body,(resp)=>{
           return res.status(201).send({status:'OK', data:resp});
         })
