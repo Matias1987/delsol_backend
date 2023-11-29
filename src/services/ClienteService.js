@@ -68,7 +68,14 @@ const desbloquear_cuenta = (idcuenta, callback) => {
   })
 }
 
+const lista_ventas_general = (idcliente, callback) => {
+  ClienteDB.lista_ventas_general(idcliente,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
+    lista_ventas_general,
     bloquear_cuenta,
     desbloquear_cuenta,
     obtenerClientes,

@@ -35,6 +35,15 @@ const obtenerClientePorDNI = (req, res) => {
     }
   );
 }
+
+const lista_ventas_general = (req, res) => {
+  const {params:{idcliente}} = req;
+  clienteService.lista_ventas_general(idcliente,(rows)=>{
+    res.status(201).send({status:'OK',data:rows});
+  })
+}
+
+
 const obtenerClientePorID = (req, res) => {
   const {params:{clienteId}} = req;
   clienteService.obtenerClienteID(
@@ -118,6 +127,7 @@ const desbloquear_cuenta = (req, res) => {
 }
 
 module.exports = {
+    lista_ventas_general,
     bloquear_cuenta,
     desbloquear_cuenta,
     obtenerClientes,

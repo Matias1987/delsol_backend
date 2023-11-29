@@ -11,6 +11,10 @@ router.get("/buscar/:values", (req, res) => {
   clienteController.buscarCliente(req,res);
 });
 
+router.get("/ventas_gral/:idcliente", (req, res) => {
+  clienteController.lista_ventas_general(req,res);
+});
+
 /*
 router.get("/bloquear/:clienteId", (req, res) => {
   console.log("bloquear")

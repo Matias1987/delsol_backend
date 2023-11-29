@@ -1,6 +1,18 @@
 const queries = require("./queries/clienteQueries")
 const mysql_connection = require("../lib/mysql_connection")
 
+const lista_ventas_general = (idcliente, callback) => {
+    
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(`SELECT s.nombre AS 'sucursal', date_format(v.fecha,'%d-%m-%y') as 'fecha_f' , v.* FROM venta  v, sucursal s WHERE 
+    v.sucursal_idsucursal = s.idsucursal and 
+    v.cliente_idcliente=${idcliente};`,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const agregar_destinatario = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -300,4 +312,5 @@ module.exports = {
     agregar_destinatario,
     actualizar_saldo_cliente,
     actualizar_saldo_en_cobro,
+    lista_ventas_general,
 };
