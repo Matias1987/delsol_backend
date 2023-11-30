@@ -22,7 +22,7 @@ const agregarEnvio = (req,res) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     
     const {body} = req;
-    console.log("body: ", JSON.stringify( body))
+    //console.log("body: ", JSON.stringify( body))
     const nuevo_envio = {
         'sucursal_idsucursal' : body.sucursal_idsucursal,
         'usuario_idusuario' : body.usuario_idusuario,

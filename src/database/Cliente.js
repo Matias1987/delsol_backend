@@ -7,7 +7,7 @@ const lista_ventas_general = (idcliente, callback) => {
     connection.connect();
     connection.query(`SELECT s.nombre AS 'sucursal', date_format(v.fecha,'%d-%m-%y') as 'fecha_f' , v.* FROM venta  v, sucursal s WHERE 
     v.sucursal_idsucursal = s.idsucursal and 
-    v.cliente_idcliente=${idcliente};`,(err,rows)=>{
+    v.cliente_idcliente=${idcliente} order by v.idventa desc;`,(err,rows)=>{
         callback(rows)
     })
     connection.end()
