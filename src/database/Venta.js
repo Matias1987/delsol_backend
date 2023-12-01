@@ -87,6 +87,7 @@ const cambiar_estado_venta = (data, callback) => {
     /**
      * if estado==entregado, update fecha_retiro
      */
+    console.log("FECHA RETIRO: " + data.fecha_retiro)
     const fr = typeof data.fecha_retiro === 'undefined' ? "": data.fecha_retiro
 
     const __t = (data.estado=="ENTREGADO" ? `, v.fecha_retiro='${fr}' `: "")
