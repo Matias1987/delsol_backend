@@ -152,6 +152,7 @@ const informe_caja = (idcaja, callback) =>{
             cliente cl
             WHERE 
             c.idcaja=${idcaja} AND 
+            v.sucursal_idsucursal = c.sucursal_idsucursal AND 
             v.estado='ENTREGADO' AND
             v.cliente_idcliente = cl.idcliente AND 
             vhmp.modo_pago = 'ctacte' AND 
