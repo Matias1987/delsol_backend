@@ -105,7 +105,7 @@ const informe_caja = (idcaja, callback) =>{
     (
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
-            'ctacte' AS 'modo_pago',
+            if(chmp.modo_pago='efectivo','ctacte',chmp.modo_pago) AS 'modo_pago',
             c.venta_idventa AS 'operacion',
             CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
             chmp.cobro_idcobro AS 'recibo',
