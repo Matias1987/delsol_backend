@@ -2,6 +2,19 @@ const usuarioService = require("../services/UsuarioService")
 const jwt = require('jsonwebtoken');
 const config = require("../../config")
 
+const check_session = (req,res) => {
+  const {params:{uid, sucursalid}} = req
+  usuarioService.check_session(uid,sucursalid,(resp)=>{
+    res.status(201).send({status:'OK', data: resp});
+  })
+}
+
+const create_session = (req,res) => {
+  const {body} = req
+  usuarioService.create_session(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp});
+  })
+}
 
 const user_is_logged = (req,res) => {
   const {params:{token}} = req;
@@ -126,4 +139,6 @@ module.exports = {
     logout,
     user_is_logged,
     obtener_detalle_vendedor,
+    check_session,
+    create_session,
   };

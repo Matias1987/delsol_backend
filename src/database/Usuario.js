@@ -1,5 +1,38 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+    /**
+     * sessions
+     */
+    const check_session = (uid,sucursalid, callback ) => {
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        const _query = `SELECT s.idsession, s.estado FROM sesion s WHERE s.fksucursal=${sucursalid} AND s.fkaccount=${uid} AND DATE(NOW()) = DATE(s.fecha)`
+        connection.query(_query,(err,rows)=>{
+            if(rows.length>0){
+                callback({
+                    estado: rows[0].estado == 'P' ? 'pending' : rows[0].estado == 'R' ? 'declined' : 'acepted'
+                })
+            }
+            else
+            {
+                callback(null)
+            }
+        })
+        connection.end()
+    }
+
+    const create_session = (data, callback) => {
+        
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        const _query = `INSERT INTO sesion (fkaccount, fksucursal,fecha) VALUES (${data.fkusuario}, ${data.fksucursal}, date('${data.anio}-${data.mes}-${data.dia}'))`
+        console.log(_query)
+        connection.query(_query, (err,rows)=>{
+            callback()
+        })
+        connection.end()
+    }
+
     const checkIfUserLoggedIn = (token, callback) => {
         const connection = mysql_connection.getConnection();
         connection.connect()
@@ -49,9 +82,14 @@ const validar_usuario_login = (data,callback) => {
             let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
             connection.query(_q,(err,_rows)=>{
                 callback({logged:1, uid: rows[0].idusuario, udata: rows[0] });
-                connection.end();
+                /* register session */
+                /*connection.query(`INSERT ignore INTO sesion  (\`fkaccount\`, \`fksucursal\`, \`active\`)   VALUES ( ${rows[0].idusuario} ,${data.fksucursal}, 1)`,(err,_resp)=>{
+                    
+                })*/
+                
 
             })
+            connection.end();
         }
         else{
             callback({logged:0})
@@ -105,4 +143,6 @@ module.exports = {
     setToken,
     checkIfUserLoggedIn,
     obtener_detalle_vendedor,
+    check_session,
+    create_session,
 }

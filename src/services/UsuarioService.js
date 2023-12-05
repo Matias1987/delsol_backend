@@ -1,5 +1,14 @@
 const UsuarioDB = require("../database/Usuario")
 
+
+const check_session = (uid,sucursalid, callback ) => {
+  UsuarioDB.check_session(uid,sucursalid,(resp)=>{return callback(resp)})
+}
+
+const create_session = (data, callback) => {
+  UsuarioDB.create_session(data,(resp)=>{return callback(resp)})
+}
+
 const checkIfUserLoggedIn = (token, callback)=>{
   UsuarioDB.checkIfUserLoggedIn(token,(res)=>{
     callback(res)
@@ -52,4 +61,6 @@ module.exports = {
     addToken,
     checkIfUserLoggedIn,
     obtener_detalle_vendedor,
+    check_session,
+    create_session,
   };

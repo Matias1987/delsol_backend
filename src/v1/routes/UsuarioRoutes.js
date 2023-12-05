@@ -18,13 +18,27 @@ router.get("/l/checklogin/:token", (req, res) => {
   usuarioController.user_is_logged(req,res)
 });
 
+
+router.get("/checks/:uid/:sucursalid",(req,res)=>{
+  usuarioController.check_session(req,res)
+})
+
+
+
 router.post("/login/",(req,res)=>{
+  //console.log("login.......")
   usuarioController.login(req,res)
 })
 
 router.post("/", (req, res) => {
+  
   usuarioController.agregarUsuario(req,res);
 });
+
+router.post("/adds/",(req,res)=>{
+  //console.log("ADDDDDS")
+  usuarioController.create_session(req,res)
+})
 
 router.patch("/:usuarioId", (req, res) => {
   res.send("Update an existing workout");
