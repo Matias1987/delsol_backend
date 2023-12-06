@@ -1,5 +1,16 @@
 const UsuarioDB = require("../database/Usuario")
 
+const obtener_autorizaciones_pendientes = (idsucursal, callback) => {
+  UsuarioDB.obtener_autorizaciones_pendientes(idsucursal,(rows)=>{
+    return callback(rows)
+  })
+}
+
+const cambiar_estado_autorizacion = (data,callback)=>{
+  UsuarioDB.cambiar_estado_autorizacion(data,(response)=>{
+    return callback(response)
+  })
+}
 
 const check_session = (uid,sucursalid, callback ) => {
   UsuarioDB.check_session(uid,sucursalid,(resp)=>{return callback(resp)})
@@ -63,4 +74,6 @@ module.exports = {
     obtener_detalle_vendedor,
     check_session,
     create_session,
+    obtener_autorizaciones_pendientes,
+    cambiar_estado_autorizacion,
   };

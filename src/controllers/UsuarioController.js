@@ -2,6 +2,20 @@ const usuarioService = require("../services/UsuarioService")
 const jwt = require('jsonwebtoken');
 const config = require("../../config")
 
+const obtener_autorizaciones_pendientes =  (req,res)=>{
+  const {params:{idsucursal}} = req;
+  usuarioService.obtener_autorizaciones_pendientes(idsucursal,(rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
+
+const cambiar_estado_autorizacion = (req,res)=>{
+  const {body} = req;
+  usuarioService.cambiar_estado_autorizacion(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp});
+  })
+}
+
 const check_session = (req,res) => {
   const {params:{uid, sucursalid}} = req
   usuarioService.check_session(uid,sucursalid,(resp)=>{
@@ -141,4 +155,6 @@ module.exports = {
     obtener_detalle_vendedor,
     check_session,
     create_session,
+    obtener_autorizaciones_pendientes,
+    cambiar_estado_autorizacion,
   };

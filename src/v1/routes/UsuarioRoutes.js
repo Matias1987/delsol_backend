@@ -18,6 +18,11 @@ router.get("/l/checklogin/:token", (req, res) => {
   usuarioController.user_is_logged(req,res)
 });
 
+router.get("/l/sessions/:idsucursal", (req, res) => {
+  //res.status(201).send({status:'OK',data:{loged:1}});
+  usuarioController.obtener_autorizaciones_pendientes(req,res)
+});
+
 
 router.get("/checks/:uid/:sucursalid",(req,res)=>{
   usuarioController.check_session(req,res)
@@ -35,9 +40,13 @@ router.post("/", (req, res) => {
   usuarioController.agregarUsuario(req,res);
 });
 
+
 router.post("/adds/",(req,res)=>{
-  //console.log("ADDDDDS")
   usuarioController.create_session(req,res)
+})
+
+router.post("/update_s/",(req,res)=>{
+  usuarioController.cambiar_estado_autorizacion(req,res)
 })
 
 router.patch("/:usuarioId", (req, res) => {
