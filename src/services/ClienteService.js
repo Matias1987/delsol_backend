@@ -1,5 +1,11 @@
 const ClienteDB = require("../database/Cliente")
 
+const update_cliente = (data,callback) => {
+  ClienteDB.update_cliente(data,(resp)=>{
+    return callback(resp)
+  })
+}
+
 const obtenerClientes = (callback) => {
   ClienteDB.obtener_lista_clientes((rows) => {
     return callback(rows);
@@ -75,6 +81,7 @@ const lista_ventas_general = (idcliente, callback) => {
 }
 
 module.exports = {
+    update_cliente,
     lista_ventas_general,
     bloquear_cuenta,
     desbloquear_cuenta,

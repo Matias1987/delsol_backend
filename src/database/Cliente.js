@@ -1,6 +1,19 @@
 const queries = require("./queries/clienteQueries")
 const mysql_connection = require("../lib/mysql_connection")
 
+const update_cliente = (data, callback) => {
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    const _q = `UPDATE cliente c SET c.direccion='${data.direccion}', c.nombre='${data.nombre}', c.apellido='${data.apellido}', c.telefono1='${data.telefono}' WHERE c.idcliente=${data.idcliente};`
+    connection.query(
+        _q,
+        (err,resp)=>{
+            callback(resp)
+        }
+    )
+    connection.end();
+}
+
 const lista_ventas_general = (idcliente, callback) => {
     
     const connection = mysql_connection.getConnection();
@@ -300,6 +313,7 @@ const desbloquear_cuenta = (idcliente, callback) =>{
 
 
 module.exports = {
+    update_cliente,
     bloquear_cuenta,
     desbloquear_cuenta,
     agregar_cliente, 

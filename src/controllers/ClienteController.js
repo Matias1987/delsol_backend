@@ -1,5 +1,12 @@
 const clienteService = require("../services/ClienteService")
 
+const update_cliente = (req, res) => {
+  const {body} = req;
+  clienteService.update_cliente(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp});
+  })
+}
+
 const obtenerClientes = (req, res) => {
   clienteService.obtenerClientes((rows)=>{
     res.status(201).send({status:'OK', data: rows});
@@ -127,6 +134,7 @@ const desbloquear_cuenta = (req, res) => {
 }
 
 module.exports = {
+    update_cliente,
     lista_ventas_general,
     bloquear_cuenta,
     desbloquear_cuenta,

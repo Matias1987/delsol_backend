@@ -57,6 +57,10 @@ router.post("/getPorDNI/", (req, res) => {
   clienteController.obtenerClientePorDNI(req,res);
 });
 
+router.post("/edit_c/",(req,res)=>{
+  clienteController.update_cliente(req,res)
+});
+
 router.patch("/:clienteId", (req, res) => {
   res.send("Update an existing workout");
 });
