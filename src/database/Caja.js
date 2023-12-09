@@ -5,9 +5,14 @@ const caja_abierta = (idsucursal,callback) =>{
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{
-        if(rows.length>0)
-        {
-            callback({abierta:1,current:rows[0].actual == 1 ? 1:0})
+        if(rows!=null){
+            if(rows.length>0)
+            {
+                callback({abierta:1,current:rows[0].actual == 1 ? 1:0})
+            }
+            else{
+                callback({abierta:0,current:0})
+            }
         }
         else{
             callback({abierta:0,current:0})

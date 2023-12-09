@@ -10,7 +10,13 @@ const mysql_connection = require("../lib/mysql_connection")
                         s.fkaccount = u.idusuario AND 
                         s.fksucursal=${idsucursal} AND DATE(s.fecha) = DATE(NOW());`
         connection.query(_query,(err,rows)=>{
-            callback(rows)
+            if(rows!=null)
+            {
+                callback(rows)
+            }
+            else{
+                callback([])
+            }
         })
         connection.end();
     }
@@ -42,6 +48,10 @@ const mysql_connection = require("../lib/mysql_connection")
                         AND DATE(NOW()) = DATE(s.fecha)`
 
         connection.query(_query,(err,rows)=>{
+            if(rows==null)
+            {
+                return  callback(null)
+            }
             if(rows.length>0){
                 if(rows[0].fksucursal_default == sucursalid)
                 {
@@ -83,6 +93,11 @@ const mysql_connection = require("../lib/mysql_connection")
         //console.log(q)
         connection.query(q,(err,res)=>{
             //console.log(JSON.stringify(res))
+            if(res==null)
+            {
+                return callback({logged:0})
+            }
+
             let _logged = 0;
             if(res.length>0){
                 if(res[0].logged=='1')
