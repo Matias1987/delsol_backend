@@ -1,5 +1,24 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const obtener_subgrupos_grupo = (idsubfamilia,callback)=>{
+    const q = `SELECT g.nombre_corto AS 'grupo', 
+    sg.nombre_largo AS 'subgrupo', 
+    sg.precio_defecto AS 'precio', 
+    sg.idsubgrupo, 
+    g.idgrupo 
+    FROM subgrupo sg, grupo g WHERE 
+    sg.grupo_idgrupo=g.idgrupo and
+    g.subfamilia_idsubfamilia=${idsubfamilia} 
+    ORDER BY 
+    sg.grupo_idgrupo;`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(q,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const modificar_precios_defecto = (data,callback) => {
     if(
         data.idfamilia<0 &&
@@ -158,4 +177,5 @@ module.exports = {
     obtener_detalle_subgrupo,
     modificar_precios_defecto,
     obtener_descripcion_cat_subgrupo,
+    obtener_subgrupos_grupo,
 }

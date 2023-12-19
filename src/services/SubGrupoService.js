@@ -1,5 +1,11 @@
 const SubGrupoDB = require("../database/SubGrupo")
 
+const obtener_subgrupos_grupo = (idsubfamilia,callback)=>{
+  SubGrupoDB.obtener_subgrupos_grupo(idsubfamilia,(rows)=>{
+    return callback(rows)
+  })
+}
+
 const obtener_subgrupos_bygrupo_opt = (grupoid,callback) => {
   SubGrupoDB.obtener_subgrupos_bygrupo_opt(grupoid,(rows)=>{
     return callback(rows);
@@ -59,4 +65,5 @@ module.exports = {
     obtener_detalle_subgrupo,
     modificar_precios_defecto,
     obtener_descripcion_cat_subgrupo,
+    obtener_subgrupos_grupo,
   };
