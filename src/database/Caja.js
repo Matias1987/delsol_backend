@@ -1,5 +1,15 @@
 const mysql_connection = require("../lib/mysql_connection");
 
+const caja_exists = (data,callback) => {
+    const query = `SELECT c.idcaja FROM caja c WHERE DATE(c.fecha) = DATE('${data.fecha}') AND c.sucursal_idsucursal=${data.idsucursal};`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const caja_abierta = (idsucursal,callback) =>{
     const query = `SELECT c.idcaja AND if(date(c.fecha) = DATE(NOW()),1,0) AS 'actual' FROM caja c WHERE c.estado='ABIERTA' AND c.sucursal_idsucursal=${idsucursal};`
     const connection = mysql_connection.getConnection()
@@ -48,7 +58,7 @@ const agregarCaja = (data,callback) =>
 
     connection.connect();
 
-    const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado) values (${data.sucursal_idsucursal},${data.monto_inicial},'${"ABIERTA"}')`
+    const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${data.sucursal_idsucursal},${data.monto_inicial},'${"ABIERTA"}', date('${data.fecha}'))`
     //values = [[data.sucursal_idsucursal, data.monto_inicial, "ABIERTA"]];
     console.log(sql)
 
@@ -181,4 +191,5 @@ module.exports = {
     obtener_lista_cajas_sucursal,
     obtener_caja_id,
     caja_abierta,
+    caja_exists,
 }

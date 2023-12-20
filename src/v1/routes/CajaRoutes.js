@@ -28,6 +28,10 @@ router.get("/:idcaja", (req, res) => {
   cajaController.obtener_caja_id(req,res)
 });
 
+router.post("/exists/", (req, res) => {
+  cajaController.caja_exists(req,res)
+});
+
 router.post("/", (req, res) => {
   cajaController.agregarCaja(req,res)
 });

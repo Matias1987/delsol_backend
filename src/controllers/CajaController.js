@@ -1,5 +1,12 @@
 const cajaService = require("../services/CajaService");
 
+const caja_exists = (req, res) => {
+    const {body} = req
+    cajaService.caja_exists(body,(rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
+
 const obtener_caja = (req, res) =>{
     const {params:{idsucursal}} = req;
     cajaService.obtener_caja(idsucursal,(resp)=>{
@@ -65,4 +72,5 @@ module.exports={
     informe_caja,
     obtener_caja_id,
     caja_abierta,
+    caja_exists,
 }

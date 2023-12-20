@@ -1,5 +1,11 @@
 const CajaDB = require("../database/Caja")
 
+const caja_exists = (data,callback) => {
+    CajaDB.caja_exists(data,(rows)=>{
+        callback(rows)
+    })
+}
+
 const obtener_caja = (idsucursal, callback) =>{
     CajaDB.obtener_caja(idsucursal,(resp)=>{
         callback(resp)
@@ -53,5 +59,6 @@ module.exports={
     informe_caja,
     obtenerCajasSucursal,
     obtener_caja_id,
-    caja_abierta
+    caja_abierta,
+    caja_exists
 }

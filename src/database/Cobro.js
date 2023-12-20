@@ -116,7 +116,8 @@ const agregar_cobro  = (data,callback) => {
         venta_idventa,
         monto,
         tipo,
-        sucursal_idsucursal
+        sucursal_idsucursal,
+        fecha
         ) values (
         ${data.caja_idcaja}, 
         ${data.usuario_idusuario}, 
@@ -124,7 +125,8 @@ const agregar_cobro  = (data,callback) => {
         ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
         ${data.monto - data.mp.ctacte_monto /* subtract ctacte monto */}, 
         '${data.tipo}',
-        ${data.sucursal_idsucursal}
+        ${data.sucursal_idsucursal},
+        date('${data.fecha}')
         )`;
 
     console.log(__query)
