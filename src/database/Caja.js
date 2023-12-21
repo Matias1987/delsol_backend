@@ -75,14 +75,21 @@ const obtener_caja = (idsucursal, callback) =>{
     const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} AND c.estado='ABIERTA';`;
     connection.query(sql,(err,rows)=>{
         
-        if(rows.length>0)
+        if(rows==null)
         {
-            console.log(JSON.stringify(rows))
-            callback({...rows[0],status:'OK'})
-        }
-        else{
             callback({message:'error, no se encontro', status: 'error'})
         }
+        else{
+            if(rows.length>0)
+            {
+                console.log(JSON.stringify(rows))
+                callback({...rows[0],status:'OK'})
+            }
+            else{
+                callback({message:'error, no se encontro', status: 'error'})
+            }
+        }
+        
         
     })
     connection.end();
