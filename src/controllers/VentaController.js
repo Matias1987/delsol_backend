@@ -1,5 +1,13 @@
 const ventaService = require("../services/VentaService")
 
+
+const totales_venta_vendedor = (req, res) => {
+  const {body} = req
+  ventaService.totales_venta_vendedor(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
+
 const cambiar_estado_venta = (req,res) => {
   const {body} = req;
   ventaService.cambiar_estado_venta(body,(result)=>{
@@ -142,4 +150,5 @@ module.exports = {
     obtener_datos_pagare,
     obtener_lista_pagares,
     obtener_categorias_productos_venta,
+    totales_venta_vendedor,
   };

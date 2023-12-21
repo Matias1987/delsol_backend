@@ -2,6 +2,39 @@ const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
+const totales_venta_vendedor = (data,callback) => {
+    const query = `SELECT u.nombre AS 'usuario', t.* FROM 
+    usuario u,
+    (
+        SELECT 
+            v.usuario_idusuario,
+            sum(if(vmp.modo_pago='efectivo',vmp.monto,0)) AS 'efectivo',
+            sum(if(vmp.modo_pago='tarjeta',vmp.monto,0)) AS 'tarjeta',
+            sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
+            sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
+            sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            SUM(vmp.monto) AS 'total'
+        FROM 
+            venta_has_modo_pago vmp, venta v 
+        WHERE
+            vmp.venta_idventa = v.idventa AND 
+            YEAR(v.fecha_retiro) = 2023 AND 
+            MONTH(v.fecha_retiro) = 12 AND 
+            v.estado = 'ENTREGADO' 
+            GROUP BY v.usuario_idusuario
+            
+    ) AS t
+    WHERE 
+    t.usuario_idusuario = u.idusuario;`
+
+    const  connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const lista_ventas_admin = (callback) => {
     const query = `SELECT
     CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
@@ -548,5 +581,6 @@ module.exports = {
     obtener_datos_pagare,
     obtener_lista_pagares,
     obtener_categorias_productos_venta,
+    totales_venta_vendedor,
 }
 

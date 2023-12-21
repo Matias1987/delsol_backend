@@ -1,5 +1,17 @@
 const MedicoDB = require("../database/Medico");
 
+const ventas_medico = (data, callback)=>{
+    MedicoDB.ventas_medico(data,(rows)=>{
+        return callback(rows)
+    })
+}
+
+const ventas_medico_totales = (data,callback)=>{
+    MedicoDB.ventas_medico_totales(data,(rows)=>{
+        return callback(rows)
+    })
+}
+
 const buscarMedico = (value, callback) => {
     MedicoDB.buscar_medico(value,(rows)=>{
         return callback(rows)
@@ -31,4 +43,6 @@ module.exports = {
     agregarMedico,
     editarMedico,
     buscarMedico,
+    ventas_medico_totales,
+    ventas_medico,
 }

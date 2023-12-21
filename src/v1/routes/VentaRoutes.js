@@ -60,6 +60,10 @@ router.post("/venta_estado_sucursal/", (req, res) => {
   ventaController.lista_venta_sucursal_estado(req,res)
 });
 
+router.post("/inf/v/totales_v/", (req, res) => {
+  ventaController.totales_venta_vendedor(req,res)
+});
+
 router.patch("/:ventaId", (req, res) => {
   ventaController.editarVenta(req,any)
 });

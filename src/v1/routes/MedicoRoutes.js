@@ -18,6 +18,14 @@ router.post("/", (req, res) => {
   medicoController.agregarMedico(req,res);
 });
 
+router.post("/ventas_medico_totales/", (req, res) => {
+  medicoController.ventas_medico_totales(req,res);
+});
+
+router.post("/ventas_medico/", (req, res) => {
+  medicoController.ventas_medico(req,res);
+});
+
 router.patch("/:clienteId", (req, res) => {
   res.send("Update an existing workout");
 });
