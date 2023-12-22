@@ -1,5 +1,17 @@
 const ventaService = require("../services/VentaService")
 
+const lista_ventas_sucursal_mes = (req, res) => {
+  const {body} = req
+  ventaService.lista_ventas_sucursal_mes(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
+const lista_ventas_vendedor_mes = (req, res) => {
+  const {body} = req
+  ventaService.lista_ventas_vendedor_mes(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
 
 const totales_venta_vendedor = (req, res) => {
   const {body} = req
@@ -151,4 +163,6 @@ module.exports = {
     obtener_lista_pagares,
     obtener_categorias_productos_venta,
     totales_venta_vendedor,
+    lista_ventas_vendedor_mes,
+    lista_ventas_sucursal_mes,
   };

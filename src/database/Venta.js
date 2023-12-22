@@ -2,6 +2,64 @@ const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
+const lista_ventas_sucursal_mes = (data,callback) => {
+    const query = `SELECT s.nombre AS 'sucursal', t.* FROM 
+    sucursal s,
+    (
+        SELECT 
+            v.sucursal_idsucursal,
+            sum(if(vmp.modo_pago='efectivo',vmp.monto,0)) AS 'efectivo',
+            sum(if(vmp.modo_pago='tarjeta',vmp.monto,0)) AS 'tarjeta',
+            sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
+            sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
+            sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            SUM(vmp.monto) AS 'total'
+        FROM 
+            venta_has_modo_pago vmp, venta v 
+        WHERE
+            vmp.venta_idventa = v.idventa AND 
+            YEAR(v.fecha_retiro) = ${data.anio} AND 
+            MONTH(v.fecha_retiro) = ${data.mes} AND 
+            v.estado = 'ENTREGADO' 
+            GROUP BY v.sucursal_idsucursal
+            
+    ) AS t
+    WHERE 
+    t.sucursal_idsucursal = s.idsucursal;`
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+
+
+}
+
+const lista_ventas_vendedor_mes = (data, callback) => {
+    const query = `SELECT 
+    v.idventa, 
+    DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro',
+    CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
+    v.monto_total
+    FROM 
+    venta v, cliente c 
+    WHERE 
+    v.cliente_idcliente = c.idcliente AND 
+    YEAR(v.fecha_retiro) = 2023 AND 
+    MONTH(v.fecha_retiro) = 12 AND 
+    v.estado='ENTREGADO' AND 
+    v.usuario_idusuario=0;`;
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const totales_venta_vendedor = (data,callback) => {
     const query = `SELECT u.nombre AS 'usuario', t.* FROM 
     usuario u,
@@ -18,8 +76,8 @@ const totales_venta_vendedor = (data,callback) => {
             venta_has_modo_pago vmp, venta v 
         WHERE
             vmp.venta_idventa = v.idventa AND 
-            YEAR(v.fecha_retiro) = 2023 AND 
-            MONTH(v.fecha_retiro) = 12 AND 
+            YEAR(v.fecha_retiro) = ${data.anio} AND 
+            MONTH(v.fecha_retiro) = ${data.mes} AND 
             v.estado = 'ENTREGADO' 
             GROUP BY v.usuario_idusuario
             
@@ -582,5 +640,7 @@ module.exports = {
     obtener_lista_pagares,
     obtener_categorias_productos_venta,
     totales_venta_vendedor,
+    lista_ventas_vendedor_mes,
+    lista_ventas_sucursal_mes,
 }
 
