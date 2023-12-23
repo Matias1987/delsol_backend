@@ -42,6 +42,7 @@ const ventas_medico_totales = (data, callback) => {
 		GROUP BY v.medico_idmedico
 	)AS m_op
 	WHERE m_op.medico_idmedico = m.idmedico;`
+    console.log(_query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(_query,(err,rows)=>{
