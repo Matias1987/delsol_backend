@@ -1,5 +1,7 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+
+
 const obtener_caja_dia_sucursal = (data, callback) => {
     const query = `SELECT c.idcaja FROM caja c WHERE date(c.fecha) = DATE('${data.anio}/${data.mes}/${data.dia}') AND c.sucursal_idsucursal=${data.idsucursal};`;
     const connection = mysql_connection.getConnection()
@@ -23,19 +25,23 @@ const obtener_caja_dia_sucursal = (data, callback) => {
     connection.end()
 }
 
-const obtener_resumen_cobros = (idcaja, callback) => {
+const obtener_resumen_totales = (idcaja, callback) => {
     const query = `SELECT 
-    SUM(if(ops.modo_pago = 'efectivo',ops.monto,0)) AS 'efectivo',
-    SUM(if(ops.modo_pago = 'tarjeta',ops.monto,0)) AS 'tarjeta',
-    SUM(if(ops.modo_pago = 'mutual',ops.monto,0)) AS 'mutual',
-    SUM(if(ops.modo_pago = 'cheque',ops.monto,0)) AS 'cheque',
-    SUM(if(ops.modo_pago = 'ctacte',ops.monto,0)) AS 'cuotas',
-    SUM(if(ops.modo_pago = 'cuota',ops.monto,0)) AS 'ctacte'
+    sum(if(ops.modo_pago = 'efectivo',ops.monto,0)) AS 'efectivo',
+    sum(if(ops.modo_pago = 'tarjeta',ops.monto,0)) AS 'tarjeta',
+    sum(if(ops.modo_pago = 'mutual',ops.monto,0)) AS 'mutual',
+    sum(if(ops.modo_pago = 'cheque',ops.monto,0)) AS 'cheque',
+    sum(if(ops.modo_pago = 'ctacte',ops.monto,0)) AS 'cuotas',
+    sum(if(ops.modo_pago = 'cuota',ops.monto,0)) AS 'ctacte'
     from
     (
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
-            if(chmp.modo_pago='efectivo','ctacte',chmp.modo_pago) AS 'modo_pago'
+            if(chmp.modo_pago='efectivo','ctacte',chmp.modo_pago) AS 'modo_pago',
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'PAGO CUOTA' as 'detalle'
             FROM 
             cobro_has_modo_pago chmp,
             cobro c,
@@ -48,7 +54,11 @@ const obtener_resumen_cobros = (idcaja, callback) => {
         UNION
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
-            chmp.modo_pago
+            chmp.modo_pago,
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'CIERRE OP.' as 'detalle'
             FROM 
             cobro_has_modo_pago chmp,
             cobro c,
@@ -62,7 +72,11 @@ const obtener_resumen_cobros = (idcaja, callback) => {
         UNION
             SELECT 
             replace(format(vhmp.monto_int,2),',','') as  'monto' ,
-            'cuota' AS 'modo_pago'
+            'cuota' AS 'modo_pago',
+            vhmp.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            '' AS 'recibo',
+            'PAGO EN CTA. CTE.' as 'detalle'
             FROM 
             venta_has_modo_pago vhmp,
             venta v,
@@ -112,4 +126,4 @@ const obtener_operaciones = (idsucursal, callback) => {
     ;`
 }
 
-module.exports = {obtener_operaciones, obtener_caja_dia_sucursal, obtener_resumen_cobros}
+module.exports = {obtener_operaciones, obtener_caja_dia_sucursal, obtener_resumen_totales}

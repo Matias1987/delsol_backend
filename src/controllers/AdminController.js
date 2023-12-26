@@ -2,7 +2,10 @@ const adminService = require("../services/AdminService")
 
 
 const obtener_resumen_operaciones_sucursal = (req, res) => {
-    adminService.obtener_resumen_operaciones_sucursal
+    const {params:{idcaja}} = req;
+    adminService.obtener_resumen_operaciones_sucursal(idcaja,(rows)=>{
+        res.send({status:"OK", data: rows})
+    })
 }
 
 const obtener_lista_ventas_admin = (req,res) =>{
@@ -34,4 +37,5 @@ module.exports = {
     obtener_lista_envios_admin,
     obtener_lista_gastos_admin,
     obtener_lista_ventas_admin,
+    obtener_resumen_operaciones_sucursal,
 }

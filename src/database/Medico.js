@@ -22,6 +22,9 @@ const ventas_medico = (data, callback) =>{
 }
 
 const ventas_medico_totales = (data, callback) => {
+    console.log(JSON.stringify(data))
+    const nombre = data.nombre.trim().length<1? "-1":data.nombre.trim()
+
     const _query = `SELECT m.nombre AS 'medico', m_op.* FROM 
 	medico m, 
 	(SELECT 
@@ -41,7 +44,7 @@ const ventas_medico_totales = (data, callback) => {
 		v.estado = 'ENTREGADO' 
 		GROUP BY v.medico_idmedico
 	)AS m_op
-	WHERE m_op.medico_idmedico = m.idmedico;`
+	WHERE m_op.medico_idmedico = m.idmedico and (case when '${nombre}'<> '-1' then m.nombre like '%${nombre}%' else true end);`
     console.log(_query)
     const connection = mysql_connection.getConnection()
     connection.connect()

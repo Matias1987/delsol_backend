@@ -4,8 +4,8 @@ const CobroDB = require("../database/Cobro")
 const EnvioDB = require("../database/TransferenciaCaja")
 const AdminDB = require("../database/Admin")
 
-const obtener_resumen_operaciones_sucursal = (idsucursal,callback) => {
-    AdminDB.obtener_operaciones(idsucursal,(rows)=>{
+const obtener_resumen_operaciones_sucursal = (idcaja,callback) => {
+    AdminDB.obtener_resumen_totales(idcaja,(rows)=>{
         callback(rows)
     })
 }
