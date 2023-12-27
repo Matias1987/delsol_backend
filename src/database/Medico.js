@@ -2,12 +2,14 @@ const mysql_connection = require("../lib/mysql_connection")
 
 const ventas_medico = (data, callback) =>{
     const query = `SELECT 
+    s.nombre as 'sucursal',
     v.idventa,
     CONCAT(c.apellido,' ',c.nombre) AS 'cliente',
     c.dni,
     v.tipo,
     v.monto_total
-     FROM venta v , cliente c WHERE 
+    FROM venta v , cliente c, sucursal s WHERE
+    v.sucursal_idsucursal = s.idsucursal AND  
     v.cliente_idcliente = c.idcliente AND 
     YEAR(v.fecha_retiro) = ${data.anio} AND
     MONTH(v.fecha_retiro) = ${data.mes} AND 
