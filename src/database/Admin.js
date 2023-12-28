@@ -32,9 +32,38 @@ const obtener_resumen_totales = (idcaja, callback) => {
     sum(if(ops.modo_pago = 'mutual',ops.monto,0)) AS 'mutual',
     sum(if(ops.modo_pago = 'cheque',ops.monto,0)) AS 'cheque',
     sum(if(ops.modo_pago = 'ctacte',ops.monto,0)) AS 'cuotas',
-    sum(if(ops.modo_pago = 'cuota',ops.monto,0)) AS 'ctacte'
+    sum(if(ops.modo_pago = 'cuota',ops.monto,0)) AS 'ctacte',
+    sum(if(ops.modo_pago = 'total',ops.monto,0)) AS 'monto_total',
+    sum(if(ops.modo_pago = 'ANULADO',ops.monto,0)) AS 'anulado'
     from
     (
+            SELECT 
+            1 AS 'monto' ,
+            'ANULADO' AS 'modo_pago',
+            'ANULADO' AS 'operacion',
+            '-' AS 'cliente',
+            0 AS 'recibo',
+            '-' AS 'detalle'
+            FROM venta v 
+            WHERE 
+            v.estado='ANULADO' AND 
+            v.caja_idcaja= ${idcaja}
+        UNION
+            SELECT 
+            v.monto_total AS 'monto' ,
+            'total' AS 'modo_pago',
+            'total' AS 'operacion',
+            '-' AS 'cliente',
+            0 AS 'recibo',
+            '-' AS 'detalle'
+            FROM 
+            venta v, caja c WHERE 
+            c.idcaja=${idcaja} AND 
+            v.sucursal_idsucursal = c.sucursal_idsucursal AND 
+            month(v.fecha_retiro) = month(NOW()) AND 
+            YEAR(v.fecha_retiro) = YEAR(NOW()) AND 
+            v.estado='ENTREGADO'
+        UNION
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
             if(chmp.modo_pago='efectivo','ctacte',chmp.modo_pago) AS 'modo_pago',
