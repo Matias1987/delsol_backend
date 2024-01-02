@@ -17,7 +17,9 @@ const ventas_medico = (data, callback) =>{
     v.medico_idmedico=${data.idmedico}`;
     const connection = mysql_connection.getConnection()
     connection.connect()
+    console.log(query)
     connection.query(query,(err,rows)=>{
+        console.log(JSON.stringify(rows))
         return callback(rows)
     })
     connection.end()
