@@ -1,6 +1,10 @@
 const queryDetalleCobro = (id) =>{
     return `SELECT 
     c.* , 
+    if(c.tipo='cuota',
+    CONCAT('Cuota cliente nro. ',c.cliente_idcliente),
+    CONCAT('Seña op. ', c.venta_idventa)
+    ) AS 'concepto_pago', 
     date_format(c.fecha,'%d-%m-%Y') as 'fecha_formatted',
     cl.dni AS 'cliente_dni',  
     CONCAT(cl.apellido,', ', cl.nombre) AS 'cliente_nombre'

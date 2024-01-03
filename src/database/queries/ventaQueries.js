@@ -322,6 +322,8 @@ const queryListaVentaStock = (ventaId) =>{
 	vhs.cantidad,
 	vhs.total,
 	c.codigo, 
+	vhs.curva_base,
+	vhs.diametro,
 	c.descripcion
 	FROM venta_has_stock vhs, codigo c WHERE 
 	c.idcodigo = vhs.stock_codigo_idcodigo AND 

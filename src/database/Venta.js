@@ -250,7 +250,7 @@ const insert_venta = (data,callback) => {
             '${(typeof e.eje === 'undefined' ? 0 : e.eje)}',
             ${typeof e.orden === 'undefined' ? 0 : e.orden},
             ${typeof e.descontable === 'undefined'? 1 : e.descontable },
-            ${typeof e.curva_base === 'undefined'? 0 : e.curva_base },
+            ${typeof e.cb === 'undefined'? 0 : e.cb },
             ${typeof e.diametro === 'undefined'? 0 : e.diametro }
             )`
         })
