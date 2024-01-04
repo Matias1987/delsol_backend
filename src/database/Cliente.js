@@ -107,13 +107,25 @@ const buscar_cliente = (value, callback) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
     
+    const parts = _value.split(' ')
+
+    var _q =""
+    parts.forEach(p=>{
+        if(p.length>0)
+        {
+            _q += (_q.length>0?" AND ":"") +`( c.apellido LIKE '%${p}%' OR c.nombre LIKE '%${p}%' OR c.dni LIKE '%${p}%' ) `
+        }
+        
+    }) 
+
+    const _query = `SELECT c.* FROM cliente c WHERE ${_q}`
+
+    console.log(_query)
+
     connection.query(
-        `SELECT c.* FROM cliente c WHERE 
-    c.apellido LIKE '%${_value}%' OR
-    c.nombre LIKE '%${_value}%' OR 
-    c.dni LIKE '%${_value}%';`,
+        _query,
     (err,rows)=>{
-        console.log(JSON.stringify(rows))
+       // console.log(JSON.stringify(rows))
         callback(rows)
     });
     connection.end();

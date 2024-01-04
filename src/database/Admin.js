@@ -4,6 +4,7 @@ const mysql_connection = require("../lib/mysql_connection")
 
 const obtener_caja_dia_sucursal = (data, callback) => {
     const query = `SELECT c.idcaja FROM caja c WHERE date(c.fecha) = DATE('${data.anio}/${data.mes}/${data.dia}') AND c.sucursal_idsucursal=${data.idsucursal};`;
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

@@ -1,5 +1,12 @@
 const adminService = require("../services/AdminService")
 
+const obtener_caja_dia_sucursal = (req, res) => {
+    const {body} = req
+    adminService.obtener_caja_dia_sucursal(body, (rows)=>{
+        res.send({status:"OK", data: rows})
+    })
+
+}
 
 const obtener_resumen_operaciones_sucursal = (req, res) => {
     const {params:{idcaja}} = req;
@@ -38,4 +45,5 @@ module.exports = {
     obtener_lista_gastos_admin,
     obtener_lista_ventas_admin,
     obtener_resumen_operaciones_sucursal,
+    obtener_caja_dia_sucursal,
 }
