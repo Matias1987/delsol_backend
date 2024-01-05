@@ -122,9 +122,11 @@ const informe_caja = (idcaja, callback) =>{
     if(ops.modo_pago = 'mutual',ops.monto,0) AS 'mutual',
     if(ops.modo_pago = 'cheque',ops.monto,0) AS 'cheque',
     if(ops.modo_pago = 'ctacte',ops.monto,0) AS 'cuotas',
-    if(ops.modo_pago = 'cuota',ops.monto,0) AS 'ctacte'
+    if(ops.modo_pago = 'cuota',ops.monto,0) AS 'ctacte',
+    if(ops.modo_pago = 'mercadopago',ops.monto,0) AS 'mercadopago'
     from
     (
+			/*CUOTAS efvo*/
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
             if(chmp.modo_pago='efectivo','ctacte',chmp.modo_pago) AS 'modo_pago',
@@ -140,8 +142,9 @@ const informe_caja = (idcaja, callback) =>{
             c.cliente_idcliente = cl.idcliente AND 
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
+			chmp.modo_pago = 'efectivo' AND 
             c.tipo='cuota'
-        UNION
+        UNION /* cierre op */
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
             chmp.modo_pago,
@@ -180,6 +183,24 @@ const informe_caja = (idcaja, callback) =>{
             vhmp.modo_pago = 'ctacte' AND 
             vhmp.venta_idventa = v.idventa AND 
             DATE(v.fecha_retiro) = DATE(c.fecha)
+		UNION /*CUOTA NO EFECTIVO (MERCADOPAGO, CHEQUE, ETC)*/
+			SELECT 
+            replace(format(chmp.monto,2),',','') as 'monto',
+            chmp.modo_pago,
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'PAGO CUOTA' as 'detalle'
+            FROM 
+            cobro_has_modo_pago chmp,
+            cobro c,
+            cliente cl
+            WHERE 
+            c.cliente_idcliente = cl.idcliente AND 
+            chmp.cobro_idcobro = c.idcobro AND
+            c.caja_idcaja=${idcaja} AND 
+			chmp.modo_pago <> 'efectivo' AND 
+            c.tipo='cuota'
     ) AS ops;`;
     //v.caja_idcaja=${idcaja}
     connection.query(sql,(err,rows)=>{

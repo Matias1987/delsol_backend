@@ -190,6 +190,21 @@ const get_mp = (data, idventa) => {
 				tarjeta_nro: null,
 			})
 		}
+		if(data?.mp?.mercadopago_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'6',
+				banco_idbanco:null,
+				mutual_idmutual:null,
+				monto:data.mp.mercadopago_monto,
+				monto_int:0,
+				cant_cuotas:0,
+				monto_cuota:0,
+				fk_tarjeta: null,
+				modo_pago: 'mercadopago',
+				tarjeta_nro: null,
+			})
+		}
 	}
 	
 	return _items_mp;

@@ -73,7 +73,7 @@ const agregar_cobro  = (data,callback) => {
      * y solamente deberia crearse un registro de modo de pago...
      */
 
-    console.log(JSON.stringify(data))
+    /*console.log(JSON.stringify(data))
     console.log("########")
     console.log(
         JSON.stringify({
@@ -81,7 +81,7 @@ const agregar_cobro  = (data,callback) => {
             monto_cuotas: data.mp.ctacte_monto_cuotas,
             cant_cuotas: data.mp.ctacte_cuotas,
         })
-    )
+    )*/
     //for later use
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     
@@ -199,6 +199,14 @@ const agregar_cobro  = (data,callback) => {
                 fkbanco: null
             }),
             "cheque_monto")
+        
+        _mp = add(
+            _mp,
+            get_mp_obj({
+                monto: data.mp.mercadopago_monto,
+                tipo: 'mercadopago',
+            }),
+            "mercadopago_monto")
 
             //console.log("ALL MP:  "  + JSON.stringify(_mp))
 
@@ -216,6 +224,7 @@ const agregar_cobro  = (data,callback) => {
             '${mp.cant_cuotas}',
             '${mp.monto_cuota}', 
             '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}')`
+            
             if(mp.tipo!='ctacte')
             {
                 console.log(`monto to add: ${mp.monto}`)
