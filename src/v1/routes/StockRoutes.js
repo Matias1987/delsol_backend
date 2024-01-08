@@ -3,12 +3,12 @@ const router = express.Router();
 const stockController = require("../../controllers/StockController")
 
 router.get("/:idsucursal", (req, res) => {
-  console.log("dfafd")
+  //console.log("dfafd")
   stockController.obtenerListaStock(req,res)
 });
 
 router.get("/get/subgrupos/full/list/", (req, res) => {
-  console.log("oifjajfosj")
+  //console.log("oifjajfosj")
   stockController.obtener_subgrupo_full(req,res)
 });
 
