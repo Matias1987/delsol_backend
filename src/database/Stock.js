@@ -169,6 +169,7 @@ const search_stock = (search_value, idsucursal, callback) => {
     const _sql = `SELECT 
                         c.idcodigo,
                         c.codigo AS 'codigo',
+                        c.modo_precio,
                         CONCAT(
                             f.nombre_corto,' / ',sf.nombre_corto, ' / ',
                             g.nombre_corto,' / ',sg.nombre_corto, ' / '
@@ -540,6 +541,7 @@ const agregar_stock = (data,callback) =>{
             _c.descripcion, 
             _c.edad,
             _c.genero,
+            _c.modo_precio,
             sg.multiplicador,
             if(_c.modo_precio=0, (ROUND((_c.costo * sg.multiplicador)/100)*100),if(_c.modo_precio = 1,sg.precio_defecto,_c.precio)) AS 'precio',
             sg.idsubgrupo,
