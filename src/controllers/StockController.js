@@ -202,7 +202,15 @@ const obtener_subgrupo_full = (req,res) => {
 
 }
 
+const modificar_cantidad = (req, res) => {
+  const {body} = req
+  stockService.modificar_cantidad(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp})
+  })
+}
+
 module.exports = {
+  modificar_cantidad,
   obtener_subgrupo_full,
   obtenerListaStock,
   agregarStock,

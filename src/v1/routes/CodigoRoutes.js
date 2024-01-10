@@ -29,6 +29,14 @@ router.post("/", (req, res) => {
   codigoController.agregarCodigo(req,res);
 });
 
+router.post("/editar_c/",(req,res)=>{
+  codigoController.editar_codigo(req,res)
+})
+
+router.post("/codigos_filtros/",(req,res)=>{
+  codigoController.obtener_codigos_filtros(req,res)
+})
+
 router.patch("/:codigoId", (req, res) => {
   res.send("Update an existing workout");
 });

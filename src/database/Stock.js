@@ -781,11 +781,26 @@ const agregar_stock = (data,callback) =>{
         ;
         `
         ;
-        console.log(query)
+        //console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,resp)=>{
             callback(resp)
+        })
+        connection.end()
+    }
+
+    const editar_stock = (data, callback) => {
+        const query = `update stock s set s.`
+    }
+
+    const modificar_cantidad = (data, callback)=>{
+        const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`
+        console.log(query)
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        connection.query(query,(err,response)=>{
+            callback(response)
         })
         connection.end()
     }
@@ -810,4 +825,5 @@ module.exports = {
     obtener_stock_ventas,
     obtener_stock_detalles_venta,
     modificar_cantidad_categoria,
+    modificar_cantidad,
 }

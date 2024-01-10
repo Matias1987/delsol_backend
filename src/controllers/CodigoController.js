@@ -100,8 +100,23 @@ const obtener_codigos_categoria = (req,res)=>{
   })
 }
 
+const editar_codigo = (req, res) => {
+  const {body} = req;
+  codigoService.editar_codigo(body,(response)=>{
+    res.status(201).send({status:'OK', data:response})
+  })
+}
+
+const obtener_codigos_filtros = (req, res) => {
+  const {body} = req
+  codigoService.obtener_codigos_filtros(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
 
 module.exports = {
+    obtener_codigos_filtros,
+    editar_codigo,
     obtenerCodigoPorId,
     obtenerCodigos,
     obtenerCodigo,

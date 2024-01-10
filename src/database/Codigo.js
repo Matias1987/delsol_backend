@@ -1,5 +1,27 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+const obtener_codigos_filtros = (data, callback) => {
+    const query = `SELECT c.*, sg.precio_defecto FROM 
+    codigo c, subgrupo sg, grupo g, subfamilia sf
+    WHERE
+    c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
+    sg.grupo_idgrupo = g.idgrupo AND 
+    g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+    (case when '${data.codigo}'='' then TRUE ELSE c.codigo LIKE '%${data.codigo}%' END ) AND 
+    (case when '${data.idsubgrupo}'='-1' then TRUE ELSE sg.idsubgrupo='${data.idsubgrupo}' END ) AND 
+    (case when '${data.idgrupo}'='-1' then TRUE ELSE g.idgrupo='${data.idgrupo}' END ) AND 
+    (case when '${data.idsubfamilia}'='-1' then TRUE ELSE sf.idsubfamilia='${data.idsubfamilia}' END ) AND
+    (case when '${data.idfamilia}'='-1' then TRUE ELSE sf.familia_idfamilia='${data.idfamilia}' END )
+    ;`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 const search_codigos = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -134,7 +156,23 @@ const obtener_codigos_categoria = (data,callback) => {
     connection.end();
 }
 
+const editar_codigo = (data, callback) => {
+    const query = `update codigo c set 
+    c.descripcion = '${data.descripcion}',
+    c.modo_precio = '${data.modo_precio}',
+    c.precio = ${data.precio}
+    where c.idcodigo = ${data.idcodigo}
+    `
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
+    editar_codigo,
     obtener_codigos,
     agregar_codigo,
     obtener_codigos_bysubgrupo_opt,
@@ -142,4 +180,5 @@ module.exports = {
     obtener_codigo_por_id,
     obtener_codigo,
     obtener_codigos_categoria,
+    obtener_codigos_filtros,
 }

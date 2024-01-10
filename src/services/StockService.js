@@ -114,8 +114,14 @@ const modificar_cantidad_categoria = (data, callback) => {
         })
 }
 
+const modificar_cantidad = (data,callback)=>{
+  StockDB.modificar_cantidad(data,(resp)=>{
+    return callback(resp)
+  })
+}
 
 module.exports = {
+  modificar_cantidad,
   obtener_subgrupo_full,
   obtenerListaStock,
   obtenerStock,

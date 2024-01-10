@@ -88,4 +88,8 @@ router.post("/filtro_stock/", (req, res) => {
   stockController.obtener_lista_stock_filtros(req,res);
 });
 
+router.post("/modificar_cantidad/",(req,res)=>{
+  stockController.modificar_cantidad(req,res)
+})
+
 module.exports = router;
