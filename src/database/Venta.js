@@ -129,9 +129,10 @@ const anular_venta = (data, callback) => {
 
 const desc_cantidades_stock_venta = (data,callback) =>
 {
-    const query = `UPDATE stock s, 
+    /*const query = `UPDATE stock s, 
     (
         SELECT 
+        vhs.idventaitem,
         vhs.stock_sucursal_idsucursal AS 'idsucursal',
         vhs.stock_codigo_idcodigo AS 'idcodigo', 
         vhs.cantidad 
@@ -139,7 +140,26 @@ const desc_cantidades_stock_venta = (data,callback) =>
     ) AS vs
     SET s.cantidad = s.cantidad - vs.cantidad WHERE
     s.codigo_idcodigo = vs.idcodigo AND 
-    s.sucursal_idsucursal = vs.idsucursal;`
+    s.sucursal_idsucursal = vs.idsucursal;`*/
+    
+    ///FALTA LA SUCURSAL!!!!!!!
+    
+    const query = `update stock s,
+    (
+            SELECT 
+                vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                sum(vhs.cantidad) AS 'cantidad' 
+            FROM venta_has_stock vhs 
+                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  AND vhs.descontable=1
+                  GROUP BY vhs.stock_codigo_idcodigo
+    ) AS vs
+    SET s.cantidad = s.cantidad - vs.cantidad
+    where
+    vs.idcodigo = s.codigo_idcodigo AND 
+    s.sucursal_idsucursal=${data.idsucursal}
+    ;`
+    console.log()
    
     const connection = mysql_connection.getConnection()
     connection.connect()

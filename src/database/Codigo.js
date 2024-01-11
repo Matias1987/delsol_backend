@@ -1,7 +1,11 @@
 const mysql_connection = require("../lib/mysql_connection")
 
 const obtener_codigos_filtros = (data, callback) => {
-    const query = `SELECT c.*, sg.precio_defecto FROM 
+    const query = `
+    SELECT c.*, 
+    sg.precio_defecto,
+    if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio_codigo'
+    FROM 
     codigo c, subgrupo sg, grupo g, subfamilia sf
     WHERE
     c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
@@ -36,7 +40,12 @@ const search_codigos = (data, callback) => {
 const obtener_codigo_por_id = (idcodigo,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`select * from codigo where idcodigo=${idcodigo}`,(err,rows,fields)=>{
+    connection.query(`
+    select c.*, 
+    if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio_codigo',
+    sg.precio_defecto 
+    from codigo c, subgrupo sg 
+    where sg.idsubgrupo = c.subgrupo_idsubgrupo and c.idcodigo=${idcodigo}`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();

@@ -592,10 +592,10 @@ const agregar_stock = (data,callback) =>{
     }
 
     const obtener_stock_ventas = (filters, callback) => {
-        //temporary!
+        
         var str = "-1";
 
-        console.log("FILTRO DE FAMILIAS: " + JSON.stringify(filters))
+        const idcodigo = typeof filters.idcodigo == 'undefined' ? '-1' : filters.idcodigo ;
 
         var _values = filters.filtroFamilias;
 
@@ -616,8 +616,6 @@ const agregar_stock = (data,callback) =>{
             __filtros_desc+= (__filtros_desc.length<1 ? "":" and ") + `c.descripcion like '%${r}%' `
         })
 
-        
-
         const _query = `SELECT 
         c.idcodigo, 
         c.codigo, 
@@ -627,6 +625,7 @@ const agregar_stock = (data,callback) =>{
         c.subgrupo_idsubgrupo = sg.idsubgrupo AND
         sg.grupo_idgrupo = g.idgrupo AND 
         g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+        (case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end) and
         (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and 
         s.sucursal_idsucursal=${filters.idSucursal} and 
         ${__filtro.length<1 ? "true" : `((${__filtros_codigo}) or (${__filtros_desc}))`} and
@@ -634,12 +633,9 @@ const agregar_stock = (data,callback) =>{
         LIMIT 200
         ;`;
 
-        console.log(_query)
-
         const connection = mysql_connection.getConnection();
         connection.connect();
         connection.query(_query,(err,rows)=>{
-            //console.log(JSON.stringify(rows))
             callback(rows)
         })
         connection.end();
