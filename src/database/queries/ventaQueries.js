@@ -324,6 +324,7 @@ const queryListaVentasSucursalEstado = (
 	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END) AND
 	(case when '${fecha}' <> '' then date(v.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end)
 	ORDER by v.idventa desc
+	LIMIT 200
 	`
 )
 

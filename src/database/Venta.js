@@ -159,7 +159,7 @@ const desc_cantidades_stock_venta = (data,callback) =>
     vs.idcodigo = s.codigo_idcodigo AND 
     s.sucursal_idsucursal=${data.idsucursal}
     ;`
-    console.log()
+    console.log(query)
    
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -485,7 +485,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
         ))
     connection.query(
         venta_queries.queryListaVentasSucursalEstado(
-            data.idsucursal,
+        (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),
         (typeof data.estado === 'undefined' ? "" : data.estado),
         (typeof data.tipo === 'undefined' ? "" : data.tipo),
         (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
