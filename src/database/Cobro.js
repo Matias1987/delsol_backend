@@ -278,21 +278,23 @@ const agregar_cobro  = (data,callback) => {
         console.log(__query_venta_mp)
 
         connection.query(__query,(err,_results)=>{
-            return callback(idcobro);
+
+            if(typeof data.idventa !== 'undefined'){
+                //hope this works!!
+                connection.query(__query_venta_mp,(err,___results)=>{})
+    
+                //console.log(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+                //UPDATE DEBE AND HABER FIELDS IN VENTA
+                connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+            }
+
+            callback(idcobro);
+            connection.end();  
         })
         //SAVE VENTA MP!, THESE HAVE BEEN DELETED BEFORE... (ONLY IN INGRESO)
-        if(typeof data.idventa !== 'undefined'){
-            //hope this works!!
-            connection.query(__query_venta_mp,(err,___results)=>{
-                //return callback(idcobro);
-            })
+        
 
-            console.log(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
-            //UPDATE DEBE AND HABER FIELDS IN VENTA
-            connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
-        }
-
-        connection.end();            
+                  
         }
     );
     
