@@ -61,6 +61,9 @@ const lista_ventas_vendedor_mes = (data, callback) => {
 }
 
 const totales_venta_vendedor = (data,callback) => {
+    ///console.log(JSON.stringify(data))
+    const fkvendedor = typeof data.fkvendedor === 'undefined' ? '-1' : data.fkvendedor;
+
     const query = `SELECT u.nombre AS 'usuario', t.* FROM 
     usuario u,
     (
@@ -78,12 +81,15 @@ const totales_venta_vendedor = (data,callback) => {
             vmp.venta_idventa = v.idventa AND 
             YEAR(v.fecha_retiro) = ${data.anio} AND 
             MONTH(v.fecha_retiro) = ${data.mes} AND 
-            v.estado = 'ENTREGADO' 
+            v.estado = 'ENTREGADO' AND
+            (case when '${fkvendedor}'<>'-1' then ${fkvendedor} = v.usuario_idusuario else true end) 
             GROUP BY v.usuario_idusuario
             
     ) AS t
     WHERE 
     t.usuario_idusuario = u.idusuario;`
+
+    console.log(query)
 
     const  connection = mysql_connection.getConnection()
     connection.connect()

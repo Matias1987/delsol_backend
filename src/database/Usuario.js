@@ -186,6 +186,7 @@ const obtener_detalle_vendedor = (idusuario,callback)=>{
     const connection = mysql_connection.getConnection();
     connection.connect();
     var sql = `SELECT u.* FROM usuario u WHERE u.idusuario=${idusuario};`;
+    console.log(sql)
     connection.query(sql,(err,rows)=>{
         return callback(rows[0])
     })
