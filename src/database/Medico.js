@@ -60,7 +60,7 @@ const ventas_medico_totales = (data, callback) => {
 
 const buscar_medico = (value, callback) => {
     const _value = decodeURIComponent(value);
-    const query = `SELECT * FROM medico m WHERE m.nombre LIKE '%${_value}%';`;
+    const query = `SELECT * FROM medico m WHERE m.nombre LIKE '%${_value}%' and m.enabled=1;`;
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(query, (err,rows)=>{
@@ -72,7 +72,7 @@ const buscar_medico = (value, callback) => {
 const obtener_medicos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from medico",(err,rows,fields)=>{
+    connection.query("select * from medico m where m.enabled=1",(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
