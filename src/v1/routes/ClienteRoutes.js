@@ -34,7 +34,7 @@ router.get("/:clienteId", (req, res) => {
  clienteController.obtenerClientePorID(req,res)
 });
 
-router.get("/operaciones/:clienteId", (req, res) => {
+router.post("/operaciones/", (req, res) => {
  clienteController.operaciones_cliente(req,res)
 });
 

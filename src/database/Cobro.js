@@ -350,7 +350,7 @@ const lista_cobros_sucursal = (data,callback) => {
 const detalle_cobro = (idcobro, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(cobro_queries.queryDetalleCobro(idcobro))
+    //console.log(cobro_queries.queryDetalleCobro(idcobro))
     connection.query(
         cobro_queries.queryDetalleCobro(idcobro),(err,results)=>{
             return callback(results);

@@ -83,9 +83,11 @@ const editarCliente = (req, res) => {}
 
 const operaciones_cliente = (req, res) => {
 
-  const {params:{clienteId}} = req;
+  //const {params:{clienteId}} = req;
 
-  clienteService.operaciones_cliente(clienteId, (rows)=>{
+  const {body} = req
+
+  clienteService.operaciones_cliente(body, (rows)=>{
 
     res.status(201).send({status:'OK',data:rows});
     

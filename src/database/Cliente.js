@@ -133,7 +133,7 @@ const buscar_cliente = (value, callback) =>{
 
 }
 
-const operaciones_cliente = (idcliente,callback) => {
+const operaciones_cliente = (data,callback) => {
     const query = `select * from
     (
 		SELECT 
@@ -143,7 +143,8 @@ const operaciones_cliente = (idcliente,callback) => {
 		'ENTREGA' as 'tipo',
 		concat('ENTREGA @', s.nombre) as 'detalle',
 		0 as 'debe',
-		c.monto as 'haber'
+		c.monto as 'haber',
+        s.idsucursal
 		FROM 
         cobro c, 
         venta_has_modo_pago vhmp, 
@@ -156,7 +157,7 @@ const operaciones_cliente = (idcliente,callback) => {
 		c.venta_idventa = vhmp.venta_idventa AND 
 		vhmp.modo_pago='ctacte' AND 
         c.tipo<>'cuota' AND
-		c.cliente_idcliente=${idcliente}
+		c.cliente_idcliente=${data.idcliente}
 		UNION
         select 
         c.idcobro as 'id',
@@ -165,13 +166,14 @@ const operaciones_cliente = (idcliente,callback) => {
         'PAGO CUOTA' as 'tipo',
         concat('PAGO CUOTA  @',s.nombre) as 'detalle',
         0 as 'debe',
-        c.monto as 'haber'
+        c.monto as 'haber',
+        s.idsucursal
          from 
          cobro c, 
          sucursal s 
          where 
          s.idsucursal = c.sucursal_idsucursal and 
-         c.cliente_idcliente=${idcliente} 
+         c.cliente_idcliente=${data.idcliente} 
          AND c.tipo = 'cuota'
         union
         select 
@@ -181,12 +183,13 @@ const operaciones_cliente = (idcliente,callback) => {
         'VENTA'  as 'tipo',
         concat('VENTA Cuotas:', vhmp.cant_cuotas, ' Monto: ', format(vhmp.monto_cuota,2) , '  @', s.nombre)   as 'detalle',
         ((v.subtotal - vhmp.monto-v.descuento) + vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
-        0 as 'haber'
+        0 as 'haber',
+        s.idsucursal
          from 
          sucursal s, venta v INNER JOIN venta_has_modo_pago vhmp ON 
          (
             vhmp.venta_idventa = v.idventa AND  
-			v.cliente_idcliente=${idcliente} AND 
+			v.cliente_idcliente=${data.idcliente} AND 
             v.estado = 'ENTREGADO'  AND 
             vhmp.modo_pago='ctacte'
         )
@@ -199,12 +202,16 @@ const operaciones_cliente = (idcliente,callback) => {
          'CARGA MANUAL' as 'tipo',
          concat('CARGA MANUAL "', cm.concepto , '"  @', s.nombre) as 'detalle',
          cm.monto as 'debe',
-         0 as 'haber'
+         0 as 'haber',
+         s.idsucursal
           from carga_manual cm, sucursal s  
           where 
           s.idsucursal = cm.sucursal_idsucursal and
-          cm.cliente_idcliente=${idcliente}
-     ) as ops order by ops.fecha asc;`
+          cm.cliente_idcliente=${data.idcliente}
+     ) as ops
+     where 
+     (case when '${data.idsucursal}'='-1' then true else ${data.idsucursal} = ops.idsucursal end)     
+     order by ops.fecha asc;`
     const connection = mysql_connection.getConnection();
     connection.connect();
     
