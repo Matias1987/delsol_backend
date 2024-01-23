@@ -104,7 +104,21 @@ const obtener_categorias_productos_venta = (data, callback) => {
   })
 }
 
+const cambiar_responsable = (data, callback) => {
+  ventaDB.cambiar_responsable(data,(resp)=>{
+    callback(resp)
+  })
+}
+
+const cambiar_destinatario = (data, callback) => {
+  ventaDB.cambiar_destinatario(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 module.exports = {
+    cambiar_destinatario,
+    cambiar_responsable,
     lista_venta_item ,
     obtenerVentas,
     obtenerVentasSucursal,

@@ -2,6 +2,31 @@ const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
 const venta_queries = require("./queries/ventaQueries");
 
+const cambiar_responsable = (data, callback) => {
+    const query = `UPDATE venta v  SET v.cliente_idcliente = ${data.idresponsable} WHERE v.idventa=${data.idventa};`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+
+    })
+    connection.end()
+
+}
+
+const cambiar_destinatario = (data, callback) => {
+    const query = `UPDATE venta v SET v.fk_destinatario = ${data.iddestinatario} WHERE v.idventa=${data.idventa};`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+
+    })
+    connection.end()
+}
+
 const lista_ventas_sucursal_mes = (data,callback) => {
     const query = `SELECT s.nombre AS 'sucursal', t.* FROM 
     sucursal s,
@@ -668,5 +693,7 @@ module.exports = {
     totales_venta_vendedor,
     lista_ventas_vendedor_mes,
     lista_ventas_sucursal_mes,
+    cambiar_responsable,
+    cambiar_destinatario,
 }
 

@@ -1,5 +1,19 @@
 const ventaService = require("../services/VentaService")
 
+const cambiar_destinatario = (req,res)=>{
+  const {body} = req
+  ventaService.cambiar_destinatario(body,(resp)=>{
+    res.status(201).send({status:'OK',data:resp})
+  })
+}
+
+const cambiar_responsable = (req,res)=>{
+  const {body} = req
+  ventaService.cambiar_responsable(body,(resp)=>{
+    res.status(201).send({status:'OK',data:resp})
+  })
+}
+
 const lista_ventas_sucursal_mes = (req, res) => {
   const {body} = req
   ventaService.lista_ventas_sucursal_mes(body,(rows)=>{
@@ -146,6 +160,8 @@ const obtener_categorias_productos_venta = (req, res) =>
 }
 
 module.exports = {
+    cambiar_destinatario,
+    cambiar_responsable,
     obtenerVentas,
     obtenerVentasSucursal,
     agregarVenta,

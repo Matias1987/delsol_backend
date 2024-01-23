@@ -71,6 +71,12 @@ router.post("/inf/v/lista_vtas_mes/", (req, res) => {
 router.post("/inf/v/lista_ventas_sucursal_mes/", (req, res) => {
   ventaController.lista_ventas_sucursal_mes(req,res)
 });
+router.post("/cambiar_destinatario/", (req, res) => {
+  ventaController.cambiar_destinatario(req,res)
+});
+router.post("/cambiar_responsable/", (req, res) => {
+  ventaController.cambiar_responsable(req,res)
+});
 
 router.patch("/:ventaId", (req, res) => {
   ventaController.editarVenta(req,any)
