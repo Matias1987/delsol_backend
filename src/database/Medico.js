@@ -14,7 +14,8 @@ const ventas_medico = (data, callback) =>{
     YEAR(v.fecha_retiro) = ${data.anio} AND
     MONTH(v.fecha_retiro) = ${data.mes} AND 
     v.estado='ENTREGADO' AND 
-    v.medico_idmedico=${data.idmedico}`;
+    v.medico_idmedico=${data.idmedico} AND 
+    (case when '${data.idsucursal}'<> '-1' then v.sucursal_idsucursal = ${data.idsucursal} else true end)`;
     const connection = mysql_connection.getConnection()
     connection.connect()
     console.log(query)
@@ -45,7 +46,8 @@ const ventas_medico_totales = (data, callback) => {
 		vmp.venta_idventa = v.idventa AND 
 		YEAR(v.fecha_retiro) = ${data.anio} AND 
 		MONTH(v.fecha_retiro) = ${data.mes} AND 
-		v.estado = 'ENTREGADO' 
+		v.estado = 'ENTREGADO' AND 
+        (case when '${data.idsucursal}'<>'-1' then ${data.idsucursal}=v.sucursal_idsucursal else true end) 
 		GROUP BY v.medico_idmedico
 	)AS m_op
 	WHERE m_op.medico_idmedico = m.idmedico and (case when '${nombre}'<> '-1' then m.nombre like '%${nombre}%' else true end);`
