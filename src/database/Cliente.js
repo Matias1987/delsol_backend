@@ -157,7 +157,8 @@ const operaciones_cliente = (data,callback) => {
 		c.venta_idventa = vhmp.venta_idventa AND 
 		vhmp.modo_pago='ctacte' AND 
         c.tipo<>'cuota' AND
-		c.cliente_idcliente=${data.idcliente}
+		c.cliente_idcliente=${data.idcliente} AND
+        c.anulado = 0
 		UNION
         select 
         c.idcobro as 'id',
@@ -175,6 +176,7 @@ const operaciones_cliente = (data,callback) => {
          s.idsucursal = c.sucursal_idsucursal and 
          c.cliente_idcliente=${data.idcliente} 
          AND c.tipo = 'cuota'
+         AND c.anulado = 0
         union
         select 
         v.idventa as 'id',
@@ -207,7 +209,8 @@ const operaciones_cliente = (data,callback) => {
           from carga_manual cm, sucursal s  
           where 
           s.idsucursal = cm.sucursal_idsucursal and
-          cm.cliente_idcliente=${data.idcliente}
+          cm.cliente_idcliente=${data.idcliente} and 
+          cm.anulado=0
      ) as ops
      where 
      (case when '${data.idsucursal}'='-1' then true else ${data.idsucursal} = ops.idsucursal end)     

@@ -12,7 +12,7 @@ const agregarPagare = ( data,callback ) => {
 }
 
 const obtenerPagaresCliente = (data,callback) => {
-    const query = `SELECT c.idcliente, c.apellido, c.nombre , p.* FROM pagare p, cliente c, venta v  WHERE p.fk_operacion = v.idventa AND c.idcliente = v.cliente_idcliente AND c.idcliente=${data.idcliente} order by v.idventa desc;`
+    const query = `SELECT c.idcliente, c.apellido, c.nombre , p.* FROM pagare p, cliente c, venta v  WHERE p.fk_operacion = v.idventa AND c.idcliente = v.cliente_idcliente AND c.idcliente=${data.idcliente} AND v.estado<>'ANULADO' order by v.idventa desc;`
     const connection = mysql_connection.getConnection();
     connection.connect()
     connection.query(query,(err,resp)=>{

@@ -11,7 +11,8 @@ const lista_gastos_admin = (callback) => {
     gasto g 
     WHERE
     g.sucursal_idsucursal = s.idsucursal AND 
-    g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto;`;
+    g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto AND
+    g.anulado=0;`;
 
     const connection = mysql_connection.getConnection()
 
@@ -32,7 +33,8 @@ const obtener_gastos_sucursal = (idsucursal, callback) => {
     connection.query(`SELECT 
     g.*, date_format(g.fecha_alta,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
-    and g.sucursal_idsucursal = ${idsucursal}
+    and g.sucursal_idsucursal = ${idsucursal} AND
+    g.anulado=0
     ORDER BY g.idgasto DESC;
     `,(err,rows)=>{
         return callback(rows)
@@ -42,16 +44,18 @@ const obtener_gastos_sucursal = (idsucursal, callback) => {
 const obtener_gastos_caja = (idcaja, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(`SELECT 
+   /* console.log(`SELECT 
     g.*, date_format(g.fecha,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
-    and g.caja_idcaja = ${idcaja}
+    and g.caja_idcaja = ${idcaja} AND
+    g.anulado=0
     ORDER BY g.idgasto DESC;
-    `)
+    `)*/
     connection.query(`SELECT 
     g.*, date_format(g.fecha,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
-    and g.caja_idcaja = ${idcaja}
+    and g.caja_idcaja = ${idcaja} AND
+    g.anulado=0 
     ORDER BY g.idgasto DESC;
     `,(err,rows)=>{
         return callback(rows)

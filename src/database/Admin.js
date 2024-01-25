@@ -81,7 +81,8 @@ const obtener_resumen_totales = (idcaja, callback) => {
             c.cliente_idcliente = cl.idcliente AND 
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
-            c.tipo='cuota'
+            c.tipo='cuota' and 
+            c.anulado=0
         UNION
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
@@ -99,7 +100,8 @@ const obtener_resumen_totales = (idcaja, callback) => {
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
             c.tipo <> 'cuota' AND 
-            chmp.modo_pago <> 'ctacte'
+            chmp.modo_pago <> 'ctacte' and
+            c.anulado=0
         UNION
             SELECT 
             replace(format(vhmp.monto_int,2),',','') as  'monto' ,

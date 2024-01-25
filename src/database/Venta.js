@@ -574,7 +574,7 @@ const obtener_datos_pagare = (data,callback) => {
     /**
      * AGREGAR pagare_impreso en tabla venta_has_modo_pago
      */
-    console.log("obteniendo detalles venta: " + data)
+   // console.log("obteniendo detalles venta: " + data)
     const query_mp_ctacte = `SELECT 
     vmp.id_modopago,
     v.idventa,
@@ -588,6 +588,7 @@ const obtener_datos_pagare = (data,callback) => {
     venta_has_modo_pago vmp, 
     venta v 
     WHERE v.idventa = ${data} AND 
+    v.estado <> 'ANULADO' AND 
     vmp.venta_idventa = v.idventa AND 
     vmp.modo_pago = 'ctacte';`
 
@@ -639,8 +640,12 @@ const obtener_datos_pagare = (data,callback) => {
 
 const obtener_lista_pagares = (data,callback) => {
     const query = `SELECT v.idventa , vhmp.monto_int AS 'monto', DATE_FORMAT(v.fecha, '%d-%m-%y') AS 'fecha'
-    FROM venta v, venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' 
-    AND vhmp.venta_idventa=v.idventa AND v.cliente_idcliente = ${data} order by v.idventa desc;`;
+    FROM venta v, venta_has_modo_pago vhmp WHERE 
+    vhmp.modo_pago = 'ctacte'  AND 
+    vhmp.venta_idventa=v.idventa AND 
+    v.estado <> 'ANULADO' AND 
+    v.cliente_idcliente = ${data} 
+    order by v.idventa desc;`;
     const connection = mysql_connection.getConnection();
     connection.connect()
     connection.query(query,(err,rows)=>{

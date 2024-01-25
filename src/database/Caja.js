@@ -143,7 +143,8 @@ const informe_caja = (idcaja, callback) =>{
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
 			chmp.modo_pago = 'efectivo' AND 
-            c.tipo='cuota'
+            c.tipo='cuota' AND
+            c.anulado = 0
         UNION /* cierre op */
             SELECT 
             replace(format(chmp.monto,2),',','') as 'monto',
@@ -161,7 +162,8 @@ const informe_caja = (idcaja, callback) =>{
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
             c.tipo <> 'cuota' AND 
-            chmp.modo_pago <> 'ctacte'
+            chmp.modo_pago <> 'ctacte' AND
+            c.anulado = 0
         UNION
             SELECT 
             replace(format(vhmp.monto_int,2),',','') as  'monto' ,
@@ -200,7 +202,8 @@ const informe_caja = (idcaja, callback) =>{
             chmp.cobro_idcobro = c.idcobro AND
             c.caja_idcaja=${idcaja} AND 
 			chmp.modo_pago <> 'efectivo' AND 
-            c.tipo='cuota'
+            c.tipo='cuota' AND
+            c.anulado = 0
     ) AS ops;`;
     //v.caja_idcaja=${idcaja}
     connection.query(sql,(err,rows)=>{
