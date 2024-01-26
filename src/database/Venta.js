@@ -88,7 +88,7 @@ const lista_ventas_vendedor_mes = (data, callback) => {
 const totales_venta_vendedor = (data,callback) => {
     ///console.log(JSON.stringify(data))
     const fkvendedor = typeof data.fkvendedor === 'undefined' ? '-1' : data.fkvendedor;
-
+    const fksucursal = typeof data.fksucursal === 'undefined' ? '-1' : data.fksucursal;
     const query = `SELECT u.nombre AS 'usuario', t.* FROM 
     usuario u,
     (
@@ -107,7 +107,8 @@ const totales_venta_vendedor = (data,callback) => {
             YEAR(v.fecha_retiro) = ${data.anio} AND 
             MONTH(v.fecha_retiro) = ${data.mes} AND 
             v.estado = 'ENTREGADO' AND
-            (case when '${fkvendedor}'<>'-1' then ${fkvendedor} = v.usuario_idusuario else true end) 
+            (case when '${fkvendedor}'<>'-1' then ${fkvendedor} = v.usuario_idusuario else true end) and  
+            (case when '${fksucursal}'<>'-1' then ${fksucursal} = v.sucursal_idsucursal else true end)
             GROUP BY v.usuario_idusuario
             
     ) AS t

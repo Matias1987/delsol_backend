@@ -21,6 +21,9 @@ router.post("/", (req, res) => {
 router.post("/lista/", (req, res) => {
   cobroController.obtenerCobros(req,res);
 });
+router.post("/anular_cobro/", (req, res) => {
+  cobroController.anular_cobro(req,res);
+});
 
 router.patch("/:cobroId", (req, res) => {
   res.send("Update an existing workout");

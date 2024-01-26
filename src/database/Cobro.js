@@ -306,6 +306,7 @@ const lista_cobros = (data, callback) => {
     const _idsucursal = typeof data.idsucursal === 'undefined' ? '' : data.idsucursal
     const _idcobro = typeof data.idcobro === 'undefined' ? '' : data.idcobro
     const _fecha = typeof data.fecha === 'undefined' ? '' : data.fecha
+    const _anulado = typeof data.anulado === 'undefined'? '' : data.anulado
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -323,8 +324,10 @@ const lista_cobros = (data, callback) => {
     (case when '' <> '${_idcliente}' then '${_idcliente}' = c.cliente_idcliente ELSE TRUE end) and 
     (case when '' <> '${_idventa}' then '${_idventa}' = c.venta_idventa ELSE TRUE end) and 
     (case when '' <> '${_idcobro}' then '${_idcobro}' = c.idcobro ELSE TRUE end) and
+    (case when '' <> '${_anulado}' then '${_anulado}' = c.anulado else true end)  and 
     (case when '' <> '${_fecha}' then date('${_fecha=='' ? `1970-01-01` : _fecha}') = date(c.fecha) ELSE TRUE end) 
-    order by c.idcobro desc;`
+    order by c.idcobro desc
+    limit 500;`
     console.log(_q)
     connection.query(
         _q,
@@ -372,9 +375,21 @@ const lista_mp_cobro = (idcobro, callback) => {
 }
 
 
+const anular_cobro = (data, callback) => {
+    const query = `update cobro c set c.anulado = 1 where c.idcobro = ${data.idcobro}`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
+
 module.exports = {
     agregar_cobro,
     lista_cobros,
     detalle_cobro,
     lista_mp_cobro,
+    anular_cobro,
 }

@@ -41,6 +41,13 @@ const lista_mp_cobro = (req,res) => {
 
 const editarCobro = (req, res) => {}
 
+const anular_cobro = (req, res) => {
+  const {body} = req;
+  cobroService.anular_cobro(body,(resp)=>{
+    res.status(201).send({status:'OK' , data: resp});
+  })
+}
+
 
 module.exports = {
     obtenerCobros,
@@ -48,4 +55,5 @@ module.exports = {
     obtenerCobro,
     editarCobro,
     lista_mp_cobro,
+    anular_cobro,
   };

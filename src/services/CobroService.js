@@ -24,6 +24,12 @@ const lista_mp_cobro = (idcobro, callback) => {
   })
 }
 
+const anular_cobro = (data, callback) => {
+  CobroDB.anular_cobro(data,(resp)=>{
+    return callback(resp)
+  })
+}
+
 const editarCobro = (req, res) => {}
 
 module.exports = {
@@ -32,4 +38,5 @@ module.exports = {
     obtenerCobro,
     editarCobro,
     lista_mp_cobro,
+    anular_cobro,
   };
