@@ -129,7 +129,8 @@ app.use("/api/v1/ic",intcuotaRoutes)
 const localidadRoutes = require("./v1/routes/LocalidadRoutes");
 app.use("/api/v1/localidad",localidadRoutes)
 
-
+const llamadaRoutes = require("./v1/routes/LlamadaClienteRoutes")
+app.use("/api/v1/llamadas",llamadaRoutes)
 
 
 app.listen(port, () => {

@@ -10,6 +10,12 @@ const agregarCargaManual  = (data,callback) => {
     })
 }
 
+const anularCargaManual = (data,callback)=>{
+    cargaManualDB.anularCargaManual(data,(resp)=>{
+        return callback(resp)
+    })
+}
+
 const editarCargaManual = (req,res) => {}
 
 
@@ -17,5 +23,6 @@ module.exports = {
     obtenerCargasManuales,
     obtenerCargasManualesCliente,
     agregarCargaManual,
-    editarCargaManual
+    editarCargaManual,
+    anularCargaManual,
 }

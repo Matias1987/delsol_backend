@@ -24,4 +24,13 @@ const agregarCargaManual= (data,callback) =>
     connection.end();
 }
 
-module.exports = {agregarCargaManual,}
+const anularCargaManual = (data,callback)=>{
+    const query = `update carga_manual cm set cm.anulado = 1 where cm.idcarga_manual=${data.id}`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+}
+
+module.exports = {agregarCargaManual, anularCargaManual,}

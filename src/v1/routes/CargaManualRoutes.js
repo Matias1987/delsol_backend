@@ -14,6 +14,10 @@ router.post("/", (req, res) => {
   cargamanualController.agregarCargaManual(req,res);
 });
 
+router.post("/anular/", (req, res) => {
+  cargamanualController.anularCargaManual(req,res);
+});
+
 router.patch("/:clienteId", (req, res) => {
   res.send("Update an existing workout");
 });

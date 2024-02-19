@@ -23,10 +23,19 @@ const agregarCargaManual  = (req,res) => {
 
 const editarCargaManual = (req,res) => {}
 
+const anularCargaManual = (req,res) => {
+    const {body} = req
+    cargaManualService.anularCargaManual(body,(resp)=>{
+        res.status(201).send({status:'OK'})
+    })
+}
+
 
 module.exports = {
     obtenerCargasManuales,
     obtenerCargasManualesCliente,
     agregarCargaManual,
-    editarCargaManual
+    editarCargaManual,
+    anularCargaManual,
+
 }
