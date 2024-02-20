@@ -39,6 +39,22 @@ const obtener_lista_envios_admin = (req,res) => {
     })
 }
 
+const obtener_totales_vendedores_dia =(req, res) =>{
+
+    const {body} = req
+
+    adminService.obtener_totales_vendedores_dia(body,(rows)=>{
+        res.send({status:"OK", data:rows})
+    })
+}
+
+const obtener_ventas_dia_vendedor = (req, res) => {
+    const {body} = req
+    adminService.obtener_ventas_dia_vendedor(body,(rows)=>{
+        res.send({status:"OK", data:rows})
+    })
+}
+
 module.exports = {
     obtener_lista_cobros_admin,
     obtener_lista_envios_admin,
@@ -46,4 +62,6 @@ module.exports = {
     obtener_lista_ventas_admin,
     obtener_resumen_operaciones_sucursal,
     obtener_caja_dia_sucursal,
+    obtener_totales_vendedores_dia,
+    obtener_ventas_dia_vendedor,
 }

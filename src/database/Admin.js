@@ -159,4 +159,59 @@ const obtener_operaciones = (idsucursal, callback) => {
     ;`
 }
 
-module.exports = {obtener_operaciones, obtener_caja_dia_sucursal, obtener_resumen_totales}
+
+const obtener_totales_vendedores_dia = (data,callback) => {
+    const idsucursal = data?.idsucursal||"-1"
+    const query = `SELECT 
+    u.nombre AS 'usuario',
+    SUM(v.monto_total) AS 'monto',  
+    v.usuario_idusuario
+    FROM 
+    venta v , usuario u
+    WHERE 
+    v.usuario_idusuario = u.idusuario AND 
+    date(v.fecha) = date('${data.fecha}') AND 
+    (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END) 
+    GROUP BY v.usuario_idusuario
+    ;
+    `
+
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
+const obtener_ventas_dia_vendedor = (data,callback) => 
+{
+    const query = `SELECT 
+    u.nombre AS 'usuario', 
+    v.usuario_idusuario
+    FROM 
+    venta v , usuario u
+    WHERE 
+    v.usuario_idusuario = u.idusuario AND 
+    date(v.fecha) = date('${data.fecha}') AND 
+    (case when '${data.idsucursal}'<>'-1' then v.sucursal_idsucursal=${data.idsucursal} ELSE TRUE END) AND 
+    v.usuario_idusuario = ${data.idusuario}
+    ;
+    `
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
+module.exports = {
+    obtener_operaciones, 
+    obtener_caja_dia_sucursal, 
+    obtener_resumen_totales,
+    obtener_totales_vendedores_dia,
+    obtener_ventas_dia_vendedor,
+}

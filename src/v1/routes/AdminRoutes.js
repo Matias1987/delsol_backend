@@ -5,6 +5,13 @@ const adminController = require("../../controllers/AdminController")
 router.post("/obtener_caja_s_dia",(req,res)=>{
     adminController.obtener_caja_dia_sucursal(req,res)
 })
+router.post("/obtener_totales_ventas_vendedor_dia",(req,res)=>{
+    adminController.obtener_totales_vendedores_dia(req,res)
+})
+
+router.post("/obtener_ventas_dia_vendedor",(req,res)=>{
+    adminController.obtener_ventas_dia_vendedor(req,res)
+})
 
 router.get("/resumen_op_sucursal/:idcaja",(req,res)=>{
     adminController.obtener_resumen_operaciones_sucursal(req,res)

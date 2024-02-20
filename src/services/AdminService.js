@@ -36,6 +36,18 @@ const obtener_lista_envios_admin = (callback) => {
 
 }
 
+const obtener_totales_vendedores_dia = (data,callback) => {
+    AdminDB.obtener_totales_vendedores_dia(data,(rows)=>{
+        callback(rows)
+    })
+}
+
+const obtener_ventas_dia_vendedor = (data,callback) => {
+    AdminDB.obtener_ventas_dia_vendedor(data,(rows)=>{
+        callback(rows)
+    })
+}
+
 module.exports = {
     obtener_lista_cobros_admin,
     obtener_lista_envios_admin,
@@ -43,4 +55,6 @@ module.exports = {
     obtener_lista_ventas_admin,
     obtener_resumen_operaciones_sucursal,
     obtener_caja_dia_sucursal,
+    obtener_totales_vendedores_dia,
+    obtener_ventas_dia_vendedor,
 }

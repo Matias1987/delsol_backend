@@ -21,6 +21,7 @@ const ObtenerLlamadasCliente = (idcliente, callback) => {
     connection.query(query, (err,rows)=>{
         callback(rows)
     })
+    connection.end()
 }
 
 module.exports = {AgregarLlamadaCliente, ObtenerLlamadasCliente,}

@@ -525,7 +525,8 @@ const lista_venta_sucursal_estado = (data,callback) => {
         (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
         (typeof data.id === 'undefined' ? "" : data.id),
         (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
-        (typeof data.fecha === 'undefined'? "" : data.fecha)
+        (typeof data.fecha === 'undefined'? "" : data.fecha),
+        (typeof data.idusuario === 'undefined' ? "" : data.idusuario),
            
             ),(err,data) => {
                 callback(data)
