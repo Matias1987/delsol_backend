@@ -1,5 +1,27 @@
 const mysql_connection = require("../lib/mysql_connection");
 
+const obtenerCargaManual = (idcargamanual,callback) => {
+    const query =  `select * from carga_manual cm where cm.idcarga_manual = ${idcargamanual}`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
+const modificar_carga_manual = (data,callback)=> 
+{
+    const query = `update carga_manual cm set cm.monto = ${data.monto} where cm.idcarga_manual= ${data.id}`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 const agregarCargaManual= (data,callback) =>
 {
     const connection = mysql_connection.getConnection();
@@ -33,4 +55,4 @@ const anularCargaManual = (data,callback)=>{
     })
 }
 
-module.exports = {agregarCargaManual, anularCargaManual,}
+module.exports = {agregarCargaManual, anularCargaManual,obtenerCargaManual,modificar_carga_manual,}

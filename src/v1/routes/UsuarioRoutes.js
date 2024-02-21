@@ -3,7 +3,7 @@ const router = express.Router();
 const usuarioController = require("../../controllers/UsuarioController")
 
 router.get("/", (req, res) => {
-  res.send("Get  allworkouts");
+  usuarioController.obtenerUsuarios(req,res)
 });
 
 router.get("/:usuarioId", (req, res) => {

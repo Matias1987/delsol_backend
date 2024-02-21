@@ -171,7 +171,8 @@ const obtener_totales_vendedores_dia = (data,callback) => {
     WHERE 
     v.usuario_idusuario = u.idusuario AND 
     date(v.fecha) = date('${data.fecha}') AND 
-    (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END) 
+    (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END) AND
+    v.estado <> 'ANULADO' 
     GROUP BY v.usuario_idusuario
     ;
     `

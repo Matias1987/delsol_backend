@@ -115,7 +115,11 @@ const logout = (req,res) => {
   
 }
 
-const obtenerUsuarios = (req, res) => {}
+const obtenerUsuarios = (req, res) => {
+  usuarioService.obtenerUsuarios((rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
 
 const obtenerUsuario = (req, res) => {}
 

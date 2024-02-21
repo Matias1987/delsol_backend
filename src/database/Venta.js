@@ -38,6 +38,7 @@ const lista_ventas_sucursal_mes = (data,callback) => {
             sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
             sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
             sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
             SUM(vmp.monto) AS 'total'
         FROM 
             venta_has_modo_pago vmp, venta v 
@@ -99,6 +100,7 @@ const totales_venta_vendedor = (data,callback) => {
             sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
             sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
             sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
             SUM(vmp.monto) AS 'total'
         FROM 
             venta_has_modo_pago vmp, venta v 
@@ -501,20 +503,20 @@ const lista_ventas_sucursal = (data,callback) => {
 const lista_venta_sucursal_estado = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(JSON.stringify(data))
-    console.log(venta_queries.queryListaVentasSucursalEstado(
-        (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),
-        (typeof data.estado === 'undefined' ? "" : data.estado),
-        (typeof data.tipo === 'undefined' ? "" : data.tipo),
-        (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
-        (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
-        (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
-        (typeof data.id === 'undefined' ? "" : data.id),
-        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
-        (typeof data.fecha === 'undefined'? "" : data.fecha)
-           
-       
-        ))
+    //console.log(JSON.stringify(data))
+    //console.log(venta_queries.queryListaVentasSucursalEstado(
+    //    (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),
+    //    (typeof data.estado === 'undefined' ? "" : data.estado),
+    //    (typeof data.tipo === 'undefined' ? "" : data.tipo),
+    //    (typeof data.idmedico === 'undefined' ? "" : data.idmedico),
+    //    (typeof data.iddestinatario === 'undefined' ? "" : data.iddestinatario),
+    //    (typeof data.idcliente === 'undefined' ? "" : data.idcliente),
+    //    (typeof data.id === 'undefined' ? "" : data.id),
+    //    (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
+    //    (typeof data.fecha === 'undefined'? "" : data.fecha)
+    //       
+    //   
+    //    ))
     connection.query(
         venta_queries.queryListaVentasSucursalEstado(
         (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),

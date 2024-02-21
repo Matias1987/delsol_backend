@@ -44,7 +44,9 @@ const logout = (data,callback) => {
   })
 }
 
-const obtenerUsuarios = (req, res) => {}
+const obtenerUsuarios = (callback) => {
+  UsuarioDB.obtener_usuarios((rows)=>{callback(rows)})
+}
 
 const obtenerUsuario = (req, res) => {}
 

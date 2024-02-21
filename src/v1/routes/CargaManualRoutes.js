@@ -6,9 +6,13 @@ router.get("/", (req, res) => {
   res.send("Obtener todas las cargas manuales");
 });
 
-router.get("/:clienteId", (req, res) => {
-  res.send("Get an existing workout");
+router.get("/:idcargamanual", (req, res) => {
+  cargamanualController.obtenerCargaManual(req,res)
 });
+
+router.post("/update/",(req,res)=>{
+  cargamanualController.editarCargaManual(req,res)
+})
 
 router.post("/", (req, res) => {
   cargamanualController.agregarCargaManual(req,res);

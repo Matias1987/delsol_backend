@@ -21,7 +21,19 @@ const agregarCargaManual  = (req,res) => {
     })
 }
 
-const editarCargaManual = (req,res) => {}
+const editarCargaManual = (req,res) => {
+    const {body} = req
+    cargaManualService.modificarCargaManual(body,(resp)=>{
+        res.status(201).send({status:'OK'})
+    })
+}
+
+const obtenerCargaManual = (req,res)=>{
+    const {params:{idcargamanual}} = req
+    cargaManualService.obtenerCargaManual(idcargamanual,(row)=>{
+        res.status(201).send({status:'OK', data: row})
+    })
+}
 
 const anularCargaManual = (req,res) => {
     const {body} = req
@@ -32,6 +44,7 @@ const anularCargaManual = (req,res) => {
 
 
 module.exports = {
+    obtenerCargaManual,
     obtenerCargasManuales,
     obtenerCargasManualesCliente,
     agregarCargaManual,
