@@ -47,8 +47,14 @@ const obtener_ventas_dia_vendedor = (data,callback) => {
         callback(rows)
     })
 }
+const ventas_dia_totales = (data,callback) => {
+    AdminDB.ventas_dia_totales(data,(rows)=>{
+        callback(rows)
+    })
+}
 
 module.exports = {
+    ventas_dia_totales,
     obtener_lista_cobros_admin,
     obtener_lista_envios_admin,
     obtener_lista_gastos_admin,

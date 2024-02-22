@@ -209,7 +209,28 @@ const obtener_ventas_dia_vendedor = (data,callback) =>
     connection.end()
 }
 
+const ventas_dia_totales = (data,callback) => {
+    const query = `SELECT DATE_FORMAT( vs.fecha, '%d-%m-%y') AS 'fecha', vs.cant FROM (
+        SELECT DATE(v.fecha) AS 'fecha' , COUNT(v.idventa) AS 'cant'
+        FROM venta v 
+        WHERE 
+        v.usuario_idusuario=${data.idusuario} AND
+        date(v.fecha)<=date(now()) and
+        date(v.fecha)>=date(date_add(now(), interval -60 day)) and 
+        v.estado<>'ANULADO' 
+        GROUP BY DATE(v.fecha)
+    ) AS vs ORDER BY vs.fecha asc`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 module.exports = {
+    ventas_dia_totales,
     obtener_operaciones, 
     obtener_caja_dia_sucursal, 
     obtener_resumen_totales,

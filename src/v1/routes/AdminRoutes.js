@@ -2,6 +2,13 @@ const express = require("express");
 const router = express.Router();
 const adminController = require("../../controllers/AdminController")
 
+router.post("/gr/ventas_dia_totales/",(req,res)=>{
+   
+    adminController.ventas_dia_totales(req,res)
+
+})
+
+
 router.post("/obtener_caja_s_dia",(req,res)=>{
     adminController.obtener_caja_dia_sucursal(req,res)
 })

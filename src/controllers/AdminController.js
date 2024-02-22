@@ -54,8 +54,15 @@ const obtener_ventas_dia_vendedor = (req, res) => {
         res.send({status:"OK", data:rows})
     })
 }
+const ventas_dia_totales = (req, res) => {
+    const {body} = req
+    adminService.ventas_dia_totales(body,(rows)=>{
+        res.send({status:"OK", data:rows})
+    })
+}
 
 module.exports = {
+    ventas_dia_totales,
     obtener_lista_cobros_admin,
     obtener_lista_envios_admin,
     obtener_lista_gastos_admin,
