@@ -25,7 +25,7 @@ const mysql_connection = require("../lib/mysql_connection")
         const connection = mysql_connection.getConnection()
         connection.connect()
         const _query = `UPDATE sesion s SET s.estado = '${data.estado}' WHERE s.idsesion=${data.idsesion};`
-        console.log(_query)
+        //console.log(_query)
         if(data.estado=='R'){
             let q = `update usuario u set u.logged = '0' where u.token = '${data.token}'`
             connection.query(q,(err,data)=>{})
@@ -79,7 +79,7 @@ const mysql_connection = require("../lib/mysql_connection")
         const connection = mysql_connection.getConnection()
         connection.connect()
         const _query = `INSERT INTO sesion (fkaccount, fksucursal,fecha) VALUES (${data.fkusuario}, ${data.fksucursal}, date('${data.anio}-${data.mes}-${data.dia}'))`
-        console.log(_query)
+        //console.log(_query)
         connection.query(_query, (err,rows)=>{
             callback()
         })
@@ -134,7 +134,7 @@ const validar_usuario_login = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     let q = `SELECT u.* from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' `
-    console.log(q)
+    //console.log(q)
     connection.query( q ,(err,rows,fields)=>{
         if(rows.length>0){
             let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`

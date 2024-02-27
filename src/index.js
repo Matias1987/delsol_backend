@@ -132,6 +132,9 @@ app.use("/api/v1/localidad",localidadRoutes)
 const llamadaRoutes = require("./v1/routes/LlamadaClienteRoutes")
 app.use("/api/v1/llamadas",llamadaRoutes)
 
+const eventoRoutes = require("./v1/routes/EventoRoutes")
+app.use("/api/v1/evt",eventoRoutes)
+
 
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
