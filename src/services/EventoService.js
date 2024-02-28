@@ -6,8 +6,8 @@ const register_event = (data,callback) => {
     })
 }
 
-const get_events  = (callback) => {
-    EventoDB.get_events((rows)=>{
+const get_events  = (data,callback) => {
+    EventoDB.get_events(data,(rows)=>{
         callback(rows)
     })
 }

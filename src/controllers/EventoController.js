@@ -8,7 +8,8 @@ const register_event = (req, res) => {
 }
 
 const get_events  = (req,res) => {
-    eventoService.get_events((rows)=>{
+    const {body} = req
+    eventoService.get_events(body,(rows)=>{
         res.status(201).send({status:'OK', data: rows});
     })
 }
