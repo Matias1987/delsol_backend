@@ -342,7 +342,9 @@ const queryListaVentaStock = (ventaId) =>{
 	c.codigo, 
 	vhs.curva_base,
 	vhs.diametro,
-	c.descripcion
+	c.descripcion,
+	vhs.stock_codigo_idcodigo,
+	vhs.idventaitem
 	FROM venta_has_stock vhs, codigo c WHERE 
 	c.idcodigo = vhs.stock_codigo_idcodigo AND 
 	vhs.venta_idventa=${ventaId} order by vhs.orden;
