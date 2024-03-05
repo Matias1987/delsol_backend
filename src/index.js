@@ -135,6 +135,9 @@ app.use("/api/v1/llamadas",llamadaRoutes)
 const eventoRoutes = require("./v1/routes/EventoRoutes")
 app.use("/api/v1/evt",eventoRoutes)
 
+const adicRoutes = require("./v1/routes/ItemAdicionalesRoutes")
+app.use("/api/v1/adic",adicRoutes)
+
 
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
