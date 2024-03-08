@@ -28,7 +28,7 @@ const get_events = (data,callback) => {
     (case when '${fkusuario}'<>'-1' then e.fk_usuario = ${fkusuario} else true end)
     ORDER BY e.idevento DESC
     `
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

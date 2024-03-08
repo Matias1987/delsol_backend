@@ -26,6 +26,7 @@ const obtener_adicionales_venta = (data, callback) => {
     ) AS items
     WHERE c.idcodigo = items.idcodigo
     ORDER BY items.tipo, items.original desc`
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
