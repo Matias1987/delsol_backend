@@ -1,6 +1,19 @@
 const mysql_connection = require("../lib/mysql_connection")
 
 const obtener_codigos_filtros = (data, callback) => {
+    
+    let cod_parts = data.codigo.trim().split(" ")
+    
+    let cod_q = ""
+
+    cod_parts.forEach(c=>{
+
+        cod_q += ( cod_q == "" ? "" : " and " ) + ` c.codigo like '%${c}%' `
+
+    })
+
+    cod_q = `(${cod_q})`
+
     const query = `
     SELECT c.*, 
     sg.precio_defecto,
@@ -11,7 +24,7 @@ const obtener_codigos_filtros = (data, callback) => {
     c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
     sg.grupo_idgrupo = g.idgrupo AND 
     g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-    (case when '${data.codigo}'='' then TRUE ELSE c.codigo LIKE '%${data.codigo}%' END ) AND 
+    ${cod_q} AND 
     (case when '${data.idsubgrupo}'='-1' then TRUE ELSE sg.idsubgrupo='${data.idsubgrupo}' END ) AND 
     (case when '${data.idgrupo}'='-1' then TRUE ELSE g.idgrupo='${data.idgrupo}' END ) AND 
     (case when '${data.idsubfamilia}'='-1' then TRUE ELSE sf.idsubfamilia='${data.idsubfamilia}' END ) AND
