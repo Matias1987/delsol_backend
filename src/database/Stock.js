@@ -803,6 +803,33 @@ const agregar_stock = (data,callback) =>{
         connection.end()
     }
 
+    const obtener_grilla_stock = (idsubgrupo, idsucursal, callback)=>{
+        const query = `SELECT * 
+        FROM 
+        (
+            SELECT 
+            c.subgrupo_idsubgrupo,
+            c.idcodigo,
+            c.codigo ,   
+            s.cantidad,
+            CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
+            CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
+            REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '')  AS 'esf',  
+            REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil'
+            FROM codigo c, stock s WHERE  s.sucursal_idsucursal=${idsucursal} AND s.codigo_idcodigo = c.idcodigo and c.subgrupo_idsubgrupo=${idsubgrupo}
+        
+        ) AS c
+        ORDER BY
+        c.esf, c.cil;
+        `
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        connection.query(query,(err,rows)=>{
+            callback(rows)
+        })
+        connection.end()
+    }
+
 module.exports = {
     verificar_cantidades_productos,
     obtener_subgrupo_full,
@@ -824,4 +851,5 @@ module.exports = {
     obtener_stock_detalles_venta,
     modificar_cantidad_categoria,
     modificar_cantidad,
+    obtener_grilla_stock,
 }

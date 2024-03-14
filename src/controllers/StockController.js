@@ -209,6 +209,13 @@ const modificar_cantidad = (req, res) => {
   })
 }
 
+const obtener_grilla_stock = (req, res) => {
+  const {params:{idsubgrupo, idsucursal}} = req
+  stockService.obtener_grilla_stock(idsubgrupo, idsucursal,(rows)=>{
+    res.status(201).send({status:'OK', data: rows})
+  })
+}
+
 module.exports = {
   modificar_cantidad,
   obtener_subgrupo_full,
@@ -230,4 +237,5 @@ module.exports = {
   obtener_stock_detalles_venta,
   modificar_cantidad_categoria,
   verificar_cantidades_productos,
+  obtener_grilla_stock,
   };

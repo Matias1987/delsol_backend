@@ -92,4 +92,8 @@ router.post("/modificar_cantidad/",(req,res)=>{
   stockController.modificar_cantidad(req,res)
 })
 
+router.get("/obtener_grilla_stock/:idsubgrupo/:idsucursal",(req, res)=>{
+  stockController.obtener_grilla_stock(req, res)
+})
+
 module.exports = router;

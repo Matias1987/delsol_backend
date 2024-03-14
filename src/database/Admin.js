@@ -229,6 +229,7 @@ const ventas_dia_totales = (data,callback) => {
     connection.end()
 }
 
+
 module.exports = {
     ventas_dia_totales,
     obtener_operaciones, 

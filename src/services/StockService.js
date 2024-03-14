@@ -120,6 +120,12 @@ const modificar_cantidad = (data,callback)=>{
   })
 }
 
+const obtener_grilla_stock = (idsubgrupo, idsucursal, callback)=>{
+  StockDB.obtener_grilla_stock(idsubgrupo, idsucursal,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
   modificar_cantidad,
   obtener_subgrupo_full,
@@ -142,4 +148,5 @@ module.exports = {
   obtener_stock_detalles_venta,
   modificar_cantidad_categoria,
   verificar_cantidades_productos,
+  obtener_grilla_stock,
   };
