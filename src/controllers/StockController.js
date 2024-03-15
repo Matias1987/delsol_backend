@@ -210,8 +210,8 @@ const modificar_cantidad = (req, res) => {
 }
 
 const obtener_grilla_stock = (req, res) => {
-  const {params:{idsubgrupo, idsucursal}} = req
-  stockService.obtener_grilla_stock(idsubgrupo, idsucursal,(rows)=>{
+  const {body} = req
+  stockService.obtener_grilla_stock(body,(rows)=>{
     res.status(201).send({status:'OK', data: rows})
   })
 }

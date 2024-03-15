@@ -120,8 +120,8 @@ const modificar_cantidad = (data,callback)=>{
   })
 }
 
-const obtener_grilla_stock = (idsubgrupo, idsucursal, callback)=>{
-  StockDB.obtener_grilla_stock(idsubgrupo, idsucursal,(rows)=>{
+const obtener_grilla_stock = (params, callback)=>{
+  StockDB.obtener_grilla_stock(params,(rows)=>{
     return callback(rows)
   })
 }

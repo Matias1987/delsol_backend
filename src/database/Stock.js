@@ -803,7 +803,8 @@ const agregar_stock = (data,callback) =>{
         connection.end()
     }
 
-    const obtener_grilla_stock = (idsubgrupo, idsucursal, callback)=>{
+    const obtener_grilla_stock = (params, callback)=>{
+        let eje = params.eje||"-1" 
         const query = `SELECT * 
         FROM 
         (
@@ -814,14 +815,21 @@ const agregar_stock = (data,callback) =>{
             s.cantidad,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
+            CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') AS DECIMAL(10,2)) AS 'eje_dec' ,
             REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '')  AS 'esf',  
-            REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil'
-            FROM codigo c, stock s WHERE  s.sucursal_idsucursal=${idsucursal} AND s.codigo_idcodigo = c.idcodigo and c.subgrupo_idsubgrupo=${idsubgrupo}
+            REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil',
+            REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '')  AS 'eje'
+            FROM codigo c, stock s WHERE  
+            s.sucursal_idsucursal=${params.idsucursal} AND 
+            s.codigo_idcodigo = c.idcodigo AND 
+            c.subgrupo_idsubgrupo=${params.idsubgrupo} AND
+            (case when '${eje}'<>'-1' then ${eje} = REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') else true end)
         
         ) AS c
         ORDER BY
-        c.esf, c.cil;
+        c.esf, c.cil, c.eje;
         `
+        console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,rows)=>{
