@@ -59,7 +59,7 @@ const verificar_cantidades_productos = (data, callback) => {
         }
     })
 
-    console.log(JSON.stringify(arr))
+    //console.log(JSON.stringify(arr))
     
     var ids  = "";
 
@@ -72,7 +72,7 @@ const verificar_cantidades_productos = (data, callback) => {
         query = `select true; `
     }
 
-    console.log(query)
+    //console.log(query)
 
     const connection = mysql_connection.getConnection();
 
@@ -227,7 +227,7 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end) AND
                 (case when '${idsubgrupo}' <> '-1' then c.subgrupo_idsubgrupo=${idsubgrupo} else true end)
                 limit 1000;`
-    console.log(_sql)
+    //console.log(_sql)
     connection.query(_sql,(err,rows)=>{
         callback(rows);
     })
@@ -422,9 +422,6 @@ const agregar_stock = (data,callback) =>{
             SELECT ${data.sucursal}, c.idcodigo, 0 FROM codigo c WHERE c.codigo IN (${_codigos_str})
         )`;
         
-        //console.log(query_insert_codigos);
-        //console.log(query_insert_stock);
-        //console.log(update_queries);
 
         const connection = mysql_connection.getConnection();
 
@@ -633,7 +630,7 @@ const agregar_stock = (data,callback) =>{
         LIMIT 200
         ;`;
 
-        console.log(_query)
+        //console.log(_query)
 
         const connection = mysql_connection.getConnection();
         connection.connect();
@@ -794,7 +791,7 @@ const agregar_stock = (data,callback) =>{
 
     const modificar_cantidad = (data, callback)=>{
         const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`
-        console.log(query)
+        //console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,response)=>{
@@ -829,7 +826,7 @@ const agregar_stock = (data,callback) =>{
         ORDER BY
         c.esf, c.cil, c.eje;
         `
-        console.log(query)
+        //console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,rows)=>{

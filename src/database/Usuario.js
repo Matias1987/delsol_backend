@@ -79,7 +79,7 @@ const mysql_connection = require("../lib/mysql_connection")
         const connection = mysql_connection.getConnection()
         connection.connect()
         const _query = `INSERT INTO sesion (fkaccount, fksucursal,fecha) VALUES (${data.fkusuario}, ${data.fksucursal}, date('${data.anio}-${data.mes}-${data.dia}'))`
-        //console.log(_query)
+        
         connection.query(_query, (err,rows)=>{
             callback()
         })
@@ -90,9 +90,9 @@ const mysql_connection = require("../lib/mysql_connection")
         const connection = mysql_connection.getConnection();
         connection.connect()
         let q = `select * from usuario u where u.token = '${token}';`
-        //console.log(q)
+        
         connection.query(q,(err,res)=>{
-            //console.log(JSON.stringify(res))
+            
             if(res==null)
             {
                 return callback({logged:0})
@@ -134,18 +134,13 @@ const validar_usuario_login = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     let q = `SELECT u.* from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' `
-    //console.log(q)
+    
     connection.query( q ,(err,rows,fields)=>{
         if(rows.length>0){
             let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
             connection.query(_q,(err,_rows)=>{
                 callback({logged:1, uid: rows[0].idusuario, udata: rows[0] });
                 /* register session */
-                /*connection.query(`INSERT ignore INTO sesion  (\`fkaccount\`, \`fksucursal\`, \`active\`)   VALUES ( ${rows[0].idusuario} ,${data.fksucursal}, 1)`,(err,_resp)=>{
-                    
-                })*/
-                
-
             })
             connection.end();
         }
@@ -186,7 +181,7 @@ const obtener_detalle_vendedor = (idusuario,callback)=>{
     const connection = mysql_connection.getConnection();
     connection.connect();
     var sql = `SELECT u.* FROM usuario u WHERE u.idusuario=${idusuario};`;
-    console.log(sql)
+    
     connection.query(sql,(err,rows)=>{
         return callback(rows[0])
     })

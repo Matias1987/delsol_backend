@@ -30,7 +30,7 @@ const obtener_codigos_filtros = (data, callback) => {
     (case when '${data.idsubfamilia}'='-1' then TRUE ELSE sf.idsubfamilia='${data.idsubfamilia}' END ) AND
     (case when '${data.idfamilia}'='-1' then TRUE ELSE sf.familia_idfamilia='${data.idfamilia}' END )
     ;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{
@@ -83,8 +83,8 @@ const obtener_codigos = (callback) => {
 }
 
 const agregar_codigo = (data,callback) => {
-    console.log("SAVING..........")
-    console.log(JSON.stringify(data))
+    //console.log("SAVING..........")
+    //console.log(JSON.stringify(data))
 
     var _genero = typeof data.genero === 'undefined' ? '' : data.genero;
     var _edad = typeof data.edad === 'undefined' ? '' : data.edad;
@@ -125,7 +125,7 @@ const agregar_codigo = (data,callback) => {
         '${ad}'
         )`;
 
-    console.log(sql)
+    //console.log(sql)
 
     connection.query(sql, (err,result) => {
         
@@ -169,7 +169,7 @@ const obtener_codigos_categoria = (data,callback) => {
     (case when '-1' <> '${data.idfamilia}' then sf.familia_idfamilia = '${data.idfamilia}' ELSE TRUE END) AND 
     (case when '-1' <> '${data.modo_precio}' then c.modo_precio=${data.modo_precio} else true end)
     ;`;
-    console.log(_query)
+    //console.log(_query)
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(_query, (err,rows)=>{

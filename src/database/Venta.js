@@ -4,7 +4,7 @@ const venta_queries = require("./queries/ventaQueries");
 
 const cambiar_responsable = (data, callback) => {
     const query = `UPDATE venta v  SET v.cliente_idcliente = ${data.idresponsable} WHERE v.idventa=${data.idventa};`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -17,7 +17,7 @@ const cambiar_responsable = (data, callback) => {
 
 const cambiar_destinatario = (data, callback) => {
     const query = `UPDATE venta v SET v.fk_destinatario = ${data.iddestinatario} WHERE v.idventa=${data.idventa};`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -117,7 +117,7 @@ const totales_venta_vendedor = (data,callback) => {
     WHERE 
     t.usuario_idusuario = u.idusuario;`
 
-    console.log(query)
+    //console.log(query)
 
     const  connection = mysql_connection.getConnection()
     connection.connect()
@@ -193,7 +193,7 @@ const desc_cantidades_stock_venta = (data,callback) =>
     vs.idcodigo = s.codigo_idcodigo AND 
     s.sucursal_idsucursal=${data.idsucursal}
     ;`
-    console.log(query)
+    //console.log(query)
    
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -237,7 +237,7 @@ const cambiar_estado_venta = (data, callback) => {
 
     const __t = (data.estado=="ENTREGADO" ? `, v.fecha_retiro='${fr}' `: "")
 
-    const en_laboratorio = 0;// (data.estado=="PENDIENTE") ? 1 : 0
+    const en_laboratorio =  0//(data.estado=="PENDIENTE") ? 1 : 0
     
     connection.query(`UPDATE venta v SET v.estado = '${data.estado}' ${__t}, v.en_laboratorio=${en_laboratorio} WHERE v.idventa=${data.idventa};`,(err,results)=>{
         callback(results)
@@ -385,23 +385,23 @@ const insert_venta = (data,callback) => {
     //check quantities
 
     prepare_qtty_array(_arr_items)
-    console.log("##########quantities########")
+    //console.log("##########quantities########")
 
-    console.log(JSON.stringify(_quantities))
+    //console.log(JSON.stringify(_quantities))
 
      const connection = mysql_connection.getConnection();
     connection.connect();
     //check quantities
-    console.log("*************** "+venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
+    //console.log("*************** "+venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)))
     connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
 
     (err,resp) => {
 
-        console.log("-----ID: "+JSON.stringify(resp))
+        //console.log("-----ID: "+JSON.stringify(resp))
 
         venta_id = parseInt(resp.insertId);
 
-        console.log("venta guardada con id " + resp.insertId)
+        //console.log("venta guardada con id " + resp.insertId)
 
         var mp = ""; 
 
@@ -423,9 +423,9 @@ const insert_venta = (data,callback) => {
 
         var _items_data = get_query_str(_arr_items);
 
-        console.log(venta_queries.query_items + _items_data)
-        console.log("*****VENTA MODO DE PAGO*******************")
-        console.log(venta_queries.query_mp + mp)
+        //console.log(venta_queries.query_items + _items_data)
+        //console.log("*****VENTA MODO DE PAGO*******************")
+        //console.log(venta_queries.query_mp + mp)
 
         if(mp.length>0)
         {
@@ -433,7 +433,7 @@ const insert_venta = (data,callback) => {
             
             connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
 
-                console.log(JSON.stringify(resp))
+                //console.log(JSON.stringify(resp))
 
                 callback(venta_id)
 
@@ -446,7 +446,7 @@ const insert_venta = (data,callback) => {
             if(_arr_items.length>0){
                 connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
 
-                    console.log(JSON.stringify(resp))
+                    //console.log(JSON.stringify(resp))
     
                     callback(venta_id)
     
@@ -468,7 +468,7 @@ const insert_venta = (data,callback) => {
 const detalle_venta = (idventa,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(venta_queries.queryDetalleVenta(idventa))
+    //console.log(venta_queries.queryDetalleVenta(idventa))
     connection.query(
         venta_queries.queryDetalleVenta(idventa),
         (err,results)=>{
@@ -620,7 +620,7 @@ const obtener_datos_pagare = (data,callback) => {
             //console.log(query_mp)
             connection.query(query_mp,(_err, _rows)=>{
                 var monto_entrega=0;
-                console.log(JSON.stringify(_rows))
+                //console.log(JSON.stringify(_rows))
                 if(_rows.length>0)
                 {
                     //entrega found

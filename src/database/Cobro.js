@@ -129,7 +129,7 @@ const agregar_cobro  = (data,callback) => {
         date('${data.fecha}')
         )`;
 
-    console.log(__query)
+    //console.log(__query)
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -275,7 +275,7 @@ const agregar_cobro  = (data,callback) => {
             ) VALUES ` + _venta_mp_item;
 
 
-        console.log(__query_venta_mp)
+        //console.log(__query_venta_mp)
 
         connection.query(__query,(err,_results)=>{
 
@@ -328,7 +328,7 @@ const lista_cobros = (data, callback) => {
     (case when '' <> '${_fecha}' then date('${_fecha=='' ? `1970-01-01` : _fecha}') = date(c.fecha) ELSE TRUE end) 
     order by c.idcobro desc
     limit 500;`
-    console.log(_q)
+    //console.log(_q)
     connection.query(
         _q,
         (err,results)=>{
@@ -366,7 +366,7 @@ const lista_mp_cobro = (idcobro, callback) => {
     const query = `SELECT cmp.* FROM cobro_has_modo_pago cmp WHERE cmp.cobro_idcobro=${idcobro};`
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(query)
+    //console.log(query)
     connection.query(query,(err,rows)=>{
         callback(rows)
     })
