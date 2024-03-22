@@ -61,6 +61,7 @@ const login = (req,res)=>{
   const user_data = {
     name: body.nombre,
     pass: body.password,
+    sucursal: body.sucursal,
   }
 
   usuarioService.validarLogin(user_data,(resp)=>{
@@ -78,7 +79,7 @@ const login = (req,res)=>{
         }
       );
 
-      usuarioService.addToken({nombre: body.nombre, password: body.password, token: token},(_resp)=>{
+      usuarioService.addToken({nombre: body.nombre, password: body.password, sucursal: body.sucursal, token: token},(_resp)=>{
         res.status(201).send({
           status:'OK', 
           data: {

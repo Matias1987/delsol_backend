@@ -572,7 +572,8 @@ const agregar_stock = (data,callback) =>{
         (case when '${data.subgrupo}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
         (case when '${data.grupo}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
         (case when '${data.subfamilia}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
-        (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) 
+        (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) and 
+        (case when '${data.grupo_contenga_a}' <> '' then c.grupo like '%${data.grupo_contenga_a}%' else true end)
         ${order}
          limit 100;
         `;

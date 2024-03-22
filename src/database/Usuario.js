@@ -113,7 +113,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const setToken = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    let q = `UPDATE usuario u SET u.logged = '1', u.token = '${data.token}' WHERE u.nombre='${data.nombre}' AND u.password='${data.password}';`
+    let q = `UPDATE usuario u SET u.logged = '1', u.token = '${data.token}' WHERE u.nombre='${data.nombre}' AND u.passwd=md5('${data.password}');`
     connection.query(q,(err,resp)=>{
         return callback(resp)
     })
@@ -133,10 +133,33 @@ const logout = (token,callback) => {
 const validar_usuario_login = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    let q = `SELECT u.* from usuario u WHERE u.nombre = '${data.name}' AND u.password = '${data.pass}' `
+    let q = `SELECT 
+                u.nombre,
+                u.usuario,
+                u.apellido,
+                u.logged,
+                u.token,
+                if(ups.idpermiso IS NULL , u.ventas , ups.ventas) AS 'ventas',
+                if(ups.idpermiso IS NULL, u.caja1, ups.caja1) AS 'caja1',
+                if(ups.idpermiso IS NULL, u.deposito_min, ups.deposito_min) AS 'deposito_min',
+                if(ups.idpermiso IS NULL, u.deposito, ups.deposito) AS 'deposito',
+                if(ups.idpermiso IS NULL, u.caja2, ups.caja2) AS 'caja2',
+                if(ups.idpermiso IS NULL, u.admin1, ups.admin1) AS 'admin1',
+                if(ups.idpermiso IS NULL, u.admin2, ups.admin2) AS 'admin2',
+                if(ups.idpermiso IS NULL, u.laboratorio, ups.laboratorio) AS 'laboratorio'
+            from usuario u 
+                LEFT JOIN usuario_permiso_sucursal ups ON 
+                ups.fk_sucursal = ${data.sucursal} AND 
+                ups.fk_usuario = u.idusuario
+            WHERE 
+            u.nombre = '${data.name}' AND 
+            u.passwd = MD5('${data.pass}')`
+
+    console.log(q)
     
     connection.query( q ,(err,rows,fields)=>{
-        if(rows.length>0){
+        
+        if((rows||[]).length>0){
             let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
             connection.query(_q,(err,_rows)=>{
                 callback({logged:1, uid: rows[0].idusuario, udata: rows[0] });
