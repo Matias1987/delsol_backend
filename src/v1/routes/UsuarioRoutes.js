@@ -57,5 +57,10 @@ router.delete("/:usuarioId", (req, res) => {
   res.send("Delete an existing workout");
 });
 
+router.get("/l/a/s/obtener_usuarios_permisos/",(req,res)=>{
+
+  usuarioController.obtener_usuarios_permisos(req,res)
+})
+
 
 module.exports = router;

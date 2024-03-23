@@ -212,7 +212,51 @@ const obtener_detalle_vendedor = (idusuario,callback)=>{
 
 }
 
+const obtener_usuarios_permisos = (callback) => {
+    const query = `SELECT * FROM (
+        SELECT 
+        u.idusuario AS 'id',
+        'TODAS' AS 'sucursal',
+        u.nombre,
+        u.ventas,
+        u.caja1,
+        u.caja2,
+        u.deposito_min,
+        u.deposito,
+        u.admin1,
+        u.admin2 ,
+        u.laboratorio
+        FROM usuario u 
+        UNION 
+        SELECT  
+        ups.fk_usuario AS 'id',
+        s.nombre AS 'sucursal',
+        '-' AS 'nombre',
+        ups.ventas,
+        ups.caja1,
+        ups.caja2,
+        ups.deposito_min,
+        ups.deposito,
+        ups.admin1,
+        ups.admin2 ,
+        ups.laboratorio
+        FROM usuario_permiso_sucursal ups, sucursal s 
+        WHERE
+        s.idsucursal = ups.fk_sucursal
+        ) AS u 
+    ORDER BY u.id`;
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+
+}
+
 module.exports = {
+    obtener_usuarios_permisos,
     obtener_autorizaciones_pendientes,
     cambiar_estado_autorizacion,
     obtener_usuarios,

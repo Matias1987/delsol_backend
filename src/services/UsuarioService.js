@@ -64,7 +64,14 @@ const obtener_detalle_vendedor = (data,callback) =>{
   })
 }
 
+const obtener_usuarios_permisos = (callback) => {
+  UsuarioDB.obtener_usuarios_permisos((rows)=>{
+    callback(rows)
+  })
+}
+
 module.exports = {
+    obtener_usuarios_permisos,
     obtenerUsuarios,
     obtenerUsuario,
     agregarUsuario,

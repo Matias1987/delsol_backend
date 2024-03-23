@@ -148,6 +148,11 @@ const obtener_detalle_vendedor = (req, res) => {
   })
 }
 
+const obtener_usuarios_permisos = (req, res) => {
+  usuarioService.obtener_usuarios_permisos((rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
 
 module.exports = {
     obtenerUsuarios,
@@ -162,4 +167,5 @@ module.exports = {
     create_session,
     obtener_autorizaciones_pendientes,
     cambiar_estado_autorizacion,
+    obtener_usuarios_permisos,
   };
