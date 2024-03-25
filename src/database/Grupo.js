@@ -4,7 +4,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const obtener_grupos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from grupo",(err,rows,fields)=>{
+    connection.query("select g.* from grupo  order by g.nombre_largo asc;",(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
@@ -13,7 +13,7 @@ const obtener_grupos = (callback) => {
 const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("SELECT g.idgrupo as 'value', g.nombre_largo as 'label' FROM grupo g WHERE g.subfamilia_idsubfamilia="+idsubfamilia+";",
+    connection.query("SELECT g.idgrupo as 'value', g.nombre_largo as 'label' FROM grupo g WHERE g.subfamilia_idsubfamilia="+idsubfamilia+" order by g.nombre_largo asc;",
     (err,rows,fields)=>{
         return callback(rows);
     });

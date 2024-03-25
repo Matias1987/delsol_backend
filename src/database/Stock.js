@@ -516,7 +516,7 @@ const agregar_stock = (data,callback) =>{
 
     const obtener_lista_stock_filtros = (data, callback)=>{
             
-        var order = '';
+        var order = ' order by c.codigo asc';
 
         if(typeof data.order !== 'undefined'){
             switch(data.order){
