@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const register_event = (data, callback) => {
     const query = `INSERT INTO evento (fecha, detalle, fk_usuario, fk_sucursal, ref_id, tipo) 
     VALUES (date('${data.fecha}'), '${data.detalle}',${data.fkusuario}, ${data.fksucursal}, ${data.refid}, '${data.tipo}');`
-    //console.log(query)
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{

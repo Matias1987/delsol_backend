@@ -134,6 +134,7 @@ const validar_usuario_login = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     let q = `SELECT 
+                u.idusuario,
                 u.nombre,
                 u.usuario,
                 u.apellido,
