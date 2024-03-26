@@ -29,7 +29,7 @@ const lista_gastos_admin = (callback) => {
 const obtener_gastos_sucursal = (idsucursal, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    
+
     connection.query(`SELECT 
     g.*, date_format(g.fecha_alta,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
