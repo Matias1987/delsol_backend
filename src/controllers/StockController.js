@@ -38,6 +38,8 @@ const incrementar_cantidad = (req, res) => {
       costo: (typeof body.costo === 'undefined' ? -1 : body.costo),
 
       descripcion: body.descripcion,
+
+      modo_precio: (typeof body.modo_precio === 'undefined' ? -1 : body.modo_precio),
     }
     ,
     (data)=>{

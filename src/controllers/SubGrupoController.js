@@ -81,7 +81,12 @@ const obtener_detalle_subgrupo = (req, res) => {
   })
 } 
 
-const editarSubgrupo = (req, res) => {}
+const editarSubgrupo = (req, res) => {
+  const {body} = req
+  subgrupoService.editarSubgrupo(body,(resp)=>{
+    res.status(201).send({status:'OK', data:resp});
+  })
+}
 
 
 const modificar_precios_defecto = (req, res) => {

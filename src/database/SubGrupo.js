@@ -169,7 +169,19 @@ const obtener_descripcion_cat_subgrupo = (id,callback) => {
     connection.end();
 }
 
+
+const editarSubgrupo = (data,callback) => {
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    //console.log(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto} where sg.idsubgrupo = ${data.idsubgrupo}`)
+    connection.query(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto} where sg.idsubgrupo = ${data.idsubgrupo}`,(err,resp)=>{
+        callback(resp)
+    }
+    )
+    connection.end()
+}
 module.exports = {
+    editarSubgrupo,
     obtener_subgrupos,
     agregar_subgrupo,
     obtener_subgrupos_bygrupo_opt,

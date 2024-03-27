@@ -126,7 +126,8 @@ const incrementar_cantidad = (data, callback) => {
     })
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `UPDATE stock s SET s.cantidad = (s.cantidad + ${data.cantidad}) 
+    const sql = `UPDATE stock s 
+    SET s.cantidad = (s.cantidad + ${data.cantidad}) 
     WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo  in (${codigos});`;
     connection.query(sql,(err,response)=>{
         callback(response)
@@ -148,6 +149,9 @@ const incrementar_cantidad = (data, callback) => {
         if(data.costo>0){
             connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
         }      
+        if(data.modo_precio>-1){
+            connection.query(`UPDATE codigo c SET c.modo_precio = ${data.modo_precio} WHERE c.idcodigo in (${codigos});`)
+        }
         if(typeof data.descripcion!=='undefined'){
             if( (data.descripcion.trim()).length > 0)
             {

@@ -25,13 +25,19 @@ router.post("/", (req, res) => {
 });
 
 router.post("/modificar_multiplicador/", (req, res) => {
-  console.log("modificar mult.")
+  //console.log("modificar mult.")
   subGrupoController.modificar_multiplicador(req,res)
 });
 router.post("/modificar_precios_defecto/", (req, res) => {
-  console.log("modificar_precios_defecto")
+  //console.log("modificar_precios_defecto")
   subGrupoController.modificar_precios_defecto(req,res)
 });
+
+router.post("/m/modif_sg",(req,res)=>{
+  console.log("lfllfdsñkñkaslfkñ")
+  subGrupoController.editarSubgrupo(req,res)
+ 
+})
 
 router.patch("/:subgrupoId", (req, res) => {
   res.send("Update an existing workout");
