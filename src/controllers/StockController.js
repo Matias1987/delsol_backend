@@ -67,7 +67,14 @@ const obtener_detalle_stock_sucursal = (req,res)=>{
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   const {params:{idsucursal,idcodigo}} = req;
   stockService.obtener_detalle_stock_sucursal(idsucursal,idcodigo,(rows)=>{
-    res.status(201).send({status:'OK', data:rows});
+    if(rows.length<1)
+    {
+      res.status(201).send({status:'OK', data:{idcodigo: idcodigo, idsucursal: idsucursal}});
+    }
+    else{
+      res.status(201).send({status:'OK', data:rows});
+    }
+    
   })
 }
 
@@ -211,6 +218,14 @@ const modificar_cantidad = (req, res) => {
   })
 }
 
+const modificar_cantidad_lista = (req, res) => {
+  const {body} = req
+  stockService.modificar_cantidad_lista(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp})
+  })
+  
+}
+
 const obtener_grilla_stock = (req, res) => {
   const {body} = req
   stockService.obtener_grilla_stock(body,(rows)=>{
@@ -219,6 +234,7 @@ const obtener_grilla_stock = (req, res) => {
 }
 
 module.exports = {
+  modificar_cantidad_lista,
   modificar_cantidad,
   obtener_subgrupo_full,
   obtenerListaStock,

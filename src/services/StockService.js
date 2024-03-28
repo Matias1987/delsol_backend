@@ -119,6 +119,11 @@ const modificar_cantidad = (data,callback)=>{
     return callback(resp)
   })
 }
+const modificar_cantidad_lista = (data,callback)=>{
+  StockDB.modificar_cantidad_lista(data,(resp)=>{
+    return callback(resp)
+  })
+}
 
 const obtener_grilla_stock = (params, callback)=>{
   StockDB.obtener_grilla_stock(params,(rows)=>{
@@ -128,6 +133,7 @@ const obtener_grilla_stock = (params, callback)=>{
 
 module.exports = {
   modificar_cantidad,
+  modificar_cantidad_lista,
   obtener_subgrupo_full,
   obtenerListaStock,
   obtenerStock,

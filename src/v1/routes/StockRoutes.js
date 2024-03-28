@@ -95,5 +95,8 @@ router.post("/modificar_cantidad/",(req,res)=>{
 router.post("/obtener_grilla_stock/",(req, res)=>{
   stockController.obtener_grilla_stock(req, res)
 })
+router.post("/modificar_cantidad_lista/",(req,res)=>{
+  stockController.modificar_cantidad_lista(req,res)
+})
 
 module.exports = router;
