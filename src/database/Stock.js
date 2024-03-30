@@ -805,20 +805,23 @@ const agregar_stock = (data,callback) =>{
         connection.end()
     }
     const modificar_cantidad_lista = (data, callback)=>{
-        console.log(JSON.stringify(data))
+        //console.log(JSON.stringify(data))
         var query = ""
 
         data.codigos.forEach(c=>{
-            query+=`update stock s set s.cantidad=${c.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${c.id};`
+            query+=`update stock s set s.cantidad=s.cantidad+${c.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${c.id};`
         })
         console.log(query)
         
-        //const connection = mysql_connection.getConnection()
-        //connection.connect()
-        //connection.query(query,(err,response)=>{
-        //    callback(response)
-        //})
-        //connection.end()
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        connection.query(query,(err,response)=>{
+            callback(response)
+            const _q = `INSERT INTO control_stock ( json, fkusuario, fksucursal, tipo, comentarios) VALUES ( '${JSON.stringify(data)}', ${data.fkusuario}, ${data.fksucursal}, 'carga', 'carga');`
+            connection.query(_q)
+            connection.end()
+        })
+        
     }
 
     const obtener_grilla_stock = (params, callback)=>{

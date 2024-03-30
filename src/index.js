@@ -138,6 +138,9 @@ app.use("/api/v1/evt",eventoRoutes)
 const adicRoutes = require("./v1/routes/ItemAdicionalesRoutes")
 app.use("/api/v1/adic",adicRoutes)
 
+const ctrlStock = require("./v1/routes/ControlStockRoutes")
+app.use("/api/v1/cs",ctrlStock)
+
 
 app.listen(port, () => {
     console.log('api is listening on port ' + port)

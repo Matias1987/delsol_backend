@@ -2,7 +2,7 @@ const mysql_connection = require("../lib/mysql_connection")
 
 const obtener_codigos_filtros = (data, callback) => {
     
-    let cod_parts = data.codigo.trim().split(" ")
+    let cod_parts = (data.codigo||"").trim().split(" ")
     
     let cod_q = ""
 
