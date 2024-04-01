@@ -6,4 +6,8 @@ router.get("/",(req,res)=>{
     controlStockController.obtener_lista_controles(req,res)
 })
 
+router.post("/",(req, res)=>{
+    controlStockController.agregar_control(req,res)
+})
+
 module.exports=router;

@@ -6,4 +6,10 @@ const obtener_lista_controles = (callback) =>{
     })
 }
 
-module.exports={obtener_lista_controles}
+const agregar_control = (data,callback) => {
+    ControlStockDB.agregar_control(data,(resp)=>{
+        callback(resp)
+    })
+}
+
+module.exports={obtener_lista_controles, agregar_control}
