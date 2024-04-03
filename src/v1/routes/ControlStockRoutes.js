@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controlStockController = require("../../controllers/ControlStockController");
 
-router.get("/",(req,res)=>{
+router.get("/:idsucursal",(req,res)=>{
     controlStockController.obtener_lista_controles(req,res)
 })
 

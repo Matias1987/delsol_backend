@@ -1,7 +1,7 @@
 const ControlStockDB = require("../database/ControlStock");
 
-const obtener_lista_controles = (callback) =>{
-    ControlStockDB.obtener_lista_controles((rows)=>{
+const obtener_lista_controles = (idsucursal, callback) =>{
+    ControlStockDB.obtener_lista_controles(idsucursal,(rows)=>{
         callback(rows)
     })
 }
