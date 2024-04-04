@@ -37,6 +37,10 @@ router.post("/codigos_filtros/",(req,res)=>{
   codigoController.obtener_codigos_filtros(req,res)
 })
 
+router.post("/editar_lote/",(req,res)=>{
+  codigoController.editar_lote_codigos(req,res)
+})
+
 router.patch("/:codigoId", (req, res) => {
   res.send("Update an existing workout");
 });

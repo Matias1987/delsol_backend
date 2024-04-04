@@ -15,15 +15,20 @@ const obtener_codigos_filtros = (data, callback) => {
     cod_q = `(${cod_q})`
 
     const query = `
-    SELECT c.*, 
+    SELECT c.*,
     sg.precio_defecto,
-    if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio_codigo'
-    FROM 
-    codigo c, subgrupo sg, grupo g, subfamilia sf
+    if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio_codigo',
+    sg.nombre_corto as 'subgrupo',
+    g.nombre_corto as 'grupo',
+    sf.nombre_corto as 'subfamilia',
+    f.nombre_corto as 'familia'
+    FROM
+    codigo c, subgrupo sg, grupo g, subfamilia sf, familia f
     WHERE
-    c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
-    sg.grupo_idgrupo = g.idgrupo AND 
+    c.subgrupo_idsubgrupo=sg.idsubgrupo AND
+    sg.grupo_idgrupo = g.idgrupo AND
     g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+    sf.familia_idfamilia = f.idfamilia AND 
     ${cod_q} AND 
     (case when '${data.idsubgrupo}'='-1' then TRUE ELSE sg.idsubgrupo='${data.idsubgrupo}' END ) AND 
     (case when '${data.idgrupo}'='-1' then TRUE ELSE g.idgrupo='${data.idgrupo}' END ) AND 
@@ -193,6 +198,50 @@ const editar_codigo = (data, callback) => {
     connection.end()
 }
 
+const editar_lote_codigos = (params, callback) => {
+
+    const query1 = `UPDATE codigo c SET 
+    c.subgrupo_idsubgrupo = ${params.idsubgrupo} 
+    WHERE
+    c.idcodigo IN (${params.idcodigos.toString()})`
+
+    const query2 = `UPDATE codigo c SET 
+    c.modo_precio = ${params.modoPrecio} 
+    WHERE
+    c.idcodigo IN (${params.idcodigos.toString()})`
+
+    //console.log(query1)
+    //console.log(query2)
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    const queries = []
+    if(+params.idsubgrupo>0)
+    {
+       queries.push(query1)
+    }
+    if(+params.modoPrecio>-1)
+    {
+        queries.push(query2)
+    }
+
+    const _doquery =_=> {
+        if(queries.length>0)
+        {
+            connection.query(queries.pop(),(err,resp)=>{
+                _doquery()
+            })
+        }
+        else{
+            callback({msg:"OK"})
+        }
+        
+    }
+
+    _doquery()
+
+}
+
 module.exports = {
     editar_codigo,
     obtener_codigos,
@@ -203,4 +252,5 @@ module.exports = {
     obtener_codigo,
     obtener_codigos_categoria,
     obtener_codigos_filtros,
+    editar_lote_codigos,
 }

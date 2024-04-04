@@ -521,6 +521,7 @@ const agregar_stock = (data,callback) =>{
     const obtener_lista_stock_filtros = (data, callback)=>{
             
         var order = ' order by c.codigo asc';
+        var limit = typeof data.limit === 'undefined' ? 'limit 100000' : '' 
 
         if(typeof data.order !== 'undefined'){
             switch(data.order){
@@ -579,9 +580,9 @@ const agregar_stock = (data,callback) =>{
         (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) and 
         (case when '${data.grupo_contenga_a}' <> '' then c.grupo like '%${data.grupo_contenga_a}%' else true end)
         ${order}
-         limit 100;
+         ${limit};
         `;
-        console.log(_query);
+        //console.log(_query);
         const connection = mysql_connection.getConnection();
         connection.connect();
 
@@ -811,7 +812,7 @@ const agregar_stock = (data,callback) =>{
         data.codigos.forEach(c=>{
             query+=`update stock s set s.cantidad=s.cantidad+${c.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${c.id};`
         })
-        console.log(query)
+        //console.log(query)
         
         const connection = mysql_connection.getConnection()
         connection.connect()
