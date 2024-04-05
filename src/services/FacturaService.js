@@ -1,7 +1,7 @@
 const FacturaDB = require("../database/Factura")
 
-const obtener_facturas = (callback) => {
-    FacturaDB.obtener_facturas((rows)=>{
+const obtener_facturas = (idprov,callback) => {
+    FacturaDB.obtener_facturas(idprov, (rows)=>{
         return callback(rows)
     })
 }

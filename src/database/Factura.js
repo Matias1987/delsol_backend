@@ -2,12 +2,14 @@ const mysql_connection = require("../lib/mysql_connection")
 
 
 
-const obtener_facturas = (callback) => {
+const obtener_facturas = (idprov,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`SELECT f.*, p.nombre AS 'proveedor',  date_format(f.fecha,'%d-%m-%y') as 'fecha_formated' 
     FROM factura f, proveedor p 
-    WHERE f.proveedor_idproveedor = p.idproveedor;`,(err,rows)=>{
+    WHERE f.proveedor_idproveedor = p.idproveedor AND 
+    (case when '-1'<>'${idprov}' then f.proveedor_idproveedor = ${idprov} else true end)
+    ;`,(err,rows)=>{
         callback(rows)
     })
     connection.end();

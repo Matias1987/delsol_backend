@@ -120,46 +120,61 @@ const verificar_cantidades_productos = (data, callback) => {
 }
 
 const incrementar_cantidad = (data, callback) => {
+
+    const queries = []
+
     var codigos = "";
     data.codigos.forEach(c=>{
         codigos += `${ (codigos.length>0 ? ',':'') + c.idcodigo}`;
     })
     const connection = mysql_connection.getConnection();
-    connection.connect();
-    const sql = `UPDATE stock s 
-    SET s.cantidad = (s.cantidad + ${data.cantidad}) 
-    WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo  in (${codigos});`;
-    connection.query(sql,(err,response)=>{
-        callback(response)
-        //if idfactura exists..
-        if(data.fkfactura!=-1)
-        {
-            
-            let query_str = `INSERT INTO codigo_factura (
-                stock_codigo_idcodigo,
-                factura_idfactura,
-                cantidad,
-                costo)(
-					 SELECT c.idcodigo, '${data.fkfactura}', '${data.cantidad}', '${data.costo < 0 ? 0 : data.costo}' 
-					 FROM codigo c WHERE c.idcodigo IN (${codigos}))`
-                console.log(query_str)
-                connection.query(query_str);
-        }
+
+    console.log(`UPDATE stock s 
+    SET s.cantidad = ${data.incrementarCantidad ? 's.cantidad + ' : ''} ${data.cantidad} 
+    WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo  in (${codigos});`)
+    
+    if(data.cantidad>-1)
+    {
+        queries.push(`UPDATE stock s 
+        SET s.cantidad = ${data.incrementarCantidad ? 's.cantidad + ' : ''} ${data.cantidad} 
+        WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo  in (${codigos});`)
+      
+    }
+
+    //if idfactura exists..
+    if(data.fkfactura!=-1)
+    {
+        queries.push(`INSERT INTO codigo_factura (
+            stock_codigo_idcodigo,
+            factura_idfactura,
+            cantidad,
+            costo)(
+                    SELECT c.idcodigo, '${data.fkfactura}', '${data.cantidad}', '${data.costo < 0 ? 0 : data.costo}' 
+                    FROM codigo c WHERE c.idcodigo IN (${codigos}));`)
+  
+    }
         //update costo
-        if(data.costo>0){
-            connection.query(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
-        }      
-        if(data.modo_precio>-1){
-            connection.query(`UPDATE codigo c SET c.modo_precio = ${data.modo_precio} WHERE c.idcodigo in (${codigos});`)
+    if(data.costo>0){
+        queries.push(`UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`)
+    }      
+
+    const _doQueries = () => {
+        if(queries.length<1)
+        {
+            connection.end();
+            callback({msg:"ok"})
+            return
         }
-        if(typeof data.descripcion!=='undefined'){
-            if( (data.descripcion.trim()).length > 0)
-            {
-                connection.query(`UPDATE codigo c SET c.descripcion = '${data.descripcion}' WHERE c.idcodigo in (${codigos});`)
-            }
-        }  
-        connection.end();
-    })
+        connection.query(queries.pop(),(err,resp)=>{
+            _doQueries()
+        })
+
+    }
+
+    connection.connect();
+    _doQueries()
+
+
     
 }
 
@@ -796,13 +811,42 @@ const agregar_stock = (data,callback) =>{
     }
 
     const modificar_cantidad = (data, callback)=>{
+
+        const _idfactura = typeof data.idfactura === 'undefined' ? -1 : data.idfactura
+
+        const _costo = typeof data.costo === 'undefined' ? -1 : data.costo
+
+        const _c = _costo > -1 ? ` , s.costo = ${data.costo} ` : ''
+
         const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`
-        //console.log(query)
+        
+
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,response)=>{
             callback(response)
         })
+
+        if(_costo>-1)
+        {
+            connection.query(`UPDATE codigo c SET c.costo=${_costo} WHERE c.idcodigo=${data.idcodigo};`)
+        }
+
+        if(_idfactura>0)
+        {
+            const query2 = `INSERT INTO codigo_factura (
+                stock_codigo_idcodigo,
+                factura_idfactura,
+                cantidad,
+                costo)(
+                        SELECT c.idcodigo, '${data.idfactura}', '${data.cantidad}', '${data.costo < 0 ? 0 : data.costo}' 
+                        FROM codigo c WHERE c.idcodigo IN (${data.idcodigo}));`
+            console.log(query2)
+            connection.query(query2,(err,response)=>{
+
+            })
+        }
+        
         connection.end()
     }
     const modificar_cantidad_lista = (data, callback)=>{

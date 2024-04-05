@@ -12,8 +12,8 @@ const obtener_subgrupos_bygrupo_opt = (grupoid,callback) => {
   })
 }
 
-const obtenerSubgrupos = (callback) => {
-  SubGrupoDB.obtener_subgrupos((rows)=>{
+const obtenerSubgrupos = (idg, callback) => {
+  SubGrupoDB.obtener_subgrupos(idg, (rows)=>{
     return callback(rows)
   })
 }

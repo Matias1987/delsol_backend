@@ -27,6 +27,8 @@ const incrementar_cantidad = (req, res) => {
   
   stockService.incrementar_cantidad(
     {
+      incrementarCantidad: typeof body.incrementarCantidad === 'undefined' ? false:body.incrementarCantidad,
+
       codigos: body.codigos,//<--array 
     
       idsucursal: body.idsucursal, 

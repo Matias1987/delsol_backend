@@ -4,7 +4,7 @@ const facturaController = require("../../controllers/FacturaController");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/:idproveedor?", (req, res) => {
     facturaController.obtener_facturas(req,res)
 });
 

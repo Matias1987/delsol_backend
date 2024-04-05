@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const subGrupoController = require("../../controllers/SubGrupoController");
 
-router.get("/", (req, res) => {
+router.get("/:idgrupo?", (req, res) => {
   subGrupoController.obtenerSubgrupos(req,res)
 });
 

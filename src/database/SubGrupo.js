@@ -103,12 +103,15 @@ const obtener_subgrupos_bygrupo_opt = (grupoid,callback)=>{
     connection.end();
 }
 
-const obtener_subgrupos = (callback) => {
+const obtener_subgrupos = (idg, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`select CONCAT(f.nombre_corto , ' / ', sf.nombre_corto, '  / ', g.nombre_corto , ' / ') AS 'ruta', sg.* from subgrupo sg, grupo g, subfamilia sf, familia f WHERE
-    sg.grupo_idgrupo = g.idgrupo AND g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-    sf.familia_idfamilia = f.idfamilia;`,(err,rows,fields)=>{
+    sg.grupo_idgrupo = g.idgrupo AND 
+    g.subfamilia_idsubfamilia = sf.idsubfamilia AND
+    sf.familia_idfamilia = f.idfamilia AND 
+    (case when '${idg}' <> '-1' then sg.grupo_idgrupo = ${idg} else true end)
+    ;`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();

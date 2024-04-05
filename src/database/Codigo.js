@@ -233,6 +233,7 @@ const editar_lote_codigos = (params, callback) => {
             })
         }
         else{
+            connection.end()
             callback({msg:"OK"})
         }
         
