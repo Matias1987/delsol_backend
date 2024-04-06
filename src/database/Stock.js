@@ -173,9 +173,7 @@ const incrementar_cantidad = (data, callback) => {
 
     connection.connect();
     _doQueries()
-
-
-    
+ 
 }
 
 /* FOR SEARCH PURPOSES, the client sends a code as a parameter for search and

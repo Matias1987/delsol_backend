@@ -69,10 +69,14 @@ const obtener_codigo_por_id = (idcodigo,callback) => {
     connection.end();
 }
 
-const obtener_codigo = (idcodigo,callback) => {
+const obtener_codigo = (codigo,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`select * from codigo c where  c.codigo='${idcodigo}'`,(err,rows,fields)=>{
+    connection.query(`
+    select c.*,
+    if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio_codigo',
+    sg.precio_defecto 
+    from codigo c, subgrupo sg  where sg.idsubgrupo = c.subgrupo_idsubgrupo and  c.codigo='${codigo}'`,(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
