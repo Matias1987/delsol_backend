@@ -14,8 +14,8 @@ const parse_venta_data = (body)=> ( {
 	fk_destinatario: body?.fkdestinatario||null,
 	fk_os: body?.fkos,
 	tipo: body?.tipo, 
-	horaRetiro: body?.horaRetiro
-
+	horaRetiro: body?.horaRetiro,
+	json_items: body?.json_items,
 })
 
 const venta_insert_query = (data) => ` 
@@ -36,7 +36,8 @@ INSERT INTO venta
 	tipo,
 	debe,
 	saldo,
-	hora_retiro
+	hora_retiro,
+	json_items
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -54,7 +55,8 @@ VALUES (
 	${data.tipo},
 	${data.monto_total},
 	${data.monto_total},
-	'${data.horaRetiro}'
+	'${data.horaRetiro}',
+	'${data.json_items}'
 );
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
