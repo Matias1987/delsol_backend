@@ -125,7 +125,7 @@ const incrementar_cantidad = (data, callback) => {
 
     var codigos = "";
     data.codigos.forEach(c=>{
-        codigos += `${ (codigos.length>0 ? ',':'') + c.idcodigo}`;
+        codigos += `${ (codigos.length>0 ? ',':'') + c}`;
     })
     const connection = mysql_connection.getConnection();
 

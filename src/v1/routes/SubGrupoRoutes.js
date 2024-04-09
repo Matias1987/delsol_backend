@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const subGrupoController = require("../../controllers/SubGrupoController");
 
-router.get("/:idgrupo?", (req, res) => {
+router.get("/listado/subgrupos/:idgrupo?", (req, res) => {
   subGrupoController.obtenerSubgrupos(req,res)
 });
 
@@ -34,7 +34,7 @@ router.post("/modificar_precios_defecto/", (req, res) => {
 });
 
 router.post("/m/modif_sg",(req,res)=>{
-  console.log("lfllfdsñkñkaslfkñ")
+ 
   subGrupoController.editarSubgrupo(req,res)
  
 })

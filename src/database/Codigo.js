@@ -214,6 +214,11 @@ const editar_lote_codigos = (params, callback) => {
     WHERE
     c.idcodigo IN (${params.idcodigos.toString()})`
 
+    const query3 = `UPDATE codigo c SET 
+    c.precio = ${params.precio} 
+    WHERE
+    c.idcodigo IN (${params.idcodigos.toString()})`
+
     //console.log(query1)
     //console.log(query2)
 
@@ -227,6 +232,10 @@ const editar_lote_codigos = (params, callback) => {
     if(+params.modoPrecio>-1)
     {
         queries.push(query2)
+    }
+    if(+params.precio>-1)
+    {
+        queries.push(query3)
     }
 
     const _doquery =_=> {
