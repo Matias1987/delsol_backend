@@ -36,6 +36,7 @@ router.get("/stock_sucursal/:idsucursal/:idcodigo", (req, res) => {
   stockController.obtener_stock_sucursal(req,res)
 });
 router.get("/stock_sucursales/:idcodigo", (req, res) => {
+  console.log("jddkj")
   stockController.stock_codigo_sucursales(req,res)
 });
 
