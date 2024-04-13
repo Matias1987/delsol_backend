@@ -68,7 +68,9 @@ const obtener_lista_clientes = (callback) => {
     connection.connect();
 
     connection.query(
-        queries.queryObtenerListaClientes(),
+        `SELECT c.*, 
+    CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
+     FROM cliente c where c.destinatario=0 limit 50;`,
         (err,results,fields) =>{
             callback(results)
         }

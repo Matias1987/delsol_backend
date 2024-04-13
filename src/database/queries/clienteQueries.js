@@ -15,7 +15,7 @@ const queryObtenerClientebyID =(id)=>{
 const queryObtenerListaClientes = () => {
     return `SELECT c.*, 
     CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
-     FROM cliente c where c.destinatario=0;`;
+     FROM cliente c where c.destinatario=0 limit 50;`;
 }
 
 const queryAgregarCliente = () => {
