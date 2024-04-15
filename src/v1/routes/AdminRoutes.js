@@ -20,6 +20,10 @@ router.post("/obtener_ventas_dia_vendedor",(req,res)=>{
     adminController.obtener_ventas_dia_vendedor(req,res)
 })
 
+router.post("/inf/stock/ventas/periodo",(req,res)=>{
+    adminController.totales_stock_ventas_periodo(req,res)
+})
+
 router.get("/resumen_op_sucursal/:idcaja",(req,res)=>{
     adminController.obtener_resumen_operaciones_sucursal(req,res)
 })

@@ -53,7 +53,14 @@ const ventas_dia_totales = (data,callback) => {
     })
 }
 
+const totales_stock_ventas_periodo = (data, callback) => {
+    AdminDB.totales_stock_ventas_periodo(data,(rows)=>{
+        callback(rows)
+    })
+}
+
 module.exports = {
+    totales_stock_ventas_periodo,
     ventas_dia_totales,
     obtener_lista_cobros_admin,
     obtener_lista_envios_admin,

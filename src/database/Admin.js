@@ -230,6 +230,70 @@ const ventas_dia_totales = (data,callback) => {
 }
 
 
+const totales_stock_ventas_periodo = (data, callback) => {
+
+    let {desde, hasta, idsucursal, codigo, cat, idcategoria} = data
+    let idfamilia = cat!='familia' ? -1 : idcategoria;
+    let idsubfamilia = cat!='subfamilia' ? -1 : idcategoria;
+    let idgrupo = cat!='grupo' ? -1 : idcategoria;
+    let idsubgrupo = cat!='subgrupo' ? -1 : idcategoria;
+    const query = `
+            SELECT 
+                sc.nombre as sucursal,
+                cod.codigo,
+                cc.cantidad
+                from
+                (
+                    SELECT 
+                    vhs.stock_sucursal_idsucursal AS 'idsucursal',
+                    vhs.stock_codigo_idcodigo AS 'idcodigo',
+                    sum(vhs.cantidad) AS 'cantidad' 
+                    FROM 
+                        venta v, 
+                        venta_has_stock vhs, 
+                        codigo c,
+                        subgrupo sg, 
+                        grupo g, 
+                        subfamilia sf,
+                        sucursal s
+                        WHERE 
+                        c.subgrupo_idsubgrupo= sg.idsubgrupo AND 
+                        sg.grupo_idgrupo = g.idgrupo AND 
+                        g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+                        vhs.stock_codigo_idcodigo = c.idcodigo AND 
+                        vhs.venta_idventa=v.idventa AND 
+                        DATE(v.fecha)>=DATE('${desde}') AND 
+                        DATE(v.fecha)<=DATE('${hasta}') AND 
+                        v.estado<>'ANULADO' AND 
+                        v.sucursal_idsucursal = s.idsucursal AND 
+                        (case when '${idsubgrupo}'<>'-1' then sg.idsubgrupo='${idcategoria}' ELSE TRUE END) AND 
+                        (case when '${idgrupo}'<>'-1' then g.idgrupo='${idcategoria}' ELSE TRUE END) AND 
+                        (case when '${idsubfamilia}'<>'-1' then sf.idsubfamilia='${idcategoria}' ELSE TRUE END) AND 
+                        (case when '${idfamilia}'<>'-1' then sf.familia_idfamilia='${idcategoria}' ELSE TRUE END) AND
+                        (case when '${codigo}'<>'' then c.codigo LIKE '%${codigo}%' ELSE TRUE END) AND 
+                        (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END)
+                        GROUP BY vhs.stock_sucursal_idsucursal, vhs.stock_codigo_idcodigo
+                ) as cc,
+                sucursal sc,
+                codigo cod
+                WHERE 
+                cc.idsucursal = sc.idsucursal AND 
+                cc.idcodigo = cod.idcodigo	 
+                order by cc.cantidad desc
+                    
+                        ;` 
+
+    console.log(query)
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query, (err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+
+}
+
 module.exports = {
     ventas_dia_totales,
     obtener_operaciones, 
@@ -237,4 +301,5 @@ module.exports = {
     obtener_resumen_totales,
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
+    totales_stock_ventas_periodo
 }
