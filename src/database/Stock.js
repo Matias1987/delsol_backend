@@ -550,6 +550,7 @@ const agregar_stock = (data,callback) =>{
         const _query = `SELECT c.* FROM 
         (
             SELECT 
+            sc.nombre as 'sucursal', 
             s.cantidad,
             _c.idcodigo,
             _c.codigo,
@@ -567,7 +568,8 @@ const agregar_stock = (data,callback) =>{
             sf.nombre_corto as 'subfamilia',
             g.nombre_corto as 'grupo',
             sg.nombre_corto as 'subgrupo'
-            FROM familia f, subfamilia sf, grupo g, subgrupo sg, stock s, codigo _c WHERE 
+            FROM familia f, subfamilia sf, grupo g, subgrupo sg, stock s, codigo _c, sucursal sc WHERE 
+            sc.idsucursal = s.sucursal_idsucursal AND 
             sg.grupo_idgrupo = g.idgrupo AND
             g.subfamilia_idsubfamilia = sf.idsubfamilia AND
             sf.familia_idfamilia = f.idfamilia AND
@@ -576,26 +578,26 @@ const agregar_stock = (data,callback) =>{
             s.sucursal_idsucursal = ${data.sucursal}
         ) AS c
          WHERE
-        (case when '${data.codigo_contenga_a}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
-        (case when '${data.codigo_igual_a}' <> '' then c.codigo = '${data.codigo_igual_a}' else true end) and
-        (case when '${data.precio_mayor_a}' <> '' then c.precio > '${data.precio_mayor_a}' else true end) and
-        (case when '${data.precio_menor_a}' <> '' then c.precio < '${data.precio_menor_a}' else true end) and
-        (case when '${data.precio_igual_a}' <> '' then c.precio = '${data.precio_igual_a}' else true end) and
-        (case when '${data.cantidad_igual_a}' <> '' then c.cantidad = '${data.cantidad_igual_a}' else true end) and
-        (case when '${data.cantidad_mayor_a}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
-        (case when '${data.cantidad_menor_a}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
-        (case when '${data.sexo}' <> '' then c.genero like '%${data.sexo}%' else true end) and
-        (case when '${data.edad}' <> '' then c.edad like '%${data.edad}%' else true end) and 
-        (case when '${data.descripcion}' <> '' then c.descripcion like '%${data.descripcion}%' else true end) and
-        (case when '${data.subgrupo}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
-        (case when '${data.grupo}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
-        (case when '${data.subfamilia}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
-        (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) and 
-        (case when '${data.grupo_contenga_a}' <> '' then c.grupo like '%${data.grupo_contenga_a}%' else true end)
+        (case when '${data.codigo_contenga_a||''}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
+        (case when '${data.codigo_igual_a||''}' <> '' then c.codigo = '${data.codigo_igual_a}' else true end) and
+        (case when '${data.precio_mayor_a||''}' <> '' then c.precio > '${data.precio_mayor_a}' else true end) and
+        (case when '${data.precio_menor_a||''}' <> '' then c.precio < '${data.precio_menor_a}' else true end) and
+        (case when '${data.precio_igual_a||''}' <> '' then c.precio = '${data.precio_igual_a}' else true end) and
+        (case when '${data.cantidad_igual_a||''}' <> '' then c.cantidad = '${data.cantidad_igual_a}' else true end) and
+        (case when '${data.cantidad_mayor_a||''}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
+        (case when '${data.cantidad_menor_a||''}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
+        (case when '${data.sexo||''}' <> '' then c.genero like '%${data.sexo}%' else true end) and
+        (case when '${data.edad||''}' <> '' then c.edad like '%${data.edad}%' else true end) and 
+        (case when '${data.descripcion||''}' <> '' then c.descripcion like '%${data.descripcion}%' else true end) and
+        (case when '${data.subgrupo||''}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
+        (case when '${data.grupo||''}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
+        (case when '${data.subfamilia||''}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
+        (case when '${data.familia||''}' <> '' then c.idfamilia = '${data.familia}' else true end) and 
+        (case when '${data.grupo_contenga_a||''}' <> '' then c.grupo like '%${data.grupo_contenga_a}%' else true end)
         ${order}
          ${limit};
         `;
-        //console.log(_query);
+        console.log(_query);
         const connection = mysql_connection.getConnection();
         connection.connect();
 
