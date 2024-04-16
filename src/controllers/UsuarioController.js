@@ -154,7 +154,15 @@ const obtener_usuarios_permisos = (req, res) => {
   })
 }
 
+const modificar_permisos = (req, res) => {
+  const {body} = req
+  usuarioService.modificar_permisos(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp});
+  })
+}
+
 module.exports = {
+    modificar_permisos,
     obtenerUsuarios,
     obtenerUsuario,
     agregarUsuario,

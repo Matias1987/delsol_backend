@@ -567,17 +567,18 @@ const agregar_stock = (data,callback) =>{
             f.nombre_corto as 'familia',
             sf.nombre_corto as 'subfamilia',
             g.nombre_corto as 'grupo',
-            sg.nombre_corto as 'subgrupo'
+            sg.nombre_corto as 'subgrupo',
+            s.sucursal_idsucursal AS 'idsucursal'
             FROM familia f, subfamilia sf, grupo g, subgrupo sg, stock s, codigo _c, sucursal sc WHERE 
             sc.idsucursal = s.sucursal_idsucursal AND 
             sg.grupo_idgrupo = g.idgrupo AND
             g.subfamilia_idsubfamilia = sf.idsubfamilia AND
             sf.familia_idfamilia = f.idfamilia AND
             _c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
-            _c.idcodigo = s.codigo_idcodigo AND
-            s.sucursal_idsucursal = ${data.sucursal}
+            _c.idcodigo = s.codigo_idcodigo 
         ) AS c
          WHERE
+        (case when '${data.sucursal}'<>'-1' then c.idsucursal = ${data.sucursal} else true end) and
         (case when '${data.codigo_contenga_a||''}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
         (case when '${data.codigo_igual_a||''}' <> '' then c.codigo = '${data.codigo_igual_a}' else true end) and
         (case when '${data.precio_mayor_a||''}' <> '' then c.precio > '${data.precio_mayor_a}' else true end) and

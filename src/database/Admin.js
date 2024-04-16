@@ -177,7 +177,7 @@ const obtener_totales_vendedores_dia = (data,callback) => {
     ;
     `
 
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{
@@ -283,7 +283,7 @@ const totales_stock_ventas_periodo = (data, callback) => {
                     
                         ;` 
 
-    console.log(query)
+    //console.log(query)
 
     const connection = mysql_connection.getConnection()
     connection.connect()

@@ -62,5 +62,9 @@ router.get("/l/a/s/obtener_usuarios_permisos/",(req,res)=>{
   usuarioController.obtener_usuarios_permisos(req,res)
 })
 
+router.post("/perm/u/a/m/",(req,res)=>{
+  usuarioController.modificar_permisos(req,res)
+})
+
 
 module.exports = router;

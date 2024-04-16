@@ -70,7 +70,14 @@ const obtener_usuarios_permisos = (callback) => {
   })
 }
 
+const modificar_permisos = (data,callback) => {
+  UsuarioDB.modificar_permisos(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 module.exports = {
+    modificar_permisos,
     obtener_usuarios_permisos,
     obtenerUsuarios,
     obtenerUsuario,

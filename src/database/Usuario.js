@@ -256,6 +256,37 @@ const obtener_usuarios_permisos = (callback) => {
 
 }
 
+const modificar_permisos = (data, callback) => {
+    const query =`INSERT INTO usuario_permiso_sucursal 
+    (fk_sucursal, fk_usuario, ventas, caja1, deposito_min, deposito, caja2, admin1, admin2, laboratorio) 
+    VALUES (${data.fk_sucursal}, ${data.fk_usuario}, ${data.ventas}, ${data.caja1}, ${data.deposito_min}, ${data.deposito}, ${data.caja2}, ${data.admin1}, ${data.admin2}, ${data.laboratorio})
+    ON DUPLICATE KEY UPDATE 
+    ventas=${data.ventas}, caja1=${data.caja1}, deposito_min=${data.deposito_min}, deposito=${data.deposito}, caja2=${data.caja2}, admin1=${data.admin1}, admin2=${data.admin2}, laboratorio=${data.laboratorio}
+    ;
+    `
+    const q2 = `update usuario u set 
+        u.ventas=${data.ventas}, 
+        u.caja1=${data.caja1}, 
+        u.deposito_min=${data.deposito_min}, 
+        u.deposito=${data.deposito}, 
+        u.caja2=${data.caja2}, 
+        u.admin1=${data.admin1}, 
+        u.admin2=${data.admin2}, 
+        u.laboratorio=${data.laboratorio}
+        where u.idusuario=${data.fk_usuario}
+        ;`
+
+
+
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(data.fk_sucursal<0 ? q2 : query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
     obtener_usuarios_permisos,
     obtener_autorizaciones_pendientes,
@@ -269,4 +300,5 @@ module.exports = {
     obtener_detalle_vendedor,
     check_session,
     create_session,
+    modificar_permisos,
 }
