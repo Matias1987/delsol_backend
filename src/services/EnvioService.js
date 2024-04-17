@@ -40,8 +40,15 @@ const cargarEnvio = (idenvio, idsucursal, callback) => {
     })
 }
 
+const anular_envio = (idenvio, callback) => {
+    EnvioDB.anular_envio(idenvio,(resp)=>{
+        return callback(resp)
+    })
+}
+
 
 module.exports = {
+    anular_envio,
     cargarEnvio,
     obtener_envios_pendientes_sucursal,
     obtenerEnvio,

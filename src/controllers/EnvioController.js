@@ -73,7 +73,15 @@ const cargarEnvio = (req, res) => {
     })
 }
 
+const anularEnvio =(req, res) => {
+    const {params:{idenvio}} = req
+    envioService.anular_envio(idenvio,(resp)=>{
+        res.status(201).send({status:'OK',data:resp})
+    })
+}
+
 module.exports = {
+    anularEnvio,
     cargarEnvio,
     obtener_envios_pendientes_sucursal,
     obtenerEnvio,

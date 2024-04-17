@@ -18,8 +18,10 @@ const queryDetalleEnvio = (id) => {
     e.idenvio,
         e.cantidad_total,
         DATE_FORMAT(e.fecha,'%d-%m-%Y') AS 'fecha',
-        s.nombre AS 'sucursal'
-    FROM envio e, sucursal s WHERE 
+        s.nombre AS 'sucursal',
+        s1.nombre AS 'sucursal_origen'
+    FROM envio e, sucursal s, sucursal s1 WHERE 
+    e.sucursal_origen = s1.idsucursal AND 
     e.sucursal_idsucursal=s.idsucursal AND
     e.idenvio=${id};`;
 }

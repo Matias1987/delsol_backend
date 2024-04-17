@@ -19,6 +19,10 @@ router.get("/envio_codigo/:idcodigo", (req, res) => {
   envioController.obtener_envios_codigo(req,res);
 });
 
+router.get("/anular/envio/:idenvio",(req,res)=>{
+  envioController.anularEnvio(req,res);
+})
+
 router.post("/", (req, res) => {
   envioController.agregarEnvio(req,res)
 });

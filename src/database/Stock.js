@@ -547,6 +547,8 @@ const agregar_stock = (data,callback) =>{
             }
         }
 
+        //console.log(JSON.stringify(data))
+
         const _query = `SELECT c.* FROM 
         (
             SELECT 
@@ -579,26 +581,26 @@ const agregar_stock = (data,callback) =>{
         ) AS c
          WHERE
         (case when '${data.sucursal}'<>'-1' then c.idsucursal = ${data.sucursal} else true end) and
-        (case when '${data.codigo_contenga_a||''}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
-        (case when '${data.codigo_igual_a||''}' <> '' then c.codigo = '${data.codigo_igual_a}' else true end) and
-        (case when '${data.precio_mayor_a||''}' <> '' then c.precio > '${data.precio_mayor_a}' else true end) and
-        (case when '${data.precio_menor_a||''}' <> '' then c.precio < '${data.precio_menor_a}' else true end) and
-        (case when '${data.precio_igual_a||''}' <> '' then c.precio = '${data.precio_igual_a}' else true end) and
-        (case when '${data.cantidad_igual_a||''}' <> '' then c.cantidad = '${data.cantidad_igual_a}' else true end) and
-        (case when '${data.cantidad_mayor_a||''}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
-        (case when '${data.cantidad_menor_a||''}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
-        (case when '${data.sexo||''}' <> '' then c.genero like '%${data.sexo}%' else true end) and
-        (case when '${data.edad||''}' <> '' then c.edad like '%${data.edad}%' else true end) and 
-        (case when '${data.descripcion||''}' <> '' then c.descripcion like '%${data.descripcion}%' else true end) and
-        (case when '${data.subgrupo||''}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
-        (case when '${data.grupo||''}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
-        (case when '${data.subfamilia||''}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
-        (case when '${data.familia||''}' <> '' then c.idfamilia = '${data.familia}' else true end) and 
+        (case when '${data.codigo_contenga_a}' <> '' then c.codigo like '%${data.codigo_contenga_a}%' else TRUE end) and
+        (case when '${data.codigo_igual_a}' <> '' then c.codigo = '${data.codigo_igual_a}' else true end) and
+        (case when '${data.precio_mayor_a}' <> '' then c.precio > '${data.precio_mayor_a}' else true end) and
+        (case when '${data.precio_menor_a}' <> '' then c.precio < '${data.precio_menor_a}' else true end) and
+        (case when '${data.precio_igual_a}' <> '' then c.precio = '${data.precio_igual_a}' else true end) and
+        (case when '${data.cantidad_igual_a}' <> '' then c.cantidad = '${data.cantidad_igual_a}' else true end) and
+        (case when '${data.cantidad_mayor_a}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
+        (case when '${data.cantidad_menor_a}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
+        (case when '${data.sexo}' <> '' then c.genero like '%${data.sexo}%' else true end) and
+        (case when '${data.edad}' <> '' then c.edad like '%${data.edad}%' else true end) and 
+        (case when '${data.descripcion}' <> '' then c.descripcion like '%${data.descripcion}%' else true end) and
+        (case when '${data.subgrupo}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
+        (case when '${data.grupo}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
+        (case when '${data.subfamilia}' <> '' then c.idsubfamilia = '${data.subfamilia}' else true end) and
+        (case when '${data.familia}' <> '' then c.idfamilia = '${data.familia}' else true end) and 
         (case when '${data.grupo_contenga_a||''}' <> '' then c.grupo like '%${data.grupo_contenga_a}%' else true end)
         ${order}
          ${limit};
         `;
-        console.log(_query);
+        //console.log(_query);
         const connection = mysql_connection.getConnection();
         connection.connect();
 
