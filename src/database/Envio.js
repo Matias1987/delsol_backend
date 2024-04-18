@@ -182,7 +182,7 @@ const anular_envio = (idenvio, callback) => {
             if(rows[0].estado=='GENERADO')
             {
                 connection.query(`update envio e set e.anulado = 1, e.estado='ANULADO' where e.idenvio=${idenvio};`,(err,resp)=>{
-                    callback(resp)
+                    //callback(resp)
                 })
 
                 connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
