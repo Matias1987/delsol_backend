@@ -37,7 +37,7 @@ const agregar_envio = (data,callback) => {
     )
         values (${data.sucursal_idsucursal},${data.usuario_idusuario},${data.cantidad_total},${data.id_sucursal_origen})`
     
-        console.log(_query)
+        //console.log(_query)
         connection.query(
         _query
             ,
