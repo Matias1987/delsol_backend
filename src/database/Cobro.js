@@ -23,7 +23,7 @@ const agregar_venta_mp_ctacte = (data,callback) =>
                 ${data.mp.ctacte_cuotas},
                 ${data.mp.ctacte_monto_cuotas})` ;
     
-    console.log(`QUERY: ${__query_venta_mp}`)
+    //console.log(`QUERY: ${__query_venta_mp}`)
 
     const connection = mysql_connection.getConnection();
     connection.connect()
@@ -45,6 +45,9 @@ const agregar_venta_mp_ctacte = (data,callback) =>
     connection.query(__query_venta_mp,(err,resp)=>{
         callback(0);
     })
+    //UPDATE VENTA DESCUENTO Y SALDO
+
+    connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`)
 
     connection.end()
 
@@ -150,7 +153,7 @@ const agregar_cobro  = (data,callback) => {
     connection.query(
         __query,
         (err,results)=>{
-            console.log(results)
+            //console.log(results)
         const idcobro = results.insertId
         //PAGO GUARDADO, PREPARAR MODOS DE PAGOS Y VENTA MODO PAGO
        console.log("Payment saved with id: " + idcobro);
@@ -227,7 +230,7 @@ const agregar_cobro  = (data,callback) => {
             
             if(mp.tipo!='ctacte')
             {
-                console.log(`monto to add: ${mp.monto}`)
+                //console.log(`monto to add: ${mp.monto}`)
                 total+=parseFloat(mp.monto);
             }
 
@@ -275,17 +278,17 @@ const agregar_cobro  = (data,callback) => {
             ) VALUES ` + _venta_mp_item;
 
 
-        //console.log(__query_venta_mp)
+        //console.log(__query)
 
         connection.query(__query,(err,_results)=>{
-
+            
             if(typeof data.idventa !== 'undefined'){
                 //hope this works!!
                 connection.query(__query_venta_mp,(err,___results)=>{})
     
                 //console.log(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
                 //UPDATE DEBE AND HABER FIELDS IN VENTA
-                connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+                connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, v.debe=v.subtotal-${data.descuento},  v.monto_total=v.subtotal-${data.descuento},  v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
             }
 
             callback(idcobro);

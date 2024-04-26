@@ -187,9 +187,51 @@ const obtener_usuarios = (callback) => {
 }
 
 const agregar_usuario = (data,callback) => {
+    /**
+     * {
+        "nombre": "asdfasf",
+        "usuario": "adasfsa",
+        "ventas": "1",
+        "caja1": "1",
+        "deposito_min": "0",
+        "deposito": "0",
+        "caja2": "0",
+        "admin1": "0",
+        "admin2": "0",
+        "admin3": "0",
+        "laboratorio": "0",
+        "passwd": "lsdfsdfd"
+        }   
+     */
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into usuario (nombre,password) values (?)";
+    var sql = `insert into usuario (
+        nombre, 
+        usuario, 
+        passwd, 
+        ventas, 
+        caja1, 
+        caja2, 
+        deposito_min, 
+        deposito, 
+        admin1,
+        admin2, 
+        laboratorio
+        ) 
+        values 
+        (
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}',
+            '${data.nombre}'
+        )`;
 
     var values = [[
         data.nombre,data.password
