@@ -127,12 +127,8 @@ const obtenerUsuario = (req, res) => {}
 const agregarUsuario = (req, res) => {
   const {body} = req;
 
-  const nuevo_usuario = {
-    'nombre': body.nombre,
-    'password': body.password
-  }
 
-  usuarioService.agregarUsuario(nuevo_usuario,(id)=>{
+  usuarioService.agregarUsuario(body,(id)=>{
     res.status(201).send({status:'OK', data: id});
   })
 

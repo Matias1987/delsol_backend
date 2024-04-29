@@ -8,7 +8,7 @@ router.get("/:idproveedor?", (req, res) => {
     facturaController.obtener_facturas(req,res)
 });
 
-router.get("/:idfactura", (req, res) => {
+router.get("/df/:idfactura", (req, res) => {
   facturaController.detalle_factura(req,res);
 });
 router.get("/elementos/:idfactura", (req, res) => {

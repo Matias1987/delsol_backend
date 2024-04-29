@@ -36,7 +36,7 @@ router.post("/login/",(req,res)=>{
 })
 
 router.post("/", (req, res) => {
-  
+  //console.log("add usuario")
   usuarioController.agregarUsuario(req,res);
 });
 

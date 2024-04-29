@@ -28,6 +28,7 @@ const agregar_factura = (data,callback) => {
 const detalle_factura = (data, callback) => {
     const  connection = mysql_connection.getConnection();
     connection.connect();
+
     connection.query(`SELECT 
     DATE_FORMAT(f.fecha, '%d-%m-%y') AS 'fecha',
     f.numero,

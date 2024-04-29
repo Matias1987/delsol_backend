@@ -221,23 +221,21 @@ const agregar_usuario = (data,callback) => {
         values 
         (
             '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}',
-            '${data.nombre}'
+            '${data.usuario}',
+            md5('${data.passwd}'),
+            '${data.ventas}',
+            '${data.caja1}',
+            '${data.caja2}',
+            '${data.deposito_min}',
+            '${data.deposito}',
+            '${data.admin1}',
+            '${data.admin2}',
+            '${data.laboratorio}'
         )`;
 
-    var values = [[
-        data.nombre,data.password
-    ]];
 
-    connection.query(sql,values, (err,result) => {
+    console.log(sql)
+    connection.query(sql, (err,result) => {
             return callback(result.insertId)
         });
     connection.end();
