@@ -129,10 +129,7 @@ const incrementar_cantidad = (data, callback) => {
     })
     const connection = mysql_connection.getConnection();
 
-    console.log(`UPDATE stock s 
-    SET s.cantidad = ${data.incrementarCantidad ? 's.cantidad + ' : ''} ${data.cantidad} 
-    WHERE s.sucursal_idsucursal=${data.idsucursal} AND s.codigo_idcodigo  in (${codigos});`)
-    
+   
     if(data.cantidad>-1)
     {
         queries.push(`UPDATE stock s 
@@ -718,7 +715,7 @@ const agregar_stock = (data,callback) =>{
         s.codigo_idcodigo IN (${_ids}) 
         AND s.sucursal_idsucursal = ${data.idsucursal};`
         
-        console.log(query)
+        //console.log(query)
 
         const connection = mysql_connection.getConnection();
         
@@ -765,7 +762,7 @@ const agregar_stock = (data,callback) =>{
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,rows)=>{
-            console.log(rows)
+            //console.log(rows)
             callback(rows)
         })
         connection.end()
@@ -844,7 +841,7 @@ const agregar_stock = (data,callback) =>{
                 costo)(
                         SELECT c.idcodigo, '${data.idfactura}', '${data.cantidad}', '${data.costo < 0 ? 0 : data.costo}' 
                         FROM codigo c WHERE c.idcodigo IN (${data.idcodigo}));`
-            console.log(query2)
+            //console.log(query2)
             connection.query(query2,(err,response)=>{
 
             })
