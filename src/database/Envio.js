@@ -176,7 +176,7 @@ const anular_envio = (idenvio, callback) => {
     connection.connect()
     //console.log(`select e.estado from envio e where e.idenvio=${idenvio};`)
     //console.log(`update envio e set e.anulado = 1, e.estado='ANULADO' where e.idenvio=${idenvio}`);
-    connection.query(`select e.estado from envio e where e.idenvio=${idenvio};`,(err,rows)=>{
+    connection.query(`select e.estado, e.sucursal_origen from envio e where e.idenvio=${idenvio};`,(err,rows)=>{
         if(rows.length>0)
         {
             if(rows[0].estado=='GENERADO')

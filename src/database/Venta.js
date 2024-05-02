@@ -206,17 +206,20 @@ const desc_cantidades_stock_venta = (data,callback) =>
 }
 const inc_cantidades_stock_venta = (data,callback) =>
 {
-    const query = `UPDATE stock s, 
+    const query = `update stock s,
     (
-        SELECT 
-        vhs.stock_sucursal_idsucursal AS 'idsucursal',
-        vhs.stock_codigo_idcodigo AS 'idcodigo', 
-        vhs.cantidad 
-        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}  AND vhs.descontable=1
+            SELECT 
+                vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                sum(vhs.cantidad) AS 'cantidad' 
+            FROM venta_has_stock vhs 
+                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  AND vhs.descontable=1
+                  GROUP BY vhs.stock_codigo_idcodigo
     ) AS vs
-    SET s.cantidad = s.cantidad - vs.cantidad WHERE
-    s.codigo_idcodigo = vs.idcodigo AND 
-    s.sucursal_idsucursal = vs.idsucursal;`
+    SET s.cantidad = s.cantidad + vs.cantidad
+    where
+    vs.idcodigo = s.codigo_idcodigo AND 
+    s.sucursal_idsucursal=${data.idsucursal}`
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
