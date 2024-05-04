@@ -11,3 +11,5 @@ router.post("/ped/",(req,res)=>{
 router.post("/c/est/dep/",(req,res)=>{
 
 })
+
+module.exports = router

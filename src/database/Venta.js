@@ -241,8 +241,8 @@ const cambiar_estado_venta = (data, callback) => {
     const __t = (data.estado=="ENTREGADO" ? `, v.fecha_retiro='${fr}' `: "")
 
     const en_laboratorio =  (data.estado=="PENDIENTE") ? 1 : 0
-    
-    connection.query(`UPDATE venta v SET v.estado = '${data.estado}' ${__t}, v.en_laboratorio=if(v.tipo=1,0, ${en_laboratorio}) WHERE v.idventa=${data.idventa};`,(err,results)=>{
+    const estado_laboratorio = en_laboratorio ? 'PENDIENTE' : ''
+    connection.query(`UPDATE venta v SET v.estado = '${data.estado}' ${__t}, v.en_laboratorio=if(v.tipo=1,0, ${en_laboratorio}), v.estado_laboratorio='${estado_laboratorio}' WHERE v.idventa=${data.idventa};`,(err,results)=>{
         callback(results)
         if(typeof data.removeMPRows !== 'undefined'){
             if(+data.removeMPRows == 1){

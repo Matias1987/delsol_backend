@@ -35,7 +35,7 @@ const marcar_como_calibrando = (data,callback) => {
 }
 
 const marcar_como_terminado = (data,callback) => {
-    const query =  `update venta v set v.estado_taller='CALIBRADO' where v.idventa = ${data.idventa}`;
+    const query =  `update venta v set v.estado_taller='TERMINADO', v.en_laboratorio='0' where v.idventa = ${data.idventa}`;
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query, (err,resp)=>{
