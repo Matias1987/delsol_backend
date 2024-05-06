@@ -1,9 +1,39 @@
-const agregar_pedido = (req, res) => {}
+const ventaTallerService = require(".././services/VentaTallerService")
 
-const marcar_como_calibrando = (req, res) => {}
+const agregar_pedido = (req, res) => {
+    ventaTallerService.agregar_pedido(req,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })    
+}
 
-const marcar_como_terminado = (req, res) => {}
+const marcar_como_calibrando = (req, res) => {
+    ventaTallerService.marcar_como_calibrando(req,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
 
-const obtener_lista= (req, res) => {}
+const marcar_como_terminado = (req, res) => {
+    ventaTallerService.marcar_como_terminado(req,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
 
-module.exports = {marcar_como_calibrando, marcar_como_terminado, agregar_pedido, obtener_lista}
+const obtener_items_operacion= (req, res) => {
+    ventaTallerService.obtener_items_operacion(req,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
+
+const obtener_lista_operaciones = (req, res) => {
+    ventaTallerService.obtener_lista_operaciones(req,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+
+}
+
+module.exports = {
+    marcar_como_calibrando, 
+    marcar_como_terminado, 
+    agregar_pedido, 
+    obtener_lista_operaciones, 
+    obtener_items_operacion}

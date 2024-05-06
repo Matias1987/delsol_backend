@@ -534,7 +534,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
         (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
         (typeof data.fecha === 'undefined'? "" : data.fecha),
         (typeof data.idusuario === 'undefined' ? "" : data.idusuario),
-           
+        (typeof data.estado_taller === 'undefined' ? "" : data.estado_taller),
             ),(err,data) => {
                 callback(data)
             }
