@@ -27,7 +27,7 @@ const ventas_medico = (data, callback) =>{
 }
 
 const ventas_medico_totales = (data, callback) => {
-    console.log(JSON.stringify(data))
+    //console.log(JSON.stringify(data))
     const nombre = data.nombre.trim().length<1? "-1":data.nombre.trim()
 
     const _query = `SELECT m.nombre AS 'medico', m_op.* FROM 
@@ -38,7 +38,8 @@ const ventas_medico_totales = (data, callback) => {
 		sum(if(vmp.modo_pago='tarjeta',vmp.monto,0)) AS 'tarjeta',
 		sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
 		sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
-		sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual'
+		sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+		sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mercadopago'
 	FROM 
 		venta_has_modo_pago vmp, venta v 
 	WHERE

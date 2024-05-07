@@ -57,6 +57,7 @@ const obtener_items_operacion = (data, callback) => {
     v.idventa = vi.venta_idventa AND
     v.idventa = ${data.idventa}
     ;`
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

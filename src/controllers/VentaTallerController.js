@@ -1,31 +1,36 @@
 const ventaTallerService = require(".././services/VentaTallerService")
 
 const agregar_pedido = (req, res) => {
-    ventaTallerService.agregar_pedido(req,(resp)=>{
+    const {body}=req
+    ventaTallerService.agregar_pedido(body,(resp)=>{
         res.status(201).send({status:'OK', data:resp})
     })    
 }
 
 const marcar_como_calibrando = (req, res) => {
-    ventaTallerService.marcar_como_calibrando(req,(resp)=>{
+    const {body}=req
+    ventaTallerService.marcar_como_calibrando(body,(resp)=>{
         res.status(201).send({status:'OK', data:resp})
     })
 }
 
 const marcar_como_terminado = (req, res) => {
-    ventaTallerService.marcar_como_terminado(req,(resp)=>{
+    const {body}=req
+    ventaTallerService.marcar_como_terminado(body,(resp)=>{
         res.status(201).send({status:'OK', data:resp})
     })
 }
 
 const obtener_items_operacion= (req, res) => {
-    ventaTallerService.obtener_items_operacion(req,(resp)=>{
+    const {body}=req
+    ventaTallerService.obtener_items_operacion(body,(resp)=>{
         res.status(201).send({status:'OK', data:resp})
     })
 }
 
 const obtener_lista_operaciones = (req, res) => {
-    ventaTallerService.obtener_lista_operaciones(req,(resp)=>{
+    const {body}=req
+    ventaTallerService.obtener_lista_operaciones(body,(resp)=>{
         res.status(201).send({status:'OK', data:resp})
     })
 
