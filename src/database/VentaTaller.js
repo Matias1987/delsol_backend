@@ -49,7 +49,7 @@ const obtener_items_operacion = (data, callback) => {
     (
         SELECT vhs.venta_idventa,vhs.tipo,vhs.esf, vhs.cil, vhs.eje, vhs.cantidad, vsp.idVtaStockPedido , c.codigo, c.descripcion
         FROM codigo c, 
-        venta_has_stock vhs LEFT JOIN venta_stock_pedido vsp ON vsp.fkVentaItem = vhs.idventaitem
+        venta_has_stock vhs INNER JOIN venta_stock_pedido vsp ON vsp.fkVentaItem = vhs.idventaitem
         WHERE 
         c.idcodigo = vhs.stock_codigo_idcodigo 
     ) AS vi
