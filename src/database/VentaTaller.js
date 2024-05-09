@@ -6,13 +6,15 @@ const agregar_pedido =  (data,callback) => {
      * idventaitem
      * estado
      */
-    const query = `INSERT INTO venta_stock_pedido (fkVentaItem, fkSucursalPedido) VALUES ;`;
+    const query = `INSERT INTO venta_stock_pedido (fkSucursalPedido, fkcodigo, fkventa, tipo  ) VALUES `;
 
     //CALLBACK
     let values=``
     data.items.forEach(i=>{
-        values += (values.length>1 ? ',':'') + `(${i.idventaitem},${data.fksucursalpedido})`;
+        values += (values.length>1 ? ',':'') + `(${data.fksucursalpedido},${i.fkcodigo},${data.fkventa},'${i.tipo}')`;
     })  
+
+    console.log("**************"+query + values + "**************")
 
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -45,17 +47,20 @@ const marcar_como_terminado = (data,callback) => {
 }
 
 const obtener_items_operacion = (data, callback) => {
-    const query = `SELECT vi.* FROM venta v ,
-    (
-        SELECT vhs.venta_idventa,vhs.tipo,vhs.esf, vhs.cil, vhs.eje, vhs.cantidad, vsp.idVtaStockPedido , c.codigo, c.descripcion
-        FROM codigo c, 
-        venta_has_stock vhs INNER JOIN venta_stock_pedido vsp ON vsp.fkVentaItem = vhs.idventaitem
-        WHERE 
-        c.idcodigo = vhs.stock_codigo_idcodigo 
-    ) AS vi
-    WHERE 
-    v.idventa = vi.venta_idventa AND
-    v.idventa = ${data.idventa}
+    const query = `SELECT 
+	c.idcodigo,
+	c.codigo,
+	vsp.fechaAlta,
+	vsp.tipo,
+	vsp.estado,
+	vsp.cantidad
+ FROM 
+venta_stock_pedido vsp INNER JOIN 
+codigo c ON c.idcodigo = vsp.fkcodigo
+WHERE 
+vsp.fkventa = ${data.idventa};
+
+
     ;`
     console.log(query)
     const connection = mysql_connection.getConnection()
