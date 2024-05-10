@@ -6,6 +6,12 @@ const agregar_pedido =  (data,callback) => {
      * idventaitem
      * estado
      */
+
+    if(data.items.length<1)
+    {
+        callback({data:"ERR"})    
+    }
+
     const query = `INSERT INTO venta_stock_pedido (fkSucursalPedido, fkcodigo, fkventa, tipo  ) VALUES `;
 
     //CALLBACK
@@ -14,16 +20,16 @@ const agregar_pedido =  (data,callback) => {
         values += (values.length>1 ? ',':'') + `(${data.fksucursalpedido},${i.fkcodigo},${data.fkventa},'${i.tipo}')`;
     })  
 
-    console.log("**************"+query + values + "**************")
-
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query + values,(err,resp)=>{
-        callback(resp)
+        
+        connection.query( `update venta v set v.estado_taller='PEDIDO' where v.idventa = ${data.fkventa}`,(err,resp)=>{
+            callback(resp)
+        })
+            
+        connection.end()
     })
-    connection.end()
-
-
 }
 
 const marcar_como_calibrando = (data,callback) => {
