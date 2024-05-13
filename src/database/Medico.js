@@ -18,9 +18,9 @@ const ventas_medico = (data, callback) =>{
     (case when '${data.idsucursal}'<> '-1' then v.sucursal_idsucursal = ${data.idsucursal} else true end)`;
     const connection = mysql_connection.getConnection()
     connection.connect()
-    console.log(query)
+    //console.log(query)
     connection.query(query,(err,rows)=>{
-        console.log(JSON.stringify(rows))
+        //console.log(JSON.stringify(rows))
         return callback(rows)
     })
     connection.end()
@@ -52,7 +52,7 @@ const ventas_medico_totales = (data, callback) => {
 		GROUP BY v.medico_idmedico
 	)AS m_op
 	WHERE m_op.medico_idmedico = m.idmedico and (case when '${nombre}'<> '-1' then m.nombre like '%${nombre}%' else true end);`
-    console.log(_query)
+    //console.log(_query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(_query,(err,rows)=>{

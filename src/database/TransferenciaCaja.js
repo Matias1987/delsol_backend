@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const agregar_transferencia = (data,callback) => {
     const query = `INSERT INTO transferencia (fk_destino, fk_origen, fk_caja, monto, comentarios) 
                     VALUES (${data.fkdestino}, ${data.fkorigen}, ${data.fkcaja}, ${data.monto}, '${data.comentarios}');`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(query,(err,rows,fields)=>{

@@ -84,7 +84,7 @@ const modificar_multiplicador_grupos = (categoria, id, value,incrementar, callba
                 (case when '${categoria=="subfamilia"? id: ''}' <> '' then sf.idsubfamilia = '${categoria=="subfamilia"? id: ''}' ELSE TRUE END) AND 
                 (case when '${categoria=="familia"? id: ''}' <> '' then sf.familia_idfamilia = '${categoria=="familia"? id: ''}' ELSE TRUE END);`;
 
-    console.log(_q);
+    //console.log(_q);
     connection.query(_q,(err,data)=>{
         callback(data)
     });
@@ -118,7 +118,7 @@ const obtener_subgrupos = (idg, callback) => {
 }
 
 const agregar_subgrupo = (data,callback) => {
-    console.log(JSON.stringify(data))
+    //console.log(JSON.stringify(data))
     const connection = mysql_connection.getConnection();
     connection.connect();
 
@@ -139,7 +139,7 @@ const agregar_subgrupo = (data,callback) => {
                 data.multiplicador,
                 data.precio_defecto,
             ]];*/
-            console.log(sql)
+            //console.log(sql)
             connection.query(sql, (err,result) => {
                     return callback(result.insertId)
                 });

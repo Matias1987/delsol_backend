@@ -82,7 +82,7 @@ const obtener_lista_clientes = (callback) => {
 const detalle_cliente_dni = (dni,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(queries.queryObtenerClientebyDNI(dni))
+    //console.log(queries.queryObtenerClientebyDNI(dni))
     connection.query(
         queries.queryObtenerClientebyDNI(dni),
         (err,results,fields) => {
@@ -94,7 +94,7 @@ const detalle_cliente_dni = (dni,callback) => {
 const detalle_cliente = (id,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log(queries.queryObtenerClientebyID(id))
+    //console.log(queries.queryObtenerClientebyID(id))
     connection.query(
         queries.queryObtenerClientebyID(id),
         (err,results,fields) => {
@@ -122,7 +122,7 @@ const buscar_cliente = (value, callback) =>{
 
     const _query = `SELECT c.* FROM cliente c WHERE ${_q}`
 
-    console.log(_query)
+    //console.log(_query)
 
     connection.query(
         _query,
@@ -267,8 +267,6 @@ const actualizar_saldo_cliente = (idcliente,callback)=>{
 const actualizar_saldo_en_cobro = (idcobro,callback)=>{
     
     const connection = mysql_connection.getConnection();
-    console.log("###########################################")
-    console.log(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`)
     
     connection.connect();
     connection.query(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`,(__err, __row)=>{
@@ -276,7 +274,7 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
         if(__row.length>0)
         {
             const query = queries.queryObtenerBalance(__row[0].cliente_idcliente)
-            console.log(query)
+          
             connection.query(
                 query,
                 (err,rows)=>{
@@ -285,7 +283,7 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
                     const debe = parseFloat(rows[0].debe)
                     const haber = parseFloat(rows[0].haber)
     
-                    console.log(`UPDATE cobro c SET c.saldo_actual = ${debe-haber} WHERE c.idcobro=${idcobro}`)
+                    //console.log(`UPDATE cobro c SET c.saldo_actual = ${debe-haber} WHERE c.idcobro=${idcobro}`)
         
                     connection.query(`UPDATE cobro c SET c.saldo_actual = ${debe-haber} WHERE c.idcobro=${idcobro}`,
                     (err,resp)=>

@@ -41,7 +41,7 @@ const agregarBajaDesperfecto = (_data, callback) => {
     
             const query = `INSERT INTO baja_desperfecto (fkcodigo, fksucursal, fkusuario, cantidad, comentarios) 
             VALUES ('${_resp[0].idcodigo}', ${data.fksucursal}, ${data.fkusuario}, ${data.cantidad}, '${data.comentarios}');`;
-            console.log(query)
+            //console.log(query)
     
             connection.query(query,(err,response)=>{
                 callback(1);

@@ -2,7 +2,7 @@ const mysql_connection = require("../lib/mysql_connection")
 
 const agregar_control = (data,callback) => {
     const query = `INSERT INTO control_stock ( json, fkusuario, fksucursal, tipo, comentarios) VALUES ( '${JSON.stringify(data)}', ${data.fkusuario}, ${data.fksucursal}, 'ctr', '${data.comentarios}');`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{callback(resp)})

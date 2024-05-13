@@ -91,7 +91,7 @@ const agregar_gasto = (data,callback) => {
         '${data.comentarios}'
     )`;
 
-    console.log(sql)
+    //console.log(sql)
 
     connection.query(sql, (err,result) => {
             return callback(result.insertId)

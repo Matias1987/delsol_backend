@@ -9,7 +9,8 @@ const agregar_pedido =  (data,callback) => {
 
     if(data.items.length<1)
     {
-        callback({data:"ERR"})    
+        callback({data:"ERR"})   
+        return 
     }
 
     const query = `INSERT INTO venta_stock_pedido (fkSucursalPedido, fkcodigo, fkventa, tipo  ) VALUES `;

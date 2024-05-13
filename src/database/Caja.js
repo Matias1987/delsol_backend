@@ -59,9 +59,7 @@ const agregarCaja = (data,callback) =>
     connection.connect();
 
     const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${data.sucursal_idsucursal},${data.monto_inicial},'${"ABIERTA"}', date('${data.fecha}'))`
-    //values = [[data.sucursal_idsucursal, data.monto_inicial, "ABIERTA"]];
-    console.log(sql)
-
+  
     connection.query(sql,(err,result,fields)=>{
         return callback(result.insertId);
     })
@@ -82,7 +80,6 @@ const obtener_caja = (idsucursal, callback) =>{
         else{
             if(rows.length>0)
             {
-                console.log(JSON.stringify(rows))
                 callback({...rows[0],status:'OK'})
             }
             else{

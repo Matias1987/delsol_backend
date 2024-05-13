@@ -234,7 +234,7 @@ const agregar_usuario = (data,callback) => {
         )`;
 
 
-    console.log(sql)
+    //console.log(sql)
     connection.query(sql, (err,result) => {
             return callback(result.insertId)
         });
@@ -286,7 +286,7 @@ const obtener_usuarios_permisos = (callback) => {
         s.idsucursal = ups.fk_sucursal
         ) AS u 
     ORDER BY u.id`;
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{
@@ -318,7 +318,7 @@ const modificar_permisos = (data, callback) => {
 
 
 
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(data.fk_sucursal<0 ? q2 : query,(err,resp)=>{

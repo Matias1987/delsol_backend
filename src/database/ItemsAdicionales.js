@@ -9,7 +9,7 @@ const agregar_item_adicional = (data, callback) => {
     })
     let query = `INSERT INTO sobre_adicionales (fk_sucursal, fk_codigo, fk_venta, cantidad, tipo) VALUES ${items};`
 
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -31,7 +31,7 @@ const obtener_adicionales_venta = (data, callback) => {
     ) AS items
     WHERE c.idcodigo = items.idcodigo
     ORDER BY items.tipo, items.original desc`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{

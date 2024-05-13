@@ -52,7 +52,7 @@ const agregar_envio = (data,callback) => {
             data.items.forEach(element => {
                 values+= (values==""? "" : ",") + "("+results.insertId + "," + element.codigo_idcodigo + "," + element.cantidad+")"
             });
-            console.log("items: ", values)
+            //console.log("items: ", values)
             connection.query("INSERT INTO `envio_has_stock` (`envio_idenvio`, `codigo_idcodigo`,  `cantidad`) VALUES " + values + ";",
             values,
             
@@ -62,18 +62,6 @@ const agregar_envio = (data,callback) => {
 
                 //descontar cantidades
 
-                console.log(`UPDATE 
-                stock s, 
-                envio_has_stock ehs,
-                envio e
-                SET 
-                s.cantidad = s.cantidad - ehs.cantidad
-                WHERE
-                e.idenvio = ehs.envio_idenvio AND  
-                s.codigo_idcodigo = ehs.codigo_idcodigo AND
-                s.sucursal_idsucursal = e.sucursal_idsucursal AND 
-                ehs.envio_idenvio=${_eid} 
-                ;`)
 
                 connection.query(`UPDATE 
                 stock s, 

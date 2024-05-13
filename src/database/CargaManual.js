@@ -13,7 +13,7 @@ const obtenerCargaManual = (idcargamanual,callback) => {
 const modificar_carga_manual = (data,callback)=> 
 {
     const query = `update carga_manual cm set cm.monto = ${data.monto} where cm.idcarga_manual= ${data.id}`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -37,7 +37,7 @@ const agregarCargaManual= (data,callback) =>
         concepto) 
     values (${data.caja_idcaja},${data.usuario_idusuario},${data.cliente_idcliente},${data.sucursal_idsucursal},${data.monto},'${data.concepto}')`
     
-    console.log(sql)
+    //console.log(sql)
 
     connection.query(sql,(err,result,fields)=>{
         return callback(result.insertId);

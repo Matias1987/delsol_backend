@@ -200,7 +200,7 @@ const obtener_ventas_dia_vendedor = (data,callback) =>
     v.usuario_idusuario = ${data.idusuario}
     ;
     `
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{
@@ -220,7 +220,7 @@ const ventas_dia_totales = (data,callback) => {
         v.estado<>'ANULADO' 
         GROUP BY DATE(v.fecha)
     ) AS vs ORDER BY vs.fecha asc`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

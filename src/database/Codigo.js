@@ -35,7 +35,7 @@ const obtener_codigos_filtros = (data, callback) => {
     (case when '${data.idsubfamilia}'='-1' then TRUE ELSE sf.idsubfamilia='${data.idsubfamilia}' END ) AND
     (case when '${data.idfamilia}'='-1' then TRUE ELSE sf.familia_idfamilia='${data.idfamilia}' END )
     ;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

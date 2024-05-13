@@ -850,14 +850,13 @@ const agregar_stock = (data,callback) =>{
         connection.end()
     }
     const modificar_cantidad_lista = (data, callback)=>{
-        //console.log(JSON.stringify(data))
+       
         var query = ""
 
         data.codigos.forEach(c=>{
             query+=`update stock s set s.cantidad=s.cantidad+${c.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${c.id};`
         })
-        //console.log(query)
-        
+      
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,response)=>{
@@ -895,7 +894,7 @@ const agregar_stock = (data,callback) =>{
         ORDER BY
         c.esf, c.cil, c.eje;
         `
-        //console.log(query)
+       
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,rows)=>{

@@ -30,18 +30,18 @@ const agregar_venta_mp_ctacte = (data,callback) =>
 
     if(typeof data.removeMPRows !== 'undefined'){
         if(+data.removeMPRows == 1){
-            console.log("ELIMINAR MODO DE PAGOS")
+            //console.log("ELIMINAR MODO DE PAGOS")
             connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
         }
     }
 
     if(typeof data.removeCtaCteRow !== 'undefined'){
         if(+data.removeCtaCteRow == 1){
-            console.log("ELIMINAR MODO DE PAGOS MP")
+            //console.log("ELIMINAR MODO DE PAGOS MP")
             connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`)
         }
     }
-    console.log("CREAR MODO DE PAGOS")
+    //console.log("CREAR MODO DE PAGOS")
     connection.query(__query_venta_mp,(err,resp)=>{
         callback(0);
     })
@@ -156,7 +156,7 @@ const agregar_cobro  = (data,callback) => {
             //console.log(results)
         const idcobro = results.insertId
         //PAGO GUARDADO, PREPARAR MODOS DE PAGOS Y VENTA MODO PAGO
-       console.log("Payment saved with id: " + idcobro);
+       //console.log("Payment saved with id: " + idcobro);
 
         var _mp = []
         

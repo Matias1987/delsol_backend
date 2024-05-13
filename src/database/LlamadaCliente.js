@@ -15,7 +15,7 @@ const ObtenerLlamadasCliente = (idcliente, callback) => {
     lc.fk_usuario = u.idusuario AND
     lc.fk_sucursal = s.idsucursal AND 
     lc.fk_cliente=${idcliente}  ORDER BY lc.fecha desc`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query, (err,rows)=>{
