@@ -207,6 +207,21 @@ const get_mp = (data, idventa) => {
 				tarjeta_nro: null,
 			})
 		}
+		if(data?.mp?.transferencia_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'7',
+				banco_idbanco:data.mp.fk_banco_transferencia,
+				mutual_idmutual:null,
+				monto:data.mp.transferencia_monto,
+				monto_int:0,
+				cant_cuotas:0,
+				monto_cuota:0,
+				fk_tarjeta: null,
+				modo_pago: 'transferencia',
+				tarjeta_nro: null,
+			})
+		}
 	}
 	
 	return _items_mp;

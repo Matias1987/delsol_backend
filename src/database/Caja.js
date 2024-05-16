@@ -120,7 +120,8 @@ const informe_caja = (idcaja, callback) =>{
     if(ops.modo_pago = 'cheque',ops.monto,0) AS 'cheque',
     if(ops.modo_pago = 'ctacte',ops.monto,0) AS 'cuotas',
     if(ops.modo_pago = 'cuota',ops.monto,0) AS 'ctacte',
-    if(ops.modo_pago = 'mercadopago',ops.monto,0) AS 'mercadopago'
+    if(ops.modo_pago = 'mercadopago',ops.monto,0) AS 'mercadopago',
+    if(ops.modo_pago = 'transferencia',ops.monto,0) AS 'transferencia'
     from
     (
 			/*CUOTAS efvo*/

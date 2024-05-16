@@ -97,6 +97,7 @@ const agregar_cobro  = (data,callback) => {
         cant_cuotas: typeof vars.cant_cuotas === 'undefined' ? 0 : vars.cant_cuotas,
         monto_cuota: typeof vars.monto_cuota === 'undefined' ? 0 : vars.monto_cuota,
 
+
     })
 
     /* solo si es modo de pago cta cte */
@@ -210,6 +211,20 @@ const agregar_cobro  = (data,callback) => {
                 tipo: 'mercadopago',
             }),
             "mercadopago_monto")
+
+
+
+        _mp = add(
+            _mp,
+            get_mp_obj(
+                {
+                    monto: data.mp.transferencia_monto,
+                    tipo: 'transferencia',
+                    fkbanco: data.mp.fk_banco_transferencia,
+                }
+            ),
+            "transferencia_monto"
+        )
 
             //console.log("ALL MP:  "  + JSON.stringify(_mp))
 

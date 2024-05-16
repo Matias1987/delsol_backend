@@ -36,7 +36,8 @@ const obtener_resumen_totales = (idcaja, callback) => {
     sum(if(ops.modo_pago = 'cuota',ops.monto,0)) AS 'ctacte',
     sum(if(ops.modo_pago = 'total',ops.monto,0)) AS 'monto_total',
     sum(if(ops.modo_pago = 'ANULADO',ops.monto,0)) AS 'anulado',
-    sum(if(ops.modo_pago = 'mercadopago',ops.monto,0)) AS 'mercadopago'
+    sum(if(ops.modo_pago = 'mercadopago',ops.monto,0)) AS 'mercadopago',
+    sum(if(ops.modo_pago = 'transferencia',ops.monto,0)) AS 'transferencia'
     from
     (
             SELECT 

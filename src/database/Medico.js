@@ -39,7 +39,8 @@ const ventas_medico_totales = (data, callback) => {
 		sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
 		sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
 		sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
-		sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mercadopago'
+		sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mercadopago',
+		sum(if(vmp.modo_pago='transferencia',vmp.monto,0)) AS 'transferencia'
 	FROM 
 		venta_has_modo_pago vmp, venta v 
 	WHERE
