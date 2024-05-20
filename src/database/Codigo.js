@@ -45,10 +45,25 @@ const obtener_codigos_filtros = (data, callback) => {
 }
 
 const search_codigos = (data, callback) => {
+
+    const _parts = data.trim().split(' ')
+
+    let query_part = ''
+
+    if(_parts.length<1)
+    {
+        return callback([]);
+    }
+
+    _parts.forEach(
+        p=>{
+            query_part+=(query_part.length>0 ? ' AND ' : '') + ` c.codigo like '%${p}%' `
+        }
+    )
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        `SELECT c.idcodigo,c.codigo,c.descripcion FROM codigo c WHERE c.codigo LIKE '%${data}%' OR c.descripcion LIKE '%${data}%';`
+        `SELECT c.idcodigo,c.codigo,c.descripcion FROM codigo c WHERE ${query_part};`
         ,(err,rows,fields)=>{
         return callback(rows);
     })
