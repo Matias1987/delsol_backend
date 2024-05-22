@@ -69,7 +69,7 @@ vsp.fkventa = ${data.idventa};
 
 
     ;`
-    console.log(query)
+   // console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

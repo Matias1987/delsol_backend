@@ -1,21 +1,43 @@
 const mysql_connection = require("../lib/mysql_connection")
 
 const agregar_item_adicional = (data, callback) => {
+
+    const list = []
+
     let items = '';
-    let query_update_stock = "";
+    
     data.items.forEach(i=>{
         items+=(items.length>0?',':'') + `(${data.fksucursal}, ${i.idcodigo}, ${data.fkventa}, 1, '${i.tipo}')`;
-        query_update_stock += `UPDATE stock s SET s.cantidad = s.cantidad -1 WHERE s.codigo_idcodigo=${i.idcodigo} AND s.sucursal_idsucursal=${data.fksucursal};`
+        
+        list.push(`UPDATE stock s SET s.cantidad = s.cantidad -1 WHERE s.codigo_idcodigo=${i.idcodigo} AND s.sucursal_idsucursal=${data.fksucursal};`);
     })
     let query = `INSERT INTO sobre_adicionales (fk_sucursal, fk_codigo, fk_venta, cantidad, tipo) VALUES ${items};`
 
-    //console.log(query)
+    const do_queries = () => {
+        if(list.length<1)
+        {
+            try{
+                connection.end()
+            }
+            catch(_e){}
+            
+            return
+        }
+        let _q = list.pop()
+        console.log(_q)
+        connection.query(_q,(err,resp)=>{do_queries()})
+    }
+
+    
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
+        
+        console.log(query)
+        do_queries();
+
         callback(resp)
-        connection.query(query_update_stock,(err,resp)=>{})
-        connection.end()
+
     })
     
 }
