@@ -28,7 +28,9 @@ const agregar_item_adicional = (data, callback) => {
         connection.query(_q,(err,resp)=>{do_queries()})
     }
 
-    
+    /**
+     * 
+     */
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
