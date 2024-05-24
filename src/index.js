@@ -144,7 +144,8 @@ app.use("/api/v1/cs",ctrlStock)
 const taller = require("./v1/routes/VentaTallerRoutes")
 app.use("/api/v1/tl",taller)
 
-
+const anotacionRoutes = require("./v1/routes/AnotacionRoutes")
+app.use("/api/v1/anot",anotacionRoutes)
 
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
