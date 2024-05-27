@@ -3,8 +3,8 @@ const mysql_connection = require("../lib/mysql_connection")
 const agregarAnotacion = (data,callback) => {
     
     const query = `INSERT INTO anotacion (nota, fkusuario, fksucursal, tipo, refId) 
-    VALUES ('${data.nota}', ${data.fkusuario}, ${data.fksucursal}, '${data.tipo}', ${data.refId});`
-
+    VALUES ('${data.mensaje}', ${data.fkusuario}, ${data.fksucursal}, '${data.tipo}', ${data.refId});`
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -32,18 +32,24 @@ const obtenerAnotacion = (idanotacion, callback) =>{
     connection.end()
 }
 
-const obtenerAnotaciones = (callback) => {
+const obtenerAnotaciones = (params,callback) => {
+    const _idref = typeof params.idref === 'undefined' ? -1 : params.idref
+    const _tipo =  typeof params.tipo === 'undefined' ? -1 : params.tipo
     const query = `SELECT 
     a.*, 
+    DATE_FORMAT( a.fecha , '%d-%m-%Y') AS 'fecha_f' ,
     u.nombre AS 'usuario', 
     s.nombre AS 'sucursal' 
     FROM anotacion a, usuario u, sucursal s WHERE 
     u.idusuario=a.fkusuario AND 
-    s.idsucursal=a.fksucursal 
+    s.idsucursal=a.fksucursal AND 
+    (case when '${_idref}}'<>'-1' then a.refId='${_idref}' ELSE TRUE END) and
+    (case when '${_tipo}}'<>'-1' then a.tipo='${_tipo}' ELSE TRUE END)
     ;`
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.query(query,(err,rows)=>{
-        callback(query)
+        callback(rows)
     })
     connection.end()
 }

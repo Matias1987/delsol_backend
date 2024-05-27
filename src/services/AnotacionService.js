@@ -12,8 +12,8 @@ const obtenerAnotacion = (idanotacion, callback) => {
  })
 }
 
-const obtenerAnotaciones = (callback) => {
- AnotacionDB.obtenerAnotaciones((resp)=>{
+const obtenerAnotaciones = (params, callback) => {
+ AnotacionDB.obtenerAnotaciones(params,(resp)=>{
     callback(resp)
  })
 }

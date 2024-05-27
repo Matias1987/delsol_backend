@@ -3,19 +3,20 @@ const anotacionService = require("../services/AnotacionService")
 const agregarAnotacion = (req,res)=>{
     const {body} = req
     anotacionService.agregarAnotacion(body,(resp)=>{
-        res.sta
+        res.send({status:"OK", data: resp})
     })    
 }
 const obtenerAnotacion = (req,res)=>{
     const {params:{idanotacion}} = req
-    anotacionService.agregarAnotacion(idanotacion,(resp)=>{
-        res.sta
+    anotacionService.obtenerAnotacion(idanotacion,(resp)=>{
+        res.send({status:"OK", data: resp})
     })
 }
 
 const obtenerAnotaciones = (req, res) => {
-    anotacionService.agregarAnotacion((resp)=>{
-        res.sta
+    const {body} = req
+    anotacionService.obtenerAnotaciones(body,(resp)=>{
+        res.send({status:"OK", data: resp})
     })
 }
 

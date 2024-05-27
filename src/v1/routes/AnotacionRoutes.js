@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const anotacionController = require("../../controllers/AnotacionController")
 
-router.get("/",(req,res)=>{
+router.post("/lista/anot/",(req,res)=>{
     anotacionController.obtenerAnotaciones(req,res)
 })
 
