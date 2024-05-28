@@ -147,6 +147,9 @@ app.use("/api/v1/tl",taller)
 const anotacionRoutes = require("./v1/routes/AnotacionRoutes")
 app.use("/api/v1/anot",anotacionRoutes)
 
+const tagRoutes = require("./v1/routes/TagRoutes")
+app.use("/api/v1/tag",tagRoutes)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
