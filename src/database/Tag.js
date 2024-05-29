@@ -1,7 +1,28 @@
 const mysql_connection = require("../lib/mysql_connection")
 
+
+const eliminar_etiquetas = (data, callback) => {
+    let _codigos_delete  = ""
+    data.codigos.forEach(c=>{
+        _codigos_delete+=_codigos_delete.length<1 ? '' : ',' + c
+    })
+    const _query_delete = `DELETE FROM codigo_has_tag WHERE codigo_has_tag.fk_codigo IN (${_codigos_delete})`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(_query_delete,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 const agregar_codigo_tag = (data, callback) => {
-    const query = `INSERT INTO codigo_has_tag (fk_codigo, fk_etiqueta) VALUES (${data.codigo}, '${data.etiqueta}');`
+    const values = ''
+    data.codigos.forEach(c=>{
+        data.tags.forEach(t=>{
+            values += values.length<1 ? '' : ',' + `(${c},${t})`
+        })
+    })
+    const query = `INSERT ignore INTO codigo_has_tag (fk_codigo, fk_etiqueta) VALUES ${values};`
     console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -74,4 +95,6 @@ module.exports = {
     obtener_lista_categorias, 
     obtener_lista_tag, 
     agregar_codigo_tag, 
-    obtener_lista_tag_codigo}
+    obtener_lista_tag_codigo,
+    eliminar_etiquetas,
+}
