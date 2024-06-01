@@ -16,10 +16,13 @@ const eliminar_etiquetas = (data, callback) => {
 }
 
 const agregar_codigo_tag = (data, callback) => {
-    const values = ''
+    let values = ''
+    console.log(JSON.stringify(data))
     data.codigos.forEach(c=>{
+        console.log("ksdfjk")
         data.tags.forEach(t=>{
-            values += values.length<1 ? '' : ',' + `(${c},${t})`
+            console.log("ddeee")
+            values += (values.length<1 ? '' : ',') + `(${c},'${t}')`
         })
     })
     const query = `INSERT ignore INTO codigo_has_tag (fk_codigo, fk_etiqueta) VALUES ${values};`
@@ -47,7 +50,7 @@ const obtener_lista_tag = (data, callback) => {
 
     const query = `SELECT t.* FROM tag t WHERE (case when '${data.fkcategoria}'<>'-1' then t.fk_categoria = '${data.fkcategoria}' ELSE TRUE END ) ORDER BY t.etiqueta ASC;`
 
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -78,8 +81,8 @@ const obtener_lista_categorias = (callback) => {
     connection.end()
 }
  
-const obtener_lista_tag_codigo = (callback) => {
-    const query = `SELECT * FROM tag_categoria;`
+const obtener_lista_tag_codigo = (data,callback) => {
+    const query = `SELECT cht.* FROM codigo_has_tag cht where cht.fk_codigo=${data.idcodigo};`
     console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()

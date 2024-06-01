@@ -1,7 +1,7 @@
 const tagDB = require("../database/Tag")
 
 const agregar_tag_codigo = (data,callback) => {
-    tagDB.agregar_tag_codigo(data,(resp)=>{callback(resp)})
+    tagDB.agregar_codigo_tag(data,(resp)=>{callback(resp)})
 }
 
 const agregar_tag = (data,callback) => {
