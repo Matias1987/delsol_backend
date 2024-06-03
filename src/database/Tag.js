@@ -36,7 +36,7 @@ const agregar_codigo_tag = (data, callback) => {
 }
 
 const agregar_tag = (data, callback) => {
-    const query = `INSERT INTO tag (etiqueta, fk_categoria) VALUES ('${data.etiqueta}', ${data.fkcategoria});`
+    const query = `INSERT INTO tag (etiqueta, fk_categoria) VALUES ('${data.etiqueta}', ${+data.fkcategoria < -0 ? "NULL" : data.fkcategoria });`
     console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -70,7 +70,7 @@ const agregar_categoria = (data,callback) => {
     connection.end()
 }
  
-const obtener_lista_categorias = (callback) => {
+const obtener_lista_categorias = (data,callback) => {
     const query = `SELECT * FROM tag_categoria;`
     console.log(query)
     const connection = mysql_connection.getConnection()
