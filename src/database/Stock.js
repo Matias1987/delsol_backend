@@ -529,9 +529,14 @@ const agregar_stock = (data,callback) =>{
     }
 
     const obtener_lista_stock_filtros = (data, callback)=>{
-            
+        
+        var tags = typeof data.etiquetas === 'undefined' ? [] : data.etiquetas
+
+        var _codigos = tags.length<1 ? ` ( select 0 as 'cnt', c.* from codigo c) ` : `( SELECT COUNT(1) AS 'cnt', c.* FROM codigo_has_tag ct , codigo c WHERE ct.fk_codigo = c.idcodigo AND ct.fk_etiqueta IN ( ${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY c.idcodigo )`
+
         var order = ' order by c.codigo asc';
         var limit = typeof data.limit === 'undefined' ? 'limit 100000' : '' 
+
 
         if(typeof data.order !== 'undefined'){
             switch(data.order){
@@ -543,6 +548,11 @@ const agregar_stock = (data,callback) =>{
                 case 'cantidad_desc': order=' order by c.cantidad desc';break;
             }
         }
+
+        if(tags.length>0)
+            {
+                order= ' order by _c.cnt asc '
+            }
 
         //console.log(JSON.stringify(data))
 
@@ -568,7 +578,15 @@ const agregar_stock = (data,callback) =>{
             g.nombre_corto as 'grupo',
             sg.nombre_corto as 'subgrupo',
             s.sucursal_idsucursal AS 'idsucursal'
-            FROM familia f, subfamilia sf, grupo g, subgrupo sg, stock s, codigo _c, sucursal sc WHERE 
+            FROM 
+            familia f, 
+            subfamilia sf, 
+            grupo g, 
+            subgrupo sg, 
+            stock s,
+            sucursal sc, 
+            ${_codigos} _c 
+            WHERE 
             sc.idsucursal = s.sucursal_idsucursal AND 
             sg.grupo_idgrupo = g.idgrupo AND
             g.subfamilia_idsubfamilia = sf.idsubfamilia AND
@@ -586,8 +604,6 @@ const agregar_stock = (data,callback) =>{
         (case when '${data.cantidad_igual_a}' <> '' then c.cantidad = '${data.cantidad_igual_a}' else true end) and
         (case when '${data.cantidad_mayor_a}' <> '' then c.cantidad > '${data.cantidad_mayor_a}' else true end) and
         (case when '${data.cantidad_menor_a}' <> '' then c.cantidad < '${data.cantidad_menor_a}' else true end) and
-        (case when '${data.sexo}' <> '' then c.genero like '%${data.sexo}%' else true end) and
-        (case when '${data.edad}' <> '' then c.edad like '%${data.edad}%' else true end) and 
         (case when '${data.descripcion}' <> '' then c.descripcion like '%${data.descripcion}%' else true end) and
         (case when '${data.subgrupo}' <> '' then c.idsubgrupo = '${data.subgrupo}' else true end) and
         (case when '${data.grupo}' <> '' then c.idgrupo = '${data.grupo}' else true end) and
@@ -597,7 +613,7 @@ const agregar_stock = (data,callback) =>{
         ${order}
          ${limit};
         `;
-        //console.log(_query);
+        console.log(_query);
         const connection = mysql_connection.getConnection();
         connection.connect();
 
