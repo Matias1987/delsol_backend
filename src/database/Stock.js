@@ -551,7 +551,7 @@ const agregar_stock = (data,callback) =>{
 
         if(tags.length>0)
             {
-                order= ' order by _c.cnt asc '
+                order= ' order by c.cnt desc '
             }
 
         //console.log(JSON.stringify(data))
@@ -577,7 +577,8 @@ const agregar_stock = (data,callback) =>{
             sf.nombre_corto as 'subfamilia',
             g.nombre_corto as 'grupo',
             sg.nombre_corto as 'subgrupo',
-            s.sucursal_idsucursal AS 'idsucursal'
+            s.sucursal_idsucursal AS 'idsucursal',
+            _c.cnt
             FROM 
             familia f, 
             subfamilia sf, 
