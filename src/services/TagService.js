@@ -25,7 +25,14 @@ const obtener_lista_tag_codigo = (data,callback) => {
     tagDB.obtener_lista_tag_codigo(data,(resp)=>{callback(resp)})
 }
 
+const eliminar_etiquetas = (data,callback) => {
+    tagDB.eliminar_etiquetas(data,(resp)=>{
+        callback(resp)
+    })
+}
+
 module.exports = {
+    eliminar_etiquetas,
     agregar_categoria, 
     agregar_tag, 
     obtener_lista_categorias, 

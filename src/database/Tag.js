@@ -4,9 +4,10 @@ const mysql_connection = require("../lib/mysql_connection")
 const eliminar_etiquetas = (data, callback) => {
     let _codigos_delete  = ""
     data.codigos.forEach(c=>{
-        _codigos_delete+=_codigos_delete.length<1 ? '' : ',' + c
+        _codigos_delete+=(_codigos_delete.length<1 ? '' : ',') + c
     })
     const _query_delete = `DELETE FROM codigo_has_tag WHERE codigo_has_tag.fk_codigo IN (${_codigos_delete})`
+    //console.log(_query_delete)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(_query_delete,(err,resp)=>{

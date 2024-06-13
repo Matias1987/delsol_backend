@@ -12,7 +12,7 @@ const verificar_cantidades_productos = (req, res) => {
 
 const modificar_cantidad_categoria = (req, res) => {
         const {body} = req
-        console.log(JSON.stringify(body))
+        //console.log(JSON.stringify(body))
         stockService.modificar_cantidad_categoria(body,(resp)=>{
           return res.status(201).send({status:'OK', data:resp});
         })
@@ -136,13 +136,8 @@ const agregar_stock_lote = (req,res) => {
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
- 
-
   
   const {body} = req;
-
-  console.log(JSON.stringify(body))
 
   stockService.agregar_stock_lote(body,(result)=>{
     res.status(201).send({status:'OK', data:result});
@@ -204,7 +199,7 @@ const obtener_stock_detalles_venta = (req,res)=>{
 const editarStock = (req, res) => {}
 
 const obtener_subgrupo_full = (req,res) => {
-  console.log("lalalala")
+  
   stockService.obtener_subgrupo_full((rows)=>{
 
     res.status(201).send({status: 'OK', data: rows});

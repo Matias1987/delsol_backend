@@ -578,7 +578,8 @@ const agregar_stock = (data,callback) =>{
             g.nombre_corto as 'grupo',
             sg.nombre_corto as 'subgrupo',
             s.sucursal_idsucursal AS 'idsucursal',
-            _c.cnt
+            _c.cnt,
+            ctag.tags as 'etiquetas'
             FROM 
             familia f, 
             subfamilia sf, 
@@ -586,7 +587,8 @@ const agregar_stock = (data,callback) =>{
             subgrupo sg, 
             stock s,
             sucursal sc, 
-            ${_codigos} _c 
+            ${_codigos} _c left join  
+                (SELECT cht.fk_codigo,GROUP_CONCAT(cht.fk_etiqueta) as 'tags' FROM codigo_has_tag cht GROUP BY cht.fk_codigo) ctag on ctag.fk_codigo=_c.idcodigo 
             WHERE 
             sc.idsucursal = s.sucursal_idsucursal AND 
             sg.grupo_idgrupo = g.idgrupo AND

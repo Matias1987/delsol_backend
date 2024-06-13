@@ -34,6 +34,13 @@ const agregar_categoria = (req, res) => {
         res.status(201).send({status:'OK',data:resp});
     })
 }
+
+const eliminar_etiquetas = (req, res) => {
+    const {body} = req
+    tagService.eliminar_etiquetas(body,(resp)=>{
+        res.status(201).send({status:'OK',data:resp});
+    })
+}
  
 const obtener_lista_categorias = (req, res) => {
 
@@ -43,6 +50,7 @@ const obtener_lista_categorias = (req, res) => {
 }
 
 module.exports = {
+    eliminar_etiquetas,
     agregar_categoria, 
     agregar_tag, 
     obtener_lista_categorias, 

@@ -25,5 +25,9 @@ router.get("/categoria/lista/",(req,res)=>{
     tagController.obtener_lista_categorias(req,res)
 })
 
+router.post("/rem/tag/cod/",(req,res)=>{
+    tagController.eliminar_etiquetas(req,res)
+})
+
 
 module.exports = router
