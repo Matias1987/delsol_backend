@@ -4,7 +4,7 @@ const agregarAnotacion = (data,callback) => {
     
     const query = `INSERT INTO anotacion (nota, fkusuario, fksucursal, tipo, refId) 
     VALUES ('${data.mensaje}', ${data.fkusuario}, ${data.fksucursal}, '${data.tipo}', ${data.refId});`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
@@ -46,7 +46,7 @@ const obtenerAnotaciones = (params,callback) => {
     (case when '${_idref}}'<>'-1' then a.refId='${_idref}' ELSE TRUE END) and
     (case when '${_tipo}}'<>'-1' then a.tipo='${_tipo}' ELSE TRUE END)
     ;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.query(query,(err,rows)=>{
         callback(rows)
