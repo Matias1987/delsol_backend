@@ -665,9 +665,60 @@ const obtener_categorias_productos_venta = (data, callback) => {
     
 }
 
+const obtener_ventas_subgrupo = (data, callback) => {
+    const connection = mysql_connection.getConnection()
+    const query = `
+    SELECT * FROM 
+    (
+        SELECT 
+        ${data.idsubgrupo} as 'subgrupo_idsubgrupo',
+        c.idcodigo,
+        c.codigo ,   
+        0 as 'stock_ideal',
+        CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
+        CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
+        CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') AS DECIMAL(10,2)) AS 'eje_dec' ,
+        REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '')  AS 'esf',  
+        REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil',
+        REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '')  AS 'eje',  
+        if( cant.stock_codigo_idcodigo IS NULL , 0 , cant.cant  ) AS 'cantidad'
+        FROM 
+            (
+                SELECT _c.codigo, _c.idcodigo FROM codigo _c WHERE _c.subgrupo_idsubgrupo = ${data.idsubgrupo}
+            ) c
+        LEFT JOIN 
+            (
+                SELECT 
+                    COUNT(vhs.stock_codigo_idcodigo) AS 'cant',
+                    vhs.stock_codigo_idcodigo
+                FROM 
+                    venta v, venta_has_stock vhs 
+                WHERE 
+                    vhs.venta_idventa=v.idventa AND 
+                    DATE(v.fecha)>=DATE('${data.desde}') AND
+                    DATE(v.fecha)<=DATE('${data.hasta}') 
+                    GROUP BY vhs.stock_codigo_idcodigo
+            ) cant
+            on c.idcodigo = cant.stock_codigo_idcodigo
+            WHERE 
+            (case when '${data.eje}'<>'-1' then '${data.eje}' = REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') else true end)
+        ) AS __c
+    ORDER BY
+    __c.esf, __c.cil, __c.eje
+    ;
+    `;
+    //console.log(query)
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
 
 
 module.exports = {
+    
+    obtener_ventas_subgrupo,
     lista_ventas_admin,
     insert_venta,
     detalle_venta,

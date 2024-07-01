@@ -116,7 +116,14 @@ const cambiar_destinatario = (data, callback) => {
   })
 }
 
+const obtener_ventas_subgrupo = (data, callback) => {
+  ventaDB.obtener_ventas_subgrupo(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 module.exports = {
+    obtener_ventas_subgrupo,
     cambiar_destinatario,
     cambiar_responsable,
     lista_venta_item ,

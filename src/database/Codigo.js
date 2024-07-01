@@ -280,7 +280,21 @@ const editar_lote_codigos = (params, callback) => {
 
 }
 
+const editar_cantidad_ideal = (params, callback) => {
+    const query = `update codigo c set c.stock_ideal = ${params.stock_ideal} where c.idcodigo = ${params.idcodigo};`;
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+
+
+}
+
 module.exports = {
+    editar_cantidad_ideal,
     editar_codigo,
     obtener_codigos,
     agregar_codigo,

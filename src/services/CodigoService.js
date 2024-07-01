@@ -59,8 +59,15 @@ const editar_lote_codigos = (data, callback) => {
   })
 }
 
+const editar_cantidad_ideal = (data,callback) => {
+  CodigoDB.editar_cantidad_ideal(data,(resp)=>{
+    return callback(resp)
+  })
+}
+
 module.exports = {
-  editar_lote_codigos,
+    editar_cantidad_ideal,
+    editar_lote_codigos,
     obtener_codigos_filtros,
     editar_codigo,
     obtenerCodigoPorID,

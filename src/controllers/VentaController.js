@@ -159,7 +159,16 @@ const obtener_categorias_productos_venta = (req, res) =>
   })
 }
 
+const obtener_ventas_subgrupo = (req, res) => 
+{
+  const {body} = req
+  ventaService.obtener_ventas_subgrupo(body,(rows)=>{
+    res.status(201).send({status:'OK', data: rows})
+  })
+}
+
 module.exports = {
+    obtener_ventas_subgrupo,
     cambiar_destinatario,
     cambiar_responsable,
     obtenerVentas,

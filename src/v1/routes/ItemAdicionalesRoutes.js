@@ -9,5 +9,9 @@ router.get("/:idventa", (req, res) => {
   router.post("/",(req,res)=>{
     ItemsAdicionalesController.agregar_item_adicional(req,res)
   })
+  
+  router.post("/obtener/uso/items/adic/subgrupo/periodo/",(req,res)=>{
+    ItemsAdicionalesController.obtener_uso_items_adic_subgrupo_periodo(req,res)
+  })
 
   module.exports = router; 

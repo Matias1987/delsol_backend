@@ -45,7 +45,7 @@ const obtenerAnotaciones = (params,callback) => {
     s.idsucursal=a.fksucursal AND 
     (case when '${_idref}}'<>'-1' then a.refId='${_idref}' ELSE TRUE END) and
     (case when '${_tipo}}'<>'-1' then a.tipo='${_tipo}' ELSE TRUE END)
-    ;`
+    order by a.idanotacion desc;`
     //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.query(query,(err,rows)=>{

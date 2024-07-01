@@ -837,6 +837,7 @@ const agregar_stock = (data,callback) =>{
 
         const _c = _costo > -1 ? ` , s.costo = ${data.costo} ` : ''
 
+
         const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`
         
 
@@ -897,6 +898,7 @@ const agregar_stock = (data,callback) =>{
             c.idcodigo,
             c.codigo ,   
             s.cantidad,
+            c.stock_ideal,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') AS DECIMAL(10,2)) AS 'eje_dec' ,
@@ -921,6 +923,8 @@ const agregar_stock = (data,callback) =>{
         })
         connection.end()
     }
+
+    
 
 module.exports = {
     verificar_cantidades_productos,

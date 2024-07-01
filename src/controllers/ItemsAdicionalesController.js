@@ -7,6 +7,13 @@ const agregar_item_adicional = (req, res) => {
     })
 }
 
+const obtener_uso_items_adic_subgrupo_periodo = (req, res) => {
+    const {body} = req
+    ItemsAdicionalesService.obtener_uso_items_adic_subgrupo_periodo(body,(resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+}
+
 const obtener_adicionales_venta = (req, res) => {
     const {params:{idventa}} = req
     ItemsAdicionalesService.obtener_adicionales_venta(idventa,(rows)=>{
@@ -15,4 +22,4 @@ const obtener_adicionales_venta = (req, res) => {
 }
 
 
-module.exports = {agregar_item_adicional, obtener_adicionales_venta}
+module.exports = {agregar_item_adicional, obtener_adicionales_venta, obtener_uso_items_adic_subgrupo_periodo}

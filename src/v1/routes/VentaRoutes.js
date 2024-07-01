@@ -77,6 +77,9 @@ router.post("/cambiar_destinatario/", (req, res) => {
 router.post("/cambiar_responsable/", (req, res) => {
   ventaController.cambiar_responsable(req,res)
 });
+router.post("/obtener/ventas/subgrupo/", (req, res) => {
+  ventaController.obtener_ventas_subgrupo(req,res)
+});
 
 router.patch("/:ventaId", (req, res) => {
   ventaController.editarVenta(req,any)

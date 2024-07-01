@@ -14,5 +14,14 @@ const obtener_adicionales_venta = (data,callback) => {
     })
 }
 
+const obtener_uso_items_adic_subgrupo_periodo = (data, callback) => {
+    AdicionalesDB.obtener_uso_items_adic_subgrupo_periodo(data,(rows)=>{
+        callback(rows)
+    })
+}
 
-module.exports = {agregar_item_adicional, obtener_adicionales_venta}
+module.exports = {
+    agregar_item_adicional, 
+    obtener_adicionales_venta,
+    obtener_uso_items_adic_subgrupo_periodo
+}

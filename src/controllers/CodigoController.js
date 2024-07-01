@@ -121,8 +121,16 @@ const editar_lote_codigos  = (req, res) => {
   })
 }
 
+const editar_cantidad_ideal = (req, res) => {
+  const {body} = req
+  codigoService.editar_cantidad_ideal(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp})
+  })
+}
+
 module.exports = {
-  editar_lote_codigos,
+    editar_cantidad_ideal,
+    editar_lote_codigos,
     obtener_codigos_filtros,
     editar_codigo,
     obtenerCodigoPorId,

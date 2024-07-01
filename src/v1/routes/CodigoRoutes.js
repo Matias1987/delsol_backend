@@ -41,6 +41,11 @@ router.post("/editar_lote/",(req,res)=>{
   codigoController.editar_lote_codigos(req,res)
 })
 
+router.post("/cod/editar/stock/ideal/",(req,res)=>{
+  console.log("kjdskfjasñlkdfjñlsajfñlasjfdlksjfñlksdjf")
+  codigoController.editar_cantidad_ideal(req,res)
+})
+
 router.patch("/:codigoId", (req, res) => {
   res.send("Update an existing workout");
 });
