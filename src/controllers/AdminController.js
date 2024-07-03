@@ -68,7 +68,15 @@ const totales_stock_ventas_periodo = (req, res) => {
     })
 }
 
+const lista_ventas_sucursal_periodo = (req, res) => {
+    const {body} = req
+    adminService.lista_ventas_sucursal_periodo(body,(rows)=>{
+        res.send({status:"OK",data:rows})
+    })
+}
+
 module.exports = {
+    lista_ventas_sucursal_periodo,
     totales_stock_ventas_periodo,
     ventas_dia_totales,
     obtener_lista_cobros_admin,

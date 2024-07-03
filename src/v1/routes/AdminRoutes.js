@@ -43,5 +43,8 @@ router.get("/obtener_lista_ventas_admin",(req,res)=>{
     adminController.obtener_lista_ventas_admin(req,res)
 })
 
+router.get("/obtener/ventas/sucursal/periodo/",(req,res)=>{
+    adminController.lista_ventas_sucursal_periodo(req,res)
+})
 
 module.exports = router;

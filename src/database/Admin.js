@@ -295,7 +295,29 @@ const totales_stock_ventas_periodo = (data, callback) => {
 
 }
 
+const lista_ventas_sucursal_periodo = (data, callback) => {
+    const query = `
+    SELECT 
+	 v.idventa,
+	 CONCAT(c.apellido, ' ', c.nombre) AS 'cliente',
+	 u.nombre AS 'vendedor',
+	 v.monto_total AS 'monto',
+     DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro_f',
+    FROM 
+    venta v, 
+    cliente c,
+    usuario u
+    WHERE
+    c.idcliente = v.cliente_idcliente AND 
+    v.usuario_idusuario = u.idusuario AND  
+    v.estado='ENTREGADO' AND 
+    DATE(v.fecha_retiro)>=DATE( CONCAT(${data.anio},'-',${data.mes},'-1')) AND 
+    DATE(v.fecha_retiro)<= DATE_ADD( DATE_ADD(DATE( CONCAT(${data.anio},'-',${data.mes},'-1')), INTERVAL 1 MONTH), INTERVAL -1 DAY)
+    ;`
+}
+
 module.exports = {
+    lista_ventas_sucursal_periodo,
     ventas_dia_totales,
     obtener_operaciones, 
     obtener_caja_dia_sucursal, 
