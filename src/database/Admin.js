@@ -301,8 +301,8 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
 	 v.idventa,
 	 CONCAT(c.apellido, ' ', c.nombre) AS 'cliente',
 	 u.nombre AS 'vendedor',
-	 v.monto_total AS 'monto',
-     DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro_f',
+	 replace(format(v.monto_total,2),',','') AS 'monto',
+     DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro_f'
     FROM 
     venta v, 
     cliente c,
@@ -311,9 +311,19 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
     c.idcliente = v.cliente_idcliente AND 
     v.usuario_idusuario = u.idusuario AND  
     v.estado='ENTREGADO' AND 
+    (case when '${data.fksucursal}'<>'-1' then v.sucursal_idsucursal = ${data.fksucursal} else true end) AND
+    (case when '${data.fkusuario}'<>'-1' then v.usuario_idusuario = ${data.fkusuario} else true end) AND 
     DATE(v.fecha_retiro)>=DATE( CONCAT(${data.anio},'-',${data.mes},'-1')) AND 
     DATE(v.fecha_retiro)<= DATE_ADD( DATE_ADD(DATE( CONCAT(${data.anio},'-',${data.mes},'-1')), INTERVAL 1 MONTH), INTERVAL -1 DAY)
     ;`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query, (err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+
 }
 
 module.exports = {
