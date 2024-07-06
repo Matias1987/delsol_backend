@@ -42,7 +42,7 @@ router.post("/editar_lote/",(req,res)=>{
 })
 
 router.post("/cod/editar/stock/ideal/",(req,res)=>{
-  console.log("kjdskfjasñlkdfjñlsajfñlasjfdlksjfñlksdjf")
+ 
   codigoController.editar_cantidad_ideal(req,res)
 })
 

@@ -616,7 +616,7 @@ const agregar_stock = (data,callback) =>{
         ${order}
          ${limit};
         `;
-        console.log(_query);
+        //console.log(_query);
         const connection = mysql_connection.getConnection();
         connection.connect();
 
