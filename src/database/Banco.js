@@ -33,7 +33,7 @@ const agregarBanco = (data,callback) => {
 
     connection.connect();
 
-    connection.query('insert into banco (nombre) values (\''+data.nombre+'\')', (err,result,fields) =>{
+    connection.query('insert into banco (nombre) values (\''+data.nombre+'\');', (err,result,fields) =>{
         return callback(result.insertId);
     })
 

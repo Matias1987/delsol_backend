@@ -95,11 +95,13 @@ const obtener_medico = (id,callback) =>{
 const agregar_medico = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = "insert into medico (nombre, matricula) values (?)";
+    var sql = "insert into medico (nombre, matricula, direccion, telefono) values (?)";
 
     var values = [[
         data.nombre,
         data.matricula,
+        data.direccion,
+        data.telefono,
     ]];
 
     connection.query(sql,values, (err,result,fields) => {
