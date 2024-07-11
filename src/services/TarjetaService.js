@@ -10,10 +10,18 @@ const agregarTarjeta = (data,callback) => {
     TarjetaDB.agregar_tarjeta(data,(id)=>{return callback(id)});
 }
 
-const editarTarjeta = (req,res) => {}
+const editarTarjeta = (req,res) => {
 
+}
+
+const desactivar_tarjeta = (data,callback) => {
+    TarjetaDB.desactivar_tarjeta(data,(resp)=>{
+        callback(resp)
+    })
+}
 
 module.exports = {
+    desactivar_tarjeta,
     obtenerTarjeta,
     obtenerTarjetas,
     agregarTarjeta,

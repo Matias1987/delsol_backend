@@ -26,6 +26,12 @@ router.post("/ventas_medico/", (req, res) => {
   medicoController.ventas_medico(req,res);
 });
 
+router.post("/d/m/", (req, res) => {
+  medicoController.deshabilitar_medico(req,res);
+});
+
+
+
 router.patch("/:clienteId", (req, res) => {
   res.send("Update an existing workout");
 });

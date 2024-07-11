@@ -24,7 +24,19 @@ const agregar_tarjeta = (data,callback) => {
     connection.end();
 }
 
+const desactivar_tarjeta = (data, callback) => {
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    const query = `update tarjeta t set t.activo = if(t.activo = 0, 1,0) where t.idtarjeta=${data.idtarjeta};`
+    //console.log(query)
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
     obtener_tarjetas,
-    agregar_tarjeta
+    agregar_tarjeta,
+    desactivar_tarjeta,
 }

@@ -14,7 +14,14 @@ const agregarBanco = (nuevo_banco,callback) => {
 const obtenerBanco = (req, res) => {}
 const editarBanco = (req, res) => {}
 
+const desactivar_banco = (data,callback) => {
+    BancoDB.desactivar_banco(data,(resp)=>{
+        callback(resp)
+    })
+}
+
 module.exports = {
+    desactivar_banco,
     obtenerBanco,
     obtenerBancos,
     agregarBanco,

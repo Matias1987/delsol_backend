@@ -43,8 +43,15 @@ const agregarMedico = (req,res) => {
 }
 const editarMedico = (req,res) => {}
 
+const deshabilitar_medico = (req,res)=>{
+    const {body} = req
+    medicoService.deshabilitar_medico(body,(resp)=>{
+        res.status(201).send({status:'OK', data: resp})
+    })
+}
 
 module.exports = {
+    deshabilitar_medico,
     obtenerMedico,
     obtenerMedicos,
     agregarMedico,

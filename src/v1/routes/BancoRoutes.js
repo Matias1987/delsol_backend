@@ -14,6 +14,10 @@ router.post("/", (req, res) => {
   bancoController.agregarBanco(req,res)
 });
 
+router.post("/de/b/", (req, res) => {
+  bancoController.desactivar_banco(req,res)
+});
+
 router.patch("/:clienteId", (req, res) => {
   bancoController.editarBanco(req,res)
 });

@@ -40,7 +40,21 @@ const agregarBanco = (data,callback) => {
     connection.end();
 }
 
+const desactivar_banco = (data,callback) => {
+    const connection = mysql_connection.getConnection()
+    const query = `update banco b set b.activo = if(b.activo = 0, 1,0) where b.idbanco=${data.idbanco};`
+    //console.log(query)
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+
+    
+}
+
 module.exports = {
+    desactivar_banco,
     obtenerBancos,
     agregarBanco
 }

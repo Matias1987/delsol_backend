@@ -22,7 +22,16 @@ const agregarBanco = (req, res) => {
 const obtenerBanco = (req, res) => {}
 const editarBanco = (req, res) => {}
 
+const desactivar_banco = (req, res) => {
+    //const {params:{idbanco}} = req
+    const {body} =  req
+    bancoService.desactivar_banco(body,(resp)=>{
+        res.send({status:"OK", data: resp})
+    })
+}   
+
 module.exports = {
+    desactivar_banco,
     obtenerBanco,
     obtenerBancos,
     agregarBanco,

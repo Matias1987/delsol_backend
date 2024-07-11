@@ -110,7 +110,18 @@ const agregar_medico = (data,callback) => {
     connection.end();
 }
 
+const deshabilitar_medico = (data,callback) =>{
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    var sql = `update medico m set m.enabled = 0 where m.idmedico = ${data.idmedico};`
+    connection.query(sql,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
+    deshabilitar_medico,
     ventas_medico,
     ventas_medico_totales,
     obtener_medicos,

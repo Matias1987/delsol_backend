@@ -35,9 +35,17 @@ const agregarMedico = (data,callback) => {
         return callback(medico_id);
     })
 }
+
+const deshabilitar_medico = (data,callback) => {
+    MedicoDB.deshabilitar_medico(data,(resp)=>{
+        return callback(resp)
+    })
+}
+
 const editarMedico = (req,res) => {}
 
 module.exports = {
+    deshabilitar_medico,
     obtenerMedico,
     obtenerMedicos,
     agregarMedico,
