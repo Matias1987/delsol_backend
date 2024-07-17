@@ -12,7 +12,21 @@ const agregar_proveedor = (data,callback) => {
     })
 }
 
+const obtener_ficha_proveedor = (data,callback) => {
+    ProveedorDB.obtener_ficha_proveedor(data,(rows)=>{
+        callback(rows)
+    })
+}
+
+const detalle_proveedor = (data, callback) => {
+    ProveedorDB.detalle_proveedor(data,(rows)=>{
+        callback(rows)
+    })
+}
+
 module.exports = {
+    detalle_proveedor,
     obtener_proveedores,
     agregar_proveedor,
+    obtener_ficha_proveedor,
 }

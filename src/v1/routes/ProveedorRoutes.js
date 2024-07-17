@@ -9,11 +9,15 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:proveedorId", (req, res) => {
-  res.send("obtener una proveedor con id");
+  proveedorController.detalle_proveedor(req, res)
 });
 
 router.post("/", (req, res) => {
-    proveedorController.agregar_proveedor(req,res)
+  proveedorController.agregar_proveedor(req,res)
+});
+
+router.post("/prov/ficha/",(req,res)=>{
+  proveedorController.obtener_ficha_proveedor(req, res)
 });
 
 router.patch("/:proveedorId", (req, res) => {

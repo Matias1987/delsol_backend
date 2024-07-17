@@ -30,6 +30,23 @@ const obtener_proveedores = (req,res) => {
     })
 }
 
+const obtener_ficha_proveedor = (req, res) => {
+    
+    const {body} = req
+
+    proveedorService.obtener_ficha_proveedor(body,(rows)=>{
+        res.status(201).send({status:'OK',data:rows})
+    })
+
+}
+
+const detalle_proveedor = (req, res) => {
+    const {params:{proveedorId}} = req
+    proveedorService.detalle_proveedor(proveedorId,(rows)=>{
+        res.status(201).send({status:'OK',data:rows})
+    })
+}
+
 module.exports = {
-    agregar_proveedor,obtener_proveedores,
+    agregar_proveedor,obtener_proveedores, obtener_ficha_proveedor,detalle_proveedor,
 }
