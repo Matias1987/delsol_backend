@@ -47,6 +47,27 @@ const detalle_proveedor = (req, res) => {
     })
 }
 
+const agregar_cm_proveedor = (req, res) => {
+    const {body} = req
+
+    proveedorService.agregar_cm_proveedor(body,(rows)=>{
+        res.status(201).send({status:'OK',data:rows})
+    })
+}
+
+const agregar_pago_proveedor = (req, res) => {
+    const {body} = req
+
+    proveedorService.agregar_pago_proveedor(body,(rows)=>{
+        res.status(201).send({status:'OK',data:rows})
+    })
+}
+
 module.exports = {
-    agregar_proveedor,obtener_proveedores, obtener_ficha_proveedor,detalle_proveedor,
+    agregar_cm_proveedor,
+    agregar_pago_proveedor,
+    agregar_proveedor,
+    obtener_proveedores, 
+    obtener_ficha_proveedor,
+    detalle_proveedor,
 }

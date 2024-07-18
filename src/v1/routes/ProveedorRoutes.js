@@ -20,6 +20,16 @@ router.post("/prov/ficha/",(req,res)=>{
   proveedorController.obtener_ficha_proveedor(req, res)
 });
 
+router.post("/agregar/cm/proveedor/",(req,res)=>{
+  proveedorController.agregar_cm_proveedor(req, res)
+});
+
+router.post("/agregar/pago/proveedor/",(req,res)=>{
+  proveedorController.agregar_pago_proveedor(req, res)
+});
+
+
+
 router.patch("/:proveedorId", (req, res) => {
   res.send("actualizar una proveedor");
 });

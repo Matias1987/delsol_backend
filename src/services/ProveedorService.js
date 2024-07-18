@@ -24,7 +24,23 @@ const detalle_proveedor = (data, callback) => {
     })
 }
 
+const agregar_cm_proveedor = (data, callback) => {
+    ProveedorDB.agregar_cm_proveedor(data,(resp)=>{
+        callback(resp)
+    })
+}
+
+const agregar_pago_proveedor = (data, callback) => {
+    ProveedorDB.agregar_pago_proveedor(data,(resp)=>{
+        callback(resp)
+    })
+}
+
+
+
 module.exports = {
+    agregar_cm_proveedor,
+    agregar_pago_proveedor,
     detalle_proveedor,
     obtener_proveedores,
     agregar_proveedor,
