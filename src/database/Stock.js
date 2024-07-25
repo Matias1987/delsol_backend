@@ -206,10 +206,11 @@ const search_stock = (search_value, idsucursal, callback) => {
     connection.end();
 }
 
-const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino, idcodigo, idsubgrupo,  callback) => {
+const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino, idcodigo, categoria, idcat,  callback) => {
     const search_value = decodeURIComponent(_search_value);
     const connection = mysql_connection.getConnection();
     connection.connect();
+    console.log("sdfafdasdfsadf")
     /**
      * se debe pasar el metodo a POST en el cliente, se debe incluir array de ids de familias
      * para limitar la respuesta del servidor 
@@ -237,11 +238,14 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 sg.grupo_idgrupo = g.idgrupo AND
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND
                 sf.familia_idfamilia = f.idfamilia AND
-                (case when '${search_value}' <> 'null' then c.codigo LIKE '%${search_value}%' else true end) AND
+                (case when '${search_value}' <> '-1' then c.codigo LIKE '%${search_value}%' else true end) AND
                 (case when '${idcodigo}' <> '0' then c.idcodigo = ${idcodigo} else true end) AND
-                (case when '${idsubgrupo}' <> '-1' then c.subgrupo_idsubgrupo=${idsubgrupo} else true end)
+                (case when '${categoria}' = 'familia' then sf.familia_idfamilia=${idcat} else true end) and 
+                (case when '${categoria}' = 'subfamilia' then sf.idsubfamilia=${idcat} else true end) and 
+                (case when '${categoria}' = 'grupo' then g.idgrupo = ${idcat} else true end) and 
+                (case when '${categoria}' = 'subgrupo' then sg.idsubgrupo = ${idcat} else true end)
                 limit 1000;`
-    //console.log(_sql)
+    console.log(_sql)
     connection.query(_sql,(err,rows)=>{
         callback(rows);
     })

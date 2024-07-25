@@ -161,8 +161,8 @@ const stock_codigo_sucursales = (req, res) => {
 }
 
 const search_stock_envio = (req,res)=>{
-  const {params:{idsucursal, idsucursal_destino, search_value,idcodigo,idsubgrupo}} = req;
-  stockService.search_stock_envio(search_value, idsucursal, idsucursal_destino,idcodigo,idsubgrupo,(rows)=>{
+  const {params:{idsucursal, idsucursal_destino, search_value,idcodigo,categoria, idcat}} = req;
+  stockService.search_stock_envio(search_value, idsucursal, idsucursal_destino,idcodigo,categoria, idcat,(rows)=>{
     res.status(201).send({status:'OK', data:rows});
   })
 }

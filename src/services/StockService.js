@@ -78,8 +78,8 @@ const stock_codigo_sucursales = (idcodigo, callback) => {
   })
 }
 
-const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino,idcodigo,idsubgrupo, callback) => {
-  StockDB.search_stock_envio(search_value, idsucursal_origen, idsucursal_destino,idcodigo,idsubgrupo,(rows)=>{
+const search_stock_envio = (search_value, idsucursal_origen, idsucursal_destino,idcodigo,categoria, idcat, callback) => {
+  StockDB.search_stock_envio(search_value, idsucursal_origen, idsucursal_destino,idcodigo,categoria, idcat,(rows)=>{
     return callback(rows)
   })
 }
