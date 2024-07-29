@@ -61,7 +61,7 @@ const login = (req,res)=>{
   const user_data = {
     name: body.nombre,
     pass: body.password,
-    sucursal: body.sucursal,
+    sucursal: body.sucursal||"-1",
   }
 
   usuarioService.validarLogin(user_data,(resp)=>{
@@ -103,6 +103,15 @@ const login = (req,res)=>{
   })
 
 }
+
+const get_user_credentials = (req, res) => {
+  const {body} = req
+  usuarioService.get_user_credentials(body,(resp)=>{
+    res.status(403).send({status:'OK', data: resp});
+  })
+}
+
+
 
 const logout = (req,res) => {
   const {params:{token}} = req ;
@@ -172,4 +181,5 @@ module.exports = {
     obtener_autorizaciones_pendientes,
     cambiar_estado_autorizacion,
     obtener_usuarios_permisos,
+    get_user_credentials,
   };

@@ -33,7 +33,7 @@ const addToken = (data,callback) => {
 }
 
 const validarLogin = (data,callback) => {
-  UsuarioDB.validar_usuario_login(data,(res)=>{
+  UsuarioDB.validar_usuario_login_b(data,(res)=>{
     return callback(res)
   })
 }
@@ -76,7 +76,14 @@ const modificar_permisos = (data,callback) => {
   })
 }
 
+const get_user_credentials = (data, callback) => {
+  UsuarioDB.get_user_credentials(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 module.exports = {
+    get_user_credentials,
     modificar_permisos,
     obtener_usuarios_permisos,
     obtenerUsuarios,
