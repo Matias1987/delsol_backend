@@ -158,7 +158,7 @@ const get_user_credentials = (data, callback) =>{
             WHERE 
             u.idusuario=${data.idusuario}`;
 
-            console.log(query)
+            //console.log(query)
 
     connection.query(query,(err,resp)=>{
         callback(resp)
