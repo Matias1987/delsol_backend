@@ -10,6 +10,15 @@ const connection_data = {
 //   password: "admin2023",
 //   host: "testdatabase.cogxzxmytpda.us-east-1.rds.amazonaws.com",
 //   database: "optica_online_final"
+//}
+
+
+//TEST
+//const connection_data = {
+//   user: "admin",
+//   password: "admin2023",
+//   host: "testdatabase.cogxzxmytpda.us-east-1.rds.amazonaws.com",
+//   database: "testing_optica"
 //} 
 
 module.exports = {
