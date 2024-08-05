@@ -61,10 +61,17 @@ const lista_elementos_factura = (data, callback) => {
 }
 
 const agregar_factura_v2 = (data, callback) => {
-    console.log(JSON.stringify(data))
-    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta) VALUES ('${data.nro}', ${data.fkproveedor},${data.total},${0},'${data.tipo}','${data.puntoVenta}');` //toDo
-    let query_iva = `INSERT INTO factura_iva (fk_factura, monto) VALUES `
-    let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto) VALUES `
+
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+
+    
+    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta ) VALUES ('${data.nro}', ${data.fkproveedor},${data.total},${0},'${data.tipo}','${data.puntoVenta}');` //toDo
+    
+    console.log(query_factura)
+
+    let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `
+    let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto, tipo) VALUES `
     let query_percepciones = `INSERT INTO factura_percepcion (fk_factura, monto) VALUES `
     let idfactura=-1;
 
@@ -77,43 +84,48 @@ const agregar_factura_v2 = (data, callback) => {
         }
         const query = _queries.pop()
         connection.query(query,(err,resp)=>{
-            _process(queries)
+            _process(_queries)
         })
     }
 
     //first insert factura
-    connection.query(query_factura,(err,resp)=>{
+    connection.query(query_factura,(err,result)=>{
         
-        idfactura = resp.insertId;
+        let idfactura=result.insertId
+        let _iva = ""
+        let _retenciones = ""
+        let _percepciones =""
         
-        params
+
+        data
         .iva
-        .forEach(row=>{query_factura += (query_factura.length>0?',':'') + `(${idfactura}, ${row.monto})`});
+        .forEach(row=>{_iva += (_iva.length>0?',':'') + `(${idfactura}, ${row.monto}, '${row.tipo}')`});
 
-        params
+        data
         .retenciones
-        .forEach(row=>{query_retenciones += (query_retenciones.length>0?',':'') + `(${idfactura}, ${row.monto})`});
+        .forEach(row=>{_retenciones += (_retenciones.length>0?',':'') + `(${idfactura}, ${row.monto})`});
 
-        params
+        data
         .percepciones
-        .forEach(row=>{query_percepciones += (query_percepciones.length>0?',':'') + `(${idfactura}, ${row.monto})`});
+        .forEach(row=>{_percepciones += (_percepciones.length>0?',':'') + `(${idfactura}, ${row.monto}, '${row.tipo}')`});
 
         let queries=[]
 
-        if(params.iva.length>0)
+        if(data.iva.length>0)
         {
-            queries.push(query_iva)
+            queries.push(query_iva + _iva)
         }
 
-        if(params.retenciones.length>0)
+        if(data.retenciones.length>0)
         {
-            queries.push(query_retenciones)
+            queries.push(query_retenciones + _retenciones)
         }
 
-        if(params.percepciones.length>0)
+        if(data.percepciones.length>0)
         {
-            queries.push(query_percepciones)
+            queries.push(query_percepciones + _percepciones)
         }
+        console.log(JSON.stringify(queries))
         
         _process(queries)
 

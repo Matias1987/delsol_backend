@@ -8,7 +8,8 @@ const ventas_medico = (data, callback) =>{
     c.dni,
     v.tipo,
     replace(replace(format(v.monto_total,2),',',''),'.',',') as 'monto_total',
-    v.monto_total as 'monto_total_raw'
+    v.monto_total as 'monto_total_raw',
+    date_format(v.fecha_retiro, '%d-%m-%Y') as 'fecha_retiro_f'
     FROM venta v , cliente c, sucursal s WHERE
     v.sucursal_idsucursal = s.idsucursal AND  
     v.cliente_idcliente = c.idcliente AND 

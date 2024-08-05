@@ -16,13 +16,14 @@ const agregar_factura = (req,res) => {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     
     const {body} = req
-    const data = {
+    /*const data = {
         numero: body.numero,
         proveedor_idproveedor: body.proveedor_idproveedor,
         monto: body.monto,
         cantidad: body.cantidad
-    }
-    facturaService.agregar_factura(data,(id)=>{
+
+    }*/
+    facturaService.agregar_factura(body,(id)=>{
         res.status(201).send({status:'OK', data:id})
     })
 
