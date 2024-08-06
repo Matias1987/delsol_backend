@@ -14,6 +14,9 @@ router.get("/df/:idfactura", (req, res) => {
 router.get("/elementos/:idfactura", (req, res) => {
   facturaController.lista_elementos_factura(req,res);
 });
+router.post("/detalle/factura/nro/", (req, res) => {
+  facturaController.lista_elementos_factura(req,res);
+});
 
 router.post("/", (req, res) => {
     facturaController.agregar_factura(req,res)

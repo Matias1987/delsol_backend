@@ -132,7 +132,18 @@ const agregar_factura_v2 = (data, callback) => {
     })
 }
 
+const obtener_factura_por_nro = (nro, callback) =>{
+    const query = `select * from factura f where f.numero = ${nro}}`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
+    obtener_factura_por_nro,
     obtener_facturas,
     agregar_factura,
     detalle_factura,

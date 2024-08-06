@@ -37,12 +37,19 @@ const detalle_factura = (req,res)=>{
 }
 
 const lista_elementos_factura = (req,res)=>{
-    const {params:{idfactura}} = req;
-    facturaService.lista_elementos_factura(idfactura,(rows)=>{
+    const {body} = req;
+    facturaService.lista_elementos_factura(body.idfactura,(rows)=>{
         res.status(201).send({status:'OK', data:rows})
     })
 }
 
+const obtener_factura_por_nro = (req, res) => {
+    const {params:{nro_factura}} = req;
+    facturaService.obtener_factura_por_nro(nro_factura,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
+
 module.exports = {
-    obtener_facturas,agregar_factura,detalle_factura,lista_elementos_factura,
+    obtener_facturas,agregar_factura,detalle_factura,lista_elementos_factura,obtener_factura_por_nro,
 }

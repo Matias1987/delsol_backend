@@ -22,9 +22,16 @@ const lista_elementos_factura = (data,callback) => {
     })
 }
 
+const obtener_factura_por_nro = (data, callback) => {
+    FacturaDB.obtener_factura_por_nro(data,(resp)=>{
+        return callback(resp)
+    })
+}
+
 
 
 module.exports = {
+    obtener_factura_por_nro,
     lista_elementos_factura,
     detalle_factura,
     obtener_facturas,
