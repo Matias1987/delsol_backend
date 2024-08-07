@@ -50,7 +50,19 @@ const agregar_subfamilia = (data,callback) => {
     
 }
 
+const obtener_subfamilias_de_familias = (data, callback) => {
+    const query = `select * from subfamilia sf where sf.familia_idfamilia in (${data.ids.map(r=>r)});`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 module.exports = {
+    obtener_subfamilias_de_familias,
     obtener_subfamilias,
     agregar_subfamilia,
     obtener_subfamilias_byfamilia_opt,

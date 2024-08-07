@@ -53,10 +53,20 @@ const obtener_subfamilias_byfamilia_opt = (req,res)=>{
 
 const editarSubFamlia = (req, res) => {}
 
+const obtener_subfamilias_de_familias = (req, res) => {
+  const {body} = req
+
+  subfamiliaService.obtener_subfamilias_de_familias(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows});
+  })
+
+}
+
 module.exports = {
     obtenerSubFamilias,
     obtenerSubFamilia,
     agregarSubFamilia,
     editarSubFamlia,
     obtener_subfamilias_byfamilia_opt,
+    obtener_subfamilias_de_familias,
   };

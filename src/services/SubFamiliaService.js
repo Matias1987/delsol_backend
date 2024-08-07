@@ -21,8 +21,15 @@ const obtener_subfamilias_byfamilia_opt = (idfamilia, callback) =>{
     )
 }
 
+const obtener_subfamilias_de_familias = (data, callback) => {
+  SubFamiliaDB.obtener_subfamilias_de_familias(data,(rows)=>{
+    return callback(rows)
+  })
+}
+
 
 module.exports = {
+    obtener_subfamilias_de_familias,
     obtenerSubFamilias,
     obtenerSubFamilia,
     agregarSubFamilia,

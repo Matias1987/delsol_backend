@@ -27,4 +27,8 @@ router.delete("/:subfamiliaId", (req, res) => {
   res.send("Delete an existing workout");
 });
 
+router.post("/obtener/subfamilias/familias",(req, res)=>{
+  subfamiliaController.obtener_subfamilias_de_familias(req, res)
+})
+
 module.exports = router;
