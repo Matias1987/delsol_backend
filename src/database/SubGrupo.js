@@ -177,7 +177,7 @@ const editarSubgrupo = (data,callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect()
     //console.log(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto} where sg.idsubgrupo = ${data.idsubgrupo}`)
-    connection.query(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto} where sg.idsubgrupo = ${data.idsubgrupo}`,(err,resp)=>{
+    connection.query(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto}, sg.comentarios='${data.comentarios}' where sg.idsubgrupo = ${data.idsubgrupo}`,(err,resp)=>{
         callback(resp)
     }
     )
