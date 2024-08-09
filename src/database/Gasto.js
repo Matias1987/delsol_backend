@@ -1,4 +1,5 @@
-const mysql_connection = require("../lib/mysql_connection")
+const mysql_connection = require("../lib/mysql_connection");
+const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 
 const lista_gastos_admin = (callback) => {
     const query = `SELECT 
@@ -75,28 +76,49 @@ const obtener_gasto = (callback) => {
 const agregar_gasto = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = `insert into gasto (
-        caja_idcaja, 
-        usuario_idusuario,
-        concepto_gasto_idconcepto_gasto,
-        monto,
-        sucursal_idsucursal,
-        comentarios
-        ) values (
-        ${data.caja_idcaja},
-        ${data.usuario_idusuario},
-        ${data.idmotivo},
-        ${data.monto},
-        ${data.sucursal_idsucursal},
-        '${data.comentarios}'
-    )`;
 
-    //console.log(sql)
+    connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
+        if(_rows.length<1)
+        {
+            console.log("No hay caja!!!!!")
+            callback(null)
+            connection.end()
+            return
+        }
+        else{
+            if(_rows[0].idcaja!=data.caja_idcaja)
+            {
+                console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ")
+            }
 
-    connection.query(sql, (err,result) => {
-            return callback(result.insertId)
-        });
-    connection.end();
+            const idcaja=_rows[0].caja_idcaja
+
+            var sql = `insert into gasto (
+                caja_idcaja, 
+                usuario_idusuario,
+                concepto_gasto_idconcepto_gasto,
+                monto,
+                sucursal_idsucursal,
+                comentarios
+                ) values (
+                ${idcaja},
+                ${data.usuario_idusuario},
+                ${data.idmotivo},
+                ${data.monto},
+                ${data.sucursal_idsucursal},
+                '${data.comentarios}'
+            )`;
+        
+ 
+            connection.query(sql, (err,result) => {
+                    return callback(result.insertId)
+                });
+            connection.end();
+        }
+    });
+
+
+    
 }
 
 module.exports = {

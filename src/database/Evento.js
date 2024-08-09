@@ -11,6 +11,17 @@ const register_event = (data, callback) => {
     })
     connection.end()
 }
+const register_event2 = (data, callback) => {
+    const query = `INSERT INTO evento (fecha, detalle, fk_usuario, fk_sucursal, ref_id, tipo) 
+    VALUES now(), '${data.detalle}',${data.fkusuario}, ${data.fksucursal}, ${data.refid}, '${data.tipo}');`
+    //console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
 
 
 const get_events = (data,callback) => {
@@ -37,4 +48,4 @@ const get_events = (data,callback) => {
     connection.end()
 }
 
-module.exports = {register_event, get_events,}
+module.exports = {register_event, get_events, register_event2}

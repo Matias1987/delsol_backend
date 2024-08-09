@@ -1,5 +1,7 @@
 const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
+const { obtenerCajaAbierta } = require("./queries/cajaQueries");
+const { insertEvento } = require("./queries/eventoQueries");
 const venta_queries = require("./queries/ventaQueries");
 
 const cambiar_responsable = (data, callback) => {
@@ -398,61 +400,74 @@ const insert_venta = (data,callback) => {
     connection.connect();
     //check quantities
    
-    connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)),
-
-    (err,resp) => {
-
-
-        venta_id = parseInt(resp.insertId);
-
-
-        var mp = ""; 
-
-        venta_queries.get_mp(data,venta_id).forEach(p=>{
-            mp+= (mp.length>0 ? ",":"")  + `(
-                ${venta_id},
-                ${p.modo_pago_idmodo_pago},
-                ${p.banco_idbanco},
-                ${p.mutual_idmutual},
-                ${p.monto},
-                ${p.monto_int},
-                ${p.cant_cuotas},
-                ${p.monto_cuota},
-                ${p.fk_tarjeta},
-                '${p.modo_pago}',
-                '${p.tarjeta_nro}'
-                )`;
-        });
-
-        var _items_data = get_query_str(_arr_items);
-
-        if(mp.length>0)
+    //get caja!
+    connection.query(obtenerCajaAbierta(data.fksucursal),(err,_rows)=>{
+        if(_rows.length<1)
         {
-        connection.query(venta_queries.query_mp + mp, (err,_resp)=>{
-            
-            connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
-
-                
-                callback(venta_id)
-
-                connection.end();
-            })
-        })
-
+            console.log("No hay caja!!!!!")
+            connection.query(insertEvento("NULL CAJA (CLIENTE REF)",data.fkusuario,data.fksucursal,data.fkcliente,"VENTA"))
+            callback(null)
+            connection.end()
+            return
         }
         else{
-            if(_arr_items.length>0){
-                connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
-
-                    callback(venta_id)
-    
-                    connection.end();
+            if(_rows[0].idcaja!=data.fkcaja)
+            {
+                console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ")
+                connection.query(insertEvento("CAJA ID MISMATCH (CLIENTE REF)",data.fkusuario,data.fksucursal,data.fkcliente,"VENTA"))
+            }
+            const idcaja=_rows[0].idcaja
+            //#region save dependent data
+            connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data),idcaja),
+            (err,resp) => {
+                venta_id = parseInt(resp.insertId);
+                var mp = ""; 
+                venta_queries.get_mp(data,venta_id).forEach(p=>{
+                    mp+= (mp.length>0 ? ",":"")  + `(
+                        ${venta_id},
+                        ${p.modo_pago_idmodo_pago},
+                        ${p.banco_idbanco},
+                        ${p.mutual_idmutual},
+                        ${p.monto},
+                        ${p.monto_int},
+                        ${p.cant_cuotas},
+                        ${p.monto_cuota},
+                        ${p.fk_tarjeta},
+                        '${p.modo_pago}',
+                        '${p.tarjeta_nro}'
+                        )`;
+                });
+        
+                var _items_data = get_query_str(_arr_items);
+        
+                if(mp.length>0)
+                {
+                connection.query(venta_queries.query_mp + mp, (err,_resp)=>{
+                    
+                    connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
+        
+                        callback(venta_id)
+        
+                        connection.end();
+                    })
                 })
-            }
-            else{
-                callback(venta_id)
-                connection.end();
-            }
+                }
+                else{
+                    if(_arr_items.length>0){
+                        connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
+        
+                            callback(venta_id)
+            
+                            connection.end();
+                        })
+                    }
+                    else{
+                        callback(venta_id)
+                        connection.end();
+                    }
+                }
+            })
+            //#endregion
         }
 
     })

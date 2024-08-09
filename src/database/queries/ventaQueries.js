@@ -18,7 +18,7 @@ const parse_venta_data = (body)=> ( {
 	json_items: body?.json_items,
 })
 
-const venta_insert_query = (data) => ` 
+const venta_insert_query = (data, idcaja=0) => ` 
 INSERT INTO venta 
 (
 	cliente_idcliente, 
@@ -42,7 +42,7 @@ INSERT INTO venta
 VALUES (
 	'${data.cliente_idcliente}', 
 	'${data.sucursal_idsucursal}', 
-	${data.caja_idcaja}, 
+	${idcaja==0? data.caja_idcaja : idcaja}, 
 	${data.usuario_idusuario}, 
 	${data.medico_idmedico}, 
 	'${data.monto_total}', 
