@@ -401,6 +401,7 @@ const insert_venta = (data,callback) => {
     //check quantities
    
     //get caja!
+    console.log("Obteniendo caja...")
     connection.query(obtenerCajaAbierta(data.fksucursal),(err,_rows)=>{
         if(_rows.length<1)
         {

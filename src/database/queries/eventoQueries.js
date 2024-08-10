@@ -1,2 +1,2 @@
-const insertEvento = (detalle, fkusuario, fksucursal, refid, tipo) => `INSERT INTO evento (fecha, detalle, fk_usuario, fk_sucursal, ref_id, tipo) VALUES now(), '${detalle}',${fkusuario}, ${fksucursal}, ${refid}, '${tipo}');`
+const insertEvento = (detalle, fkusuario, fksucursal, refid, tipo) => `INSERT INTO evento (fecha, detalle, fk_usuario, fk_sucursal, ref_id, tipo) VALUES (now(), '${detalle}',${fkusuario<1?'NULL':fkusuario}, ${fksucursal<1?'NULL':fksucursal}, ${refid}, '${tipo}');`
 module.exports={insertEvento,}

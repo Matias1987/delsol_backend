@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
+const { insertEvento } = require("./queries/eventoQueries");
 
 const caja_exists = (data,callback) => {
     const query = `SELECT c.idcaja FROM caja c WHERE DATE(c.fecha) = DATE('${data.fecha}') AND c.sucursal_idsucursal=${data.idsucursal};`
@@ -45,6 +46,8 @@ const cerrarCaja = (idcaja, callback) => {
 
     connection.connect();
 
+    connection.query(insertEvento("CIERRE CAJA",0,0,idcaja,"CAJA"))
+
     connection.query(`UPDATE caja c SET c.estado='CERRADO' WHERE c.idcaja=${idcaja}`,(err,resp)=>{
         callback(resp)
     })
@@ -61,10 +64,15 @@ const agregarCaja = (data,callback) =>
     const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${data.sucursal_idsucursal},${data.monto_inicial},'${"ABIERTA"}', date('${data.fecha}'))`
   
     connection.query(sql,(err,result,fields)=>{
-        return callback(result.insertId);
-    })
+        const _id = result.insertId
 
-    connection.end();
+        connection.query(insertEvento("ABRIR CAJA",data.usuario_idusuario,data.sucursal_idsucursal,_id,"CAJA"))
+
+        connection.end();
+
+        return callback(_id);
+    })
+    
 }
 
 const obtener_caja = (idsucursal, callback) =>{

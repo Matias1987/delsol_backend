@@ -96,7 +96,7 @@ const modificar_multiplicador_grupos = (categoria, id, value,incrementar, callba
 const obtener_subgrupos_bygrupo_opt = (grupoid,callback)=>{
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("SELECT sg.idsubgrupo as 'value', sg.nombre_largo as 'label', sg.multiplicador FROM subgrupo sg WHERE sg.grupo_idgrupo="+grupoid+";",
+    connection.query("SELECT sg.*, sg.idsubgrupo as 'value', sg.nombre_largo as 'label' FROM subgrupo sg WHERE sg.grupo_idgrupo="+grupoid+";",
     (err,rows,fields)=>{
         return callback(rows);
     })

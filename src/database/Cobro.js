@@ -136,6 +136,7 @@ const agregar_cobro  = (data,callback) => {
     }
 
     //get caja!
+    console.log("Obteniendo caja...")
     connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
         if(_rows.length<1)
         {
