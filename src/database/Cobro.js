@@ -308,6 +308,8 @@ const agregar_cobro  = (data,callback) => {
                     cant_cuotas, 
                     monto_cuota
                     ) VALUES ` + _venta_mp_item;
+
+                console.log("INSERTING VENTA MODO DE PAGO: " + __query_venta_mp)
         
         
                 connection.query(__query,(err,_results)=>{

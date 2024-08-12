@@ -419,6 +419,10 @@ const insert_venta = (data,callback) => {
             }
             const idcaja=_rows[0].idcaja
             //#region save dependent data
+            console.log("###################################");
+            console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)));
+            console.log("###################################");
+
             connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data),idcaja),
             (err,resp) => {
                 venta_id = parseInt(resp.insertId);
