@@ -76,7 +76,7 @@ const obtener_gasto = (callback) => {
 const agregar_gasto = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-
+    //console.log(data.sucursal_idsucursal)
     connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
         if(_rows.length<1)
         {
@@ -90,8 +90,8 @@ const agregar_gasto = (data,callback) => {
             {
                 console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ")
             }
-
-            const idcaja=_rows[0].caja_idcaja
+            //console.log(JSON.stringify(_rows))
+            const idcaja=_rows[0].idcaja
 
             var sql = `insert into gasto (
                 caja_idcaja, 
@@ -108,8 +108,8 @@ const agregar_gasto = (data,callback) => {
                 ${data.sucursal_idsucursal},
                 '${data.comentarios}'
             )`;
-        
- 
+
+            
             connection.query(sql, (err,result) => {
                     return callback(result.insertId)
                 });
