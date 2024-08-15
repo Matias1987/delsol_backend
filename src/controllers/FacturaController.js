@@ -37,8 +37,8 @@ const detalle_factura = (req,res)=>{
 }
 
 const lista_elementos_factura = (req,res)=>{
-    const {body} = req;
-    facturaService.lista_elementos_factura(body.idfactura,(rows)=>{
+    const {params:{idfactura}} = req;
+    facturaService.lista_elementos_factura(idfactura,(rows)=>{
         res.status(201).send({status:'OK', data:rows})
     })
 }

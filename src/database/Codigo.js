@@ -116,8 +116,7 @@ const obtener_codigos = (callback) => {
 }
 
 const agregar_codigo = (data,callback) => {
-    //console.log("SAVING..........")
-    //console.log(JSON.stringify(data))
+    
 
     var _genero = typeof data.genero === 'undefined' ? '' : data.genero;
     var _edad = typeof data.edad === 'undefined' ? '' : data.edad;
@@ -136,42 +135,58 @@ const agregar_codigo = (data,callback) => {
         codigo, 
         descripcion,
         subgrupo_idsubgrupo,
-        genero,
-        edad,
         costo,
         modo_precio,
         precio,
         esf,
         cil,
-        ad
+        ad,
+        hook
         ) values (
         '${data.codigo}', 
         '${data.descripcion}', 
         ${data.subgrupo_idsubgrupo},
-        '${_genero}',
-        '${_edad}',
         ${_costo}, 
         ${data.modo_precio}, 
         ${data.precio},
         '${esf}',
         '${cil}',
-        '${ad}'
+        '${ad}',
+        '${data.hook}'
         )`;
 
-    //console.log(sql)
+    //console.log(JSON.stringify(data))
 
     connection.query(sql, (err,result) => {
         
             if(err!=null){
-                return callback(-1)
+                callback(-1)
             }else{
                 const _id = typeof result === 'undefined' ? -1 : result.insertId;
-                return callback(_id)
+
+                let values=""
+
+                data.tags.forEach(t=>{
+                    values += (values.length<1 ? '' : ',') + `(${_id},'${t}')`
+                })
+
+                
+        
+                const query_tags = `INSERT ignore INTO codigo_has_tag (fk_codigo, fk_etiqueta) VALUES ${values};`
+                //console.log(query_tags)
+                
+                connection.query(query_tags,(err,__resp)=>{
+                    callback(_id)
+                })
             }
+
+            connection.end();
         
             
         });
-    connection.end();
+    //connection.query(` INSERT IGNORE INTO codigo_insert_session (hook) VALUES ('${data.hook}');`);
+
+    
 }
 
 const obtener_codigos_bysubgrupo_opt = (idsubgrupo,callback) =>{

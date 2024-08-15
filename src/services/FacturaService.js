@@ -7,7 +7,8 @@ const obtener_facturas = (idprov,callback) => {
 }
 
 const agregar_factura = (data,callback) => {
-    FacturaDB.agregar_factura_v2(data,(id)=>{
+    //FacturaDB.agregar_factura_v2(data,(id)=>{
+    FacturaDB.agregar_factura(data,(id)=>{
         return callback(id)
     })
 }

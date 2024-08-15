@@ -58,6 +58,8 @@ const agregarCodigo = (req, res) => {
     'esf': typeof body.esf === 'undefined' ? 0 : body.esf,
     'cil': typeof body.cil === 'undefined' ? 0 : body.cil,
     'ad': typeof body.ad === 'undefined' ? 0 : body.ad,
+    'hook': typeof body.hook === 'undefined' ? 0 : body.hook,
+    'tags': typeof body.tags === 'undefined' ? [] : body.tags,
   }
   codigoService.agregarCodigo(nuevo_codigo,
     (id)=>{
