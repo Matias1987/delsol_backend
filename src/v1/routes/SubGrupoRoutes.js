@@ -6,6 +6,10 @@ router.get("/listado/subgrupos/:idgrupo?", (req, res) => {
   subGrupoController.obtenerSubgrupos(req,res)
 });
 
+router.get("/listado/subgrupos/fitros/:idsubgrupo/:idgrupo/:idsubfamilia/:idfamilia", (req, res) => {
+  subGrupoController.obtenerSubgrupos(req,res)
+});
+
 router.get("/:subgrupoId", (req, res) => {
   subGrupoController.obtener_detalle_subgrupo(req,res)
 });

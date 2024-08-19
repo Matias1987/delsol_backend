@@ -8,9 +8,12 @@ const obtener_subgrupos_grupo = (req, res)=>{
 }
 
 const obtenerSubgrupos = (req, res) => {
-  const {params:{idgrupo}} = req;
+  const {params:{idsubgrupo, idgrupo, idsubfamilia, idfamilia}} = req;
 
   let _idg = -1
+  let _idsubfamilia= -1
+  let _idfamilia=-1
+  let _idsubgrupo=-1
 
   if(typeof idgrupo !== 'undefined')
   {
@@ -19,10 +22,31 @@ const obtenerSubgrupos = (req, res) => {
       _idg=idgrupo
     }
   }
+  if(typeof idsubfamilia !== 'undefined')
+  {
+    if(idsubfamilia!=null)
+    {
+      _idsubfamilia=idsubfamilia
+    }
+  }
+  if(typeof idfamilia !== 'undefined')
+  {
+    if(idfamilia!=null)
+    {
+      _idfamilia=idfamilia
+    }
+  }
+  if(typeof idsubgrupo !== 'undefined')
+  {
+    if(idsubgrupo!=null)
+    {
+      _idsubgrupo=idsubgrupo
+    }
+  }
   
   subgrupoService.obtenerSubgrupos(_idg,(rows)=>{
     res.status(201).send({status:'OK', data:rows});
-  })
+  },_idsubfamilia,_idfamilia, _idsubgrupo)
 }
 
 const obtenerSubgrupo = (req, res) => {
