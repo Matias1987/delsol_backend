@@ -107,23 +107,6 @@ const obtener_subgrupos = (idg, callback, idsf=-1, idf=-1, idsg=-1) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     
-    console.log(`select 
-        CONCAT(f.nombre_corto , ' / ', sf.nombre_corto, '  / ', g.nombre_corto , ' / ') AS 'ruta', 
-        sg.* 
-        from 
-        subgrupo sg, 
-        grupo g, 
-        subfamilia sf, 
-        familia f 
-        WHERE
-        sg.grupo_idgrupo = g.idgrupo AND 
-        g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-        sf.familia_idfamilia = f.idfamilia AND 
-        (case when '${idg}' <> '-1' then sg.grupo_idgrupo = ${idg} else true end) and 
-        (case when '${idsf}' <> '-1' then g.subfamilia_idsubfamilia = ${idsf} else true end) and 
-        (case when '${idf}' <> '-1' then sf.familia_idfamilia = ${idf} else true end) and
-        (case when '${idsg}' <> '-1' then sg.idsubgrupo = ${idsg} else true end) `)
-        ;
     connection.query(`
         select 
         CONCAT(f.nombre_corto , ' / ', sf.nombre_corto, '  / ', g.nombre_corto , ' / ') AS 'ruta', 
