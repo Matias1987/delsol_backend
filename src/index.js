@@ -151,6 +151,9 @@ app.use("/api/v1/anot",anotacionRoutes)
 const tagRoutes = require("./v1/routes/TagRoutes")
 app.use("/api/v1/tag",tagRoutes)
 
+const opticaRoutes = require("./v1/routes/OpticaRoutes")
+app.use("/api/v1/op",opticaRoutes)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })

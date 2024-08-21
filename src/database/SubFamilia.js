@@ -51,7 +51,10 @@ const agregar_subfamilia = (data,callback) => {
 }
 
 const obtener_subfamilias_de_familias = (data, callback) => {
-    const query = `select * from subfamilia sf where sf.familia_idfamilia in (${data.ids.map(r=>r)});`
+    const query = `select sf.*, f.nombre_largo as 'familia' 
+    from subfamilia sf, familia f 
+    where f.idfamilia= sf.familia_idfamilia and sf.familia_idfamilia in (${data.ids.map(r=>r)}) 
+    order by f.nombre_largo, sf.idsubfamilia;`
     console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()

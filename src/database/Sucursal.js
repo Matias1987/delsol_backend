@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const obtener_detalle_sucursal = (idsucursal,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(`select * from sucursal s where s.idsucursal = ${idsucursal};` ,
+    connection.query(`select s.*, o.nombre as 'optica' from sucursal s inner join optica o on o.idoptica = s.fkoptica where s.idsucursal = ${idsucursal};` ,
     (err,resp)=>{
         callback(resp)
     })
@@ -14,7 +14,7 @@ const obtener_detalle_sucursal = (idsucursal,callback) => {
 const obtener_sucursales = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from sucursal",(err,rows,fields)=>{
+    connection.query("select s.*, o.nombre as 'optica' from sucursal s inner join optica o on o.idoptica = s.fkoptica;  ",(err,rows,fields)=>{
         callback(rows);
     })
     connection.end();
