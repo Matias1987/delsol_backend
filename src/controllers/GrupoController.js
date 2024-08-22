@@ -49,11 +49,18 @@ const obtener_grupos_bysubfamilia_opt = (req,res)=>{
   )
 }
 
+const mover = (req, res) => {
+  const {body} = req
+  grupoService.mover(body,(resp)=>{
+    res.status(201).send({status:'OK', data:resp});
+  })
+}
 
 module.exports = {
-    obtenerGrupo,
-    obtenerGrupos,
-    agregarGrupo,
-    editarGrupo,
-    obtener_grupos_bysubfamilia_opt,
+  mover,
+  obtenerGrupo,
+  obtenerGrupos,
+  agregarGrupo,
+  editarGrupo,
+  obtener_grupos_bysubfamilia_opt,
   };

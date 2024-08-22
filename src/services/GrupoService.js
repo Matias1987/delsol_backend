@@ -19,7 +19,14 @@ const obtener_grupos_bysubfamilia_opt = (idsubfamilia,callback) =>{
   })
 }
 
+const mover = (data, callback) =>{
+  GrupoDB.mover(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 module.exports = {
+    mover,
     obtenerGrupo,
     obtenerGrupos,
     agregarGrupo,

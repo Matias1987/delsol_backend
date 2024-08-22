@@ -51,7 +51,19 @@ const agregar_grupo = (data,callback) => {
     
 }
 
+const mover = (data,callback) => {
+
+    const query = `update grupo g set g.subfamilia_idsubfamilia=${data.targetId} where g.idgrupo in = (${data.ids.map(g=>g)})`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
+    mover,
     obtener_grupos,
     agregar_grupo,
     obtener_grupos_bysubfamilia_opt,

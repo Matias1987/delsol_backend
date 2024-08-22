@@ -18,6 +18,10 @@ router.post("/", (req, res) => {
   grupoController.agregarGrupo(req,res);
 });
 
+router.post("/mover/",(req,res)=>{
+  grupoController.mover(req,res)
+})
+
 router.patch("/:grupoId", (req, res) => {
   res.send("Update an existing workout");
 });

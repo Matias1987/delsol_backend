@@ -37,6 +37,10 @@ router.post("/modificar_precios_defecto/", (req, res) => {
   subGrupoController.modificar_precios_defecto(req,res)
 });
 
+router.post("/m/v/sg/",(req,res)=>{
+  subGrupoController.mover(req, res)
+})
+
 router.post("/m/modif_sg",(req,res)=>{
  
   subGrupoController.editarSubgrupo(req,res)

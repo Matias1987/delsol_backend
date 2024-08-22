@@ -58,8 +58,16 @@ const obtener_descripcion_cat_subgrupo = (id,callback) => {
   })
 }
 
+const mover = (data, callback) =>
+{
+  SubGrupoDB.mover(data,(resp)=>{
+    callback(resp)
+  })
+}
+
 
 module.exports = {
+    mover,
     obtenerSubgrupos,
     obtenerSubgrupo,
     agregarSubgrupo,

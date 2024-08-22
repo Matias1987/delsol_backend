@@ -136,16 +136,25 @@ const obtener_descripcion_cat_subgrupo = (req,res) => {
   })
 }
 
+const mover = (req, res) => {
+  const {body} = req
+  subgrupoService.mover(body,(resp)=>{
+    res.status(201).send({status:'OK', data:resp});
+  })
+}
+
+
 
 module.exports = {
-    obtenerSubgrupos,
-    obtenerSubgrupo,
-    agregarSubgrupo,
-    editarSubgrupo,
-    obtener_subgrupos_bygrupo_opt,
-    modificar_multiplicador,
-    obtener_detalle_subgrupo,
-    modificar_precios_defecto,
-    obtener_descripcion_cat_subgrupo,
-    obtener_subgrupos_grupo,
+  mover,
+  obtenerSubgrupos,
+  obtenerSubgrupo,
+  agregarSubgrupo,
+  editarSubgrupo,
+  obtener_subgrupos_bygrupo_opt,
+  modificar_multiplicador,
+  obtener_detalle_subgrupo,
+  modificar_precios_defecto,
+  obtener_descripcion_cat_subgrupo,
+  obtener_subgrupos_grupo,
   };

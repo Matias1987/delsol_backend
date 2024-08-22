@@ -196,7 +196,19 @@ const editarSubgrupo = (data,callback) => {
     )
     connection.end()
 }
+
+const mover = (data, callback) => {
+    const query = `update subgrupo sg set sg.grupo_idgrupo=${data.targetId} where sg.idsubgrupo in (${data.ids.map(sg=>sg)})`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
+    mover,
     editarSubgrupo,
     obtener_subgrupos,
     agregar_subgrupo,
