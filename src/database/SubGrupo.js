@@ -132,6 +132,9 @@ const obtener_subgrupos = (idg, callback, idsf=-1, idf=-1, idsg=-1) => {
 
 const agregar_subgrupo = (data,callback) => {
     //console.log(JSON.stringify(data))
+    if((data.grupo_idgrupo||"")==""){
+        return callback(-1)
+    }
     const connection = mysql_connection.getConnection();
     connection.connect();
 
@@ -153,9 +156,14 @@ const agregar_subgrupo = (data,callback) => {
                 data.precio_defecto,
             ]];*/
             //console.log(sql)
+            try{
             connection.query(sql, (err,result) => {
                     return callback(result.insertId)
                 });
+                }
+                catch(e){
+                    return callback(-1)
+                }
         }
 
         connection.end();
@@ -198,7 +206,9 @@ const editarSubgrupo = (data,callback) => {
 }
 
 const mover = (data, callback) => {
-    const query = `update subgrupo sg set sg.grupo_idgrupo=${data.targetId} where sg.idsubgrupo in (${data.ids.map(sg=>sg)})`
+    const query = `update subgrupo sg set sg.grupo_idgrupo=${data.targetId} where sg.idsubgrupo in (${data.ids.map(sg=>sg)});`;
+    console.log(query)
+    //return
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{
