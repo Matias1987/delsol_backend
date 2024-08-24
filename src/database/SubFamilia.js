@@ -4,7 +4,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const obtener_subfamilias = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from subfamilia",(err,rows,fields)=>{
+    connection.query("select sf.*, f.nombre_corto as 'familia' from subfamilia sf, familia f where sf.familia_idfamilia = f.idfamilia;",(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
