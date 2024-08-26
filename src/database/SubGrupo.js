@@ -39,7 +39,7 @@ const modificar_precios_defecto = (data,callback) => {
     grupo g,
     subfamilia sf, 
     familia f
-    SET sg.precio_defecto = (sg.precio_defecto * ${parseFloat(data.multiplicador)} ) + ${parseFloat(data.valor)}
+    SET sg.precio_defecto = truncate((sg.precio_defecto * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(data.valor)}
     WHERE 
     sg.grupo_idgrupo=g.idgrupo AND
     g.subfamilia_idsubfamilia = sf.idsubfamilia AND
@@ -132,9 +132,14 @@ const obtener_subgrupos = (idg, callback, idsf=-1, idf=-1, idsg=-1) => {
 
 const agregar_subgrupo = (data,callback) => {
     //console.log(JSON.stringify(data))
+    
+   
+    
     if((data.grupo_idgrupo||"")==""){
         return callback(-1)
     }
+
+
     const connection = mysql_connection.getConnection();
     connection.connect();
 
@@ -144,9 +149,11 @@ const agregar_subgrupo = (data,callback) => {
             return callback(-1)
         }
         else{
-            var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo, multiplicador, precio_defecto, no_stock) values (
-                '${data.nombre_corto}','${data.nombre_largo}',${data.grupo_idgrupo},${data.multiplicador},${data.precio_defecto},${+data.control_stock==0 ? 1 : 0}
+            var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo,  precio_defecto, no_stock) values (
+                '${data.nombre_corto}','${data.nombre_largo}',${data.grupo_idgrupo},${data.precio_defecto},${+data.control_stock==0 ? 1 : 0}
             )`;
+
+            console.log(sql)
 
             /*var values = [[
                 data.nombre_corto,
