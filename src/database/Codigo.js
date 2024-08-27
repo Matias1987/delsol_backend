@@ -243,6 +243,10 @@ const editar_codigo = (data, callback) => {
 
 const editar_lote_codigos = (params, callback) => {
 
+    const _multiplier = params.porcentaje<0? 0 : 1 + parseFloat(params.porcentaje) / 100.0
+    const _round = params.redondeo<0 ? 1 : parseFloat(params.redondeo)
+    const _precio = params.precio<0?0:params.precio
+
     const query1 = `UPDATE codigo c SET 
     c.subgrupo_idsubgrupo = ${params.idsubgrupo} 
     WHERE
@@ -254,12 +258,13 @@ const editar_lote_codigos = (params, callback) => {
     c.idcodigo IN (${params.idcodigos.toString()})`
 
     const query3 = `UPDATE codigo c SET 
-    c.precio = ${params.precio} 
+    c.precio_ant = c.precio,
+    c.precio = ${_precio} + truncate( (c.precio * ${_multiplier} ) / ${_round} , 0) * ${_round}
     WHERE
     c.idcodigo IN (${params.idcodigos.toString()})`
 
     //console.log(query1)
-    //console.log(query2)
+    console.log(query3)
 
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -272,7 +277,7 @@ const editar_lote_codigos = (params, callback) => {
     {
         queries.push(query2)
     }
-    if(+params.precio>-1)
+    if(+params.modificarPrecio>0)
     {
         queries.push(query3)
     }
