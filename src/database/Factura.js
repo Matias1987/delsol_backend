@@ -66,7 +66,7 @@ const agregar_factura_v2 = (data, callback) => {
     connection.connect()
 
     
-    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta ) VALUES ('${data.nro}', ${data.fkproveedor},${data.total},${0},'${data.tipo}','${data.puntoVenta}');` //toDo
+    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito  ) VALUES ('${data.nro}', ${data.fkproveedor},${data.total},${0},'${data.tipo}','${data.puntoVenta}', ${data.esremito});` //toDo
     
     console.log(query_factura)
 

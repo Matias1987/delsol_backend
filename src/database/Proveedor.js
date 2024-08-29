@@ -35,6 +35,7 @@ const obtener_ficha_proveedor = (data, callback) => {
                     FROM (
                         SELECT 
                         'FACTURA' AS 'tipo', 
+                        'Factura' as 'detalle',
                         f.idfactura AS 'id', 
                         f.monto, 
                         date_format(f.fecha , '%d-%m-%y') AS 'fecha_f'
@@ -42,6 +43,7 @@ const obtener_ficha_proveedor = (data, callback) => {
                         UNION
                         (
                             SELECT 'PAGO' AS 'tipo', 
+                            'Pago' as 'detalle',
                             pp.id AS 'id',  
                             pp.monto, 
                             date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f'
@@ -51,6 +53,7 @@ const obtener_ficha_proveedor = (data, callback) => {
                         (
                             SELECT 
                             'CM' AS 'tipo', 
+                            'Carga Manual' as 'detalle',
                             cm.id AS 'id',  
                             cm.monto, 
                             date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f'
