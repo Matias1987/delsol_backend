@@ -150,7 +150,8 @@ const get_user_credentials = (data, callback) =>{
                 if(ups.idpermiso IS NULL, u.caja2, ups.caja2) AS 'caja2',
                 if(ups.idpermiso IS NULL, u.admin1, ups.admin1) AS 'admin1',
                 if(ups.idpermiso IS NULL, u.admin2, ups.admin2) AS 'admin2',
-                if(ups.idpermiso IS NULL, u.laboratorio, ups.laboratorio) AS 'laboratorio'
+                if(ups.idpermiso IS NULL, u.laboratorio, ups.laboratorio) AS 'laboratorio',
+                if(ups.idpermiso IS NULL, u.admin_prov, ups.admin_prov) AS 'admin_prov'
             from usuario u 
                 LEFT JOIN usuario_permiso_sucursal ups ON 
                 ups.fk_sucursal = ${data.idsucursal} AND 
@@ -185,7 +186,8 @@ const validar_usuario_login = (data,callback) => {
                 if(ups.idpermiso IS NULL, u.caja2, ups.caja2) AS 'caja2',
                 if(ups.idpermiso IS NULL, u.admin1, ups.admin1) AS 'admin1',
                 if(ups.idpermiso IS NULL, u.admin2, ups.admin2) AS 'admin2',
-                if(ups.idpermiso IS NULL, u.laboratorio, ups.laboratorio) AS 'laboratorio'
+                if(ups.idpermiso IS NULL, u.laboratorio, ups.laboratorio) AS 'laboratorio',
+                if(ups.idpermiso IS NULL, u.admin_prov, ups.admin_prov) AS 'admin_prov'
             from usuario u 
                 LEFT JOIN usuario_permiso_sucursal ups ON 
                 ups.fk_sucursal = ${data.sucursal} AND 
@@ -332,7 +334,8 @@ const obtener_usuarios_permisos = (callback) => {
         u.deposito,
         u.admin1,
         u.admin2 ,
-        u.laboratorio
+        u.laboratorio,
+        u.admin_prov
         FROM usuario u 
         UNION 
         SELECT  
@@ -346,7 +349,8 @@ const obtener_usuarios_permisos = (callback) => {
         ups.deposito,
         ups.admin1,
         ups.admin2 ,
-        ups.laboratorio
+        ups.laboratorio,
+        u.admin_prov
         FROM usuario_permiso_sucursal ups, sucursal s 
         WHERE
         s.idsucursal = ups.fk_sucursal
