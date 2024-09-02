@@ -210,7 +210,7 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
     const search_value = decodeURIComponent(_search_value);
     const connection = mysql_connection.getConnection();
     connection.connect();
-    console.log("sdfafdasdfsadf")
+    
     /**
      * se debe pasar el metodo a POST en el cliente, se debe incluir array de ids de familias
      * para limitar la respuesta del servidor 

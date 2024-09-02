@@ -80,6 +80,13 @@ const anularEnvio =(req, res) => {
     })
 }
 
+const buscarStockEnvio = (req, res) => {
+    const {body} = req
+    envioService.buscarStockEnvio(body,(response)=>{
+        res.status(201).send({status:'OK',data:response})
+    })
+}
+
 module.exports = {
     anularEnvio,
     cargarEnvio,
@@ -89,4 +96,5 @@ module.exports = {
     agregarEnvio,
     editarEnvio,
     obtener_envios_codigo,
+    buscarStockEnvio,
 }

@@ -31,6 +31,10 @@ router.post("/cargarEnvio/", (req, res) => {
   envioController.cargarEnvio(req,res)
 });
 
+router.post("/search/stock/for/envio/",(req,res)=>{
+  envioController.buscarStockEnvio(req, res)
+})
+
 router.patch("/:envioId", (req, res) => {
   res.send("actualizar una familia");
 });

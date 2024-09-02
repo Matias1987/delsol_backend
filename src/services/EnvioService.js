@@ -46,8 +46,14 @@ const anular_envio = (idenvio, callback) => {
     })
 }
 
+const buscarStockEnvio = (data, callback) =>{
+    EnvioDB.search_stock_envio(data,(rows)=>{
+        callback(rows)
+    })
+}
 
 module.exports = {
+    buscarStockEnvio,
     anular_envio,
     cargarEnvio,
     obtener_envios_pendientes_sucursal,
