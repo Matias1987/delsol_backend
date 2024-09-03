@@ -191,7 +191,7 @@ const anular_envio = (idenvio, callback) => {
 
 
 const search_stock_envio = (data, callback) => {
-    const tags =( data.tags.length>0 ? data.tags : ['-']).map(t=>t)
+    const tags =( data.tags.length>0 ? data.tags : [`'-'`]).map(t=>`'${t}'`)
     const tags_count = data.tags.length-1
 
     const query = `
@@ -203,14 +203,14 @@ const search_stock_envio = (data, callback) => {
                 c.codigo, 
                 c.descripcion, 
                 c.cantidad,
+                c.idcodigo,
                 if(s.cantidad IS NULL, 0 , s.cantidad) AS 'cantidad_destino'
                 FROM 
-                stock s1,
                 subgrupo sg, 
                 grupo g,
                 subfamilia sf, 
                 familia f,
-                (SELECT _c.codigo, _c.descripcion, s1.cantidad FROM codigo _c INNER JOIN stock s1 ON s1.codigo_idcodigo = _c.idcodigo AND s1.sucursal_idsucursal=${data.sucursal_origen}) c
+                (SELECT _c.codigo, _c.descripcion, s1.cantidad, _c.idcodigo, _c.subgrupo_idsubgrupo  FROM codigo _c INNER JOIN stock s1 ON s1.codigo_idcodigo = _c.idcodigo AND s1.sucursal_idsucursal=${data.sucursal_origen}) c
                 LEFT JOIN stock s ON s.codigo_idcodigo=c.idcodigo AND s.sucursal_idsucursal=${data.sucursal_destino} 
                 WHERE 
                 (
@@ -230,17 +230,18 @@ const search_stock_envio = (data, callback) => {
                 sg.grupo_idgrupo = g.idgrupo AND 
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
                 sf.familia_idfamilia = f.idfamilia AND 
-                (case when '${data.filtro}'<>'-1' then c.codigo like '${data.filtro}' else true end) AND 
+                (case when '${data.filtro}'<>'-1' then c.codigo like '%${data.filtro}%' else true end) AND 
                 (case when '${data.idsubfamilia}'<>'-1' then sf.idsubfamilia=${data.idsubfamilia} ELSE TRUE END ) AND 
                 (case when '${data.idfamilia}'<>'-1' then f.idfamilia=${data.idfamilia} ELSE TRUE END ) AND 
                 (case when '${data.idsubgrupo}'<>'-1' then c.subgrupo_idsubgrupo=${data.idsubgrupo} ELSE TRUE END) AND 
                 (case when '${data.idgrupo}'<>'-1' then sg.grupo_idgrupo=${data.idgrupo} ELSE TRUE END )
                 ;
                 `
-                console.log(query)
+                //console.log(query)
                 const connection = mysql_connection.getConnection()
                 connection.connect()
                 connection.query(query,(err,resp)=>{
+                    //console.log(JSON.stringify(resp))
                     callback(resp)
                 })
                 connection.end()
