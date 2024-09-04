@@ -95,6 +95,7 @@ const agregar_pago_proveedor = (data, callback) =>{
     connection.query(query, (err,resp)=>{
         callback(resp)
     })    
+    
     connection.end()
 }
 
@@ -104,9 +105,25 @@ const agregar_cm_proveedor = (data, callback) => {
     const query = `INSERT INTO carga_manual_proveedor  (fk_proveedor, monto, comentarios, modo_ficha) VALUES (${data.fk_proveedor}, ${data.monto}, '${data.comentarios}', ${data.modo})`
     console.log(query)
     connection.query(query, (err,resp)=>{
+        if(data.efectivo.checked)
+        {
+            const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ('efectivo', ${resp.insertId}, ${data.efectivo.monto});`
+            connection.query(_q)
+        }
+        if(data.cheque.checked)
+        {
+            const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('cheque', ${resp.insertId}, ${data.cheque.monto}, ${data.cheque.fkbanco});`
+            connection.query(_q)
+        }
+        if(data.transferencia.checked)
+        {
+            const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkbanco});`
+            connection.query(_q)
+        }
         callback(resp)
+        connection.end()
     })    
-    connection.end()
+    
 }
 module.exports = {
     agregar_proveedor,obtener_proveedores, obtener_ficha_proveedor,detalle_proveedor, agregar_pago_proveedor, agregar_cm_proveedor
