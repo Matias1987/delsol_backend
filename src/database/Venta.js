@@ -401,7 +401,7 @@ const insert_venta = (data,callback) => {
     //check quantities
    
     //get caja!
-    console.log("Obteniendo caja...")
+    //console.log("Obteniendo caja...")
     connection.query(obtenerCajaAbierta(data.fksucursal),(err,_rows)=>{
         if(_rows.length<1)
         {
@@ -419,9 +419,9 @@ const insert_venta = (data,callback) => {
             }
             const idcaja=_rows[0].idcaja
             //#region save dependent data
-            console.log("###################################");
-            console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)));
-            console.log("###################################");
+            //console.log("###################################");
+            //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)));
+            //console.log("###################################");
 
             connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data),idcaja),
             (err,resp) => {

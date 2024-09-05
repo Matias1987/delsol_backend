@@ -13,6 +13,7 @@ const obtener_mensajes = (callback) => {
 const agregar_mensaje = (data, callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect()
+    //console.log(`insert into mensaje (fkemisor, mensaje) values (${data.fkemisor}, '${data.mensaje}') `)
     connection.query(`insert into mensaje (fkemisor, mensaje) values (${data.fkemisor}, '${data.mensaje}') `,(err,data)=>{
         callback(data)
     })

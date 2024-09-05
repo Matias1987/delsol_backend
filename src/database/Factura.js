@@ -35,7 +35,8 @@ const detalle_factura = (data, callback) => {
     f.cantidad,
     f.monto,
     f.proveedor_idproveedor,
-    p.nombre as 'proveedor'
+    p.nombre as 'proveedor',
+    f.es_remito
     FROM 
     factura f, 
     proveedor p 

@@ -1,3 +1,4 @@
+const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection")
 
 const agregar_proveedor = (data,callback) => {
@@ -35,7 +36,7 @@ const obtener_ficha_proveedor = (data, callback) => {
                     FROM (
                         SELECT 
                         'FACTURA' AS 'tipo', 
-                        'Factura' as 'detalle',
+                        concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
                         f.idfactura AS 'id', 
                         f.monto, 
                         date_format(f.fecha , '%d-%m-%y') AS 'fecha_f'
@@ -53,16 +54,17 @@ const obtener_ficha_proveedor = (data, callback) => {
                         (
                             SELECT 
                             'CM' AS 'tipo', 
-                            'Carga Manual' as 'detalle',
+                            concat('Carga Manual: ', cm.comentarios)  as 'detalle',
                             cm.id AS 'id',  
                             cm.monto, 
                             date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f'
                             FROM  carga_manual_proveedor cm WHERE cm.fk_proveedor=${data.idproveedor} and cm.activo=1 and cm.modo_ficha=${data.modo}
                         )
                     ) op
-                    ORDER BY op. op.fecha_f ASC 
+                    ORDER BY op.fecha_f desc 
                     ;`;
     
+                    //console.log(query)
 
     const connection = mysql_connection.getConnection()
 
@@ -90,13 +92,30 @@ const detalle_proveedor = (data, callback) => {
 const agregar_pago_proveedor = (data, callback) =>{
     const connection = mysql_connection.getConnection()
     connection.connect()
-    const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha) VALUES (${data.monto}, ${data.fk_proveedor}, ${data.modo})`
+    const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha, fecha) VALUES (${data.monto}, ${data.fk_proveedor}, ${data.modo}, '${parse_date_for_mysql(data.fecha)}')`
     console.log(query)
     connection.query(query, (err,resp)=>{
+            if(data.efectivo.checked)
+            {
+                const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ('efectivo', ${resp.insertId}, ${data.efectivo.monto});`
+                connection.query(_q)
+            }
+            if(data.cheque.checked)
+            {
+                const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('cheque', ${resp.insertId}, ${data.cheque.monto}, ${data.cheque.fkbanco});`
+                connection.query(_q)
+            }
+            if(data.transferencia.checked)
+            {
+                const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkbanco});`
+                console.log(_q)
+                connection.query(_q)
+            }
         callback(resp)
+        connection.end()
     })    
     
-    connection.end()
+    
 }
 
 const agregar_cm_proveedor = (data, callback) => {
@@ -105,24 +124,11 @@ const agregar_cm_proveedor = (data, callback) => {
     const query = `INSERT INTO carga_manual_proveedor  (fk_proveedor, monto, comentarios, modo_ficha) VALUES (${data.fk_proveedor}, ${data.monto}, '${data.comentarios}', ${data.modo})`
     console.log(query)
     connection.query(query, (err,resp)=>{
-        if(data.efectivo.checked)
-        {
-            const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ('efectivo', ${resp.insertId}, ${data.efectivo.monto});`
-            connection.query(_q)
-        }
-        if(data.cheque.checked)
-        {
-            const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('cheque', ${resp.insertId}, ${data.cheque.monto}, ${data.cheque.fkbanco});`
-            connection.query(_q)
-        }
-        if(data.transferencia.checked)
-        {
-            const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkbanco});`
-            connection.query(_q)
-        }
+        
         callback(resp)
-        connection.end()
+        
     })    
+    connection.end()
     
 }
 module.exports = {
