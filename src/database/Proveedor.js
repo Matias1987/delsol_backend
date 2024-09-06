@@ -39,7 +39,8 @@ const obtener_ficha_proveedor = (data, callback) => {
                         concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
                         f.idfactura AS 'id', 
                         f.monto, 
-                        date_format(f.fecha , '%d-%m-%y') AS 'fecha_f'
+                        date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
+                        f.fecha
                         FROM factura f WHERE f.proveedor_idproveedor=${data.idproveedor} and f.activo=1 and f.es_remito=${data.modo==0 ? 1 : 0}
                         UNION
                         (
@@ -47,7 +48,8 @@ const obtener_ficha_proveedor = (data, callback) => {
                             'Pago' as 'detalle',
                             pp.id AS 'id',  
                             pp.monto, 
-                            date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f'
+                            date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f',
+                            pp.fecha
                             FROM pago_proveedor pp WHERE pp.fk_proveedor=${data.idproveedor} and pp.activo=1 and pp.modo_ficha=${data.modo}
                         )
                         UNION
@@ -57,11 +59,12 @@ const obtener_ficha_proveedor = (data, callback) => {
                             concat('Carga Manual: ', cm.comentarios)  as 'detalle',
                             cm.id AS 'id',  
                             cm.monto, 
-                            date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f'
+                            date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
+                            cm.fecha
                             FROM  carga_manual_proveedor cm WHERE cm.fk_proveedor=${data.idproveedor} and cm.activo=1 and cm.modo_ficha=${data.modo}
                         )
                     ) op
-                    ORDER BY op.fecha_f desc 
+                    ORDER BY op.fecha asc 
                     ;`;
     
                     //console.log(query)
