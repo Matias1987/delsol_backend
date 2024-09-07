@@ -41,7 +41,11 @@ const obtener_ficha_proveedor = (data, callback) => {
                         f.monto, 
                         date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
                         f.fecha
-                        FROM factura f WHERE f.proveedor_idproveedor=${data.idproveedor} and f.activo=1 and f.es_remito=${data.modo==0 ? 1 : 0}
+                        FROM factura f 
+                        WHERE 
+                            f.proveedor_idproveedor=${data.idproveedor} and 
+                            f.activo=1 and 
+                            (case when '${data.modo}'='-1' then true else f.es_remito=${data.modo==0 ? 1 : 0} end)
                         UNION
                         (
                             SELECT 'PAGO' AS 'tipo', 
@@ -50,7 +54,11 @@ const obtener_ficha_proveedor = (data, callback) => {
                             pp.monto, 
                             date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f',
                             pp.fecha
-                            FROM pago_proveedor pp WHERE pp.fk_proveedor=${data.idproveedor} and pp.activo=1 and pp.modo_ficha=${data.modo}
+                            FROM pago_proveedor pp 
+                            WHERE 
+                                pp.fk_proveedor=${data.idproveedor} and 
+                                pp.activo=1 and 
+                                (case when '${data.modo}'='-1' then true else pp.modo_ficha=${data.modo} end)
                         )
                         UNION
                         (
@@ -61,7 +69,11 @@ const obtener_ficha_proveedor = (data, callback) => {
                             cm.monto, 
                             date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
                             cm.fecha
-                            FROM  carga_manual_proveedor cm WHERE cm.fk_proveedor=${data.idproveedor} and cm.activo=1 and cm.modo_ficha=${data.modo}
+                            FROM  carga_manual_proveedor cm 
+                            WHERE 
+                                cm.fk_proveedor=${data.idproveedor} and 
+                                cm.activo=1 and 
+                                (case when '${data.modo}'='-1' then true else cm.modo_ficha=${data.modo} end)
                         )
                     ) op
                     ORDER BY op.fecha asc 
