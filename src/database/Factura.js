@@ -143,7 +143,36 @@ const obtener_factura_por_nro = (nro, callback) =>{
     connection.end()
 }
 
+const obtener_facturas_filtros = (data, callback) =>{
+    //console.log(JSON.stringify(data))
+
+    const provids = data.idprovs.length<1 ? ['0'] : data.idprovs
+    const from = data.desde == "" ? "2000-01-01" : data.desde
+    const to = data.hasta =="" ? "2000-01-01" : data.hasta
+    var _q = +data.ver_facturas == 1 ? ' f.es_remito=0 ' : ''
+    _q += _q.length>0 ? (+data.ver_remitos ==1 ? ' or f.es_remito=1 ' : '') :( +data.ver_remitos==1 ? ' f.es_remito=1' : ' f.es_remito=-1 ')
+
+
+    const query =`SELECT DATE_FORMAT(f.fecha,'%d-%m-%y') AS 'fecha_f', f.*, p.nombre AS 'proveedor' FROM factura f, proveedor p WHERE
+                p.idproveedor=f.proveedor_idproveedor and 
+                (case when '${data.idprovs.length}'<>'0' then f.proveedor_idproveedor IN (${provids.map(id=>id)}) ELSE TRUE END) AND 
+                (case when '${data.desde}'<>'' then DATE(f.fecha)>DATE('${from}') ELSE TRUE END ) AND 
+                (case when '${data.hasta}'<>'' then DATE(f.fecha)<DATE('${to}') ELSE TRUE END ) AND 
+                (${_q})
+                ;  
+                `;
+    //console.log(query)
+    
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+    connection.end()
+}
+
 module.exports = {
+    obtener_facturas_filtros,
     obtener_factura_por_nro,
     obtener_facturas,
     agregar_factura,

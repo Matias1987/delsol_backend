@@ -29,9 +29,16 @@ const obtener_factura_por_nro = (data, callback) => {
     })
 }
 
+const obtener_facturas_filtros = (data,callback)=>{
+    FacturaDB.obtener_facturas_filtros(data,(resp)=>{
+        callback(resp)
+    })
+}
+
 
 
 module.exports = {
+    obtener_facturas_filtros,
     obtener_factura_por_nro,
     lista_elementos_factura,
     detalle_factura,

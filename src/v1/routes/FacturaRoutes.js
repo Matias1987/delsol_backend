@@ -22,6 +22,10 @@ router.post("/", (req, res) => {
     facturaController.agregar_factura(req,res)
 });
 
+router.post("/obtener/fact/uras/filtros/",(req, res)=>{
+  facturaController.obtener_facturas_filtros(req, res)
+})
+
 router.patch("/:facturaId", (req, res) => {
   res.send("actualizar una factura");
 });

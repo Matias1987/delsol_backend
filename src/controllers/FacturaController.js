@@ -50,6 +50,18 @@ const obtener_factura_por_nro = (req, res) => {
     })
 }
 
+const obtener_facturas_filtros = (req, res) => {
+    const {body} = req;
+    facturaService.obtener_facturas_filtros(body,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
+
 module.exports = {
-    obtener_facturas,agregar_factura,detalle_factura,lista_elementos_factura,obtener_factura_por_nro,
+    obtener_facturas,
+    agregar_factura,
+    detalle_factura,
+    lista_elementos_factura,
+    obtener_factura_por_nro,
+    obtener_facturas_filtros,
 }
