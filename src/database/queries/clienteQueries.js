@@ -49,13 +49,14 @@ const queryObtenerBalance = (idcliente) => {
         vmp.modo_pago = 'ctacte' AND 
         c.venta_idventa = vmp.venta_idventa  AND
         c.tipo <> 'cuota' AND
+        c.anulado=0 AND
         c.cliente_idcliente=${idcliente}
         union	 
          SELECT 
          CONCAT('b',c.idcobro) as 'id',
         c.monto AS 'haber',
         0 AS 'debe'
-         FROM cobro c WHERE c.tipo = 'cuota' AND c.cliente_idcliente=${idcliente}
+         FROM cobro c WHERE c.tipo = 'cuota' AND c.cliente_idcliente=${idcliente} AND c.anulado=0
          union
         SELECT 
         CONCAT('c',v.idventa) as 'id',
@@ -74,7 +75,7 @@ const queryObtenerBalance = (idcliente) => {
         CONCAT('d',cm.idcarga_manual) as 'id',
         0 AS 'haber', 
         cm.monto AS 'debe'
-        FROM carga_manual cm WHERE cm.cliente_idcliente=${idcliente}
+        FROM carga_manual cm WHERE cm.cliente_idcliente=${idcliente} and cm.anulado=0
         
     ) AS op
     ;`

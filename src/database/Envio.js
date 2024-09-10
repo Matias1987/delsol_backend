@@ -194,6 +194,9 @@ const search_stock_envio = (data, callback) => {
     const tags =( data.tags.length>0 ? data.tags : [`'-'`]).map(t=>`'${t}'`)
     const tags_count = data.tags.length-1
 
+    const q_local = data.conStockOrigen ? ' s1.cantidad>0 ':' true '
+    const q_dest = data.sinStockDestino ? ' s.cantidad<1 ':' true '
+
     const query = `
                 SELECT 
                 f.nombre_largo AS 'familia',
@@ -210,8 +213,8 @@ const search_stock_envio = (data, callback) => {
                 grupo g,
                 subfamilia sf, 
                 familia f,
-                (SELECT _c.codigo, _c.descripcion, s1.cantidad, _c.idcodigo, _c.subgrupo_idsubgrupo  FROM codigo _c INNER JOIN stock s1 ON s1.codigo_idcodigo = _c.idcodigo AND s1.sucursal_idsucursal=${data.sucursal_origen}) c
-                LEFT JOIN stock s ON s.codigo_idcodigo=c.idcodigo AND s.sucursal_idsucursal=${data.sucursal_destino} 
+                (SELECT _c.codigo, _c.descripcion, s1.cantidad, _c.idcodigo, _c.subgrupo_idsubgrupo  FROM codigo _c INNER JOIN stock s1 ON s1.codigo_idcodigo = _c.idcodigo AND s1.sucursal_idsucursal=${data.sucursal_origen} and ${q_local}) c
+                LEFT JOIN stock s ON s.codigo_idcodigo=c.idcodigo AND s.sucursal_idsucursal=${data.sucursal_destino} and ${q_dest}
                 WHERE 
                 (
                     case when 0<1 then TRUE ELSE 
