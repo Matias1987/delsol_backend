@@ -41,25 +41,37 @@ const agregar_cliente = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
 
-    connection.query(
-        queries.queryAgregarCliente(),
-        [[
-            data.localidad_idlocalidad,
-            data.nombre,
-            data.apellido,
-            data.direccion,
-            data.dni,
-            data.telefono1,
-            data.telefono2,
-            data.destinatario,
-            data.fechaNac
-        ]],
-        (err,results,fields) => {
-            return callback(results.insertId)
-        }
-    )
+    connection.query(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim('${data.dni}');`,
+        (err,rows)=>{
+            
+            if(rows.length<1)
+            {
+                console.log(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim('${data.dni}');`)
 
-    connection.end();
+                connection.query(
+                    queries.queryAgregarCliente(),
+                    [[
+                        data.localidad_idlocalidad,
+                        data.nombre,
+                        data.apellido,
+                        data.direccion,
+                        data.dni,
+                        data.telefono1,
+                        data.telefono2,
+                        data.destinatario,
+                        data.fechaNac
+                    ]],
+                    (err,results,fields) => {
+                        return callback(results.insertId)
+                    }
+                )
+            }
+            
+            connection.end();
+
+        })
+
+    
 
 }
 

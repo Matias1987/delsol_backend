@@ -1,7 +1,7 @@
 const queryObtenerClientebyDNI =(dni)=>{
     return `SELECT c.*, 
     CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo' 
-    FROM cliente c WHERE c.dni='${dni}';`;
+    FROM cliente c WHERE trim(c.dni)=trim('${dni}');`;
 } 
 
 const queryObtenerClientebyID =(id)=>{
