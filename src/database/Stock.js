@@ -536,7 +536,8 @@ const agregar_stock = (data,callback) =>{
         
         var tags = typeof data.etiquetas === 'undefined' ? [] : data.etiquetas
 
-        var _codigos = tags.length<1 ? ` ( select 0 as 'cnt', c.* from codigo c) ` : `( SELECT COUNT(1) AS 'cnt', c.* FROM codigo_has_tag ct , codigo c WHERE ct.fk_codigo = c.idcodigo AND ct.fk_etiqueta IN ( ${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY c.idcodigo )`
+        //var _codigos = tags.length<1 ? ` ( select 0 as 'cnt', c.* from codigo c) ` : `( SELECT COUNT(1) AS 'cnt', c.* FROM codigo_has_tag ct , codigo c WHERE ct.fk_codigo = c.idcodigo AND ct.fk_etiqueta IN ( ${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY c.idcodigo )`
+        var _codigos = tags.length<1 ? ` ( select 0 as 'cnt', c.* from codigo c) ` : `(SELECT c.* FROM (SELECT COUNT(1) AS 'qtty', cht.fk_codigo FROM codigo_has_tag cht WHERE cht.fk_etiqueta IN (${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY cht.fk_codigo) ci INNER JOIN codigo c ON c.idcodigo = ci.fk_codigo WHERE ci.qtty>=${tags.length})`
 
         var order = ' order by c.codigo asc';
         var limit = typeof data.limit === 'undefined' ? 'limit 100000' : '' 
@@ -553,10 +554,7 @@ const agregar_stock = (data,callback) =>{
             }
         }
 
-        if(tags.length>0)
-            {
-                order= ' order by c.cnt desc '
-            }
+        
 
         //console.log(JSON.stringify(data))
 
@@ -582,7 +580,6 @@ const agregar_stock = (data,callback) =>{
             g.nombre_corto as 'grupo',
             sg.nombre_corto as 'subgrupo',
             s.sucursal_idsucursal AS 'idsucursal',
-            _c.cnt,
             ctag.tags as 'etiquetas'
             FROM 
             familia f, 

@@ -3,8 +3,9 @@ const mysql_connection = require("../lib/mysql_connection")
 const obtener_codigos_filtros = (data, callback) => {
 
     const tags = typeof data.etiquetas === 'undefined' ? [] : data.etiquetas
-    const _codigos = tags.length<1 ? ` ( select 0 as 'cnt', _c.* from codigo _c) ` : `( SELECT COUNT(1) AS 'cnt', _c.* FROM codigo_has_tag ct , codigo _c WHERE ct.fk_codigo = _c.idcodigo AND ct.fk_etiqueta IN ( ${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY _c.idcodigo )`
-    
+    //const _codigos = tags.length<1 ? ` ( select 0 as 'cnt', _c.* from codigo _c) ` : `( SELECT COUNT(1) AS 'cnt', _c.* FROM codigo_has_tag ct , codigo _c WHERE ct.fk_codigo = _c.idcodigo AND ct.fk_etiqueta IN ( ${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY _c.idcodigo )`
+    var _codigos = tags.length<1 ? ` ( select 0 as 'cnt', c.* from codigo c) ` : `(SELECT c.* FROM (SELECT COUNT(1) AS 'qtty', cht.fk_codigo FROM codigo_has_tag cht WHERE cht.fk_etiqueta IN (${tags.map((_t,idx)=> `'${_t}'` )}) GROUP BY cht.fk_codigo) ci INNER JOIN codigo c ON c.idcodigo = ci.fk_codigo WHERE ci.qtty>=${tags.length})`
+
     let cod_parts = (data.codigo||"").trim().split(" ")
     
     let cod_q = ""
