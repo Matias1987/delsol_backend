@@ -2,7 +2,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const cobro_queries = require("./queries/cobroQueries");
 const { insertEvento } = require("./queries/eventoQueries");
-
+const UsuarioDB = require("./Usuario") 
 const agregar_venta_mp_ctacte = (data,callback) =>
 {
      const __query_venta_mp = `INSERT INTO venta_has_modo_pago 
@@ -57,9 +57,8 @@ const agregar_venta_mp_ctacte = (data,callback) =>
     
 }
 
-const agregar_cobro  = (data,callback) => {
-
-    /*
+const do_agregar_cobro = (data, callback) => {
+/*
     params:
         tipo: cuota, adelanto
         si cuota: idcliente (id venta is null or undefined --todo?)
@@ -309,7 +308,7 @@ const agregar_cobro  = (data,callback) => {
                     monto_cuota
                     ) VALUES ` + _venta_mp_item;
 
-                console.log("INSERTING VENTA MODO DE PAGO: " + __query_venta_mp)
+                //console.log("INSERTING VENTA MODO DE PAGO: " + __query_venta_mp)
         
         
                 connection.query(__query,(err,_results)=>{
@@ -330,6 +329,11 @@ const agregar_cobro  = (data,callback) => {
             //#endregion
         }
     })
+}
+
+const agregar_cobro  = (data,callback) => {
+
+    UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_cobro(data,callback)},()=>{callback({msg:"error"})})
     
 }
 

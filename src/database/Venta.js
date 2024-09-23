@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
 const venta_queries = require("./queries/ventaQueries");
-
+const UsuarioDB = require("./Usuario")
 const cambiar_responsable = (data, callback) => {
     const query = `UPDATE venta v  SET v.cliente_idcliente = ${data.idresponsable} WHERE v.idventa=${data.idventa};`
     
@@ -270,7 +270,7 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback)=>{
     connection.end()
 }
 
-const insert_venta = (data,callback) => {
+const do_insert_venta = (data, callback) => {
 
     const __now = new Date();
 
@@ -477,6 +477,17 @@ const insert_venta = (data,callback) => {
 
     })
     
+}
+
+const insert_venta = (data,callback) => {
+    UsuarioDB.validar_usuario_be(
+        {
+            tk: data.tk,
+            permisos: "venta"
+        },
+        ()=>{do_insert_venta(data,callback)},
+        ()=>{callback({msg:"error"})}
+    )
 }
 
 

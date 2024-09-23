@@ -15,7 +15,7 @@ const obtenerClientes = (req, res) => {
 
 const agregarCliente = (req, res) => {
   const {body} = req;
-
+  
   const nuevo_cliente = {
     'localidad_idlocalidad' :  body.idlocalidad,
     'nombre' : body.nombres,
@@ -26,6 +26,7 @@ const agregarCliente = (req, res) => {
     'telefono2' : "",//body.telefono2,
     'destinatario': typeof body.destinatario === 'undefined' ? 0 : body.destinatario,
     'fechaNac': body.fechaNac,
+    'tk':body.tk,
   }
 
   clienteService.agregarCliente(nuevo_cliente,

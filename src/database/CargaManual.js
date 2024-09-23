@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
+const UsuarioDB = require("./Usuario")
 
 const obtenerCargaManual = (idcargamanual,callback) => {
     const query =  `select * from carga_manual cm where cm.idcarga_manual = ${idcargamanual}`
@@ -22,8 +23,7 @@ const modificar_carga_manual = (data,callback)=>
     connection.end()
 }
 
-const agregarCargaManual= (data,callback) =>
-{
+const do_agregarCargaManual = (data, callback) => {
     const connection = mysql_connection.getConnection();
 
     connection.connect();
@@ -44,6 +44,11 @@ const agregarCargaManual= (data,callback) =>
     })
 
     connection.end();
+}
+
+const agregarCargaManual= (data,callback) =>
+{
+    UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregarCargaManual(data,callback)},()=>{})
 }
 
 const anularCargaManual = (data,callback)=>{

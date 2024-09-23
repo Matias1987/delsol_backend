@@ -1,5 +1,6 @@
 const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
+const UsuarioDB = require("./Usuario") 
 
 const lista_gastos_admin = (callback) => {
     const query = `SELECT 
@@ -73,7 +74,7 @@ const obtener_gasto = (callback) => {
     connection.end();
 }
 
-const agregar_gasto = (data,callback) => {
+const do_agregar_gasto = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     //console.log(data.sucursal_idsucursal)
@@ -117,7 +118,11 @@ const agregar_gasto = (data,callback) => {
         }
     });
 
+}
 
+const agregar_gasto = (data,callback) => {
+    
+    UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_gasto(data,callback)}, ()=>{})
     
 }
 

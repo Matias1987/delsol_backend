@@ -397,7 +397,35 @@ const modificar_permisos = (data, callback) => {
     connection.end()
 }
 
+const validar_usuario_be = (data,  onOK, onError)=>{
+    //console.log(`user with token: ${data.tk} validated`)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(`SELECT u.idusuario, u.logged FROM usuario u WHERE u.token='${data.tk}';`,(err,rows)=>{
+        const resp = rows||[]
+        if(rows.length>0)
+        {
+            if(+resp[0].logged==1)
+            {
+                onOK()
+            }
+            else
+            {
+                onError()
+            }
+        }
+        else
+        {
+            onError()
+        }
+    })
+    connection.end()
+   
+}
+
+
 module.exports = {
+    validar_usuario_be, 
     obtener_usuarios_permisos,
     obtener_autorizaciones_pendientes,
     cambiar_estado_autorizacion,
