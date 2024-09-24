@@ -1,6 +1,6 @@
 const mysql_connection = require("../lib/mysql_connection");
 const { insertEvento } = require("./queries/eventoQueries");
-
+const UsuarioDB = require("./Usuario")
 const caja_exists = (data,callback) => {
     const query = `SELECT c.idcaja FROM caja c WHERE DATE(c.fecha) = DATE('${data.fecha}') AND c.sucursal_idsucursal=${data.idsucursal};`
     const connection = mysql_connection.getConnection()
@@ -55,8 +55,7 @@ const cerrarCaja = (idcaja, callback) => {
     connection.end();
 }
 
-const agregarCaja = (data,callback) =>
-{
+const do_agregarCaja = (data, callback) =>{
     const connection = mysql_connection.getConnection();
 
     connection.connect();
@@ -72,6 +71,18 @@ const agregarCaja = (data,callback) =>
 
         return callback(_id);
     })
+}
+
+const agregarCaja = (data,callback) =>
+{
+    UsuarioDB.validar_usuario_be(
+        {
+            tk: data.tk,
+            permisos: "venta"
+        },
+        ()=>{do_agregarCaja(data,callback)},
+        ()=>{}
+    )
     
 }
 
