@@ -206,6 +206,7 @@ const anular_envio = (idenvio, callback) => {
 
 const search_stock_envio = (data, callback) => {
     const tags =( data.tags.length>0 ? data.tags : [`'-'`]).map(t=>`'${t}'`)
+    //const tags = typeof data.tags === 'undefined' ? [] : data.tags
     const tags_count = data.tags.length-1
 
     const q_local = data.conStockOrigen ? ' s1.cantidad>0 ':' true '
@@ -231,7 +232,7 @@ const search_stock_envio = (data, callback) => {
                 LEFT JOIN stock s ON s.codigo_idcodigo=c.idcodigo AND s.sucursal_idsucursal=${data.sucursal_destino} and ${q_dest}
                 WHERE 
                 (
-                    case when 0<1 then TRUE ELSE 
+                    case when ${data.tags.length}<1 then TRUE ELSE 
                         c.idcodigo IN 
                         (
                             SELECT m.fk_codigo FROM (
