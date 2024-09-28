@@ -80,7 +80,14 @@ const lista_ventas_general = (idcliente, callback) => {
   })
 }
 
+const obtener_clientes_morosos = (data, callback) =>{
+  ClienteDB.obtener_clientes_morosos(data,(rows)=>{
+    return callback(rows)
+  })
+}
+
 module.exports = {
+    obtener_clientes_morosos,
     update_cliente,
     lista_ventas_general,
     bloquear_cuenta,

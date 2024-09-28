@@ -136,7 +136,16 @@ const desbloquear_cuenta = (req, res) => {
   })
 }
 
+
+const obtener_clientes_morosos = (req, res)=> {
+  const {body} = req
+  clienteService.obtener_clientes_morosos(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
+
 module.exports = {
+    obtener_clientes_morosos,
     update_cliente,
     lista_ventas_general,
     bloquear_cuenta,

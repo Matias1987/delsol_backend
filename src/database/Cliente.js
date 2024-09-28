@@ -348,8 +348,45 @@ const desbloquear_cuenta = (idcliente, callback) =>{
     connection.end()
 }
 
+const obtener_clientes_morosos = ( data, callback ) => {
+    const query = `SELECT 
+                    cl2.dni,
+                    CONCAT(cl2.apellido, ' ', cl2.nombre) AS 'cliente',
+                    cl1.* 
+                    FROM 
+                    (
+                        SELECT 
+                        ops.idcliente,
+                        SUM(if(ops.t='d',ops.am,-ops.am)) AS 'saldo'
+                        FROM (
+                            SELECT v.cliente_idcliente AS 'idcliente', SUM(vmp.monto_int) AS 'am', 'd' AS 't' FROM venta v INNER JOIN venta_has_modo_pago vmp ON vmp.modo_pago='ctacte' AND vmp.venta_idventa = v.idventa WHERE v.estado='ENTREGADO' GROUP BY v.cliente_idcliente
+                            UNION 
+                            SELECT cm.cliente_idcliente AS 'idcliente', SUM(cm.monto) AS 'am', 'd' AS 't' FROM carga_manual cm WHERE cm.anulado=0 GROUP BY cm.cliente_idcliente
+                            UNION 
+                            SELECT c.cliente_idcliente AS 'idcliente', SUM(c.monto) AS 'am', 'h' AS 't' FROM cobro c WHERE c.tipo='cuota' AND c.anulado=0 GROUP BY c.cliente_idcliente
+                        ) AS ops
+                        GROUP BY ops.idcliente
+                    ) AS cl1,
+                    cliente cl2 
+                    WHERE 
+                    cl2.bloqueado=0 AND 
+                    cl2.idcliente = cl1.idcliente AND 
+                    cl1.idcliente not IN (SELECT distinct c.cliente_idcliente FROM cobro c WHERE DATE(c.fecha) >= DATE_ADD(date(NOW()), INTERVAL -2 MONTH))
+                    order by cl1.saldo desc
+                    ;`
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+
+    connection.query(query,(err,rows)=>{
+        callback(rows)
+    })
+
+    connection.end()
+}
 
 module.exports = {
+    obtener_clientes_morosos,
     update_cliente,
     bloquear_cuenta,
     desbloquear_cuenta,

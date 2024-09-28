@@ -61,6 +61,11 @@ router.post("/edit_c/",(req,res)=>{
   clienteController.update_cliente(req,res)
 });
 
+
+router.post("/g/cl/m/",(req, res)=>{
+  clienteController.obtener_clientes_morosos(req, res)
+})
+
 router.patch("/:clienteId", (req, res) => {
   res.send("Update an existing workout");
 });
