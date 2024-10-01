@@ -144,7 +144,15 @@ const obtener_clientes_morosos = (req, res)=> {
   })
 }
 
+const add_flag = (req, res) => {
+  const {body} = req
+  clienteService.add_flag(body,(resp)=>{
+    res.status(201).send({status:'OK',data:resp})
+  })
+}
+
 module.exports = {
+    add_flag,
     obtener_clientes_morosos,
     update_cliente,
     lista_ventas_general,

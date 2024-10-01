@@ -385,7 +385,18 @@ const obtener_clientes_morosos = ( data, callback ) => {
     connection.end()
 }
 
+const add_flag =(data, callback ) => {
+    const query =`update cliente c set c.flag='${data.flag}' where c.idcliente=${data.idcliente}`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,resp)=>{
+        callback(resp)
+    })
+    connection.end()
+}
+
 module.exports = {
+    add_flag,
     obtener_clientes_morosos,
     update_cliente,
     bloquear_cuenta,

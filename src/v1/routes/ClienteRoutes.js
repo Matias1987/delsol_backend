@@ -38,6 +38,10 @@ router.post("/operaciones/", (req, res) => {
  clienteController.operaciones_cliente(req,res)
 });
 
+router.post("/cl/a/f/l/",(req, res)=>{
+  clienteController.add_flag(req,res)
+})
+
 router.get("/actualizar_saldo_en_cobro/:idcobro", (req, res) => {
  clienteController.actualizar_saldo_en_cobro(req,res)
 });

@@ -224,7 +224,7 @@ const validar_usuario_login_b = (data,callback) => {
             u.nombre = '${data.name}' AND 
             u.passwd = MD5('${data.pass}')`
 
-    //console.log(q)
+    console.log(q)
     
     connection.query( q ,(err,rows,fields)=>{
         

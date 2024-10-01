@@ -86,7 +86,12 @@ const obtener_clientes_morosos = (data, callback) =>{
   })
 }
 
+const add_flag = (data,callback) =>{
+  ClienteDB.add_flag(data,(resp)=>{callback(resp)})
+}
+
 module.exports = {
+    add_flag,
     obtener_clientes_morosos,
     update_cliente,
     lista_ventas_general,
