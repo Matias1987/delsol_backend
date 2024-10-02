@@ -374,7 +374,7 @@ const obtener_clientes_morosos = ( data, callback ) => {
                     cl1.idcliente not IN (SELECT distinct c.cliente_idcliente FROM cobro c WHERE DATE(c.fecha) >= DATE_ADD(date(NOW()), INTERVAL -2 MONTH))
                     order by cl1.saldo desc
                     ;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
 
