@@ -43,8 +43,8 @@ const mysql_connection = require("../lib/mysql_connection")
         const _query = `SELECT s.idsesion, s.estado, u.fksucursal_default 
                         FROM sesion s, usuario u WHERE 
                         u.idusuario = s.fkaccount AND 
-                        s.fksucursal=${sucursalid} AND 
-                        s.fkaccount=${uid} 
+                        s.fksucursal=${connection.escape(sucursalid)} AND 
+                        s.fkaccount=${connection.escape(uid)} 
                         AND DATE(NOW()) = DATE(s.fecha)`
 
         connection.query(_query,(err,rows)=>{
@@ -89,7 +89,7 @@ const mysql_connection = require("../lib/mysql_connection")
     const checkIfUserLoggedIn = (token, callback) => {
         const connection = mysql_connection.getConnection();
         connection.connect()
-        let q = `select * from usuario u where u.token = '${token}';`
+        let q = `select * from usuario u where u.token = ${connection.escape(token)};`
         
         connection.query(q,(err,res)=>{
             
@@ -113,7 +113,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const setToken = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    let q = `UPDATE usuario u SET u.logged = '1', u.token = '${data.token}' WHERE u.nombre='${data.nombre}' AND u.passwd=md5('${data.password}');`
+    let q = `UPDATE usuario u SET u.logged = '1', u.token = ${connection.escape(data.token)} WHERE u.nombre=${connection.escape(data.nombre)} AND u.passwd=md5(${connection.escape(data.password)});`
     connection.query(q,(err,resp)=>{
         return callback(resp)
     })
@@ -123,7 +123,7 @@ const setToken = (data, callback) => {
 const logout = (token,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    let q = `update usuario u set u.logged = '0' where u.token = '${token}'`
+    let q = `update usuario u set u.logged = '0' where u.token = ${connection.escape(token)}`
     connection.query(q,(err,data)=>{
         return callback(data)
     })
@@ -154,10 +154,10 @@ const get_user_credentials = (data, callback) =>{
                 if(ups.idpermiso IS NULL, u.admin_prov, ups.admin_prov) AS 'admin_prov'
             from usuario u 
                 LEFT JOIN usuario_permiso_sucursal ups ON 
-                ups.fk_sucursal = ${data.idsucursal} AND 
+                ups.fk_sucursal = ${connection.escape(data.idsucursal)} AND 
                 ups.fk_usuario = u.idusuario
             WHERE 
-            u.idusuario=${data.idusuario}`;
+            u.idusuario=${connection.escape(data.idusuario)}`;
 
             //console.log(query)
 
@@ -190,11 +190,11 @@ const validar_usuario_login = (data,callback) => {
                 if(ups.idpermiso IS NULL, u.admin_prov, ups.admin_prov) AS 'admin_prov'
             from usuario u 
                 LEFT JOIN usuario_permiso_sucursal ups ON 
-                ups.fk_sucursal = ${data.sucursal} AND 
+                ups.fk_sucursal = ${connection.escape(data.sucursal)} AND 
                 ups.fk_usuario = u.idusuario
             WHERE 
-            u.nombre = '${data.name}' AND 
-            u.passwd = MD5('${data.pass}')`
+            u.nombre = ${connection.escape(data.name)} AND 
+            u.passwd = MD5(${connection.escape(data.pass)})`
 
     //console.log(q)
     
@@ -221,15 +221,15 @@ const validar_usuario_login_b = (data,callback) => {
     connection.connect();
     let q = `SELECT  u.* from usuario u         
             WHERE 
-            u.nombre = '${data.name}' AND 
-            u.passwd = MD5('${data.pass}')`
+            u.nombre = ${connection.escape(data.name)} AND 
+            u.passwd = MD5(${connection.escape(data.pass)})`
 
-    console.log(q)
+    //console.log(q)
     
     connection.query( q ,(err,rows,fields)=>{
         
         if((rows||[]).length>0){
-            let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`
+            let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${connection.escape(rows[0].idusuario)}`
             connection.query(_q,(err,_rows)=>{
                 callback({logged:1, uid: rows[0].idusuario, udata: rows[0] });
                 /* register session */
@@ -312,7 +312,7 @@ const agregar_usuario = (data,callback) => {
 const obtener_detalle_vendedor = (idusuario,callback)=>{
     const connection = mysql_connection.getConnection();
     connection.connect();
-    var sql = `SELECT u.* FROM usuario u WHERE u.idusuario=${idusuario};`;
+    var sql = `SELECT u.* FROM usuario u WHERE u.idusuario=${connection.escape(idusuario)};`;
     
     connection.query(sql,(err,rows)=>{
         return callback(rows[0])
@@ -401,7 +401,7 @@ const validar_usuario_be = (data,  onOK, onError)=>{
     //console.log(`user with token: ${data.tk} validated`)
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(`SELECT u.idusuario, u.logged FROM usuario u WHERE u.token='${data.tk}';`,(err,rows)=>{
+    connection.query(`SELECT u.idusuario, u.logged FROM usuario u WHERE u.token=${connection.escape(data.tk)};`,(err,rows)=>{
         const resp = rows||[]
         if(rows.length>0)
         {

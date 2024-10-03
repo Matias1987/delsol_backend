@@ -28,6 +28,7 @@ const lista_ventas_general = (idcliente, callback) => {
 
 const agregar_destinatario = (data,callback) => {
     const connection = mysql_connection.getConnection();
+    const query = "";
     connection.connect();
     connection.query(query,(err,resp)=>{
         callback(resp.insertId)

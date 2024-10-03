@@ -315,8 +315,8 @@ const do_insert_venta = (data, callback) => {
             '${(typeof e.eje === 'undefined' ? 0 : e.eje)}',
             ${typeof e.orden === 'undefined' ? 0 : e.orden},
             ${typeof e.descontable === 'undefined'? 1 : e.descontable },
-            ${typeof e.cb === 'undefined'? 0 : e.cb },
-            ${typeof e.diametro === 'undefined'? 0 : e.diametro }
+            '${typeof e.cb === 'undefined'? 0 : e.cb }',
+            '${typeof e.diametro === 'undefined'? 0 : e.diametro }'
             )`
         })
         return _str;
@@ -422,7 +422,7 @@ const do_insert_venta = (data, callback) => {
             //console.log("###################################");
             //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)));
             //console.log("###################################");
-
+            
             connection.query(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data),idcaja),
             (err,resp) => {
                 venta_id = parseInt(resp.insertId);
@@ -444,6 +444,8 @@ const do_insert_venta = (data, callback) => {
                 });
         
                 var _items_data = get_query_str(_arr_items);
+
+                //console.log(venta_queries.query_items + _items_data)
         
                 if(mp.length>0)
                 {
