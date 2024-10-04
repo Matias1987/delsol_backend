@@ -102,12 +102,12 @@ const do_agregar_gasto = (data, callback) => {
                 sucursal_idsucursal,
                 comentarios
                 ) values (
-                ${idcaja},
-                ${data.usuario_idusuario},
-                ${data.idmotivo},
-                ${data.monto},
-                ${data.sucursal_idsucursal},
-                '${data.comentarios}'
+                ${connection.escape(idcaja)},
+                ${connection.escape(data.usuario_idusuario)},
+                ${connection.escape(data.idmotivo)},
+                ${connection.escape(data.monto)},
+                ${connection.escape(data.sucursal_idsucursal)},
+                ${connection.escape(data.comentarios)}
             )`;
 
             

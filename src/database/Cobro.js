@@ -77,15 +77,6 @@ const do_agregar_cobro = (data, callback) => {
      * y solamente deberia crearse un registro de modo de pago...
      */
 
-    /*console.log(JSON.stringify(data))
-    console.log("########")
-    console.log(
-        JSON.stringify({
-            monto_ctacte: data.mp.ctacte_monto,
-            monto_cuotas: data.mp.ctacte_monto_cuotas,
-            cant_cuotas: data.mp.ctacte_cuotas,
-        })
-    )*/
     //for later use
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     
@@ -164,13 +155,13 @@ const do_agregar_cobro = (data, callback) => {
                 sucursal_idsucursal,
                 fecha
                 ) values (
-                ${idcaja}, 
-                ${data.usuario_idusuario}, 
-                ${typeof data.idcliente === 'undefined' ? 'null' : data.idcliente}, 
-                ${typeof data.idventa === 'undefined' ? 'null' : data.idventa}, 
+                ${connection.escape(idcaja)}, 
+                ${connection.escape(data.usuario_idusuario)}, 
+                ${typeof data.idcliente === 'undefined' ? 'null' : connection.escape(data.idcliente)}, 
+                ${typeof data.idventa === 'undefined' ? 'null' : connection.escape(data.idventa)}, 
                 ${data.monto - data.mp.ctacte_monto /* subtract ctacte monto */}, 
-                '${data.tipo}',
-                ${data.sucursal_idsucursal},
+                ${connection.escape(data.tipo)},
+                ${connection.escape(data.sucursal_idsucursal)},
                 date('${data.fecha}')
                 )`;
 
@@ -392,7 +383,7 @@ const detalle_cobro = (idcobro, callback) => {
     connection.connect();
     //console.log(cobro_queries.queryDetalleCobro(idcobro))
     connection.query(
-        cobro_queries.queryDetalleCobro(idcobro),(err,results)=>{
+        cobro_queries.queryDetalleCobro(connection.escape(idcobro)),(err,results)=>{
             return callback(results);
         }
     );
@@ -400,8 +391,9 @@ const detalle_cobro = (idcobro, callback) => {
 }
 
 const lista_mp_cobro = (idcobro, callback) => {
-    const query = `SELECT cmp.* FROM cobro_has_modo_pago cmp WHERE cmp.cobro_idcobro=${idcobro};`
+    
     const connection = mysql_connection.getConnection();
+    const query = `SELECT cmp.* FROM cobro_has_modo_pago cmp WHERE cmp.cobro_idcobro=${connection.escape(idcobro)};`
     connection.connect();
     //console.log(query)
     connection.query(query,(err,rows)=>{
@@ -413,8 +405,9 @@ const lista_mp_cobro = (idcobro, callback) => {
 
 
 const anular_cobro = (data, callback) => {
-    const query = `update cobro c set c.anulado = 1 where c.idcobro = ${data.idcobro}`
+    
     const connection = mysql_connection.getConnection()
+    const query = `update cobro c set c.anulado = 1 where c.idcobro = ${connection.escape(data.idcobro)}`
     connection.connect()
     connection.query(query,(err,resp)=>{
         callback(resp)

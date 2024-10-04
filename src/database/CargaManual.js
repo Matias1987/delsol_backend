@@ -35,7 +35,7 @@ const do_agregarCargaManual = (data, callback) => {
         sucursal_idsucursal,
         monto,
         concepto) 
-    values (${data.caja_idcaja},${data.usuario_idusuario},${data.cliente_idcliente},${data.sucursal_idsucursal},${data.monto},'${data.concepto}')`
+    values (${connection.escape(data.caja_idcaja)},${connection.escape(data.usuario_idusuario)},${connection.escape(data.cliente_idcliente)},${connection.escape(data.sucursal_idsucursal)},${connection.escape(data.monto)},${connection.escape(data.concepto)})`
     
     //console.log(sql)
 
@@ -52,8 +52,9 @@ const agregarCargaManual= (data,callback) =>
 }
 
 const anularCargaManual = (data,callback)=>{
-    const query = `update carga_manual cm set cm.anulado = 1 where cm.idcarga_manual=${data.id}`
     const connection = mysql_connection.getConnection()
+    const query = `update carga_manual cm set cm.anulado = 1 where cm.idcarga_manual=${connection.escape(data.id)}`
+    
     connection.connect()
     connection.query(query,(err,resp)=>{
         callback(resp)
