@@ -327,11 +327,13 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
 const bloquear_cuenta = (data, callback) =>{
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(`update cliente c set c.bloqueado = 1 where c.idcliente = ${data.idcliente};`,(err,resp)=>{
+    connection.query(`update cliente c set c.bloqueado = 1 where c.idcliente = ${connection.escape(data.idcliente)};`,(err,resp)=>{
         
         //insert comment
         //console.log(`INSERT INTO anotacion (refId, tipo, nota, fksucursal, fkusuario) VALUES ('${data.idcliente}',  '${'CLIENTE'}', '${data.comentario}', '${data.idsucursal}', '${data.idusuario}');`)
-        connection.query(`INSERT INTO anotacion (refId, tipo, nota, fksucursal, fkusuario) VALUES ('${data.idcliente}',  '${'CLIENTE'}', '(BLOQUEO) ${data.comentario}', '${data.idsucursal}', '${data.idusuario}');`,
+        const query = `INSERT INTO anotacion (refId, tipo, nota, fksucursal, fkusuario) VALUES ('${connection.escape(data.idcliente)}',  '${'CLIENTE'}',  ${connection.escape('Bloqueo: ' + data.comentario)}, ${connection.escape(data.idsucursal)}, ${connection.escape(data.idusuario)});`
+        console.log(query)
+        connection.query(query,
         (_err, _resp)=>{
             callback(resp)
         })

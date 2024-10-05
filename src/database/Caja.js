@@ -59,9 +59,9 @@ const do_agregarCaja = (data, callback) =>{
     const connection = mysql_connection.getConnection();
 
     connection.connect();
-
-    const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${data.sucursal_idsucursal},${data.monto_inicial},'${"ABIERTA"}', date('${data.fecha}'))`
-  
+    //console.log(connection.escape(data.fecha))
+    const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${connection.escape(data.sucursal_idsucursal)},${connection.escape(data.monto_inicial)},'${"ABIERTA"}', date(${connection.escape(data.fecha)}))`
+    console.log(sql)
     connection.query(sql,(err,result,fields)=>{
         const _id = result.insertId
 
