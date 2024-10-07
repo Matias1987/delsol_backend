@@ -119,16 +119,25 @@ const obtener_codigos = (callback) => {
 const agregar_codigo = (data,callback) => {
     
 
-    var _genero = typeof data.genero === 'undefined' ? '' : data.genero;
-    var _edad = typeof data.edad === 'undefined' ? '' : data.edad;
+    //var _genero = typeof data.genero === 'undefined' ? '' : data.genero;
+    //var _edad = typeof data.edad === 'undefined' ? '' : data.edad;
     var _costo = typeof data.costo === 'undefined' ? 0 : data.costo;
-    _genero = _genero == null ? '':_genero;
-    _edad = _edad == null ? '': _edad;
-    _costo = _costo == null ? '': _costo;
+    //_genero = _genero == null ? '':_genero;
+    //_edad = _edad == null ? '': _edad;
+    _costo = _costo == null ? '0': isNaN(_costo) ? "0" : parseFloat(_costo);
 
     var esf = typeof data.esf === 'undefined' ? '' : data.esf;  
     var cil = typeof data.cil === 'undefined' ? '' : data.cil;
     var ad = typeof data.ad === 'undefined' ? '' : data.ad;
+
+    let valid_string = /^[A-Za-z0-9\-_\.\+]+$/
+
+    if(!valid_string.test(data.codigo) || !/^[A-Za-z0-9\-_\.\+\s]+$/.test(data.descripcion))
+    {
+        console.log("invalid code")
+        callback(-1)
+        return
+    }
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -156,7 +165,6 @@ const agregar_codigo = (data,callback) => {
         '${data.hook}'
         )`;
 
-    //console.log(JSON.stringify(data))
 
     connection.query(sql, (err,result) => {
         
@@ -174,7 +182,6 @@ const agregar_codigo = (data,callback) => {
                 
         
                 const query_tags = `INSERT ignore INTO codigo_has_tag (fk_codigo, fk_etiqueta) VALUES ${values};`
-                //console.log(query_tags)
                 
                 connection.query(query_tags,(err,__resp)=>{
                     callback(_id)
