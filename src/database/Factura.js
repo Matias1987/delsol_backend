@@ -67,7 +67,14 @@ const agregar_factura_v2 = (data, callback) => {
     connection.connect()
 
     
-    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito  ) VALUES ('${data.nro}', ${data.fkproveedor},${data.total},${data.cant_productos},'${data.tipo}','${data.puntoVenta}', ${data.esremito});` //toDo
+    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito  ) VALUES (
+    ${connection.escape(data.nro)}, 
+    ${connection.escape(data.fkproveedor)},
+    ${connection.escape(data.total)},
+    ${connection.escape(data.cant_productos)},
+    ${connection.escape(data.tipo)},
+    ${connection.escape(data.puntoVenta)}, 
+    ${connection.escape(data.esremito)});` //toDo
     
     console.log(query_factura)
 
@@ -100,15 +107,15 @@ const agregar_factura_v2 = (data, callback) => {
 
         data
         .iva
-        .forEach(row=>{_iva += (_iva.length>0?',':'') + `(${idfactura}, ${row.monto}, '${row.tipo}')`});
+        .forEach(row=>{_iva += (_iva.length>0?',':'') + `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(row.tipo)})`});
 
         data
         .retenciones
-        .forEach(row=>{_retenciones += (_retenciones.length>0?',':'') + `(${idfactura}, ${row.monto})`});
+        .forEach(row=>{_retenciones += (_retenciones.length>0?',':'') + `(${idfactura}, ${connection.escape(row.monto)})`});
 
         data
         .percepciones
-        .forEach(row=>{_percepciones += (_percepciones.length>0?',':'') + `(${idfactura}, ${row.monto}, '${row.tipo}')`});
+        .forEach(row=>{_percepciones += (_percepciones.length>0?',':'') + `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(row.tipo)})`});
 
         let queries=[]
 
@@ -156,8 +163,8 @@ const obtener_facturas_filtros = (data, callback) =>{
     const query =`SELECT DATE_FORMAT(f.fecha,'%d-%m-%y') AS 'fecha_f', f.*, p.nombre AS 'proveedor' FROM factura f, proveedor p WHERE
                 p.idproveedor=f.proveedor_idproveedor and 
                 (case when '${data.idprovs.length}'<>'0' then f.proveedor_idproveedor IN (${provids.map(id=>id)}) ELSE TRUE END) AND 
-                (case when '${data.desde}'<>'' then DATE(f.fecha)>DATE('${from}') ELSE TRUE END ) AND 
-                (case when '${data.hasta}'<>'' then DATE(f.fecha)<DATE('${to}') ELSE TRUE END ) AND 
+                (case when '${data.desde}'<>'' then DATE(f.fecha)>=DATE('${from}') ELSE TRUE END ) AND 
+                (case when '${data.hasta}'<>'' then DATE(f.fecha)<=DATE('${to}') ELSE TRUE END ) AND 
                 (${_q})
                 ;  
                 `;

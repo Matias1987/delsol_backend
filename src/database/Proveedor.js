@@ -4,12 +4,12 @@ const mysql_connection = require("../lib/mysql_connection")
 const agregar_proveedor = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    connection.query(`SELECT p.idproveedor FROM proveedor p WHERE p.cuit = '${data.cuit}'`, (err,resp)=>{
+    connection.query(`SELECT p.idproveedor FROM proveedor p WHERE p.cuit = ${connection.escape(data.cuit)}`, (err,resp)=>{
         if(resp.length>0){
             callback(-1)
         }
         else{
-            connection.query("INSERT INTO `proveedor` (`cuit`, `nombre`) VALUES ('"+data.cuit+"', '"+data.nombre+"');",(err,result,fields)=>{
+            connection.query("INSERT INTO `proveedor` (`cuit`, `nombre`) VALUES ("+connection.escape(data.cuit)+", "+connection.escape(data.nombre)+");",(err,result,fields)=>{
                 callback(result.insertId)
             })
         }
@@ -108,7 +108,7 @@ const agregar_pago_proveedor = (data, callback) =>{
     const connection = mysql_connection.getConnection()
     connection.connect()
     const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha, fecha) VALUES (${data.monto}, ${data.fk_proveedor}, ${data.modo}, '${parse_date_for_mysql(data.fecha)}')`
-    console.log(query)
+    //console.log(query)
     connection.query(query, (err,resp)=>{
             if(data.efectivo.checked)
             {
@@ -123,7 +123,7 @@ const agregar_pago_proveedor = (data, callback) =>{
             if(data.transferencia.checked)
             {
                 const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkbanco});`
-                console.log(_q)
+                //console.log(_q)
                 connection.query(_q)
             }
         callback(resp)
@@ -137,7 +137,7 @@ const agregar_cm_proveedor = (data, callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect()
     const query = `INSERT INTO carga_manual_proveedor  (fk_proveedor, monto, comentarios, modo_ficha) VALUES (${data.fk_proveedor}, ${data.monto}, '${data.comentarios}', ${data.modo})`
-    console.log(query)
+    //console.log(query)
     connection.query(query, (err,resp)=>{
         
         callback(resp)

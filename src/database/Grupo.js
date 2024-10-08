@@ -24,7 +24,7 @@ const agregar_grupo = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
 
-    connection.query(`SELECT g.idgrupo FROM grupo g WHERE g.subfamilia_idsubfamilia = ${data.subfamilia_idsubfamilia} AND g.nombre_corto='${data.nombre_corto}'`,
+    connection.query(`SELECT g.idgrupo FROM grupo g WHERE g.subfamilia_idsubfamilia = ${connection.escape(data.subfamilia_idsubfamilia)} AND g.nombre_corto=${connection.escape(data.nombre_corto)}`,
     (err,rows)=>{
         if(rows.length>0){
             return callback(-1);

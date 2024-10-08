@@ -132,37 +132,23 @@ const obtener_subgrupos = (idg, callback, idsf=-1, idf=-1, idsg=-1) => {
 
 const agregar_subgrupo = (data,callback) => {
     //console.log(JSON.stringify(data))
-    
-   
-    
     if((data.grupo_idgrupo||"")==""){
         return callback(-1)
     }
 
-
     const connection = mysql_connection.getConnection();
     connection.connect();
 
-    connection.query(`select sg.idsubgrupo from subgrupo sg where sg.nombre_corto = '${data.nombre_corto}' and sg.grupo_idgrupo=${data.grupo_idgrupo}`,
+    connection.query(`select sg.idsubgrupo from subgrupo sg where sg.nombre_corto = ${connection.escape(data.nombre_corto)} and sg.grupo_idgrupo=${connection.escape(data.grupo_idgrupo)}`,
     (err,rows)=>{
         if(rows.length>0){
             return callback(-1)
         }
         else{
             var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo,  precio_defecto, no_stock) values (
-                '${data.nombre_corto}','${data.nombre_largo}',${data.grupo_idgrupo},${data.precio_defecto},${+data.control_stock==0 ? 1 : 0}
+                ${connection.escape(data.nombre_corto)},${connection.escape(data.nombre_largo)},${connection.escape(data.grupo_idgrupo)},${connection.escape(data.precio_defecto)},${+data.control_stock==0 ? 1 : 0}
             )`;
 
-            console.log(sql)
-
-            /*var values = [[
-                data.nombre_corto,
-                data.nombre_largo,
-                data.grupo_idgrupo,
-                data.multiplicador,
-                data.precio_defecto,
-            ]];*/
-            //console.log(sql)
             try{
             connection.query(sql, (err,result) => {
                     return callback(result.insertId)
@@ -175,9 +161,6 @@ const agregar_subgrupo = (data,callback) => {
 
         connection.end();
     })
-
-    
-    
 }
 
 const obtener_detalle_subgrupo = (id,callback)=>{
@@ -204,8 +187,8 @@ const obtener_descripcion_cat_subgrupo = (id,callback) => {
 const editarSubgrupo = (data,callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect()
-    //console.log(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto} where sg.idsubgrupo = ${data.idsubgrupo}`)
-    connection.query(`update subgrupo sg set sg.precio_defecto=${data.precio_defecto}, sg.comentarios='${data.comentarios}' where sg.idsubgrupo = ${data.idsubgrupo}`,(err,resp)=>{
+
+    connection.query(`update subgrupo sg set sg.precio_defecto=${connection.escape(data.precio_defecto)}, sg.comentarios=${connection.escape(data.comentarios)} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`,(err,resp)=>{
         callback(resp)
     }
     )
@@ -214,8 +197,7 @@ const editarSubgrupo = (data,callback) => {
 
 const mover = (data, callback) => {
     const query = `update subgrupo sg set sg.grupo_idgrupo=${data.targetId} where sg.idsubgrupo in (${data.ids.map(sg=>sg)});`;
-    console.log(query)
-    //return
+    
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{

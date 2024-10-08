@@ -25,7 +25,7 @@ const agregar_familia = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
 
-    connection.query(`select f.idfamilia from familia f where f.nombre_corto ='${data.nombre_corto}'`,
+    connection.query(`select f.idfamilia from familia f where f.nombre_corto =${connection.escape(data.nombre_corto)}`,
     (err,rows)=>{
         if(rows.length>0){
             return callback(-1);

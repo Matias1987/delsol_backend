@@ -27,7 +27,7 @@ const agregar_subfamilia = (data,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     //check if code exists
-    var _sql = `select sf.idsubfamilia from subfamilia sf where sf.nombre_corto = '${data.nombre_largo}' and sf.familia_idfamilia = ${data.familia_idfamilia};`
+    var _sql = `select sf.idsubfamilia from subfamilia sf where sf.nombre_corto = ${connection.escape(data.nombre_largo)} and sf.familia_idfamilia = ${connection.escape(data.familia_idfamilia)};`
     connection.query(_sql,(err,rows)=>{
 
         if(rows.length>0){
@@ -53,9 +53,12 @@ const agregar_subfamilia = (data,callback) => {
 const obtener_subfamilias_de_familias = (data, callback) => {
     const query = `select sf.*, f.nombre_largo as 'familia' 
     from subfamilia sf, familia f 
-    where f.idfamilia= sf.familia_idfamilia and sf.familia_idfamilia in (${data.ids.map(r=>r)}) 
+    where 
+    f.idfamilia= sf.familia_idfamilia and 
+    sf.familia_idfamilia in (${data.ids.map(r=>r)}) and 
+	sf.idsubfamilia in (SELECT DISTINCT g.subfamilia_idsubfamilia FROM grupo g WHERE g.idgrupo IN (SELECT DISTINCT sg.grupo_idgrupo FROM subgrupo sg))
     order by f.nombre_largo, sf.idsubfamilia;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{

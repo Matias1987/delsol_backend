@@ -6,14 +6,14 @@ const agregar_pago_proveedor = (data,callback) => {
 
     connection.connect()
 
-     const query_pago = `INSERT INTO pago_proveedor (fk_proveedor, monto) VALUES (${data.fk_proveedor}, ${data.monto});`
+     const query_pago = `INSERT INTO pago_proveedor (fk_proveedor, monto) VALUES (${connection.escape(data.fk_proveedor)}, ${connection.escape(data.monto)});`
 
     connection.query(query_pago,(err,resp)=>{
 
         //go thru mp
         let mp=''
         data.mp.forEach(mp=>{
-            mp+= (mp.length>0?',':'') +`('${mp.modo_pago}',${resp.inserId},${mp.monto})`
+            mp+= (mp.length>0?',':'') +`(${connection.escape(mp.modo_pago)},${connection.escape(resp.inserId)},${connection.escape(mp.monto)})`
         })
 
         const query_modo = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ${mp};`
