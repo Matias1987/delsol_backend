@@ -53,7 +53,7 @@ const obtenerAnotaciones = (params,callback) => {
     (case when ${connection.escape(_idref)}<>'-1' then a.refId=${connection.escape(_idref)} ELSE TRUE END) and
     (case when ${connection.escape(_tipo)}<>'-1' then a.tipo=${connection.escape(_tipo)} ELSE TRUE END)
     order by a.idanotacion desc;`
-    console.log(query)
+    //console.log(query)
     connection.query(query,(err,rows)=>{
         callback(rows)
     })
