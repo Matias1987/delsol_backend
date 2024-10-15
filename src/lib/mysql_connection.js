@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const _global_vars = require("../lib/global");
+const _global_vars = require("./global");
 
 const getConnection = () =>{
     return mysql.createConnection(
