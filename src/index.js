@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.port || 3001;//release
 //const port = process.env.port || 3002;//for testing
 
-app.use(cors({origin: ['http://54.174.39.15:3000','http://54.174.39.15:3003','http://localhost:3000']}));//RELEASE
+app.use(cors({origin: ['http://54.174.39.15:3000','http://77.37.68.128:3000/','http://localhost:3000']}));//RELEASE
 //app.use(bodyParser.json());
 //FROM https://stackoverflow.com/questions/24543847/req-body-empty-on-posts
 app.use(bodyParser.urlencoded({
