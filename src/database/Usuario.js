@@ -402,6 +402,12 @@ const validar_usuario_be = (data,  onOK, onError)=>{
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(`SELECT u.idusuario, u.logged FROM usuario u WHERE u.token=${connection.escape(data.tk)};`,(err,rows)=>{
+        if(err)
+        {
+            console.log(err)
+            onError()
+            return
+        }
         const resp = rows||[]
         if(rows.length>0)
         {

@@ -482,6 +482,8 @@ const do_insert_venta = (data, callback) => {
 }
 
 const insert_venta = (data,callback) => {
+    do_insert_venta(data,callback)
+    /*
     UsuarioDB.validar_usuario_be(
         {
             tk: data.tk,
@@ -489,7 +491,7 @@ const insert_venta = (data,callback) => {
         },
         ()=>{do_insert_venta(data,callback)},
         ()=>{callback({msg:"error"})}
-    )
+    )*/
 }
 
 

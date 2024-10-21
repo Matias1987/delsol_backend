@@ -43,10 +43,17 @@ const do_agregar_cliente = (data, callback) => {
 
  connection.query(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${connection.escape(data.dni)});`,
      (err,rows)=>{
+        if(err)
+        {
+            callback(-1)
+            console.log(err)
+            connection.end()
+            return
+        }
          
          if(rows.length<1)
          {
-             console.log(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim('${connection.escape(data.dni)}');`)
+             console.log(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${connection.escape(data.dni)});`)
 
              connection.query(
                  queries.queryAgregarCliente(),

@@ -35,9 +35,9 @@ router.post("/exists/", (req, res) => {
 router.post("/", (req, res) => {
   cajaController.agregarCaja(req,res)
 });
-
+/*
 router.patch("/:clienteId", (req, res) => {
   cajaController.cerrarCaja(req,res)
-});
+});*/
 
 module.exports = router;

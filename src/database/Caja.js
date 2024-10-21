@@ -45,13 +45,13 @@ const cerrarCaja = (idcaja, callback) => {
     const connection = mysql_connection.getConnection();
 
     connection.connect();
-
-    connection.query(insertEvento("CIERRE CAJA",0,0,idcaja,"CAJA"))
-
-    connection.query(`UPDATE caja c SET c.estado='CERRADO' WHERE c.idcaja=${idcaja}`,(err,resp)=>{
+    const query = `UPDATE caja c SET c.estado='CERRADO' WHERE c.idcaja=${idcaja}`
+    
+    console.log(query)
+    connection.query(query,(err,resp)=>{
         callback(resp)
     })
-
+    connection.query(insertEvento("CIERRE CAJA",0,0,idcaja,"CAJA"))
     connection.end();
 }
 

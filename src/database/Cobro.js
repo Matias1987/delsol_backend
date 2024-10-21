@@ -105,9 +105,6 @@ const do_agregar_cobro = (data, callback) => {
         return;//nothing else to do
     }
  
-    
-
-    //console.log(__query)
 
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -128,6 +125,13 @@ const do_agregar_cobro = (data, callback) => {
     //get caja!
     console.log("Obteniendo caja...")
     connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
+        if(err)
+        {
+            console.log(err)
+            callback(null)
+            connection.end()
+            return
+        }
         if(_rows.length<1)
         {
             console.log("No hay caja!!!!!")
@@ -136,45 +140,55 @@ const do_agregar_cobro = (data, callback) => {
             connection.end()
             return
         }
-        else
+        
+
+        if(_rows[0].idcaja!=data.caja_idcaja)
         {
-            if(_rows[0].idcaja!=data.caja_idcaja)
-            {
-                console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ")
-                connection.query(insertEvento("CAJA ID MISMATCH (CLIENTE REF)",data.usuario_idusuario,data.sucursal_idsucursal,data.idcliente,"COBRO"))
-            }
-            const idcaja=_rows[0].idcaja
+            console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ")
+            connection.query(insertEvento("CAJA ID MISMATCH (CLIENTE REF)",data.usuario_idusuario,data.sucursal_idsucursal,data.idcliente,"COBRO"))
+        }
 
-            const __query = `insert into cobro (            
-                caja_idcaja,
-                usuario_idusuario,
-                cliente_idcliente,
-                venta_idventa,
-                monto,
-                tipo,
-                sucursal_idsucursal,
-                fecha
-                ) values (
-                ${connection.escape(idcaja)}, 
-                ${connection.escape(data.usuario_idusuario)}, 
-                ${typeof data.idcliente === 'undefined' ? 'null' : connection.escape(data.idcliente)}, 
-                ${typeof data.idventa === 'undefined' ? 'null' : connection.escape(data.idventa)}, 
-                ${data.monto - data.mp.ctacte_monto /* subtract ctacte monto */}, 
-                ${connection.escape(data.tipo)},
-                ${connection.escape(data.sucursal_idsucursal)},
-                date('${data.fecha}')
-                )`;
+        const idcaja=_rows[0].idcaja
 
+        const __query = `insert into cobro (            
+            caja_idcaja,
+            usuario_idusuario,
+            cliente_idcliente,
+            venta_idventa,
+            monto,
+            tipo,
+            sucursal_idsucursal,
+            fecha
+            ) values (
+            ${connection.escape(idcaja)}, 
+            ${connection.escape(data.usuario_idusuario)}, 
+            ${typeof data.idcliente === 'undefined' ? 'null' : connection.escape(data.idcliente)}, 
+            ${typeof data.idventa === 'undefined' ? 'null' : connection.escape(data.idventa)}, 
+            ${data.monto - data.mp.ctacte_monto /* subtract ctacte monto */}, 
+            ${connection.escape(data.tipo)},
+            ${connection.escape(data.sucursal_idsucursal)},
+            date('${data.fecha}')
+            )`;
 
-            //#region save data
-            connection.query(
-                __query,
-                (err,results)=>{
-           
+        console.log(__query)
+
+        //#region save data
+        connection.query(
+            __query,
+            (err,results)=>{
+
+                if(err)
+                {
+                    console.log(err)
+                    callback(-1)
+                    return
+                }
+            
+        
                 const idcobro = results.insertId
                 //PAGO GUARDADO, PREPARAR MODOS DE PAGOS Y VENTA MODO PAGO
                 var _mp = []
-                
+                //#region PREPARACION
                 _mp = add(
                     _mp,
                     get_mp_obj({
@@ -274,6 +288,8 @@ const do_agregar_cobro = (data, callback) => {
         
                     })
                 }
+                //#endregion
+                
                 //FIN DE PREPARACION...
                 var __query = `INSERT INTO cobro_has_modo_pago 
                 (
@@ -299,9 +315,9 @@ const do_agregar_cobro = (data, callback) => {
                     monto_cuota
                     ) VALUES ` + _venta_mp_item;
 
-                //console.log("INSERTING VENTA MODO DE PAGO: " + __query_venta_mp)
-        
-        
+        /**
+         * insert venta modo de pago...
+         */
                 connection.query(__query,(err,_results)=>{
                     
                     if(typeof data.idventa !== 'undefined'){
@@ -313,19 +329,18 @@ const do_agregar_cobro = (data, callback) => {
                     callback(idcobro);
                     connection.end();  
                 })
-                //SAVE VENTA MP!, THESE HAVE BEEN DELETED BEFORE... (ONLY IN INGRESO)
-                }
-            );
+            //SAVE VENTA MP!, THESE HAVE BEEN DELETED BEFORE... (ONLY IN INGRESO)
+            }
+        );
 
             //#endregion
-        }
     })
 }
 
 const agregar_cobro  = (data,callback) => {
 
-    UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_cobro(data,callback)},()=>{callback({msg:"error"})})
-    
+    //UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_cobro(data,callback)},()=>{callback({msg:"error VALIDANDO USUARIO"})})
+    do_agregar_cobro(data,callback)
 }
 
 const lista_cobros = (data, callback) => {
