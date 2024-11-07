@@ -132,12 +132,13 @@ const agregar_codigo = (data,callback) => {
 
     let valid_string = /^[A-Za-z0-9\-_\.\+]+$/
 
-    if(!valid_string.test(data.codigo) /*|| !/^[/A-Za-z0-9\-_\.\+\s\(\)\*]+$/.test(data.descripcion)*/)
+    /*
+    if(!valid_string.test(data.codigo) || !/^[/A-Za-z0-9\-_\.\+\s\(\)\*]+$/.test(data.descripcion))
     {
         console.log("invalid code")
         callback(-1)
         return
-    }
+    }*/
 
     const connection = mysql_connection.getConnection();
     connection.connect();
