@@ -170,7 +170,7 @@ const do_agregar_cobro = (data, callback) => {
             date('${data.fecha}')
             )`;
 
-        console.log(__query)
+        //console.log(__query)
 
         //#region save data
         connection.query(
