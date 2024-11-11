@@ -657,7 +657,9 @@ const agregar_stock = (data,callback) =>{
         const _query = `SELECT 
         c.idcodigo, 
         c.codigo, 
-        c.descripcion
+        c.descripcion,
+        if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
+        if(c.modo_precio = 1,sg.precio_defecto_mayorista,c.precio_mayorista) AS 'precio_mayorista'
         FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
         s.codigo_idcodigo = c.idcodigo AND 
         c.subgrupo_idsubgrupo = sg.idsubgrupo AND
