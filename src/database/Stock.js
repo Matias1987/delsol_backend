@@ -844,7 +844,7 @@ const agregar_stock = (data,callback) =>{
 
         const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`
         
-
+        console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,response)=>{

@@ -157,6 +157,9 @@ app.use("/api/v1/op",opticaRoutes)
 const tareaRoutes = require("./v1/routes/TareaRoutes")
 app.use("/api/v1/t",tareaRoutes)
 
+const cambioRoutes = require("./v1/routes/CambioVentaRoutes")
+app.use("/api/v1/cb",cambioRoutes)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
