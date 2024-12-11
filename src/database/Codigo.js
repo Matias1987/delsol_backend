@@ -212,7 +212,8 @@ const obtener_codigos_categoria = (data,callback) => {
     SELECT c.*, 
     if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
     sg.multiplicador, 
-    sg.precio_defecto 
+    sg.precio_defecto ,
+    sg.precio_defecto_mayorista
     FROM 
     codigo c, 
     subgrupo sg, grupo g, subfamilia sf

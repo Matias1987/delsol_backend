@@ -32,14 +32,20 @@ const modificar_precios_defecto = (data,callback) => {
             return;
         }
     const connection = mysql_connection.getConnection()
-    connection.connect()
+    
+    const modif_precio_mayorista = data.modif_precio_mayorista||"0" == "0" ? false : data.modif_precio_mayorista 
+
+    let set_part = modif_precio_mayorista ? 
+    `SET sg.precio_defecto = truncate((sg.precio_defecto * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(data.valor)}`
+    :
+    `SET sg.precio_defecto_mayorista = truncate((sg.precio_defecto_mayorista * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(data.valor)}`
 
     const query = `update
     subgrupo sg,
     grupo g,
     subfamilia sf, 
     familia f
-    SET sg.precio_defecto = truncate((sg.precio_defecto * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(data.valor)}
+    ${set_part}
     WHERE 
     sg.grupo_idgrupo=g.idgrupo AND
     g.subfamilia_idsubfamilia = sf.idsubfamilia AND
@@ -47,9 +53,14 @@ const modificar_precios_defecto = (data,callback) => {
     (case when '-1' <> '${data.idfamilia}' then f.idfamilia = ${data.idfamilia} ELSE TRUE END) AND 
     (case when '-1' <> '${data.idsubfamilia}' then sf.idsubfamilia = ${data.idsubfamilia} ELSE TRUE END) AND 
     (case when '-1' <> '${data.idgrupo}' then g.idgrupo = ${data.idgrupo} ELSE TRUE END) AND 
-    (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = ${data.idsubgrupo} ELSE TRUE END);`
+    (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = ${data.idsubgrupo} ELSE TRUE END)
+    ;`
+    
 
-
+    console.log(query)
+    //    return
+    
+    connection.connect()
     connection.query(query,(err,resp)=>{
         callback(resp)
     })
@@ -201,7 +212,7 @@ const editarSubgrupo = (data,callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect()
 
-    connection.query(`update subgrupo sg set sg.precio_defecto=${connection.escape(data.precio_defecto)}, sg.comentarios=${connection.escape(data.comentarios)} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`,(err,resp)=>{
+    connection.query(`update subgrupo sg set sg.precio_defecto=${connection.escape(data.precio_defecto)}, sg.comentarios=${connection.escape(data.comentarios)}, sg.precio_defecto_mayorista=${connection.escape(data.precio_defecto_mayorista)} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`,(err,resp)=>{
         callback(resp)
     }
     )
