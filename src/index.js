@@ -160,6 +160,9 @@ app.use("/api/v1/t",tareaRoutes)
 const cambioRoutes = require("./v1/routes/CambioVentaRoutes")
 app.use("/api/v1/cb",cambioRoutes)
 
+const sorteoRoutes = require("./v1/routes/SorteoRoutes")
+app.use("/api/v1/srt",sorteoRoutes)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
