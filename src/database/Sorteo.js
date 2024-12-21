@@ -4,6 +4,10 @@ const sorteoQueries = require("./queries/sorteoQueries")
 
 const generarSorteo = (data, callback) =>{
 
+    console.log(JSON.stringify(data))
+
+    //return
+
     const connection = mysql_connection.getConnection()
 
     const uid = get_uid(1)
@@ -76,9 +80,9 @@ const generarSorteo = (data, callback) =>{
 }
 
 const obtenerParticipantesDistinct = (data, callback)=>{
-    const query = sorteoQueries.query_get_tickets
+    const query = sorteoQueries.query_get_tickets()
     const connection = mysql_connection.getConnection()
-
+    console.log(query)
     connection.connect()
 
     connection.query(query,(err,resp)=>{
@@ -86,7 +90,10 @@ const obtenerParticipantesDistinct = (data, callback)=>{
         {
             console.log("Error trying to get tickets for sorteo")
         }
+        return callback(resp)
     })
+
+    connection.end()
 }
 const obtenerTickets = (data, callback)=>{
     const query = sorteoQueries.query_get_tickets

@@ -1,5 +1,8 @@
 const sorteoQueries = {
-    query_get_tickets: () =>`
+    query_get_tickets: () =>`SELECT 
+cl.idcliente,
+CONCAT(cl.apellido, ' ', cl.nombre) AS 'cliente' 
+from sorteo.ticket tk, optica_online_final.cliente cl WHERE cl.idcliente = tk.participante_idparticipante AND tk.sorteo_idsorteo=1
                     ;`
 }
 
