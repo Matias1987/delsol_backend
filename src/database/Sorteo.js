@@ -114,8 +114,10 @@ const determinarGanador = (data, callback) => {
  
 
     connection.connect()
-
-    connection.query(sorteoQueries.query_get_tickets,
+    console.log("Determining the winner! ")
+    console.log("First, get tickets...")
+    console.log(sorteoQueries.query_get_tickets())
+    connection.query(sorteoQueries.query_get_tickets(),
         (err,response)=>{
             if(err)
             {
@@ -124,19 +126,24 @@ const determinarGanador = (data, callback) => {
             }
             const tickets_arr = response||[]
             //determine the winner!
-            const winner_index = Math.floor( Math.random() * tickets_arr.length)
             
+            const winner_index = Math.floor( Math.random() * tickets_arr.length)
+           
+
             const the_winner = tickets_arr[winner_index]
 
-            const set_winner_query = `update ticket t set t.ganador=1 where t.sorteo_idsorteo=${data.uidsorteo} and t.uid=${connection.escape(the_winner.idventa)}`
+            const set_winner_query = `update sorteo.ticket t set t.ganador=1 where t.sorteo_idsorteo='${data.uidsorteo}' and t.uid=${connection.escape(the_winner.idventa)}`
+
+            console.log("Now, the winner index is:  " + winner_index + " uid: " + the_winner.idcliente + "  " + the_winner.cliente )
+            console.log(set_winner_query)
 
             connection.query(set_winner_query,(_err,_response)=>{
-                if(_err)
+               /* if(_err)
                 {
                     console.log("Error trying to set winner, " + _err)
                     return callback({msg:"ERROR " + _err})
-                }
-                return callback({winner_id: the_winner.cliente_idcliente})
+                }*/
+                return callback({winner_id: the_winner.idcliente})
             })
 
             connection.end()
