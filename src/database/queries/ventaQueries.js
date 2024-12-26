@@ -341,7 +341,7 @@ const queryListaVentasSucursalEstado = (
 	(case when '${id}'<>'' then v.idventa = '${id}' ELSE TRUE END) AND
 	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END) AND
 	(case when '${fecha}' <> '' then date(v.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end) AND
-	(case when '${idusuario}'<> '' then v.usuario_idusuario = '${idusuario}' else true end) AND 
+	(case when '${idusuario}'<> '-1' then v.usuario_idusuario = '${idusuario}' else true end) AND 
 	(case when '${estado_taller}'<>'' then v.estado_taller = '${estado_taller}' else true end) 
 	ORDER by v.idventa desc
 	LIMIT 200
