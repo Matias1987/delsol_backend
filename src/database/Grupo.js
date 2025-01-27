@@ -13,8 +13,22 @@ const obtener_grupos = (callback) => {
 const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("SELECT g.idgrupo as 'value', g.nombre_largo as 'label' FROM grupo g WHERE g.subfamilia_idsubfamilia="+idsubfamilia+" order by g.nombre_largo asc;",
+    const query = `SELECT 
+                    g.idgrupo as 'value', 
+                    g.nombre_largo as 'label' ,
+                    sg.qtty AS 'subgrupo_qtty'
+                    FROM grupo g, 
+                    (SELECT _sg.grupo_idgrupo, COUNT(*) AS 'qtty' FROM subgrupo _sg GROUP BY _sg.grupo_idgrupo) sg 
+                    WHERE 
+                    g.subfamilia_idsubfamilia=${idsubfamilia} AND 
+                    sg.grupo_idgrupo = g.idgrupo 
+                    order by g.nombre_largo ASC
+                    ;`
+    //console.log(query)
+    connection.query(query,
+                    
     (err,rows,fields)=>{
+        console.log(JSON.stringify(rows))
         return callback(rows);
     });
     connection.end();
