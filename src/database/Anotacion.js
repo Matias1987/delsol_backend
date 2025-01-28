@@ -8,7 +8,7 @@ const agregarAnotacion = (data,callback) => {
 
     const query = `INSERT INTO anotacion (nota, fkusuario, fksucursal, tipo, refId) 
     VALUES (${connection.escape(data.mensaje)}, ${connection.escape(data.fkusuario)}, ${connection.escape(data.fksucursal)}, ${connection.escape(data.tipo)}, ${connection.escape(data.refId)});`
-    console.log(query)
+    //console.log(query)
     connection.query(query,(err,resp)=>{
         callback(resp)
     })
@@ -39,7 +39,7 @@ const obtenerAnotaciones = (params,callback) => {
     
     //
     const connection = mysql_connection.getConnection()
-    console.log(params.tipo)
+    //console.log(params.tipo)
     const _idref = typeof params.idref === 'undefined' ? '-1' : params.idref.toString()
     const _tipo =  typeof params.tipo === 'undefined' ? '-1' : params.tipo.toString()
     const query = `SELECT 

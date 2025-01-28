@@ -316,7 +316,7 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
     DATE(v.fecha_retiro)>=DATE( CONCAT(${data.anio},'-',${data.mes},'-1')) AND 
     DATE(v.fecha_retiro)<= DATE_ADD( DATE_ADD(DATE( CONCAT(${data.anio},'-',${data.mes},'-1')), INTERVAL 1 MONTH), INTERVAL -1 DAY)
     ;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query, (err,resp)=>{

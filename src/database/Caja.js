@@ -47,7 +47,7 @@ const cerrarCaja = (idcaja, callback) => {
     connection.connect();
     const query = `UPDATE caja c SET c.estado='CERRADO' WHERE c.idcaja=${idcaja}`
     
-    console.log(query)
+    //console.log(query)
     connection.query(query,(err,resp)=>{
         callback(resp)
     })
@@ -61,7 +61,7 @@ const do_agregarCaja = (data, callback) =>{
     connection.connect();
     //console.log(connection.escape(data.fecha))
     const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${connection.escape(data.sucursal_idsucursal)},${connection.escape(data.monto_inicial)},'${"ABIERTA"}', date(${connection.escape(data.fecha)}))`
-    console.log(sql)
+    //console.log(sql)
     connection.query(sql,(err,result,fields)=>{
         const _id = result.insertId
 

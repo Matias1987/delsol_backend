@@ -33,7 +33,7 @@ const obtener_tareas = (data, callback) =>{
     const connection = mysql_connection.getConnection()
     
     const query = `select *, concat(date_format(t.fecha, '%d-%m-%y'),' ', t.descripcion) as 'desc' from tarea t where t.fk_parent is null and t.nombre=${connection.escape(data.nombre)} order by t.idtarea desc`
-    console.log(query)
+    //console.log(query)
     connection.connect()
 
     connection.query(query,(err,resp)=>{

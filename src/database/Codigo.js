@@ -274,7 +274,7 @@ const editar_lote_codigos = (params, callback) => {
     c.idcodigo IN (${params.idcodigos.toString()})`
 
     //console.log(query1)
-    console.log(query3)
+    //console.log(query3)
 
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -312,7 +312,7 @@ const editar_lote_codigos = (params, callback) => {
 
 const editar_cantidad_ideal = (params, callback) => {
     const query = `update codigo c set c.stock_ideal = ${params.stock_ideal} where c.idcodigo = ${params.idcodigo};`;
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{

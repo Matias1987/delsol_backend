@@ -76,7 +76,7 @@ const agregar_factura_v2 = (data, callback) => {
     ${connection.escape(data.puntoVenta)}, 
     ${connection.escape(data.esremito)});` //toDo
     
-    console.log(query_factura)
+    //console.log(query_factura)
 
     let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `
     let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto, tipo) VALUES `
@@ -133,7 +133,7 @@ const agregar_factura_v2 = (data, callback) => {
         {
             queries.push(query_percepciones + _percepciones)
         }
-        console.log(JSON.stringify(queries))
+        //console.log(JSON.stringify(queries))
         
         _process(queries)
 

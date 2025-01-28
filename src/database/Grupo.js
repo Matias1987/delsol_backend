@@ -28,7 +28,7 @@ const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
     connection.query(query,
                     
     (err,rows,fields)=>{
-        console.log(JSON.stringify(rows))
+        //console.log(JSON.stringify(rows))
         return callback(rows);
     });
     connection.end();

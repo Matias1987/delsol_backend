@@ -53,7 +53,7 @@ const do_agregar_cliente = (data, callback) => {
          
          if(rows.length<1)
          {
-             console.log(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${connection.escape(data.dni)});`)
+             //console.log(`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${connection.escape(data.dni)});`)
 
              connection.query(
                  queries.queryAgregarCliente(),
@@ -339,7 +339,7 @@ const bloquear_cuenta = (data, callback) =>{
         //insert comment
         //console.log(`INSERT INTO anotacion (refId, tipo, nota, fksucursal, fkusuario) VALUES ('${data.idcliente}',  '${'CLIENTE'}', '${data.comentario}', '${data.idsucursal}', '${data.idusuario}');`)
         const query = `INSERT INTO anotacion (refId, tipo, nota, fksucursal, fkusuario) VALUES ('${connection.escape(data.idcliente)}',  '${'CLIENTE'}',  ${connection.escape('Bloqueo: ' + data.comentario)}, ${connection.escape(data.idsucursal)}, ${connection.escape(data.idusuario)});`
-        console.log(query)
+        //console.log(query)
         connection.query(query,
         (_err, _resp)=>{
             callback(resp)

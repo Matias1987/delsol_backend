@@ -2,7 +2,7 @@ const mysql_connection = require("../lib/mysql_connection")
 
 const registrar_cambio_venta_item = (data, callback) => {
     const connection = mysql_connection.getConnection()
-    console.log(JSON.stringify(connection.config.database))
+    //console.log(JSON.stringify(connection.config.database))
     const query = `INSERT INTO venta_has_stock (
                     venta_idventa, 
                     stock_sucursal_idsucursal, 
@@ -34,7 +34,7 @@ const registrar_cambio_venta_item = (data, callback) => {
 
    // const query1 = `UPDATE venta_has_stock vhs SET vhs.activo =${data.idventa} WHERE vhs.tipo='${data.idventa}' AND vhs.venta_idventa=${data.idventa};`
     const query1 = `DELETE FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa} AND vhs.tipo='${data.tipo}';`
-    console.log(query)
+    //console.log(query)
 
     connection.connect()
 

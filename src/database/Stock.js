@@ -245,7 +245,7 @@ const search_stock_envio = (_search_value, idsucursal_origen, idsucursal_destino
                 (case when '${categoria}' = 'grupo' then g.idgrupo = ${idcat} else true end) and 
                 (case when '${categoria}' = 'subgrupo' then sg.idsubgrupo = ${idcat} else true end)
                 limit 1000;`
-    console.log(_sql)
+    //console.log(_sql)
     connection.query(_sql,(err,rows)=>{
         callback(rows);
     })
@@ -844,7 +844,7 @@ const agregar_stock = (data,callback) =>{
 
         const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`
         
-        console.log(query)
+        //console.log(query)
         const connection = mysql_connection.getConnection()
         connection.connect()
         connection.query(query,(err,response)=>{

@@ -57,7 +57,7 @@ const modificar_precios_defecto = (data,callback) => {
     ;`
     
 
-    console.log(query)
+    //console.log(query)
     //    return
     
     connection.connect()
