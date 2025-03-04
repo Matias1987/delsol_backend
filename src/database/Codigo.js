@@ -73,7 +73,7 @@ const search_codigos = (data, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(
-        `SELECT c.idcodigo,c.codigo,c.descripcion FROM codigo c WHERE ${query_part};`
+        `SELECT c.idcodigo,c.codigo,c.descripcion FROM codigo c WHERE ${query_part} limit 100;`
         ,(err,rows,fields)=>{
         return callback(rows);
     })
