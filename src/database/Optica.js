@@ -4,9 +4,14 @@ const agregar_optica = (data, callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect();
 
-    const sql = `INSERT INTO optica (nombre, fkusuario) VALUES ('${data.nombre}',${data.fkusuario});`
+    const sql = `INSERT ignore INTO optica (nombre, fkusuario) VALUES ('${data.nombre}',${data.fkusuario});`
 
     connection.query(sql,(err,resp)=>{
+        if(err)
+        {
+            callback({message:"ERR"})
+            return
+        }
         callback(resp)
     })
 

@@ -13,13 +13,10 @@ router.get("/:idsucursal", (req, res) => {
 router.post("/", (req, res) => {
   sucursalController.agregarSucursal(req,res);
 });
-
-router.patch("/:sucursalId", (req, res) => {
-  res.send("Update an existing workout");
+router.post("/edit/", (req, res) => {
+  sucursalController.editarSucursal(req,res);
 });
 
-router.delete("/:sucursalId", (req, res) => {
-  res.send("Delete an existing workout");
-});
+
 
 module.exports = router;

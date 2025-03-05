@@ -21,7 +21,11 @@ const agregarSucursal = (data, callback) => {
   })
 }
 
-const editarSucursal = (req, res) => {}
+const editarSucursal = (data, callback) => {
+  SucursalDB.actualizar_sucursal(data,(response)=>{
+    return callback(response)
+  })
+}
 
 
 

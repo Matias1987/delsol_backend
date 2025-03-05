@@ -29,7 +29,12 @@ const agregarSucursal = (req, res) => {
 
 }
 
-const editarSucursal = (req, res) => {}
+const editarSucursal = (req, res) => {
+  const {body} = req
+  sucursalService.editarSucursal(body,(response)=>{
+    res.status(201).send({status:'OK', data:response})
+  })
+}
 
 
 module.exports = {
