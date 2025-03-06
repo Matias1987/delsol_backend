@@ -75,6 +75,7 @@ const buscar_medico = (value, callback) => {
     connection.end();
 }
 
+
 const obtener_medicos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -84,6 +85,14 @@ const obtener_medicos = (callback) => {
     connection.end();
 }
 
+const obtener_medicos_opt = (callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query("select m.* from medico m ",(err,rows,fields)=>{
+        return callback(rows);
+    })
+    connection.end();
+}
 const obtener_medico = (id,callback) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -110,11 +119,28 @@ const agregar_medico = (data,callback) => {
         });
     connection.end();
 }
+const actualizar_medico = (data,callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    var sql = "insert into medico (nombre, matricula, direccion, telefono) values (?)";
+
+    var values = [[
+        data.nombre,
+        data.matricula,
+        data.direccion,
+        data.telefono,
+    ]];
+
+    connection.query(sql,values, (err,result,fields) => {
+            return callback(result.insertId)
+        });
+    connection.end();
+}
 
 const deshabilitar_medico = (data,callback) =>{
     const connection = mysql_connection.getConnection()
     connection.connect()
-    var sql = `update medico m set m.enabled = 0 where m.idmedico = ${data.idmedico};`
+    var sql = `update medico m set m.enabled = if(m.enabled=0,1,0)  where m.idmedico = ${data.idmedico};`
     connection.query(sql,(err,resp)=>{
         callback(resp)
     })
@@ -129,4 +155,5 @@ module.exports = {
     agregar_medico,
     obtener_medico,
     buscar_medico,
+    obtener_medicos_opt,
 }

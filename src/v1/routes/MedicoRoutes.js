@@ -5,6 +5,9 @@ const router = express.Router();
 router.get("/", (req, res) => {
   medicoController.obtenerMedicos(req,res)
 });
+router.get("/o/p/t/", (req, res) => {
+  medicoController.obtenerMedicosOpt(req,res)
+});
 
 router.get("/:idmedico", (req, res) => {
   medicoController.obtenerMedico(req,res)

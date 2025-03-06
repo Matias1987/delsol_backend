@@ -23,6 +23,11 @@ const obtenerMedicos = (callback) => {
         return callback(rows)
     })
 }
+const obtenerMedicosOpt = (callback) => {
+    MedicoDB.obtener_medicos_opt((rows)=>{
+        return callback(rows)
+    })
+}
 
 const obtenerMedico = (id,callback) => {
     MedicoDB.obtener_medico(id,(rows)=>{
@@ -53,4 +58,5 @@ module.exports = {
     buscarMedico,
     ventas_medico_totales,
     ventas_medico,
+    obtenerMedicosOpt,
 }

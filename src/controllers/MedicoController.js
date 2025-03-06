@@ -27,6 +27,12 @@ const obtenerMedicos = (req,res) => {
         res.status(201).send({status:'OK', data:rows});
     })
 }
+
+const obtenerMedicosOpt = (req,res) => {
+    medicoService.obtenerMedicosOpt((rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    })
+}
 const obtenerMedico = (req,res) => {
     const {params:{idmedico}} = req;
     medicoService.obtenerMedico(idmedico,(rows)=>{
@@ -59,4 +65,5 @@ module.exports = {
     buscarMedico,
     ventas_medico_totales,
     ventas_medico,
+    obtenerMedicosOpt,
 }
