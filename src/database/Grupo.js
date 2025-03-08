@@ -16,12 +16,12 @@ const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
     const query = `SELECT 
                     g.idgrupo as 'value', 
                     g.nombre_largo as 'label' ,
-                    sg.qtty AS 'subgrupo_qtty'
-                    FROM grupo g, 
+                    if(sg.grupo_idgrupo is null, 0, sg.qtty) AS 'subgrupo_qtty'
+                    FROM grupo g left join
                     (SELECT _sg.grupo_idgrupo, COUNT(*) AS 'qtty' FROM subgrupo _sg GROUP BY _sg.grupo_idgrupo) sg 
+                    on sg.grupo_idgrupo = g.idgrupo 
                     WHERE 
-                    g.subfamilia_idsubfamilia=${idsubfamilia} AND 
-                    sg.grupo_idgrupo = g.idgrupo 
+                    g.subfamilia_idsubfamilia=${idsubfamilia}  
                     order by g.nombre_largo ASC
                     ;`
     //console.log(query)
