@@ -1,4 +1,4 @@
-import { server_port } from "./lib/global";
+const config = require("./lib/global");
 const express = require("express");
 const bodyParser = require("body-parser");
 var cors = require('cors')
@@ -7,7 +7,7 @@ var cors = require('cors')
 ///const session = require('express-session');
 
 const app = express();
-const port = process.env.port || server_port;//release
+const port = process.env.port || config.server_port;//release
 //const port = process.env.port || 3002;//for testing
 
 app.use(cors(/*{origin: ['http://54.174.39.15:3000','http://77.37.68.128:3000/','http://localhost:3000']}*/));//RELEASE
