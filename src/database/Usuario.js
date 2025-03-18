@@ -302,8 +302,12 @@ const agregar_usuario = (data,callback) => {
         )`;
 
 
-    //console.log(sql)
+    console.log(sql)
     connection.query(sql, (err,result) => {
+        if(err)
+        {
+            return callback({err:1})
+        }
             return callback(result.insertId)
         });
     connection.end();
@@ -334,8 +338,7 @@ const obtener_usuarios_permisos = (callback) => {
         u.deposito,
         u.admin1,
         u.admin2 ,
-        u.laboratorio,
-        u.admin_prov
+        u.laboratorio
         FROM usuario u 
         UNION 
         SELECT  
@@ -349,8 +352,7 @@ const obtener_usuarios_permisos = (callback) => {
         ups.deposito,
         ups.admin1,
         ups.admin2 ,
-        ups.laboratorio,
-        u.admin_prov
+        ups.laboratorio
         FROM usuario_permiso_sucursal ups, sucursal s 
         WHERE
         s.idsucursal = ups.fk_sucursal
