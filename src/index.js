@@ -16,6 +16,9 @@ app.use(cors(/*{origin: ['http://54.174.39.15:3000','http://77.37.68.128:3000/',
 app.use(bodyParser.urlencoded({
     extended: true
   }));
+
+  app.use('/static',express.static('uploads'));
+
 //app.use(express.urlencoded({ extended: true }));  
 
 
@@ -162,8 +165,10 @@ const cambioRoutes = require("./v1/routes/CambioVentaRoutes")
 app.use("/api/v1/cb",cambioRoutes)
 
 const sorteoRoutes = require("./v1/routes/SorteoRoutes");
-const { server_port } = require("./lib/global");
 app.use("/api/v1/srt",sorteoRoutes)
+
+const imgRouter = require("./v1/routes/ImageRoutes")
+app.use("/api/v1/img", imgRouter)
 
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
