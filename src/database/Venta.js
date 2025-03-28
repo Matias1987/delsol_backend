@@ -239,7 +239,7 @@ const cambiar_estado_venta = (data, callback) => {
 
     const __t = (data.estado=="ENTREGADO" ? `, v.fecha_retiro='${fr}' `: "")
 
-    const en_laboratorio =  (data.estado=="PENDIENTE") ? 1 : 0
+    const en_laboratorio = 0;//  (data.estado=="PENDIENTE") ? 1 : 0
 
     const estado_laboratorio = en_laboratorio ? 'PENDIENTE' : ''
     
