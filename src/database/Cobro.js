@@ -58,6 +58,7 @@ const agregar_venta_mp_ctacte = (data,callback) =>
 }
 
 const do_agregar_cobro = (data, callback) => {
+    //console.log(JSON.stringify(data.mp))
 /*
     params:
         tipo: cuota, adelanto
@@ -84,10 +85,13 @@ const do_agregar_cobro = (data, callback) => {
         monto: vars.monto,
         tipo: vars.tipo,
         tarjeta: typeof vars.tarjeta === 'undefined' ? null : vars.tarjeta,
+        
         fkmutual: typeof vars.fkmutual === 'undefined' ? null : vars.fkmutual,
         fkbanco: typeof vars.fkbanco === 'undefined' ? null : vars.fkbanco,
         cant_cuotas: typeof vars.cant_cuotas === 'undefined' ? 0 : vars.cant_cuotas,
         monto_cuota: typeof vars.monto_cuota === 'undefined' ? 0 : vars.monto_cuota,
+        fk_tarjeta: typeof vars.fk_tarjeta === 'undefined' ? null : vars.fk_tarjeta,
+
 
 
     })
@@ -123,7 +127,7 @@ const do_agregar_cobro = (data, callback) => {
     }
 
     //get caja!
-    console.log("Obteniendo caja...")
+    //console.log("Obteniendo caja...")
     connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
         if(err)
         {
@@ -202,7 +206,8 @@ const do_agregar_cobro = (data, callback) => {
                     get_mp_obj({
                         monto: data.mp.tarjeta_monto,
                         tipo: 'tarjeta',
-                        tarjeta: data.mp.tarjeta_tarjeta,
+                        cant_cuotas: data.mp.tarjeta_tarjeta,
+                        fk_tarjeta: data.mp.fk_tarjeta,
                     }),
                     "tarjeta_monto")
                 _mp = add(
@@ -265,13 +270,16 @@ const do_agregar_cobro = (data, callback) => {
                     '${mp.monto}',
                     '${mp.cant_cuotas}',
                     '${mp.monto_cuota}', 
-                    '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}')`
+                    '${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}',
+                    ${connection.escape(mp.fk_tarjeta)}
+                    )`
                     
                     if(mp.tipo!='ctacte')
                     {
                         total+=parseFloat(mp.monto);
                     }
                 })
+                //venta modo de pago
                 if(typeof data.idventa !== 'undefined'){
                     _mp.forEach((mp)=>{
                         _venta_mp_item +=  (_venta_mp_item.length>0 ? ',': '') +`
@@ -283,7 +291,8 @@ const do_agregar_cobro = (data, callback) => {
                             ${mp.monto},
                             ${parseFloat(mp.cant_cuotas) * parseFloat(mp.monto_cuota)}, 
                             ${mp.cant_cuotas},
-                            ${mp.monto_cuota})
+                            ${mp.monto_cuota},
+                            ${connection.escape(mp.fk_tarjeta)})
                         `;
         
                     })
@@ -300,7 +309,9 @@ const do_agregar_cobro = (data, callback) => {
                     monto, 
                     cant_cuotas, 
                     monto_cuota, 
-                    total_int
+                    total_int,
+                    fk_tarjeta
+
                 ) VALUES ` + _cobro_mp_item;
         
                 const __query_venta_mp = `INSERT INTO venta_has_modo_pago 
@@ -312,8 +323,13 @@ const do_agregar_cobro = (data, callback) => {
                     monto, 
                     monto_int, 
                     cant_cuotas, 
-                    monto_cuota
+                    monto_cuota,
+                    fk_tarjeta
+
                     ) VALUES ` + _venta_mp_item;
+
+        //console.log(__query)
+        //console.log(__query_venta_mp)
 
         /**
          * insert venta modo de pago...
@@ -408,7 +424,16 @@ const detalle_cobro = (idcobro, callback) => {
 const lista_mp_cobro = (idcobro, callback) => {
     
     const connection = mysql_connection.getConnection();
-    const query = `SELECT cmp.* FROM cobro_has_modo_pago cmp WHERE cmp.cobro_idcobro=${connection.escape(idcobro)};`
+    const query = `
+    SELECT 
+    cmp.* ,
+    if(t.idtarjeta is null, '', t.nombre) as 'tarjeta',
+    if(m.idmutual is null, '', m.nombre) as 'mutual'
+    FROM 
+    cobro_has_modo_pago cmp 
+        left join tarjeta t on t.idtarjeta=cmp.fk_tarjeta
+        left join mutual m on m.idmutual = cmp.mutual_idmutual
+    WHERE cmp.cobro_idcobro=${connection.escape(idcobro)};`
     connection.connect();
     //console.log(query)
     connection.query(query,(err,rows)=>{
