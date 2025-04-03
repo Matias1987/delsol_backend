@@ -231,6 +231,28 @@ const informe_caja = (idcaja, callback) =>{
     connection.end();
 }
 
+const resumen_caja = (idcaja, callback) => {
+    const connection = mysql_connection.getConnection()
+
+    const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo' FROM 
+                        cobro_has_modo_pago cmp 
+                        INNER JOIN ( SELECT c.* from cobro c WHERE date(c.fecha)=date(NOW()) ) c1 
+                    ON c1.idcobro=cmp.cobro_idcobro 
+                    WHERE 
+                    cmp.modo_pago='efectivo'
+                    union
+                    SELECT SUM(g.monto) AS 'monto', 'egreso' AS 'tipo' FROM gasto g WHERE DATE(g.fecha) = DATE(NOW())
+                    ;`
+    
+    connection.connect()
+
+    connection.query(query,(err,response)=>{
+        callback(response)
+    })
+
+    connection.end()
+}
+
 module.exports = {
     agregarCaja,
     obtener_caja,
@@ -240,4 +262,5 @@ module.exports = {
     obtener_caja_id,
     caja_abierta,
     caja_exists,
+    resumen_caja,
 }
