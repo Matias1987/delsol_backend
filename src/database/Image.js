@@ -65,6 +65,8 @@ const get_default_image = (data,callback) => {
 
         return callback(resp)
     })
+
+     connection.end()
 }
 
 module.exports={agregar_imagen, remover_imagen, obtener_imagenes, get_default_image}
