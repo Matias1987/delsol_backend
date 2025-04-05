@@ -542,6 +542,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
     let iddestinatario = data.iddestinatario||''
     let idventa = data.id||'' 
     let idcliente = data.idcliente||''
+    let fecha = data.fecha||''
 
     idmedico = idmedico=='-1'? '': idmedico 
     iddestinatario = iddestinatario=='-1'? '': iddestinatario 
@@ -552,7 +553,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
 
     idusuario = idusuario=="-1" ? "" : idusuario
 
-    console.log(JSON.stringify(data))
+    /*console.log(JSON.stringify(data))
 
     console.log(venta_queries.queryListaVentasSucursalEstado(
         (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),
@@ -563,11 +564,11 @@ const lista_venta_sucursal_estado = (data,callback) => {
         idcliente,
         idventa,
         (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
-        (typeof data.fecha === 'undefined'? "" : data.fecha),
+        fecha,
         idusuario,
         (typeof data.estado_taller === 'undefined' ? "" : data.estado_taller),
             ))
-  
+  */
 
     connection.query(
         venta_queries.queryListaVentasSucursalEstado(
@@ -579,7 +580,7 @@ const lista_venta_sucursal_estado = (data,callback) => {
         idcliente,
         idventa,
         (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
-        (typeof data.fecha === 'undefined'? "" : data.fecha),
+        fecha,
         idusuario,
         (typeof data.estado_taller === 'undefined' ? "" : data.estado_taller),
             ),(err,data) => {
