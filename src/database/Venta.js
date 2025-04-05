@@ -538,10 +538,15 @@ const lista_venta_sucursal_estado = (data,callback) => {
     connection.connect();
     
     
-    const idmedico = data.idmedico||''
-    const iddestinatario = data.iddestinatario||''
-    const idventa = data.id||'' 
-    const idcliente = data.idcliente||''
+    let idmedico = data.idmedico||''
+    let iddestinatario = data.iddestinatario||''
+    let idventa = data.id||'' 
+    let idcliente = data.idcliente||''
+
+    idmedico = idmedico=='-1'? '': idmedico 
+    iddestinatario = iddestinatario=='-1'? '': iddestinatario 
+    idventa = idventa=='-1'? '': idventa   
+    idcliente = idcliente=='-1'? '': idcliente   
     
     let idusuario = (typeof data.idusuario === 'undefined' ? "" : data.idusuario)
 
