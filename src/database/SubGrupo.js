@@ -190,7 +190,21 @@ const agregar_subgrupo = (data,callback) => {
 const obtener_detalle_subgrupo = (id,callback)=>{
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const query = `SELECT sg.* FROM subgrupo sg WHERE sg.idsubgrupo=${id};`;
+    const query = `SELECT 
+                    f.nombre_corto AS 'familia',
+                    sf.nombre_corto AS 'subfamilia',
+                    g.nombre_corto AS 'grupo',
+                    sg.* 
+                    FROM 
+                    subgrupo sg,
+                    grupo g,
+                    subfamilia sf,
+                    familia f
+                    WHERE
+                    sg.grupo_idgrupo=g.idgrupo AND 
+                    g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+                    sf.familia_idfamilia = f.idfamilia AND 
+                    sg.idsubgrupo=${id};`;
     connection.query(query,(err,rows)=>{
         callback(rows)
     })
