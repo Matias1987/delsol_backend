@@ -170,6 +170,9 @@ app.use("/api/v1/srt",sorteoRoutes)
 const imgRouter = require("./v1/routes/ImageRoutes")
 app.use("/api/v1/img", imgRouter)
 
+const objetivoSucursalRouter = require("./v1/routes/ObjetivoSucursalRoutes")
+app.use("/api/v1/objs", objetivoSucursalRouter)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
