@@ -15,7 +15,37 @@ const establecer_objetivo_sucursal = (req, res) =>{
 const obtener_progreso_sucursal_objetivo = (req, res) =>{
     const {body} = req
     service.obtener_progreso_sucursal_objetivo(body,response=>{
-        res.status(201).send({msg:"OK", data:response})
+        //two rows expected
+        console.log(JSON.stringify(response))
+        const result = {
+            ventas:0,
+            objetivo:0,
+            progreso:0,
+            err: 1
+        }
+
+        if(typeof response.err !== 'undefinied')
+        {
+            if((response||[]).length >1)
+            {
+                for(let i=0;i<response.length;i++)
+                {
+                    if('v' == response[i].tipo )
+                    {
+                        result.ventas = parseFloat(response[i].monto||"0")
+                    }
+                    else{
+                        result.objetivo = parseFloat(response[i].monto||"0")
+                    }
+                }
+
+                result.progreso = +result.objetivo<1 ? 0 :
+                                  +result.objetivo<=result.ventas ? 100 : 
+                                  ((+result.ventas)/(+result.objetivo) *100  )
+            }
+        }
+
+        res.status(201).send({msg:"OK", data:result})
     })
 }
 

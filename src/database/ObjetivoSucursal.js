@@ -51,7 +51,7 @@ const obtener_progreso_sucursal_objetivo = (data, callback) => {
                     (
                         SELECT 
                         0 AS 'id',
-                        'ventas'AS  'tipo',
+                        'v'AS  'tipo',
                         SUM(v.monto_total) AS 'monto'
                         FROM venta v 
                         WHERE 
@@ -65,7 +65,7 @@ const obtener_progreso_sucursal_objetivo = (data, callback) => {
                         SELECT * FROM
                         (
                             SELECT ob.id_objetivo_sucursal AS 'id', 
-                            'objetivo' AS 'tipo', 
+                            'o' AS 'tipo', 
                             ob.monto 
                             FROM objetivo_sucursal ob 
                             WHERE ob.fk_sucursal=${connection.escape(data.fksucursal)} 
@@ -73,6 +73,8 @@ const obtener_progreso_sucursal_objetivo = (data, callback) => {
                         )_
                         
                     )__;`
+
+    console.log(query)
     connection.connect()
 
     connection.query(query,(err,response)=>{
