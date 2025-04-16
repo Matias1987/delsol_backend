@@ -6,14 +6,16 @@ const obtenerLocalidadesPorProvincia = (idProvincia, callback) =>
     loc.id AS 'idlocalidad',
     d.id AS 'iddepartamento',
     loc.nombre AS 'localidad' , 
-    d.nombre AS 'departamento'
+    d.nombre AS 'departamento',
+    d.provincia_id
     FROM  localidades loc, departamentos d, provincias p
     WHERE
     loc.departamento_id = d.id AND 
     d.provincia_id = p.id AND 
-    d.provincia_id = ${idProvincia}
+    (case when '${idProvincia}'<>'-1' then d.provincia_id = ${idProvincia} else true end )
     ;`
     ;
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,rows)=>{
@@ -32,4 +34,18 @@ const obtenerProvincias = (callback) =>{
     connection.end()
 }
 
-module.exports = {obtenerLocalidadesPorProvincia, obtenerProvincias}
+const obtenerLocalidad = (data, callback) => {
+    const connection = mysql_connection.getConnection()
+    const query = ``
+    connection.connect()
+    connection.query(query,(err,response)=>{
+        if(err)
+        {
+            return callback({err:1})
+        }
+        callback(response)
+    })
+    connection.end()
+}
+
+module.exports = {obtenerLocalidadesPorProvincia, obtenerProvincias, obtenerLocalidad}

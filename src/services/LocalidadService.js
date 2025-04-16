@@ -13,4 +13,10 @@ const obtenerProvincias = (callback) =>{
     })
 }
 
-module.exports = {obtenerLocalidadesPorProvincia, obtenerProvincias}
+const obtenerLocalidad = (data, callback) => {
+    LocalidadDB.obtenerLocalidad(data,(response)=>{
+        return callback(response)
+    })
+}
+
+module.exports = {obtenerLocalidadesPorProvincia, obtenerProvincias, obtenerLocalidad}

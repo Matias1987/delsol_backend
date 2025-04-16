@@ -45,7 +45,9 @@ const actualizar_sucursal = (data, callback) => {
                     s.telefono=${connection.escape(data.telefono)},
                     s.instagram=${connection.escape(data.instagram)},
                     s.whatsapp=${connection.escape(data.whatsapp)},
-                    s.facebook=${connection.escape(data.facebook)}
+                    s.facebook=${connection.escape(data.facebook)},
+                    s.fk_localidad=${connection.escape(data.fk_localidad)},
+                    s.fk_provincia=${connection.escape(data.fk_provincia)}
                     WHERE s.idsucursal=${connection.escape(data.idsucursal)};`
 
     console.log(query)
