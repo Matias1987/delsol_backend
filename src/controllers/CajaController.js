@@ -63,6 +63,14 @@ const caja_abierta = (req, res) =>{
     })
 }
 
+const resumen_caja = (req, res) => {
+    const {params:{idsucursal}} = req
+
+    cajaService.resumen_caja({idsucursal:idsucursal},(response)=>{
+        res.status(201).send({status:'OK', data:response})
+    })
+}
+
 
 module.exports={
     obtenerCajasSucursal,
@@ -73,4 +81,5 @@ module.exports={
     obtener_caja_id,
     caja_abierta,
     caja_exists,
+    resumen_caja,
 }

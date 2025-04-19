@@ -5,6 +5,9 @@ router.get("/", (req, res) => {
   cajaController.obtenerCajas(req,res)
 });
 
+router.get("/resumen/caja/s/:idsucursal", (req, res) => {
+  cajaController.resumen_caja(req,res)
+});
 router.get("/caja_abierta/:idsucursal", (req, res) => {
   cajaController.caja_abierta(req,res)
 });

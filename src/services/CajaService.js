@@ -50,9 +50,13 @@ const caja_abierta = (idsucursal,callback) => {
     })
 }
 
+const resumen_caja = (data, callback) => {
+    CajaDB.resumen_caja(data,(response)=>{
+        return callback(response)
+    })
+}
 
 module.exports={
-    
     agregarCaja,
     cerrarCaja,
     obtener_caja,
@@ -60,5 +64,6 @@ module.exports={
     obtenerCajasSucursal,
     obtener_caja_id,
     caja_abierta,
-    caja_exists
+    caja_exists,
+    resumen_caja,
 }

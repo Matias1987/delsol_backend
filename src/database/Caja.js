@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
+const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
 const UsuarioDB = require("./Usuario")
 const caja_exists = (data,callback) => {
@@ -231,26 +232,48 @@ const informe_caja = (idcaja, callback) =>{
     connection.end();
 }
 
-const resumen_caja = (idcaja, callback) => {
+const resumen_caja = (data, callback) => {
+
+    
     const connection = mysql_connection.getConnection()
 
-    const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo' FROM 
+    
+    
+    connection.connect()
+
+    connection.query(obtenerCajaAbierta(data.idsucursal),(err,_rows)=>{
+        if(err)
+        {
+            connection.end()
+            return
+        }
+
+        const idcaja = _rows[0]?.idcaja
+
+        const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo' FROM 
                         cobro_has_modo_pago cmp 
-                        INNER JOIN ( SELECT c.* from cobro c WHERE date(c.fecha)=date(NOW()) ) c1 
+                        INNER JOIN ( SELECT c.* from cobro c WHERE c.caja_idcaja=${idcaja} and c.anulado=0 ) c1 
                     ON c1.idcobro=cmp.cobro_idcobro 
                     WHERE 
                     cmp.modo_pago='efectivo'
                     union
-                    SELECT SUM(g.monto) AS 'monto', 'egreso' AS 'tipo' FROM gasto g WHERE DATE(g.fecha) = DATE(NOW())
+                    SELECT SUM(g.monto) AS 'monto', 'egreso' AS 'tipo' FROM gasto g WHERE 
+                    DATE(g.fecha) = DATE(NOW()) and 
+                    g.anulado=0 and 
+                    g.caja_idcaja = ${idcaja}
                     ;`
-    
-    connection.connect()
 
-    connection.query(query,(err,response)=>{
-        callback(response)
+
+        connection.query(query,(err,response)=>{
+            callback(response)
+        })
+        connection.end()
+
     })
 
-    connection.end()
+    
+
+    
 }
 
 module.exports = {
