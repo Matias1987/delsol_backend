@@ -250,15 +250,15 @@ const resumen_caja = (data, callback) => {
 
         const idcaja = _rows[0]?.idcaja
 
-        const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo' FROM 
+        const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
                         cobro_has_modo_pago cmp 
                         INNER JOIN ( SELECT c.* from cobro c WHERE c.caja_idcaja=${idcaja} and c.anulado=0 ) c1 
                     ON c1.idcobro=cmp.cobro_idcobro 
                     WHERE 
                     cmp.modo_pago='efectivo'
                     union
-                    SELECT SUM(g.monto) AS 'monto', 'egreso' AS 'tipo' FROM gasto g WHERE 
-                    DATE(g.fecha) = DATE(NOW()) and 
+                    SELECT SUM(g.monto) AS 'monto', 'egreso' AS 'tipo', 'Gastos' as 'detalle' FROM gasto g WHERE 
+                   
                     g.anulado=0 and 
                     g.caja_idcaja = ${idcaja}
                     ;`
