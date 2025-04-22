@@ -243,7 +243,7 @@ const operaciones_cliente = (data,callback) => {
      where 
      (case when '${data.idsucursal}'='-1' then true else ${data.idsucursal} = ops.idsucursal end)     
      order by ops.fecha asc, ops.orden asc;`
-     console.log(query)
+     //console.log(query)
     const connection = mysql_connection.getConnection();
     connection.connect();
     
