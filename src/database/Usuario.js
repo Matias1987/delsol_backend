@@ -390,7 +390,7 @@ const modificar_permisos = (data, callback) => {
 
 
 
-    //console.log(query)
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(data.fk_sucursal<0 ? q2 : query,(err,resp)=>{
