@@ -90,6 +90,10 @@ const add_flag = (data,callback) =>{
   ClienteDB.add_flag(data,(resp)=>{callback(resp)})
 }
 
+const obtener_ultimas_graduaciones = (data,callback) =>{
+  ClienteDB.obtener_ultimas_graduaciones(data,(resp)=>{callback(resp)})
+}
+
 module.exports = {
     add_flag,
     obtener_clientes_morosos,
@@ -108,4 +112,5 @@ module.exports = {
     obtener_saldo_ctacte,
     actualizar_saldo_cliente,
     actualizar_saldo_en_cobro,
+    obtener_ultimas_graduaciones,
   };

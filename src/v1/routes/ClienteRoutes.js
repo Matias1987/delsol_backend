@@ -53,6 +53,10 @@ router.get("/saldo/ctacte/:clienteId", (req, res) => {
  clienteController.obtener_saldo_ctacte(req,res)
 });
 
+router.get("/get/ultimas/graduaciones/cliente/:idcliente",(req,res)=>{
+  clienteController.obtener_ultimas_graduaciones(req,res)
+})
+
 router.post("/", (req, res) => {
   clienteController.agregarCliente(req,res);
 });

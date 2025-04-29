@@ -151,6 +151,13 @@ const add_flag = (req, res) => {
   })
 }
 
+const obtener_ultimas_graduaciones = (req,res)=>{
+  const {params:{idcliente}} = req
+  clienteService.obtener_ultimas_graduaciones({idcliente:idcliente},(response)=>{
+    res.status(201).send({status:'OK',data:response })
+  })
+}
+
 module.exports = {
     add_flag,
     obtener_clientes_morosos,
@@ -170,4 +177,5 @@ module.exports = {
     obtener_saldo_ctacte,
     actualizar_saldo_cliente,
     actualizar_saldo_en_cobro,
+    obtener_ultimas_graduaciones,
   };

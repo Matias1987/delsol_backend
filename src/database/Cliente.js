@@ -19,7 +19,7 @@ const lista_ventas_general = (idcliente, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`SELECT s.nombre AS 'sucursal', date_format(v.fecha,'%d-%m-%y') as 'fecha_f' , v.* FROM venta  v, sucursal s WHERE 
-    v.sucursal_idsucursal = s.idsucursal and 
+    v.sucursal_idsucursal = s.idsucursal and v.estado<>'ANULADO'and 
     v.cliente_idcliente=${idcliente} order by v.idventa desc;`,(err,rows)=>{
         callback(rows)
     })
@@ -414,6 +414,34 @@ const add_flag =(data, callback ) => {
     connection.end()
 }
 
+const obtener_ultimas_graduaciones = (data, callback) =>{
+    const query = `SELECT * FROM(
+	SELECT vi.*, 'CR' as 'origen', 0 AS 'orden1' FROM 
+		(SELECT MAX(v.idventa) AS 'id' FROM venta v WHERE v.cliente_idcliente=${data.idcliente} AND v.estado<>'ANULADO' AND (v.tipo=4 OR v.tipo=2 OR v.tipo=5)) vid,
+		(SELECT vs.*, c.codigo FROM  venta_has_stock vs INNER JOIN codigo c ON vs.stock_codigo_idcodigo = c.idcodigo) vi 
+	WHERE
+		vid.id = vi.venta_idventa 
+	UNION
+	SELECT vi.*, 'LC' as 'origen', 1 AS 'orden1' FROM 
+		(SELECT MAX(v.idventa) AS 'id' FROM venta v WHERE v.cliente_idcliente=${data.idcliente} AND v.estado<>'ANULADO' AND ( v.tipo=6 OR v.tipo=3)) vid,
+		(SELECT vs.*, c.codigo FROM  venta_has_stock vs INNER JOIN codigo c ON vs.stock_codigo_idcodigo = c.idcodigo) vi 
+	WHERE
+		vid.id = vi.venta_idventa 
+	)_	ORDER BY _.orden1 ASC, _.orden ASC   `;
+
+    //console.log(query)
+
+    const connection = mysql_connection.getConnection()
+
+    connection.connect()
+
+    connection.query(query,(err,response)=>{
+        callback(response)
+    })
+
+    connection.end()
+    }
+
 module.exports = {
     add_flag,
     obtener_clientes_morosos,
@@ -431,4 +459,5 @@ module.exports = {
     actualizar_saldo_cliente,
     actualizar_saldo_en_cobro,
     lista_ventas_general,
+    obtener_ultimas_graduaciones,
 };
