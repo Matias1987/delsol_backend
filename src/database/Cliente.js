@@ -418,13 +418,23 @@ const obtener_ultimas_graduaciones = (data, callback) =>{
     const query = `SELECT * FROM(
 	SELECT vi.*, 'CR' as 'origen', 0 AS 'orden1' FROM 
 		(SELECT MAX(v.idventa) AS 'id' FROM venta v WHERE v.cliente_idcliente=${data.idcliente} AND v.estado<>'ANULADO' AND (v.tipo=4 OR v.tipo=2 OR v.tipo=5)) vid,
-		(SELECT vs.*, c.codigo FROM  venta_has_stock vs INNER JOIN codigo c ON vs.stock_codigo_idcodigo = c.idcodigo) vi 
+		(  
+            SELECT vs.*, c.codigo, v.tipo as 'tipo_venta' 
+            FROM  venta_has_stock vs 
+            INNER JOIN codigo c ON vs.stock_codigo_idcodigo = c.idcodigo 
+            INNER JOIN venta v where v.idventa=vs.venta_idventa
+        ) vi 
 	WHERE
 		vid.id = vi.venta_idventa 
 	UNION
 	SELECT vi.*, 'LC' as 'origen', 1 AS 'orden1' FROM 
 		(SELECT MAX(v.idventa) AS 'id' FROM venta v WHERE v.cliente_idcliente=${data.idcliente} AND v.estado<>'ANULADO' AND ( v.tipo=6 OR v.tipo=3)) vid,
-		(SELECT vs.*, c.codigo FROM  venta_has_stock vs INNER JOIN codigo c ON vs.stock_codigo_idcodigo = c.idcodigo) vi 
+		(
+            SELECT vs.*, c.codigo , v.tipo as 'tipo_venta'
+            FROM  venta_has_stock vs 
+            INNER JOIN codigo c ON vs.stock_codigo_idcodigo = c.idcodigo
+            INNER JOIN venta v where v.idventa=vs.venta_idventa
+        ) vi 
 	WHERE
 		vid.id = vi.venta_idventa 
 	)_	ORDER BY _.orden1 ASC, _.orden ASC   `;
