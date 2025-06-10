@@ -296,8 +296,14 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
     const connection = mysql_connection.getConnection();
     
     connection.connect();
+
+    //console.log(JSON.stringify(idcobro))
+
+    //console.log(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`)
+
     connection.query(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`,(__err, __row)=>{
 
+  
         if(__row.length>0)
         {
             const query = queries.queryObtenerBalance(__row[0].cliente_idcliente)

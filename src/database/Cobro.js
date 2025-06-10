@@ -10,7 +10,8 @@ const doQuery = (query, callback=null) => {
     connection.query(query,(err,response)=>{
         if(err)
         {
-            return callback(err,null)
+            console.log("Error " + JSON.stringify(err))
+            return callback?.(err,null)
         }
         callback?.(err,response)
     })
@@ -18,6 +19,10 @@ const doQuery = (query, callback=null) => {
 }
 
 const do_agregar_cobro_v2 = (data , callback) => {
+
+    const connection = mysql_connection.getConnection();
+
+    //console.log(JSON.stringify(data))
     //console.log("using new version.....")
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     
@@ -87,6 +92,11 @@ const do_agregar_cobro_v2 = (data , callback) => {
                 ${connection.escape(data.sucursal_idsucursal)},
                 date('${data.fecha}')
                 )`;
+
+
+            //console.log("insert cobro")
+            //console.log(JSON.stringify(__query))
+
             doQuery(__query,(err1, result1)=>{
                 if(err1)
                     {
@@ -166,6 +176,7 @@ const do_agregar_cobro_v2 = (data , callback) => {
                 var _cobro_mp_item = ``
                 var _venta_mp_item = ``
                 var total = 0;
+
                 _mp.forEach((mp)=>{
         
                     _cobro_mp_item +=  (_cobro_mp_item.length>0 ? ',': '') +
@@ -230,21 +241,43 @@ const do_agregar_cobro_v2 = (data , callback) => {
                     fk_tarjeta
 
                 ) VALUES ` + _venta_mp_item;
-                //#endregion
-                doQuery(___query,(err2, result2)=>{
-                    if(err2)
+
+               
+                if(_venta_mp_item.length<1)
+                {
+                    doQuery(`UPDATE venta  v SET v.descuento=${data.descuento}, v.debe=v.subtotal-${data.descuento},  v.monto_total=v.subtotal-${data.descuento},  v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${(data.idventa||"0")};`)
+                    
+                    if(_cobro_mp_item.length>0)
                     {
-                        callback(null)
-                        return
+                        doQuery(___query,(err2, result2)=>{
+                            callback(idcobro);
+                        })
                     }
-                    if(typeof data.idventa !== 'undefined'){
-                        //hope this works!!
-                        doQuery(__query_venta_mp)
-                        //UPDATE DEBE AND HABER FIELDS IN VENTA
-                        doQuery(`UPDATE venta  v SET v.descuento=${data.descuento}, v.debe=v.subtotal-${data.descuento},  v.monto_total=v.subtotal-${data.descuento},  v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${data.idventa};`)
+                    else{
+                        callback(idcobro);
                     }
-                    callback(idcobro);
-                })
+                    
+                }
+                else{
+                    doQuery(___query,(err2, result2)=>{
+                        if(err2)
+                        {
+                            console.log("error...........................")
+                            callback(null)
+                            return
+                        }
+                        if(typeof data.idventa !== 'undefined'){
+                            //hope this works!!
+                            doQuery(__query_venta_mp)
+                            //UPDATE DEBE AND HABER FIELDS IN VENTA
+                            doQuery(`UPDATE venta  v SET v.descuento=${data.descuento}, v.debe=v.subtotal-${data.descuento},  v.monto_total=v.subtotal-${data.descuento},  v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${(data.idventa||"0")};`)
+                        }
+                        callback(idcobro);
+                    })
+                }
+
+                //#endregion
+                
             
             
             })
