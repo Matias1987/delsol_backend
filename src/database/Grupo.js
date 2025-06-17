@@ -10,7 +10,9 @@ const obtener_grupos = (callback) => {
     connection.end();
 }
 
-const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
+const obtener_grupos_bysubfamilia_opt = (data, callback) =>{
+    const {idsubfamilia, visible} = data;
+    
     const connection = mysql_connection.getConnection();
     connection.connect();
     const query = `SELECT 
@@ -21,10 +23,11 @@ const obtener_grupos_bysubfamilia_opt = (idsubfamilia, callback) =>{
                     (SELECT _sg.grupo_idgrupo, COUNT(*) AS 'qtty' FROM subgrupo _sg GROUP BY _sg.grupo_idgrupo) sg 
                     on sg.grupo_idgrupo = g.idgrupo 
                     WHERE 
+                    (case when '${(visible||"0")}'='0' then true else g.visible_lp=1 end) and
                     g.subfamilia_idsubfamilia=${idsubfamilia}  
                     order by g.nombre_largo ASC
                     ;`
-    //console.log(query)
+    console.log(query)
     connection.query(query,
                     
     (err,rows,fields)=>{

@@ -13,8 +13,8 @@ const agregarGrupo = (data,callback) => {
 }
 const editarGrupo = (req, res) => {}
 
-const obtener_grupos_bysubfamilia_opt = (idsubfamilia,callback) =>{
-  GrupoDB.obtener_grupos_bysubfamilia_opt(idsubfamilia,(rows)=>{
+const obtener_grupos_bysubfamilia_opt = (data,callback) =>{
+  GrupoDB.obtener_grupos_bysubfamilia_opt(data,(rows)=>{
     return callback(rows);
   })
 }
