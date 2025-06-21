@@ -25,6 +25,10 @@ router.get("/optforsubgrupo/:subgrupoId", (req, res) => {
   codigoController.obtener_codigos_bysubgrupo_opt(req,res);
 });
 
+router.post("/cambiar/estado/codigo/",(req,res)=>{
+  codigoController.cambiar_estado_activo(req,res)
+})
+
 router.post("/", (req, res) => {
   codigoController.agregarCodigo(req,res);
 });

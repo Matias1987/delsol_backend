@@ -65,6 +65,11 @@ const editar_cantidad_ideal = (data,callback) => {
   })
 }
 
+const cambiar_estado_activo = (data, callback) => {
+  CodigoDB.cambiar_estado_activo(data,response=>{
+    return callback(response)
+  })
+}
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -78,4 +83,5 @@ module.exports = {
     search_codigos,
     obtenerCodigo,
     obtener_codigos_categoria,
+    cambiar_estado_activo,
   };

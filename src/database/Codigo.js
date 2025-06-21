@@ -323,6 +323,23 @@ const editar_cantidad_ideal = (params, callback) => {
 
 }
 
+const cambiar_estado_activo = (params, callback) => {
+    const {activo, codigos} = params
+    const connection = mysql_connection.getConnection()
+    const q = `update codigo c set c.activo = '${activo}' where c.idcodigo in (${codigos});`;
+    console.log(q)
+   // return
+    connection.connect()
+    connection.query(q,(err,response)=>{
+        if(err)
+        {
+            return callback({err:1})
+        }
+        return callback(callback)
+    })
+    connection.end()
+}
+
 module.exports = {
     editar_cantidad_ideal,
     editar_codigo,
@@ -335,4 +352,5 @@ module.exports = {
     obtener_codigos_categoria,
     obtener_codigos_filtros,
     editar_lote_codigos,
+    cambiar_estado_activo,
 }

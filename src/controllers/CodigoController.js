@@ -130,6 +130,13 @@ const editar_cantidad_ideal = (req, res) => {
   })
 }
 
+const cambiar_estado_activo = (req, res) =>{
+  const {body} = req;
+  codigoService.cambiar_estado_activo(body,response=>{
+    res.status(201).send({satus:"OK", data: response})
+  })
+}
+
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -143,4 +150,5 @@ module.exports = {
     obtener_codigos_bysubgrupo_opt,
     search_codigos,
     obtener_codigos_categoria,
+    cambiar_estado_activo,
   };
