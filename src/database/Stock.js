@@ -570,6 +570,7 @@ const agregar_stock = (data,callback) =>{
             _c.genero,
             _c.modo_precio,
             sg.multiplicador,
+            _c.activo,
             if(_c.modo_precio=0, (ROUND((_c.costo * sg.multiplicador)/100)*100),if(_c.modo_precio = 1,sg.precio_defecto,_c.precio)) AS 'precio',
             sg.idsubgrupo,
             g.idgrupo,

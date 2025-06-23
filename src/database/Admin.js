@@ -1,6 +1,55 @@
 const mysql_connection = require("../lib/mysql_connection")
 
 
+const total_general_gastos = (data,  callback) =>{
+    const query = `SELECT 
+                    SUM(if(periodo='dia',gs.monto, 0 )) AS 'monto_dia',
+                    SUM(if(periodo='dia',gs.cant, 0 )) AS 'cant_dia',
+                    SUM(if(periodo='mes',gs.monto, 0 )) AS 'monto_mes',
+                    SUM(if(periodo='mes',gs.cant, 0 )) AS 'cant_mes'
+                    FROM 
+                    (
+                        SELECT 'dia' AS 'periodo', COUNT(g.idgasto) AS 'cant', SUM(g.monto) AS 'monto' FROM gasto g WHERE DATE(g.fecha) = DATE(NOW()) AND g.anulado=0
+                        union
+                        SELECT 'mes' AS 'periodo', COUNT(g.idgasto) AS 'cant', SUM(g.monto) AS 'monto' FROM gasto g WHERE MONTH(g.fecha)=MONTH(NOW()) AND YEAR(g.fecha) = YEAR(NOW())
+                    )gs`;
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,response)=>{
+        if(err)
+        {
+            return callback({err:1})
+        }
+
+        return callback(response);
+    })
+    connection.end();
+}
+
+const total_general_cobros = (data, callback) =>{
+    const query = `SELECT 
+                    SUM(if(cs.periodo='dia',cs.monto, 0 )) AS 'monto_dia',
+                    SUM(if(cs.periodo='dia',cs.cant, 0 )) AS 'cant_dia',
+                    SUM(if(cs.periodo='mes',cs.monto, 0 )) AS 'monto_mes',
+                    SUM(if(cs.periodo='mes',cs.cant, 0 )) AS 'cant_mes'
+                    FROM 
+                    (
+                    SELECT 'dia' AS 'periodo', COUNT(c.idcobro) AS 'cant', SUM(c.monto) AS 'monto' FROM cobro c WHERE c.anulado=0 AND DATE(c.fecha) = DATE(NOW())
+                    UNION 
+                    SELECT 'mes' AS 'periodo', COUNT(c.idcobro) AS 'cant', SUM(c.monto) AS 'monto' FROM cobro c WHERE c.anulado=0 AND YEAR(c.fecha) = YEAR(NOW()) AND MONTH(c.fecha) = MONTH(NOW())
+                    )cs;`
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,response)=>{
+        if(err)
+        {
+            return callback({err:1})
+        }
+
+        return callback(response);
+    })
+    connection.end();
+}
 
 const obtener_caja_dia_sucursal = (data, callback) => {
     const query = `SELECT c.idcaja FROM caja c WHERE date(c.fecha) = DATE('${data.anio}/${data.mes}/${data.dia}') AND c.sucursal_idsucursal=${data.idsucursal};`;
@@ -334,5 +383,8 @@ module.exports = {
     obtener_resumen_totales,
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
-    totales_stock_ventas_periodo
+    totales_stock_ventas_periodo,
+    
+    total_general_cobros,
+    total_general_gastos,
 }
