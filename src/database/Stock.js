@@ -663,6 +663,7 @@ const agregar_stock = (data,callback) =>{
         if(c.modo_precio = 1,sg.precio_defecto_mayorista,c.precio_mayorista) AS 'precio_mayorista',
         sg.idsubgrupo
         FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
+        c.activo=1 AND 
         s.codigo_idcodigo = c.idcodigo AND 
         c.subgrupo_idsubgrupo = sg.idsubgrupo AND
         sg.grupo_idgrupo = g.idgrupo AND 
