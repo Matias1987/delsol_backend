@@ -70,13 +70,6 @@ const cambiar_estado_activo = (data, callback) => {
     return callback(response)
   })
 }
-
-const ejemplo_codigo = (data, callback) => {
-  CodigoDB.ejemplo_codigo(data, response=>{
-    callback(response)
-  })
-}
-
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -91,5 +84,4 @@ module.exports = {
     obtenerCodigo,
     obtener_codigos_categoria,
     cambiar_estado_activo,
-    ejemplo_codigo,
   };

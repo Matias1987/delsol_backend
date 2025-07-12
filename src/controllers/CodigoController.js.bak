@@ -137,16 +137,6 @@ const cambiar_estado_activo = (req, res) =>{
   })
 }
 
-const ejemplo_codigo = (req, res) => {
-  const {params:{idsubgrupo, idgrupo}} = req
-
-
-  codigoService.ejemplo_codigo({idsubgrupo: (idsubgrupo||"0"), idgrupo:(idgrupo||"0")},response=>{
-    res.status(201).send({status:"OK", data:response})
-  })
-
-}
-
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -161,5 +151,4 @@ module.exports = {
     search_codigos,
     obtener_codigos_categoria,
     cambiar_estado_activo,
-    ejemplo_codigo,
   };

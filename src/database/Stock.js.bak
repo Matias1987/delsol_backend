@@ -652,13 +652,13 @@ const agregar_stock = (data,callback) =>{
             __filtros_codigo+= (__filtros_codigo.length<1 ? "":" and ") + `c.codigo like '%${r}%' `
         })
         __parts.forEach(r=>{
-            __filtros_desc+= (__filtros_desc.length<1 ? "":" and ") + `concat(c.descripcion, ' ' , g.nombre_corto, ' ', sg.nombre_corto)  like '%${r}%' `
+            __filtros_desc+= (__filtros_desc.length<1 ? "":" and ") + `c.descripcion like '%${r}%' `
         })
 
         const _query = `SELECT 
         c.idcodigo, 
         c.codigo, 
-        c.descripcion ,
+        c.descripcion,
         if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
         if(c.modo_precio = 1,sg.precio_defecto_mayorista,c.precio_mayorista) AS 'precio_mayorista',
         sg.idsubgrupo

@@ -13,10 +13,6 @@ router.get("/lista_por_categoria/:idfamilia/:idsubfamilia/:idgrupo/:idsubgrupo/:
   codigoController.obtener_codigos_categoria(req,res)
 });
 
-router.get("/ej/cod/:idsubgrupo/:idgrupo",(req,res)=>{
-  codigoController.ejemplo_codigo(req,res)
-})
-
 router.post("/porcodigo/", (req,res)=>{
   codigoController.obtenerCodigo(req,res)
 });

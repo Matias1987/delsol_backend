@@ -27,7 +27,7 @@ const obtener_grupos_bysubfamilia_opt = (data, callback) =>{
                     g.subfamilia_idsubfamilia=${idsubfamilia}  
                     order by g.nombre_largo ASC
                     ;`
-    console.log(query)
+    //console.log(query)
     connection.query(query,
                     
     (err,rows,fields)=>{
