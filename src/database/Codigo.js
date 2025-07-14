@@ -354,7 +354,7 @@ const ejemplo_codigo = (params, callback) => {
                     ) mc
                     ON c1.idcodigo = mc.id
                     ;`
-    console.log(query)
+    //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,response)=>{
