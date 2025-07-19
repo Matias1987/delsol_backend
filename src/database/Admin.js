@@ -291,6 +291,7 @@ const totales_stock_ventas_periodo = (data, callback) => {
             SELECT 
                 sc.nombre as sucursal,
                 cod.codigo,
+                cod.descripcion,
                 cc.cantidad
                 from
                 (
