@@ -176,7 +176,13 @@ app.use("/api/v1/objs", objetivoSucursalRouter)
 const settingsRouter = require("./v1/routes/SettingsRoutes")
 app.use("/api/v1/stt", settingsRouter)
 
+/*
+const ingresoRouter = require("./v1/routes/IngresoRoutes");
+app.use("/api/v1/ingresos", ingresoRouter);
 
+const egresoRouter = require("./v1/routes/EgresoRoutes");
+app.use("/api/v1/egresos", egresoRouter);
+*/
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
