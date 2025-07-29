@@ -176,6 +176,10 @@ app.use("/api/v1/objs", objetivoSucursalRouter)
 const settingsRouter = require("./v1/routes/SettingsRoutes")
 app.use("/api/v1/stt", settingsRouter)
 
+const importerRouter = require("./v1/routes/ImporterRoutes")
+app.use("/api/v1/importer", importerRouter);
+
+
 /*
 const ingresoRouter = require("./v1/routes/IngresoRoutes");
 app.use("/api/v1/ingresos", ingresoRouter);
