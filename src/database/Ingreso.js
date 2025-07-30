@@ -1,29 +1,62 @@
 // Example CRUD methods for Egreso with 'params' and 'callback' arguments
 
-const db = require('./db'); // Adjust this to your DB connection module
+const mysql_connection = require("../lib/mysql_connection")
+
+const doQuery = (query, params, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    connection.query(query, params, (err, rows, fields) => {
+        callback(rows);
+    })
+    connection.end();
+} 
 
 // Create
 function createEgreso(params, callback) {
-    const sql = 'INSERT INTO egresos SET ?';
-    db.query(sql, params, callback);
+   const query = 'INSERT INTO egresos SET ?';
+   doQuery(query, params, (result) => {
+       if (result.insertId) {
+           callback(null, { id: result.insertId, ...params });
+       } else {
+           callback(new Error('Error creating Egreso'));
+       }
+   });
 }
 
 // Read
 function getEgreso(params, callback) {
-    const sql = 'SELECT * FROM egresos WHERE id = ?';
-    db.query(sql, [params.id], callback);
+    const query = 'SELECT * FROM egresos WHERE id = ?';
+    doQuery(query, [params.id], (result) => {
+        if (result.length > 0) {
+            callback(null, result[0]);
+        } else {
+            callback(new Error('Egreso not found'));
+        }
+    });
 }
 
 // Update
 function updateEgreso(params, callback) {
-    const sql = 'UPDATE egresos SET ? WHERE id = ?';
-    db.query(sql, [params.data, params.id], callback);
+    const query = 'UPDATE egresos SET ? WHERE id = ?';
+    doQuery(query, [params, params.id], (result) => {
+        if (result.affectedRows > 0) {
+            callback(null, { id: params.id, ...params });
+        } else {
+            callback(new Error('Error updating Egreso'));
+        }
+    });
 }
 
 // Delete
 function deleteEgreso(params, callback) {
-    const sql = 'DELETE FROM egresos WHERE id = ?';
-    db.query(sql, [params.id], callback);
+    const query = 'DELETE FROM egresos WHERE id = ?';
+    doQuery(query, [params.id], (result) => {
+        if (result.affectedRows > 0) {
+            callback(null, { message: 'Egreso deleted successfully' });
+        } else {
+            callback(new Error('Error deleting Egreso'));
+        }
+    });
 }
 
 module.exports = {

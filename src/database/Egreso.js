@@ -74,9 +74,26 @@ function deleteEgreso(params, callback) {
     connection.end();
 }
 
+function getEgresoList(callback) {
+    const connection = db.getconnection();
+    if (!connection) {return callback(new Error('No database connection')); }
+
+    const sql = 'SELECT * FROM egresos';
+    connection.connect();
+
+    connection.query(sql, (err, results) => {
+        if (err) {
+            return callback(err);
+        }
+        callback(null, results);
+    });
+    connection.end();
+}
+
 module.exports = {
     createEgreso,
     getEgreso,
     updateEgreso,
-    deleteEgreso
+    deleteEgreso,
+    getEgresoList,
 };

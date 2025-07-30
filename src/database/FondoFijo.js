@@ -33,6 +33,16 @@ function remove(id, callback) {
     db.query(sql, [id], callback);
 }
 
+function getBalance(idsucursal, callback) {
+    const sql = `SELECT op.* from (
+                    SELECT e.idegreso AS 'id', 'egreso' AS 'tipo', e.fecha, e.monto FROM c_egreso e WHERE e.fk_caja=0 
+                    UNION 
+                    SELECT i.idingreso AS 'id', 'ingreso' AS 'tipo', i.fecha, i.monto FROM c_ingreso i WHERE i.fk_caja=0
+                    ) op ORDER BY op.id ;`
+                     ;
+    db.query(sql, [idsucursal], callback);
+}
+
 module.exports = {
     create,
     getAll,

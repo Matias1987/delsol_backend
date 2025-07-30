@@ -239,7 +239,7 @@ const obtener_codigos_categoria = (data,callback) => {
 const editar_codigo = (data, callback) =>{
     const _codigo = data.codigo||""
     if(_codigo==''){
-        callback();
+        callback(null, {affectedRows:0});
         return
     }
     const connection = mysql_connection.getConnection();
@@ -256,8 +256,11 @@ const editar_codigo = (data, callback) =>{
 }
 
 const editar_codigo_propiedades = (data, callback) => {
-
+    //try to edit the code first
     editar_codigo(data,(_err, _resp)=>{
+        if(_err){
+
+        }
         const query = `update codigo c set 
         c.descripcion = '${data.descripcion}',
         c.modo_precio = '${data.modo_precio}',
@@ -266,9 +269,12 @@ const editar_codigo_propiedades = (data, callback) => {
         `
         const connection = mysql_connection.getConnection()
         connection.connect()
-        //does code exists?...
+        
         connection.query(query,(err,resp)=>{
-            callback(resp)
+            callback({
+                modif_codigo: _resp.affectedRows>0,
+                modif_prop: resp.affectedRows>0,
+            })
         })
         connection.end()
     })

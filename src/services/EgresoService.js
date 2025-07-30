@@ -2,12 +2,12 @@ const Egreso = require("../database/Egreso");
 
 // Create egreso
 function createEgreso(params, callback) {
-    Egreso.create(params, callback);
+    Egreso.createEgreso(params, callback);
 }
 
 // Get all egresos
 function getAllEgresos(callback) {
-    Egreso.getAll(callback);
+    Egreso.getEgresoList(callback);
 }
 
 // Get egreso by ID

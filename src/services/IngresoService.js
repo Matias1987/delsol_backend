@@ -2,7 +2,7 @@ const Ingreso = require("../database/Ingreso");
 
 // Create ingreso
 function createIngreso(params, callback) {
-    Ingreso.create(params, callback);
+    Ingreso.createEgreso(params, callback);
 }
 
 // Get all ingresos

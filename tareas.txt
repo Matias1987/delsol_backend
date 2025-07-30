@@ -1,0 +1,3 @@
+30/07/2025
+Archivo entity CajaMaster: para manejar las consultas de la caja master, tabla caja.
+Archivo FondoComun: para manejar las consultas de la caja nro. 2, tabla caja.
