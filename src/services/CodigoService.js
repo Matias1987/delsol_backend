@@ -41,8 +41,8 @@ const obtener_codigos_categoria = (data,callback) => {
   })
 }
 
-const editar_codigo = (data, callback) => {
-  CodigoDB.editar_codigo(data,(response)=>{
+const editar_codigo_propiedades = (data, callback) => {
+  CodigoDB.editar_codigo_propiedades(data,(response)=>{
     return callback(response)
   })
 }
@@ -81,7 +81,7 @@ module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
     obtener_codigos_filtros,
-    editar_codigo,
+    editar_codigo_propiedades,
     obtenerCodigoPorID,
     obtenerCodigos,
     agregarCodigo,

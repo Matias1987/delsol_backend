@@ -38,7 +38,7 @@ router.post("/", (req, res) => {
 });
 
 router.post("/editar_c/",(req,res)=>{
-  codigoController.editar_codigo(req,res)
+  codigoController.editar_codigo_propiedades(req,res)
 })
 
 router.post("/codigos_filtros/",(req,res)=>{

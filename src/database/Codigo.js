@@ -236,19 +236,44 @@ const obtener_codigos_categoria = (data,callback) => {
     connection.end();
 }
 
-const editar_codigo = (data, callback) => {
-    const query = `update codigo c set 
-    c.descripcion = '${data.descripcion}',
-    c.modo_precio = '${data.modo_precio}',
-    c.precio = ${data.precio}
-    where c.idcodigo = ${data.idcodigo}
-    `
-    const connection = mysql_connection.getConnection()
+const editar_codigo = (data, callback) =>{
+    const _codigo = data.codigo||""
+    if(_codigo==''){
+        callback();
+        return
+    }
+    const connection = mysql_connection.getConnection();
     connection.connect()
+
+    const query=`update codigo c set c.codigo=${connection.escape(_codigo)} 
+    where c.idcodigo = ${data.idcodigo}`
+
     connection.query(query,(err,resp)=>{
-        callback(resp)
+        callback(err,resp)
     })
+
     connection.end()
+}
+
+const editar_codigo_propiedades = (data, callback) => {
+
+    editar_codigo(data,(_err, _resp)=>{
+        const query = `update codigo c set 
+        c.descripcion = '${data.descripcion}',
+        c.modo_precio = '${data.modo_precio}',
+        c.precio = ${data.precio}
+        where c.idcodigo = ${data.idcodigo}
+        `
+        const connection = mysql_connection.getConnection()
+        connection.connect()
+        //does code exists?...
+        connection.query(query,(err,resp)=>{
+            callback(resp)
+        })
+        connection.end()
+    })
+
+
 }
 
 const editar_lote_codigos = (params, callback) => {
@@ -386,7 +411,7 @@ const ejemplo_codigo = (params, callback) => {
 
 module.exports = {
     editar_cantidad_ideal,
-    editar_codigo,
+    editar_codigo_propiedades,
     obtener_codigos,
     agregar_codigo,
     obtener_codigos_bysubgrupo_opt,

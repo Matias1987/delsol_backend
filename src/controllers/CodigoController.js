@@ -102,9 +102,9 @@ const obtener_codigos_categoria = (req,res)=>{
   })
 }
 
-const editar_codigo = (req, res) => {
+const editar_codigo_propiedades = (req, res) => {
   const {body} = req;
-  codigoService.editar_codigo(body,(response)=>{
+  codigoService.editar_codigo_propiedades(body,(response)=>{
     res.status(201).send({status:'OK', data:response})
   })
 }
@@ -151,7 +151,7 @@ module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
     obtener_codigos_filtros,
-    editar_codigo,
+    editar_codigo_propiedades,
     obtenerCodigoPorId,
     obtenerCodigos,
     obtenerCodigo,
