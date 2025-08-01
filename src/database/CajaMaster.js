@@ -30,6 +30,41 @@ function getBalance(idsucursal, callback) {
     });
 }
 
+function getCajasSucursales(callback){
+    const sql = `SELECT 
+                    s.nombre AS 'sucursal', 
+                    c.estado,
+                    op.monto_efectivo
+                    FROM 
+                    caja c INNER join sucursal s ON s.idsucursal=c.sucursal_idsucursal,
+                    (
+                        SELECT 
+                            cb.caja_idcaja, 
+                            SUM(cmp.monto) AS 'monto_efectivo'
+                        FROM 
+                            cobro cb, 
+                            cobro_has_modo_pago cmp
+                        WHERE 
+                            cmp.cobro_idcobro = cb.idcobro AND 
+                            cb.caja_idcaja IN 
+                            (
+                                SELECT _c.idcaja
+                                FROM caja _c
+                                WHERE _c.control_pendiente=1
+                            ) AND 
+                            cmp.modo_pago='efectivo'
+                        GROUP BY cb.caja_idcaja
+                    ) op
+                    WHERE 
+                    c.idcaja = op.caja_idcaja
+                    ;`;
+    doQuery(sql, [], (err, results) => {
+        if (err) return callback(err);
+        callback(null, results);
+    });
+}
+
 module.exports = {
     getBalance,
+    getCajasSucursales
 };
