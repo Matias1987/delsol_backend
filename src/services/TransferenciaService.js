@@ -1,19 +1,17 @@
-const TransferenciaDB = require("../database/TransferenciaCaja")
+const TransferenciaDB = require("../database/TransferenciaCajaV2")
 
 const agregar_transferencia = (data,callback)=>{
-    TransferenciaDB.agregar_transferencia(data,(id)=>{
-        callback(id)
+    TransferenciaDB.generarTransferenciaCaja(data,(result)=>{
+        callback(result)
     })
 }
 const obtener_transferencias_enviadas = (data,callback)=>{
-    TransferenciaDB.obtener_transferencias_enviadas(data,(rows)=>{
-        callback(rows)
+    TransferenciaDB.obtener_transferencias_enviadas(data,(result)=>{
+        callback(result)
     })
 }
 const obtener_transferencias_recibidas = (data,callback)=>{
-    TransferenciaDB.obtener_transferencias_recibidas(data,(rows)=>{
-        callback(rows)
-    })
+    
 }
 
 module.exports = {

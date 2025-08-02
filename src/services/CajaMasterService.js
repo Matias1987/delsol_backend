@@ -1,10 +1,14 @@
-const db = require('../database/CajaMaster');
+const dbCajaMaster = require('../database/CajaMaster');
+const dbEgreso = require('../database/Egreso');
+const dbIngreso = require('../database/Ingreso');
 
 const getBalance = (idsucursal, callback) => {
-    db.getBalance(idsucursal, (response)=>{
+    dbCajaMaster.getBalance(idsucursal, (response)=>{
         callback(response);
     });
 };
+
+
 
 module.exports = {
     getBalance,

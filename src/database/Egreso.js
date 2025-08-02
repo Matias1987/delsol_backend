@@ -1,10 +1,8 @@
+const mysql_connection = require("../lib/mysql_connection");
 // Example CRUD methods for Egreso with 'params' and 'callback' arguments
-
-const db = require('./db'); // Adjust this to your DB connection module
-
 // Create
 function createEgreso(params, callback) {
-    const connection = db.getconnection();
+    const connection = mysql_connection.getConnection();
     if (!connection) {return callback(new Error('No database connection')); }
 
     const sql = 'INSERT INTO egresos SET ?';
@@ -22,7 +20,7 @@ function createEgreso(params, callback) {
 
 // Read
 function getEgreso(params, callback) {
-    const connection = db.getconnection();
+    const connection = mysql_connection.getConnection();
     if (!connection) {return callback(new Error('No database connection')); }
 
     const sql = 'SELECT * FROM egresos WHERE id = ?';
@@ -40,7 +38,7 @@ function getEgreso(params, callback) {
 
 // Update
 function updateEgreso(params, callback) {
-    const connection = db.getconnection();
+    const connection = mysql_connection.getConnection();
     if (!connection) {return callback(new Error('No database connection')); }
 
     const sql = 'UPDATE egresos SET ? WHERE id = ?';
@@ -58,7 +56,7 @@ function updateEgreso(params, callback) {
 
 // Delete
 function deleteEgreso(params, callback) {
-    const connection = db.getconnection();
+    const connection = mysql_connection.getConnection();
     if (!connection) {return callback(new Error('No database connection')); }
 
     const sql = 'DELETE FROM egresos WHERE id = ?';
@@ -75,7 +73,7 @@ function deleteEgreso(params, callback) {
 }
 
 function getEgresoList(callback) {
-    const connection = db.getconnection();
+    const connection = mysql_connection.getConnection();
     if (!connection) {return callback(new Error('No database connection')); }
 
     const sql = 'SELECT * FROM egresos';

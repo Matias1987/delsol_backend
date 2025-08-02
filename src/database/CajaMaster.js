@@ -64,7 +64,25 @@ function getCajasSucursales(callback){
     });
 }
 
+function generarTransferenciaCaja(data, callback) {
+    const sql = ``;
+    doQuery(sql, [data.caja_idcaja, data.sucursal_idsucursal, data.monto, data.observaciones], (err, results) => {
+        if (err) return callback(err);
+        callback(null, results);
+    });
+}
+
+function marcarCajaComoControlada(idcaja, callback) {
+    const sql = `UPDATE caja SET control_pendiente=0 WHERE idcaja=?;`;
+    doQuery(sql, [idcaja], (err, results) => {
+        if (err) return callback(err);
+        callback(null, results);
+    });
+}
+
 module.exports = {
     getBalance,
-    getCajasSucursales
+    getCajasSucursales,
+    marcarCajaComoControlada,
+    generarTransferenciaCaja
 };

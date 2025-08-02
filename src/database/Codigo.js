@@ -237,8 +237,11 @@ const obtener_codigos_categoria = (data,callback) => {
 }
 
 const editar_codigo = (data, callback) =>{
+    
+
     const _codigo = data.codigo||""
     if(_codigo==''){
+        console.log("No changes for code... returning 0 affected rows");
         callback(null, {affectedRows:0});
         return
     }
@@ -249,6 +252,11 @@ const editar_codigo = (data, callback) =>{
     where c.idcodigo = ${data.idcodigo}`
 
     connection.query(query,(err,resp)=>{
+        console.log("edit code response: ", resp);
+        if(err){
+            console.log("error editing code: ", err);
+            return callback(err, null)
+        }
         callback(err,resp)
     })
 
@@ -256,6 +264,7 @@ const editar_codigo = (data, callback) =>{
 }
 
 const editar_codigo_propiedades = (data, callback) => {
+    console.log("trying to edit code.... ", data);
     //try to edit the code first
     editar_codigo(data,(_err, _resp)=>{
         if(_err){
@@ -271,9 +280,13 @@ const editar_codigo_propiedades = (data, callback) => {
         connection.connect()
         
         connection.query(query,(err,resp)=>{
+            console.log("==============finished trying to edit code.=============", );
+            //console.log(`${_resp.affectedRows>0 ? "Code modified" : "Code not modified"} and ${resp.affectedRows>0 ? "Properties modified" : "Properties not modified"}`);
+            const _affectedRows1 = _resp ? _resp.affectedRows : 0
             callback({
-                modif_codigo: _resp.affectedRows>0,
+                modif_codigo: _affectedRows1>0,
                 modif_prop: resp.affectedRows>0,
+                msg: _err? "Código duplicado" : ""
             })
         })
         connection.end()
