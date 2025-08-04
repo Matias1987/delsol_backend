@@ -276,7 +276,26 @@ const resumen_caja = (data, callback) => {
     
 }
 
+const obtener_caja_nro = (data,callback) => {
+    const query = `SELECT  * FROM caja c WHERE c.nro=${data.nro} AND c.sucursal_idsucursal=${data.nro} AND c.estado='${data.nro}';`;
+    const connection = mysql_connection.getConnection();
+
+    connection.connect();
+
+    connection.query(query,(err,response)=>{
+        if(err)
+        {
+            return callback({err:1})
+        }
+
+        return callback(response)
+    })
+
+    connection.end();
+}
+
 module.exports = {
+    obtener_caja_nro,
     agregarCaja,
     obtener_caja,
     cerrarCaja,
