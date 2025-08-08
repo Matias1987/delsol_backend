@@ -1,7 +1,7 @@
 const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const UsuarioDB = require("./Usuario") 
-
+const CajaDB = require("./Caja")
 const lista_gastos_admin = (callback) => {
     const query = `SELECT 
     cg.nombre AS 'concepto',
@@ -74,10 +74,10 @@ const obtener_gasto = (callback) => {
     connection.end();
 }
 
-const do_agregar_gasto = (data, callback) => {
+const do_agregar_gasto = (data, callback, idcaja) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    //console.log(data.sucursal_idsucursal)
+    
     connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
         if(_rows.length<1)
         {
@@ -87,12 +87,6 @@ const do_agregar_gasto = (data, callback) => {
             return
         }
         else{
-            if(_rows[0].idcaja!=data.caja_idcaja)
-            {
-                console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ")
-            }
-            //console.log(JSON.stringify(_rows))
-            const idcaja=_rows[0].idcaja
 
             var sql = `insert into gasto (
                 caja_idcaja, 
@@ -121,9 +115,12 @@ const do_agregar_gasto = (data, callback) => {
 }
 
 const agregar_gasto = (data,callback) => {
-    
-    UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_gasto(data,callback)}, ()=>{})
-    
+
+    CajaDB.obtener_caja_gasto({idsucursal:data.sucursal_idsucursal},(idcaja)=>{
+        do_agregar_gasto(data, callback, idcaja)
+    })
+    //UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_gasto(data,callback)}, ()=>{})  
+
 }
 
 module.exports = {

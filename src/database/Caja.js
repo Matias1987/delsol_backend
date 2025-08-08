@@ -294,6 +294,40 @@ const obtener_caja_nro = (data,callback) => {
     connection.end();
 }
 
+const obtener_caja_gasto = (data, callback) => {
+    const query = `SELECT 
+                        c.idcaja
+                    FROM   
+                        sucursal s, 
+                        caja c 
+                    WHERE  
+                        c.sucursal_idsucursal=${data.idsucursal} AND 
+                        s.idsucursal = c.sucursal_idsucursal AND 
+                        c.estado='ABIERTA' AND 
+                        (case when s.usar_fondo_fijo=1 then c.nro=2 else c.nro=1 end ) ;`;
+    
+    const connection = mysql_connection.getConnection();
+    
+    connection.connect();
+    
+    connection.query(query,(err,response)=>{
+        console.log(JSON.stringify(response))
+
+        if(err)
+        {
+            return callback({err:1});
+        }
+        if(response.length<1)
+        {
+            return callback({err:1});
+        }
+        return callback(response[0].idcaja);
+    });
+
+    connection.end();
+
+}
+
 module.exports = {
     obtener_caja_nro,
     agregarCaja,
@@ -305,4 +339,5 @@ module.exports = {
     caja_abierta,
     caja_exists,
     resumen_caja,
+    obtener_caja_gasto,
 }
