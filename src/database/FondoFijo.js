@@ -1,17 +1,18 @@
 const mysql_connection = require("../lib/mysql_connection")
 
-const doQuery = (query, params, callback) => {
+const doQuery = (query, callback) => {
     const connection = mysql_connection.getConnection();
-    connection.open();
+    connection.connect()
     if (!connection) {
         console.error('Database connection failed');
         return callback(new Error('Database connection failed'));
     }
-    connection.query(query, params, (err, results) => {
+    connection.query(query,  (err, results) => {
         if (err) {
             console.error('Database query error:', err);
             return callback(err);
         }
+        console.log("Query executed successfully:", query);
         callback(null, results);
     });
     connection.end();
@@ -20,36 +21,40 @@ const doQuery = (query, params, callback) => {
 // Create FondoFijo
 function create(params, callback) {
     const sql = `INSERT INTO caja (sucursal_idsucursal, monto_inicial, estado, nro) VALUES (?, ?, ?, ?)`;
-    doQuery(sql, params, (err, results) => {
+    doQuery(sql, (err, results) => {
         if (err) return callback(err);
         const id = results.insertId;
-        callback(null, { id, ...params });
+        callback({ id, ...params });
     });
 }
 
 // Get all FondoFijo
 function getAll(callback) {
+    console.log("get all......")
     const sql = 'SELECT * FROM caja c where c.nro=2 and c.estado="ABIERTO"';
-    doQuery(sql, [], (err, results) => {
-        if (err) return callback(err);
-        callback(null, results);
+    doQuery(sql, (err, results) => {
+        if (err) {
+            console.log("error....")
+            return callback(err);
+        }
+        callback(results);
     });
 }
 
 // Get FondoFijo by ID
 function getById(id, callback) {
     const sql = 'SELECT * FROM fondofijo WHERE id = ?';
-    doQuery(sql, [id], (err, results) => {
+    doQuery(sql, (err, results) => {
         if (err) return callback(err);
-        callback(null, results[0]);
+        callback(results[0]);
     });
 }
 
 function getForSucursal(idsucursal, callback) {
     const sql = `SELECT * FROM caja c WHERE c.sucursal_idsucursal=? AND c.estado='ABIERTO' AND c.nro=2;`;
-    doQuery(sql, [idsucursal], (err, results) => {
+    doQuery(sql,  (err, results) => {
         if (err) return callback(err);
-        callback(null, results[0]);
+        callback(results[0]);
     });
 }
 
@@ -60,10 +65,9 @@ function getBalance(idsucursal, callback) {
                     UNION 
                     SELECT i.idingreso AS 'id', 'ingreso' AS 'tipo', i.fecha, i.monto FROM c_ingreso i WHERE i.fk_caja=0
                     ) op ORDER BY op.id ;`
-                     ;
-    doQuery(sql, [], (err, results) => {
+    doQuery(sql, (err, results) => {
         if (err) return callback(err);
-        callback(null, results);
+        callback(results);
     });
 }
 

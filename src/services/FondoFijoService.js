@@ -7,7 +7,9 @@ function createFondoFijo(params, callback) {
 
 // Get all FondoFijo
 function getAllFondoFijo(callback) {
-    FondoFijo.getAll(callback);
+    FondoFijo.getAll((rows)=>{
+        callback(rows)
+    });
 }
 
 // Get FondoFijo by ID

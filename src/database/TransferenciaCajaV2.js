@@ -10,36 +10,39 @@ const doQuery = (query, params, callback) => {
   });
   connection.end();
 };
-
-const generarTransferenciaCaja = (data, callback) => {
-  /**
+ /**
    * first generate the egreso and ingreso, then generate the transferencia
    *
    * @param {Object} data - The data for the transferencia
    */
+const generarTransferenciaCaja = (data, callback) => {
 
+  console.log("Agregar transferencia");
+  console.log(JSON.stringify(data));
+  //return callback({}); //only for testing
   dbEgreso.createEgreso(
     {
-      fk_caja: data.caja_idcaja,
+      idcaja: data.id_sucursal_origen,
       monto: data.monto,
-      observaciones: data.observaciones,
     },
     (err, egreso) => {
       if (err) return callback(err);
-
+      console.log("EGRESO CREADO CON ID " + egreso.id);
       dbIngreso.createIngreso(
         {
-          fk_caja: data.caja_idcaja,
+          idcaja: data.id_sucursal_destino,
           monto: data.monto,
-          observaciones: data.observaciones,
         },
         (err, ingreso) => {
           if (err) return callback(err);
+          console.log("INGRESO CREADO CON ID " + ingreso.id);
 
-          dbCajaMaster.generarTransferenciaCaja(
+          generar_transferencia(
             {
-              caja_idcaja: data.caja_idcaja,
-              sucursal_idsucursal: data.sucursal_idsucursal,
+              c_egreso_idegreso: egreso.id,
+              c_ingreso_idingreso: ingreso.id,
+              c_caja_origen: data.id_sucursal_origen,
+              c_caja_destino: data.id_sucursal_destino,
               monto: data.monto,
               observaciones: data.observaciones,
             },
@@ -52,6 +55,32 @@ const generarTransferenciaCaja = (data, callback) => {
       );
     }
   );
+};
+
+const generar_transferencia = (data, callback) => {
+  const query = `
+    insert into caja_master.transferencia_caja
+    (
+      c_egreso_idegreso,
+      c_ingreso_idingreso,
+      monto, 
+      id_caja_origen, 
+      id_caja_destino,
+      fecha
+    )
+    values
+  (
+    ${data.c_egreso_idegreso},
+    ${data.c_ingreso_idingreso},
+    ${data.monto},
+    ${data.id_caja_origen},
+    ${data.id_caja_destino},
+    date(now())
+  )
+  `;
+  doQuery(query, [], (result) => {
+    callback(result);
+  });
 };
 
 const obtener_transferencias_enviadas = (data, callback) => {

@@ -13,7 +13,7 @@ const doQuery = (query, params, callback) => {
 
 // Create
 function createIngreso(params, callback) {
-    const query = 'INSERT INTO ingresos SET ?';
+    const query = `insert into c_ingreso (fk_caja, comentarios, monto) values (${connection.escape(params.idcaja)}, ${""}, ${connection.escape(params.monto)})`;
     doQuery(query, params, (result) => {
         if (result.insertId) {
             callback(null, { id: result.insertId, ...params });

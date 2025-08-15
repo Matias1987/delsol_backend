@@ -2,8 +2,7 @@ const FondoFijoService = require("../services/FondoFijoService");
 
 // Get all FondoFijo
 function obtenerFondoFijos(req, res) {
-    FondoFijoService.getAllFondoFijo((err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+    FondoFijoService.getAllFondoFijo((results) => {
         res.json(results);
     });
 }
