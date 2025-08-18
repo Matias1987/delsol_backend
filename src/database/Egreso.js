@@ -5,7 +5,8 @@ function createEgreso(params, callback) {
     const connection = mysql_connection.getConnection();
     if (!connection) {return callback(new Error('No database connection')); }
 
-    const sql = `insert into c_egreso (fk_caja, fk_motivo, monto) values (${connection.escape(params.idcaja)}, ${connection.escape(1)}, ${connection.escape(params.monto)})`;
+    const sql = `insert into caja_master.c_egreso (fk_caja, fk_motivo, monto) values (${connection.escape(params.idcaja)}, ${connection.escape(1)}, ${connection.escape(params.monto)})`;
+    console.log(sql)
     connection.connect();
 
     connection.query(sql, (err,results)=>{

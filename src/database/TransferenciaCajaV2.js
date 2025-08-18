@@ -2,10 +2,10 @@ const mysql_connection = require("../lib/mysql_connection");
 const dbEgreso = require("../database/Egreso");
 const dbIngreso = require("../database/Ingreso");
 
-const doQuery = (query, params, callback) => {
+const doQuery = (query, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
-  connection.query(query, params, (err, rows, fields) => {
+  connection.query(query, (err, rows, fields) => {
     callback(rows);
   });
   connection.end();
@@ -17,38 +17,40 @@ const doQuery = (query, params, callback) => {
    */
 const generarTransferenciaCaja = (data, callback) => {
 
-  console.log("Agregar transferencia");
-  console.log(JSON.stringify(data));
+  //console.log("Agregar transferencia");
+  //console.log(JSON.stringify(data));
   //return callback({}); //only for testing
   dbEgreso.createEgreso(
     {
-      idcaja: data.id_sucursal_origen,
+      idcaja: data.id_caja_origen,
       monto: data.monto,
     },
     (err, egreso) => {
       if (err) return callback(err);
-      console.log("EGRESO CREADO CON ID " + egreso.id);
+      //console.log("EGRESO CREADO CON ID " + egreso.id);
       dbIngreso.createIngreso(
         {
-          idcaja: data.id_sucursal_destino,
+          idcaja: data.id_caja_destino,
           monto: data.monto,
         },
         (err, ingreso) => {
           if (err) return callback(err);
-          console.log("INGRESO CREADO CON ID " + ingreso.id);
+          //console.log("INGRESO CREADO CON ID " + ingreso.id);
 
           generar_transferencia(
             {
               c_egreso_idegreso: egreso.id,
               c_ingreso_idingreso: ingreso.id,
-              c_caja_origen: data.id_sucursal_origen,
-              c_caja_destino: data.id_sucursal_destino,
+              id_caja_origen: data.id_caja_origen,
+              id_caja_destino: data.id_caja_destino,
               monto: data.monto,
               observaciones: data.observaciones,
+              comentarios: data.comentarios,
             },
-            (err, transferencia) => {
+            (err, result) => {
               if (err) return callback(err);
-              callback(null, { egreso, ingreso, transferencia });
+              //console.log("TRANSFERENCIA CREADA CON ID " + result.insertId);
+              //callback(null, { egreso, ingreso, transferencia: result });
             }
           );
         }
@@ -66,7 +68,8 @@ const generar_transferencia = (data, callback) => {
       monto, 
       id_caja_origen, 
       id_caja_destino,
-      fecha
+      fecha,
+      comentarios
     )
     values
   (
@@ -75,10 +78,12 @@ const generar_transferencia = (data, callback) => {
     ${data.monto},
     ${data.id_caja_origen},
     ${data.id_caja_destino},
-    date(now())
+    date(now()),
+    '${data.comentarios}'
   )
   `;
-  doQuery(query, [], (result) => {
+  console.log("Query de transferencia: " + query);
+  doQuery(query, (result) => {
     callback(result);
   });
 };

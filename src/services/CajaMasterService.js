@@ -8,8 +8,13 @@ const getBalance = (idsucursal, callback) => {
     });
 };
 
-
+const getCajasSucursales = (callback) => {
+    dbCajaMaster.getCajasSucursales((response) => {
+        callback(response);
+    });
+};
 
 module.exports = {
     getBalance,
+    getCajasSucursales,
 };

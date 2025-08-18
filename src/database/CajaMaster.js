@@ -1,13 +1,13 @@
 const mysql_connection = require("../lib/mysql_connection")
-
-const doQuery = (query, params, callback) => {
+const tc2 = require("./TransferenciaCajaV2")
+const doQuery = (query, callback) => {
     const connection = mysql_connection.getConnection();
-    connection.open();
+    connection.connect();
     if (!connection) {
         console.error('Database connection failed');
         return callback(new Error('Database connection failed'));
     }
-    connection.query(query, params, (err, results) => {
+    connection.query(query, (err, results) => {
         if (err) {
             console.error('Database query error:', err);
             return callback(err);
@@ -16,6 +16,11 @@ const doQuery = (query, params, callback) => {
     });
     connection.end();
 };
+
+function getCajaMaster(callback) {
+
+}
+
 
 function getBalance(idsucursal, callback) {
     const sql = `SELECT op.* from (
@@ -26,7 +31,7 @@ function getBalance(idsucursal, callback) {
                      ;
     doQuery(sql, [], (err, results) => {
         if (err) return callback(err);
-        callback(null, results);
+        callback(results);
     });
 }
 
@@ -52,23 +57,31 @@ function getCajasSucursales(callback){
                                 FROM caja _c
                                 WHERE _c.control_pendiente=1
                             ) AND 
-                            cmp.modo_pago='efectivo'
+                            cmp.modo_pago='tarjeta'
                         GROUP BY cb.caja_idcaja
                     ) op
                     WHERE 
                     c.idcaja = op.caja_idcaja
                     ;`;
-    doQuery(sql, [], (err, results) => {
+    console.log(sql)
+    doQuery(sql, (err, results) => {
         if (err) return callback(err);
-        callback(null, results);
+        //console.log("Cajas sucursales: ", results);
+        callback(results);
     });
 }
 
-function generarTransferenciaCaja(data, callback) {
-    const sql = ``;
-    doQuery(sql, [data.caja_idcaja, data.sucursal_idsucursal, data.monto, data.observaciones], (err, results) => {
+function generarTransferenciaACajaMaster(data, callback) {
+    //get caja master
+    getCajaMaster((err, idCajaMaster) => {
         if (err) return callback(err);
-        callback(null, results);
+        // Now you have the cajaMaster, you can use it
+        tc2.generarTransferenciaCaja({
+            id_caja_origen: data.id_caja_origen,
+            id_caja_destino: idCajaMaster,
+            monto: data.monto,
+            comentarios: data.comentarios,
+        }, callback);
     });
 }
 
@@ -84,5 +97,5 @@ module.exports = {
     getBalance,
     getCajasSucursales,
     marcarCajaComoControlada,
-    generarTransferenciaCaja
+    generarTransferenciaACajaMaster
 };

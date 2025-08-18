@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const obtenerConceptosGastos = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from concepto_gasto",(err,rows)=>{
+    connection.query("select cg.* from concepto_gasto cg where cg.activo = 1 order by cg.nombre asc", (err, rows) => {
         callback(rows)
     })
     connection.end()
@@ -13,14 +13,11 @@ const agregarConceptoGasto = (data,callback)=>{
     const connection = mysql_connection.getConnection();
     connection.connect();
 
-    const sql = "insert into concepto_gasto (nombre) values (?)";
-    const values = [
-        [
-            data.nombre
-        ]
-    ]
+    const sql = `insert into concepto_gasto (nombre) values (${connection.escape(data.nombre)})`;
 
-    connection.query(sql,values,(err,result,fields)=>{
+    console.log(sql);
+
+    connection.query(sql,(err,result,fields)=>{
         return callback(result.insertId);
     })
 

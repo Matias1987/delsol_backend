@@ -6,3 +6,15 @@ const getBalance = (req,res) => {
         res.json(results);
     });
 };
+
+const getCajasSucursales = (req, res) => {
+    service.getCajasSucursales((results) => {
+        console.log("Cajas sucursales: ", results);
+        res.json(results);
+    });
+};
+
+module.exports = {
+    getBalance,
+    getCajasSucursales,
+};

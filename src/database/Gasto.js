@@ -1,9 +1,9 @@
 const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
-const UsuarioDB = require("./Usuario") 
-const CajaDB = require("./Caja")
+const UsuarioDB = require("./Usuario");
+const CajaDB = require("./Caja");
 const lista_gastos_admin = (callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
     cg.nombre AS 'concepto',
     s.nombre AS 'sucursal',
     g.monto
@@ -16,79 +16,85 @@ const lista_gastos_admin = (callback) => {
     g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto AND
     g.anulado=0;`;
 
-    const connection = mysql_connection.getConnection()
+  const connection = mysql_connection.getConnection();
 
-    connection.connect()
+  connection.connect();
 
-    connection.query(query,(err,rows)=>{
-        callback(rows)
-    })
+  connection.query(query, (err, rows) => {
+    callback(rows);
+  });
 
-    connection.end()
-
-}
+  connection.end();
+};
 
 const obtener_gastos_sucursal = (idsucursal, callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
+  const connection = mysql_connection.getConnection();
+  connection.connect();
 
-    connection.query(`SELECT 
+  connection.query(
+    `SELECT 
     g.*, date_format(g.fecha_alta,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
     and g.sucursal_idsucursal = ${idsucursal} AND
     g.anulado=0
     ORDER BY g.idgasto DESC;
-    `,(err,rows)=>{
-        return callback(rows)
-    });
-    connection.end();
-}
+    `,
+    (err, rows) => {
+      return callback(rows);
+    }
+  );
+  connection.end();
+};
 const obtener_gastos_caja = (idcaja, callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-   /* console.log(`SELECT 
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  /* console.log(`SELECT 
     g.*, date_format(g.fecha,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
     and g.caja_idcaja = ${idcaja} AND
     g.anulado=0
     ORDER BY g.idgasto DESC;
     `)*/
-    connection.query(`SELECT 
+  connection.query(
+    `SELECT 
     g.*, date_format(g.fecha,'%d-%m-%y') as 'fecha_f', cg.nombre AS 'concepto_gasto'
     FROM gasto g, concepto_gasto cg WHERE g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto 
     and g.caja_idcaja = ${idcaja} AND
     g.anulado=0 
     ORDER BY g.idgasto DESC;
-    `,(err,rows)=>{
-        return callback(rows)
-    });
-    connection.end();
-}
+    `,
+    (err, rows) => {
+      return callback(rows);
+    }
+  );
+  connection.end();
+};
 
 const obtener_gasto = (callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    connection.query("select * from gasto",(err,rows,fields)=>{
-        return callback(rows);
-    })
-    connection.end();
-}
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query("select * from gasto", (err, rows, fields) => {
+    return callback(rows);
+  });
+  connection.end();
+};
 
-const do_agregar_gasto = (data, callback, idcaja) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    
-    connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),(err,_rows)=>{
-        if(_rows.length<1)
-        {
-            console.log("No hay caja!!!!!")
-            callback(null)
-            connection.end()
-            return
-        }
-        else{
+const do_agregar_gasto = (data, callback) => {
+  const connection = mysql_connection.getConnection();
+  connection.connect();
 
-            var sql = `insert into gasto (
+  connection.query(
+    obtenerCajaAbierta(data.sucursal_idsucursal),
+    (err, _rows) => {
+      if (_rows.length < 1) {
+        console.log("No hay caja!!!!!");
+        callback(null);
+        connection.end();
+        return;
+      } else {
+        const idcaja = _rows[0].idcaja;
+
+        var sql = `insert into gasto (
                 caja_idcaja, 
                 usuario_idusuario,
                 concepto_gasto_idconcepto_gasto,
@@ -104,29 +110,32 @@ const do_agregar_gasto = (data, callback, idcaja) => {
                 ${connection.escape(data.comentarios)}
             )`;
 
-            
-            connection.query(sql, (err,result) => {
-                    return callback(result.insertId)
-                });
-            connection.end();
-        }
-    });
+        connection.query(sql, (err, result) => {
+          return callback(result.insertId);
+        });
+        connection.end();
+      }
+    }
+  );
+};
 
-}
-
-const agregar_gasto = (data,callback) => {
-
-    CajaDB.obtener_caja_gasto({idsucursal:data.sucursal_idsucursal},(idcaja)=>{
+const agregar_gasto = (data, callback) => {
+  /*CajaDB.obtener_caja_gasto({idsucursal:data.sucursal_idsucursal},(idcaja)=>{
         do_agregar_gasto(data, callback, idcaja)
-    })
-    //UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_gasto(data,callback)}, ()=>{})  
-
-}
+    })*/
+  UsuarioDB.validar_usuario_be(
+    { tk: data.tk },
+    () => {
+      do_agregar_gasto(data, callback);
+    },
+    () => {}
+  );
+};
 
 module.exports = {
-    obtener_gasto,
-    agregar_gasto,
-    obtener_gastos_sucursal,
-    obtener_gastos_caja,
-    lista_gastos_admin,
-}
+  obtener_gasto,
+  agregar_gasto,
+  obtener_gastos_sucursal,
+  obtener_gastos_caja,
+  lista_gastos_admin,
+};

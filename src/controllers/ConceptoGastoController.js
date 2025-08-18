@@ -7,7 +7,7 @@ const obtenerConceptosGastos = (req,res) => {
 }
 
 const agregarConceptoGasto = (req,res) => {
-
+    console.log("Agregar concepto gasto");  
     const {body} = req;
 
     const nuevo_concepto_gasto = {

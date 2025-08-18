@@ -2,19 +2,29 @@
 
 const mysql_connection = require("../lib/mysql_connection")
 
-const doQuery = (query, params, callback) => {
+const doQuery = (query,  callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query(query, params, (err, rows, fields) => {
-        callback(rows);
+    connection.query(query, (err, response, fields) => {
+        console.log("Query executed: " + query);
+        if(err)
+        {
+            console.error("Database error:", err);
+            return callback(err);
+        }
+        console.log("Query result:" + response);
+        callback(response);
     })
     connection.end();
 } 
 
 // Create
 function createIngreso(params, callback) {
-    const query = `insert into c_ingreso (fk_caja, comentarios, monto) values (${connection.escape(params.idcaja)}, ${""}, ${connection.escape(params.monto)})`;
-    doQuery(query, params, (result) => {
+    console.log("creando ingreso......")
+    const query = `insert into caja_master.c_ingreso (fk_caja, comentarios, monto) values (${params.idcaja}, '-', ${params.monto})`;
+    console.log(query)
+    doQuery(query, (result) => {
+        console.log(result)
         if (result.insertId) {
             callback(null, { id: result.insertId, ...params });
         } else {

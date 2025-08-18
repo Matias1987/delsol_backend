@@ -3,7 +3,7 @@ const mysql_connection = require("../lib/mysql_connection")
 const obtener_tarjetas = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from tarjeta",(err,rows,fields)=>{
+    connection.query("select t.* from tarjeta t where t.activo = 1",(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();

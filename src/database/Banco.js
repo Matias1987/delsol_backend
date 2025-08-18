@@ -7,7 +7,7 @@ const obtenerBancos = (callback) => {
 
     connection.connect();
 
-    connection.query("select * from banco", (err,rows,fields)=>{
+    connection.query("select b.* from banco b where b.activo = 1", (err,rows,fields)=>{
         callback(rows);
     })
 
