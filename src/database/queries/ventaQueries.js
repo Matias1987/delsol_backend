@@ -222,6 +222,21 @@ const get_mp = (data, idventa) => {
 				tarjeta_nro: null,
 			})
 		}
+		if(data?.mp?.tarjeta1_monto!==0){
+			_items_mp.push({
+				venta_idventa:idventa,
+				modo_pago_idmodo_pago:'2',
+				banco_idbanco:null,
+				mutual_idmutual:null,
+				monto:data.mp.tarjeta1_monto,
+				monto_int:0,
+				cant_cuotas:(typeof data.mp.tarjeta1_tarjeta === 'undefined' ? 0 : data.mp.tarjeta1_tarjeta),
+				monto_cuota:0,
+				fk_tarjeta: data.mp.fk_tarjeta1,
+				modo_pago: 'tarjeta1',
+				tarjeta_nro: (typeof data.mp.tarjeta1_nro === 'undefined' ? 0 : data.mp.tarjeta1_nro)
+			})
+		}
 	}
 	
 	return _items_mp;

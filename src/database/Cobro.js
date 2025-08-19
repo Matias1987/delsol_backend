@@ -22,7 +22,7 @@ const do_agregar_cobro_v2 = (data , callback) => {
 
     const connection = mysql_connection.getConnection();
 
-    //console.log(JSON.stringify(data))
+    console.log(JSON.stringify(data))
     //console.log("using new version.....")
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     
@@ -30,7 +30,6 @@ const do_agregar_cobro_v2 = (data , callback) => {
         monto: vars.monto,
         tipo: vars.tipo,
         tarjeta: typeof vars.tarjeta === 'undefined' ? null : vars.tarjeta,
-        
         fkmutual: typeof vars.fkmutual === 'undefined' ? null : vars.fkmutual,
         fkbanco: typeof vars.fkbanco === 'undefined' ? null : vars.fkbanco,
         cant_cuotas: typeof vars.cant_cuotas === 'undefined' ? 0 : vars.cant_cuotas,
@@ -172,6 +171,17 @@ const do_agregar_cobro_v2 = (data , callback) => {
                     ),
                     "transferencia_monto"
                 )
+
+                //this one is new........
+                _mp = add(
+                    _mp,
+                    get_mp_obj({
+                        monto: data.mp.tarjeta1_monto,
+                        tipo: 'tarjeta',
+                        cant_cuotas: data.mp.tarjeta1_tarjeta,
+                        fk_tarjeta: data.mp.fk_tarjeta1,
+                    }),
+                    "tarjeta1_monto");
         
                 var _cobro_mp_item = ``
                 var _venta_mp_item = ``
