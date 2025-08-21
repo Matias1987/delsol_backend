@@ -31,7 +31,7 @@ function create(params, callback) {
 // Get all FondoFijo
 function getAll(callback) {
     console.log("get all......")
-    const sql = 'SELECT * FROM caja c where c.nro=2 and c.estado="ABIERTO"';
+    const sql = `SELECT s.nombre as 'sucursal', c.* FROM caja c inner join sucursal s on s.idsucursal = c.sucursal_idsucursal where c.nro=2 and c.estado='ABIERTA'`;
     doQuery(sql, (err, results) => {
         if (err) {
             console.log("error....")
