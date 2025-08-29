@@ -1,8 +1,7 @@
-const Egreso = require("../database/Egreso");
-
+const service = require("../services/EgresoService");
 // Get all egresos
 function obtenerEgresos(req, res) {
-    Egreso.getAll((err, results) => {
+    service.getAllEgresos((err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
@@ -11,7 +10,7 @@ function obtenerEgresos(req, res) {
 // Get egreso by ID
 function obtenerEgresoPorId(req, res) {
     const id = req.params.id;
-    Egreso.getById(id, (err, result) => {
+    service.getEgresoById(id, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!result) return res.status(404).json({ error: "Egreso not found" });
         res.json(result);
@@ -20,7 +19,7 @@ function obtenerEgresoPorId(req, res) {
 
 // Create new egreso
 function crearEgreso(req, res) {
-    Egreso.create(req.body, (err, result) => {
+    service.createEgreso(req.body, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json(result);
     });

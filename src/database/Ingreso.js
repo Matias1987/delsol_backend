@@ -21,7 +21,7 @@ const doQuery = (query,  callback) => {
 // Create
 function createIngreso(params, callback) {
     console.log("creando ingreso......")
-    const query = `insert into caja_master.c_ingreso (fk_caja, comentarios, monto) values (${params.idcaja}, '-', ${params.monto})`;
+    const query = `insert into caja_master.c_ingreso (fk_caja, comentarios, monto) values (${params.idcaja}, '${params.fuente}', ${params.monto})`;
     console.log(query)
     doQuery(query, (result) => {
         console.log(result)

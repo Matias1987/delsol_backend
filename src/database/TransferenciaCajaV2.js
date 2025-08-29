@@ -17,21 +17,23 @@ const doQuery = (query, callback) => {
    */
 const generarTransferenciaCaja = (data, callback) => {
 
-  //console.log("Agregar transferencia");
-  //console.log(JSON.stringify(data));
+  console.log("Agregar transferencia");
+  console.log(JSON.stringify(data));
   //return callback({}); //only for testing
   dbEgreso.createEgreso(
     {
-      idcaja: data.id_caja_origen,
+      idcaja: data.idCajaOrigen,
       monto: data.monto,
+      idMotivo:null,
     },
     (err, egreso) => {
       if (err) return callback(err);
       //console.log("EGRESO CREADO CON ID " + egreso.id);
       dbIngreso.createIngreso(
         {
-          idcaja: data.id_caja_destino,
+          idcaja: data.idCajaDestino,
           monto: data.monto,
+          fuente:"transferencia",
         },
         (err, ingreso) => {
           if (err) return callback(err);
@@ -41,8 +43,8 @@ const generarTransferenciaCaja = (data, callback) => {
             {
               c_egreso_idegreso: egreso.id,
               c_ingreso_idingreso: ingreso.id,
-              id_caja_origen: data.id_caja_origen,
-              id_caja_destino: data.id_caja_destino,
+              id_caja_origen: data.idCajaOrigen,
+              id_caja_destino: data.idCajaDestino,
               monto: data.monto,
               observaciones: data.observaciones,
               comentarios: data.comentarios,

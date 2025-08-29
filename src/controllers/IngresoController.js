@@ -1,4 +1,4 @@
-const Ingreso = require("../database/Ingreso");
+const Ingreso = require("../services/IngresoService");
 
 // Get all ingresos
 function obtenerIngresos(req, res) {
@@ -20,7 +20,7 @@ function obtenerIngresoPorId(req, res) {
 
 // Create new ingreso
 function crearIngreso(req, res) {
-    Ingreso.create(req.body, (err, result) => {
+    Ingreso.createIngreso(req.body, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json(result);
     });
