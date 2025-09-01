@@ -32,7 +32,7 @@ const generarTransferenciaCaja = (data, callback) => {
       dbIngreso.createIngreso(
         {
           idcaja: data.idCajaDestino,
-          monto: data.monto,
+          monto: data.monto_real ? data.monto_real : data.monto,
           fuente:"transferencia",
         },
         (err, ingreso) => {
@@ -46,13 +46,12 @@ const generarTransferenciaCaja = (data, callback) => {
               id_caja_origen: data.idCajaOrigen,
               id_caja_destino: data.idCajaDestino,
               monto: data.monto,
-              observaciones: data.observaciones,
+              monto_real: data.monto_real ? data.monto_real : data.monto,
+              //observaciones: data.observaciones,
               comentarios: data.comentarios,
             },
             (err, result) => {
               if (err) return callback(err);
-              //console.log("TRANSFERENCIA CREADA CON ID " + result.insertId);
-              //callback(null, { egreso, ingreso, transferencia: result });
             }
           );
         }
