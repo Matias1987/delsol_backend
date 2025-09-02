@@ -22,8 +22,26 @@ const generarTransferenciaACajaMaster = (req, res) => {
   });
 };
 
+const generarTransferenciaAFF = (req, res) => {
+  const data = req.body;
+  service.generarTransferenciaAFF(data, (results) => {
+    if (!results) return res.status(500).json({ error: "Internal server error" });
+    res.json(results);
+  });
+};
+
+const agregarEgreso = (req, res) => {
+  const data = req.body;
+  service.agregarEgreso(data, (results) => {
+    if (!results) return res.status(500).json({ error: "Internal server error" });
+    res.json(results);
+  });
+};
+
 module.exports = {
   getBalance,
   getCajasSucursales,
   generarTransferenciaACajaMaster,
+  agregarEgreso,
+  generarTransferenciaAFF,
 };

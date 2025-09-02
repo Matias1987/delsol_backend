@@ -1,7 +1,7 @@
 const mysql_connection = require("../lib/mysql_connection");
 const tc2 = require("./TransferenciaCajaV2");
 const doQuery = (query, callback) => {
-  console.log(query)
+  console.log(query);
   const connection = mysql_connection.getConnection();
   connection.connect();
   if (!connection) {
@@ -38,11 +38,11 @@ function getBalance(callback) {
                     o.tipo, 
                     o.monto
                     FROM (
-                    SELECT e.idegreso AS 'id', date_format(e.fecha, '%d-%m-%y') AS 'fecha_f',  'EGRESO' AS 'tipo', e.monto FROM caja_master.c_egreso e WHERE e.fk_caja=${idCajaMaster}
-                    union
-                    SELECT i.idingreso AS 'id', DATE_FORMAT(i.fecha, '%d-%m-%y') AS 'fecha_f', 'INGRESO' AS 'tipo', i.monto  FROM caja_master.c_ingreso i WHERE i.fk_caja=${idCajaMaster}
+                      SELECT e.fecha, e.idegreso AS 'id', date_format(e.fecha, '%d-%m-%y') AS 'fecha_f',  'EGRESO' AS 'tipo', e.monto FROM caja_master.c_egreso e WHERE e.fk_caja=${idCajaMaster}
+                      union
+                      SELECT i.fecha, i.idingreso AS 'id', DATE_FORMAT(i.fecha, '%d-%m-%y') AS 'fecha_f', 'INGRESO' AS 'tipo', i.monto  FROM caja_master.c_ingreso i WHERE i.fk_caja=${idCajaMaster}
                     ) o
-                    ORDER BY o.fecha_f;
+                    ORDER BY o.fecha asc;
                     `;
     console.log("Balance query: ", query);
 
@@ -74,7 +74,7 @@ function getCajasSucursales(callback) {
                             (
                                 SELECT _c.idcaja
                                 FROM caja _c
-                                WHERE _c.control_pendiente=1
+                                WHERE _c.control_pendiente=1 and _c.nro=1 and _c.estado='CERRADO'
                             ) AND 
                             cmp.modo_pago='efectivo'
                         GROUP BY cb.caja_idcaja
@@ -112,11 +112,14 @@ function generarTransferenciaACajaMaster(data, callback) {
 
 function marcarCajaComoControlada(idcaja, callback) {
   const sql = `UPDATE caja SET control_pendiente=0 WHERE idcaja=${idcaja};`;
-  doQuery(sql,  (results) => {
+  console.log(sql);
+  doQuery(sql, (results) => {
     if (!results) return callback(results);
     callback(results);
   });
 }
+
+
 
 module.exports = {
   getBalance,
