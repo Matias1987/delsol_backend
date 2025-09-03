@@ -8,9 +8,10 @@ function obtenerFondoFijos(req, res) {
 }
 
 // Get FondoFijo by ID
-function obtenerFondoFijoPorId(req, res) {
-    FondoFijoService.getFondoFijoById({ id: req.params.id }, (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+function GetOperacionesFF(req, res) {
+    const {body} = req;
+    FondoFijoService.GetOperacionesFF(body, (result) => {
+       // if (err) return res.status(500).json({ error: err.message });
         if (!result) return res.status(404).json({ error: "FondoFijo not found" });
         res.json(result);
     });
@@ -42,7 +43,7 @@ function eliminarFondoFijo(req, res) {
 
 module.exports = {
     obtenerFondoFijos,
-    obtenerFondoFijoPorId,
+    GetOperacionesFF,
     crearFondoFijo,
     actualizarFondoFijo,
     eliminarFondoFijo

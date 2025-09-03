@@ -13,8 +13,10 @@ function getAllFondoFijo(callback) {
 }
 
 // Get FondoFijo by ID
-function getFondoFijoById(params, callback) {
-    FondoFijo.getById(params.id, callback);
+function GetOperacionesFF(params, callback) {
+    FondoFijo.GetOperacionesFF(params, (response)=>{
+        return callback(response)
+    });
 }
 
 // Update FondoFijo
@@ -30,8 +32,7 @@ function deleteFondoFijo(params, callback) {
 module.exports = {
     createFondoFijo,
     getAllFondoFijo,
-    getFondoFijoById,
+    GetOperacionesFF,
     updateFondoFijo,
     deleteFondoFijo,
-    getFondoFijoById
 };
