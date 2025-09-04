@@ -1,5 +1,7 @@
 const mysql_connection = require("../lib/mysql_connection");
 
+const get_str = str => (str||"").trim()
+
 const doQuery = ( query, callback) => {
     console.log("=======================================================")
     console.log(query)
@@ -13,28 +15,28 @@ const doQuery = ( query, callback) => {
 }
 
 const crear_familia = (parts, callback) =>{
- const query = `insert into familia (nombre_corto, nombre_largo) values ('${parts[0]}','${parts[0]}');`;
+ const query = `insert into familia (nombre_corto, nombre_largo) values ('${get_str(parts[0])}','${parts[0]}');`;
  doQuery(query,(err,response)=>{
     callback(err,+response.insertId);
  })
 }
 
 const crear_subfamilia = (id_familia, parts, callback) =>{
- const query = `insert into subfamilia (nombre_corto, nombre_largo, familia_idfamilia) values ('${parts[1]}','${parts[1]}', ${id_familia});`;
+ const query = `insert into subfamilia (nombre_corto, nombre_largo, familia_idfamilia) values ('${get_str(parts[1])}','${parts[1]}', ${id_familia});`;
  doQuery(query,(err,response)=>{
     callback(err,+response.insertId);
  })
 }
 
 const crear_grupo = (id_subfamilia, parts, callback) =>{
- const query = `insert into grupo (nombre_corto, nombre_largo, subfamilia_idsubfamilia) values ('${parts[2]}','${parts[2]}', ${id_subfamilia});`;
+ const query = `insert into grupo (nombre_corto, nombre_largo, subfamilia_idsubfamilia) values ('${get_str(parts[2])}','${parts[2]}', ${id_subfamilia});`;
  doQuery(query,(err,response)=>{
     callback(err,+response.insertId);
  })
 }
 
 const crear_subgrupo = (id_grupo, parts, callback) =>{
-     const query = `insert into subgrupo (nombre_corto, nombre_largo, grupo_idgrupo) values ('${parts[3]}','${parts[3]}', ${id_grupo});`;
+     const query = `insert into subgrupo (nombre_corto, nombre_largo, grupo_idgrupo) values ('${get_str(parts[3])}','${parts[3]}', ${id_grupo});`;
      doQuery(query,(err,response)=>{
         callback(err,+response.insertId);
      })
@@ -46,7 +48,7 @@ const crear_codigo = (id_subgrupo, parts, callback) =>{
         callback({err:1}, -1);
         return;
     }
-    const codigo = parts[4];
+    const codigo = get_str(parts[4]);
     const descripcion = parts[5] || codigo;
     const precio = parts[6] || 0; // Default to 0 if not provided
     const query = `insert into codigo (codigo, descripcion, precio, subgrupo_idsubgrupo, modo_precio) values ('${codigo}','${descripcion}', ${precio}, ${id_subgrupo},2);`;
@@ -68,15 +70,15 @@ const get_field = (field, result, err) => {
 }
 
 const get_familia_id = (parts, callback) => {
-    const query = `select f.idfamilia from familia f where f.nombre_corto = '${parts[0]}';`
+    const query = `select f.idfamilia from familia f where f.nombre_corto = '${get_str(parts[0])}';`
     doQuery(query,(err,response)=>{
         callback(get_field('idfamilia',response, err));
     })
 }
 
 const get_subfamilia_id = (parts, callback) =>{
-    const nombre_corto_familia = parts[0];
-    const nombre_corto_subfamilia = parts[1];
+    const nombre_corto_familia = get_str(parts[0]);
+    const nombre_corto_subfamilia = get_str(parts[1]);
     const query = `select sf.idsubfamilia from familia f, subfamilia sf where sf.familia_idfamilia = f.idfamilia and 
     f.nombre_corto = '${nombre_corto_familia}' and sf.nombre_corto = '${nombre_corto_subfamilia}'`;
     doQuery(query,(err,response)=>{
@@ -85,9 +87,9 @@ const get_subfamilia_id = (parts, callback) =>{
 }
 
 const get_grupo_id = (parts, callback) =>{
-    const nombre_corto_familia = parts[0];
-    const nombre_corto_subfamilia = parts[1];
-    const nombre_corto_grupo = parts[2];
+    const nombre_corto_familia = get_str(parts[0]);
+    const nombre_corto_subfamilia = get_str(parts[1]);
+    const nombre_corto_grupo = get_str(parts[2]);
 
     const query = `
     select g.idgrupo 
@@ -106,10 +108,10 @@ const get_grupo_id = (parts, callback) =>{
 }
 
 const get_subgrupo_id = (parts, callback) => {
-    const nombre_corto_familia = parts[0];
-    const nombre_corto_subfamilia = parts[1];
-    const nombre_corto_grupo = parts[2];
-    const nombre_corto_subgrupo = parts[3];
+    const nombre_corto_familia = get_str(parts[0]);
+    const nombre_corto_subfamilia = get_str(parts[1]);
+    const nombre_corto_grupo = get_str(parts[2]);
+    const nombre_corto_subgrupo = get_str(parts[3]);
 
     const query = `
     select sg.idsubgrupo from
