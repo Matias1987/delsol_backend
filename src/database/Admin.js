@@ -1,8 +1,7 @@
-const mysql_connection = require("../lib/mysql_connection")
-
+const mysql_connection = require("../lib/mysql_connection");
 
 const total_general_gastos = (data, callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
                     SUM(if(periodo='dia',gs.monto, 0 )) AS 'monto_dia',
                     SUM(if(periodo='dia',gs.cant, 0 )) AS 'cant_dia',
                     SUM(if(periodo='mes',gs.monto, 0 )) AS 'monto_mes',
@@ -13,20 +12,20 @@ const total_general_gastos = (data, callback) => {
                         union
                         SELECT 'mes' AS 'periodo', COUNT(g.idgasto) AS 'cant', SUM(g.monto) AS 'monto' FROM gasto g WHERE MONTH(g.fecha)=MONTH(NOW()) AND YEAR(g.fecha) = YEAR(NOW())
                     )gs`;
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, response) => {
-        if (err) {
-            return callback({ err: 1 })
-        }
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, response) => {
+    if (err) {
+      return callback({ err: 1 });
+    }
 
-        return callback(response);
-    })
-    connection.end();
-}
+    return callback(response);
+  });
+  connection.end();
+};
 
 const total_general_cobros = (data, callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
                     SUM(if(cs.periodo='dia',cs.monto, 0 )) AS 'monto_dia',
                     SUM(if(cs.periodo='dia',cs.cant, 0 )) AS 'cant_dia',
                     SUM(if(cs.periodo='mes',cs.monto, 0 )) AS 'monto_mes',
@@ -36,43 +35,40 @@ const total_general_cobros = (data, callback) => {
                     SELECT 'dia' AS 'periodo', COUNT(c.idcobro) AS 'cant', SUM(c.monto) AS 'monto' FROM cobro c WHERE c.anulado=0 AND DATE(c.fecha) = DATE(NOW())
                     UNION 
                     SELECT 'mes' AS 'periodo', COUNT(c.idcobro) AS 'cant', SUM(c.monto) AS 'monto' FROM cobro c WHERE c.anulado=0 AND YEAR(c.fecha) = YEAR(NOW()) AND MONTH(c.fecha) = MONTH(NOW())
-                    )cs;`
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, response) => {
-        if (err) {
-            return callback({ err: 1 })
-        }
+                    )cs;`;
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, response) => {
+    if (err) {
+      return callback({ err: 1 });
+    }
 
-        return callback(response);
-    })
-    connection.end();
-}
+    return callback(response);
+  });
+  connection.end();
+};
 
 const obtener_caja_dia_sucursal = (data, callback) => {
-    const query = `SELECT c.idcaja FROM caja c WHERE date(c.fecha) = DATE('${data.anio}/${data.mes}/${data.dia}') AND c.sucursal_idsucursal=${data.idsucursal};`;
-    //console.log(query)
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, rows) => {
-        if (rows != null) {
-            if (rows.length > 0) {
-                callback(rows[0])
-            }
-            else {
-                callback(null)
-            }
-        }
-        else {
-            callback(null)
-        }
-
-    })
-    connection.end()
-}
+  const query = `SELECT c.idcaja FROM caja c WHERE date(c.fecha) = DATE('${data.anio}/${data.mes}/${data.dia}') AND c.sucursal_idsucursal=${data.idsucursal};`;
+  //console.log(query)
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    if (rows != null) {
+      if (rows.length > 0) {
+        callback(rows[0]);
+      } else {
+        callback(null);
+      }
+    } else {
+      callback(null);
+    }
+  });
+  connection.end();
+};
 
 const obtener_resumen_totales = (idcaja, callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
     sum(if(ops.modo_pago = 'efectivo',ops.monto,0)) AS 'efectivo',
     sum(if(ops.modo_pago = 'tarjeta',ops.monto,0)) AS 'tarjeta',
     sum(if(ops.modo_pago = 'mutual',ops.monto,0)) AS 'mutual',
@@ -169,23 +165,22 @@ const obtener_resumen_totales = (idcaja, callback) => {
             vhmp.modo_pago = 'ctacte' AND 
             vhmp.venta_idventa = v.idventa AND 
             DATE(v.fecha_retiro) = DATE(c.fecha)
-    ) AS ops;`
+    ) AS ops;`;
 
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, rows) => {
-        if (rows != null) {
-            callback(rows)
-        }
-        else {
-            callback([])
-        }
-    })
-    connection.end()
-}
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    if (rows != null) {
+      callback(rows);
+    } else {
+      callback([]);
+    }
+  });
+  connection.end();
+};
 
 const obtener_operaciones = (idsucursal, callback) => {
-    const query = `
+  const query = `
     SELECT 'VENTAS_MONTO' AS 'tipo', SUM(v.monto_total) AS 'monto' FROM venta v WHERE DATE(v.fecha)=DATE(NOW()) AND v.estado<>'ANULADO'
     union
     SELECT 'VENTAS_CANT' AS 'tipo', COUNT(v.idventa) AS 'monto' FROM venta v WHERE DATE(v.fecha)=DATE(NOW()) AND v.estado<>'ANULADO'
@@ -201,13 +196,12 @@ const obtener_operaciones = (idsucursal, callback) => {
     SELECT 'TARJETA' AS 'tipo', sum(c.monto) AS 'monto' FROM cobro c WHERE DATE(c.fecha) = DATE(NOW()) AND c.tipo = 'tarjeta'
     union
     SELECT 'MUTUAL' AS 'tipo', sum(c.monto) AS 'monto' FROM cobro c WHERE DATE(c.fecha) = DATE(NOW()) AND c.tipo = 'mutual'
-    ;`
-}
-
+    ;`;
+};
 
 const obtener_totales_vendedores_dia = (data, callback) => {
-    const idsucursal = data?.idsucursal || "-1"
-    const query = `SELECT 
+  const idsucursal = data?.idsucursal || "-1";
+  const query = `SELECT 
     u.nombre AS 'usuario',
     SUM(v.monto_total) AS 'monto',  
     v.usuario_idusuario
@@ -220,19 +214,19 @@ const obtener_totales_vendedores_dia = (data, callback) => {
     v.estado <> 'ANULADO' 
     GROUP BY v.usuario_idusuario
     ;
-    `
+    `;
 
-    //console.log(query)
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, rows) => {
-        callback(rows)
-    })
-    connection.end()
-}
+  //console.log(query)
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    callback(rows);
+  });
+  connection.end();
+};
 
 const obtener_ventas_dia_vendedor = (data, callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
     u.nombre AS 'usuario', 
     v.usuario_idusuario
     FROM 
@@ -243,18 +237,18 @@ const obtener_ventas_dia_vendedor = (data, callback) => {
     (case when '${data.idsucursal}'<>'-1' then v.sucursal_idsucursal=${data.idsucursal} ELSE TRUE END) AND 
     v.usuario_idusuario = ${data.idusuario}
     ;
-    `
-    //console.log(query)
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, rows) => {
-        callback(rows)
-    })
-    connection.end()
-}
+    `;
+  //console.log(query)
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    callback(rows);
+  });
+  connection.end();
+};
 
 const ventas_dia_totales = (data, callback) => {
-    const query = `SELECT DATE_FORMAT( vs.fecha, '%d-%m-%y') AS 'fecha', vs.cant FROM (
+  const query = `SELECT DATE_FORMAT( vs.fecha, '%d-%m-%y') AS 'fecha', vs.cant FROM (
         SELECT DATE(v.fecha) AS 'fecha' , COUNT(v.idventa) AS 'cant'
         FROM venta v 
         WHERE 
@@ -263,25 +257,23 @@ const ventas_dia_totales = (data, callback) => {
         date(v.fecha)>=date(date_add(now(), interval -60 day)) and 
         v.estado<>'ANULADO' 
         GROUP BY DATE(v.fecha)
-    ) AS vs ORDER BY vs.fecha asc`
-    //console.log(query)
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, rows) => {
-        callback(rows)
-    })
-    connection.end()
-}
-
+    ) AS vs ORDER BY vs.fecha asc`;
+  //console.log(query)
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    callback(rows);
+  });
+  connection.end();
+};
 
 const totales_stock_ventas_periodo = (data, callback) => {
-
-    let { desde, hasta, idsucursal, codigo, cat, idcategoria } = data
-    let idfamilia = cat != 'familia' ? -1 : idcategoria;
-    let idsubfamilia = cat != 'subfamilia' ? -1 : idcategoria;
-    let idgrupo = cat != 'grupo' ? -1 : idcategoria;
-    let idsubgrupo = cat != 'subgrupo' ? -1 : idcategoria;
-    const query = `
+  let { desde, hasta, idsucursal, codigo, cat, idcategoria } = data;
+  let idfamilia = cat != "familia" ? -1 : idcategoria;
+  let idsubfamilia = cat != "subfamilia" ? -1 : idcategoria;
+  let idgrupo = cat != "grupo" ? -1 : idcategoria;
+  let idsubgrupo = cat != "subgrupo" ? -1 : idcategoria;
+  const query = `
             SELECT 
                 sc.nombre as sucursal,
                 cod.codigo,
@@ -326,21 +318,20 @@ const totales_stock_ventas_periodo = (data, callback) => {
                 cc.idcodigo = cod.idcodigo	 
                 order by cc.cantidad desc
                     
-                        ;`
+                        ;`;
 
-    //console.log(query)
+  //console.log(query)
 
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, rows) => {
-        callback(rows)
-    })
-    connection.end()
-
-}
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    callback(rows);
+  });
+  connection.end();
+};
 
 const lista_ventas_sucursal_periodo = (data, callback) => {
-    const query = `
+  const query = `
     SELECT 
 	 v.idventa,
 	 CONCAT(c.apellido, ' ', c.nombre) AS 'cliente',
@@ -359,20 +350,18 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
     (case when '${data.fkusuario}'<>'-1' then v.usuario_idusuario = ${data.fkusuario} else true end) AND 
     DATE(v.fecha_retiro)>=DATE( CONCAT(${data.anio},'-',${data.mes},'-1')) AND 
     DATE(v.fecha_retiro)<= DATE_ADD( DATE_ADD(DATE( CONCAT(${data.anio},'-',${data.mes},'-1')), INTERVAL 1 MONTH), INTERVAL -1 DAY)
-    ;`
-    //console.log(query)
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query, (err, resp) => {
-        callback(resp)
-    })
-    connection.end()
-
-}
-
+    ;`;
+  //console.log(query)
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, resp) => {
+    callback(resp);
+  });
+  connection.end();
+};
 
 const total_tarjetas_periodo = (data, callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
                     o.idtarjeta,
                     o.tarjeta,
                     SUM(o.monto) AS 'monto'
@@ -395,19 +384,29 @@ const total_tarjetas_periodo = (data, callback) => {
                         )
                     ) o
                     GROUP BY o.idtarjeta
-                    ;`
-}
+                    ;`;
+
+  console.log(query);
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, response) => {
+    if (err) {
+      return callback({ err: 1 });
+    }
+    callback(response);
+  });
+};
 
 module.exports = {
-    lista_ventas_sucursal_periodo,
-    ventas_dia_totales,
-    obtener_operaciones,
-    obtener_caja_dia_sucursal,
-    obtener_resumen_totales,
-    obtener_totales_vendedores_dia,
-    obtener_ventas_dia_vendedor,
-    totales_stock_ventas_periodo,
-    total_general_cobros,
-    total_general_gastos,
-    total_tarjetas_periodo,
-}
+  lista_ventas_sucursal_periodo,
+  ventas_dia_totales,
+  obtener_operaciones,
+  obtener_caja_dia_sucursal,
+  obtener_resumen_totales,
+  obtener_totales_vendedores_dia,
+  obtener_ventas_dia_vendedor,
+  totales_stock_ventas_periodo,
+  total_general_cobros,
+  total_general_gastos,
+  total_tarjetas_periodo,
+};
