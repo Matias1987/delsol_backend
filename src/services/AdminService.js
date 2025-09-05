@@ -65,7 +65,14 @@ const lista_ventas_sucursal_periodo = (data,callback) => {
     })
 }
 
+const total_tarjetas_periodo = (data, callback) => {
+    AdminDB.total_tarjetas_periodo(data,(response)=>{
+        callback(response)
+    })
+}
+
 module.exports = {
+    total_tarjetas_periodo,
     lista_ventas_sucursal_periodo,
     totales_stock_ventas_periodo,
     ventas_dia_totales,

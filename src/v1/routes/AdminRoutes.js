@@ -47,4 +47,8 @@ router.post("/obtener/ventas/sucursal/periodo/",(req,res)=>{
     adminController.lista_ventas_sucursal_periodo(req,res)
 })
 
+router.post("/obtener/totales/tarjetas/periodo/",(req,res)=>{
+    adminController.total_tarjetas_periodo(req,res)
+})
+
 module.exports = router;

@@ -75,6 +75,13 @@ const lista_ventas_sucursal_periodo = (req, res) => {
     })
 }
 
+const total_tarjetas_periodo = (req, res) => {
+
+    adminService.total_tarjetas_periodo(body, (response)=>{
+        res.send({status:"OK", data:response});
+    })
+}
+
 module.exports = {
     lista_ventas_sucursal_periodo,
     totales_stock_ventas_periodo,
@@ -87,4 +94,5 @@ module.exports = {
     obtener_caja_dia_sucursal,
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
+    total_tarjetas_periodo,
 }

@@ -1,7 +1,7 @@
 const mysql_connection = require("../lib/mysql_connection")
 
 
-const total_general_gastos = (data,  callback) =>{
+const total_general_gastos = (data, callback) => {
     const query = `SELECT 
                     SUM(if(periodo='dia',gs.monto, 0 )) AS 'monto_dia',
                     SUM(if(periodo='dia',gs.cant, 0 )) AS 'cant_dia',
@@ -15,10 +15,9 @@ const total_general_gastos = (data,  callback) =>{
                     )gs`;
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,response)=>{
-        if(err)
-        {
-            return callback({err:1})
+    connection.query(query, (err, response) => {
+        if (err) {
+            return callback({ err: 1 })
         }
 
         return callback(response);
@@ -26,7 +25,7 @@ const total_general_gastos = (data,  callback) =>{
     connection.end();
 }
 
-const total_general_cobros = (data, callback) =>{
+const total_general_cobros = (data, callback) => {
     const query = `SELECT 
                     SUM(if(cs.periodo='dia',cs.monto, 0 )) AS 'monto_dia',
                     SUM(if(cs.periodo='dia',cs.cant, 0 )) AS 'cant_dia',
@@ -40,10 +39,9 @@ const total_general_cobros = (data, callback) =>{
                     )cs;`
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,response)=>{
-        if(err)
-        {
-            return callback({err:1})
+    connection.query(query, (err, response) => {
+        if (err) {
+            return callback({ err: 1 })
         }
 
         return callback(response);
@@ -56,21 +54,19 @@ const obtener_caja_dia_sucursal = (data, callback) => {
     //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,rows)=>{
-        if(rows!=null)
-        {
-            if(rows.length>0)
-            {
+    connection.query(query, (err, rows) => {
+        if (rows != null) {
+            if (rows.length > 0) {
                 callback(rows[0])
             }
-            else{
+            else {
                 callback(null)
             }
         }
-        else{
+        else {
             callback(null)
         }
-       
+
     })
     connection.end()
 }
@@ -177,12 +173,11 @@ const obtener_resumen_totales = (idcaja, callback) => {
 
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,rows)=>{
-        if(rows!=null)
-        {
+    connection.query(query, (err, rows) => {
+        if (rows != null) {
             callback(rows)
         }
-        else{
+        else {
             callback([])
         }
     })
@@ -210,8 +205,8 @@ const obtener_operaciones = (idsucursal, callback) => {
 }
 
 
-const obtener_totales_vendedores_dia = (data,callback) => {
-    const idsucursal = data?.idsucursal||"-1"
+const obtener_totales_vendedores_dia = (data, callback) => {
+    const idsucursal = data?.idsucursal || "-1"
     const query = `SELECT 
     u.nombre AS 'usuario',
     SUM(v.monto_total) AS 'monto',  
@@ -230,14 +225,13 @@ const obtener_totales_vendedores_dia = (data,callback) => {
     //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,rows)=>{
+    connection.query(query, (err, rows) => {
         callback(rows)
     })
     connection.end()
 }
 
-const obtener_ventas_dia_vendedor = (data,callback) => 
-{
+const obtener_ventas_dia_vendedor = (data, callback) => {
     const query = `SELECT 
     u.nombre AS 'usuario', 
     v.usuario_idusuario
@@ -253,13 +247,13 @@ const obtener_ventas_dia_vendedor = (data,callback) =>
     //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,rows)=>{
+    connection.query(query, (err, rows) => {
         callback(rows)
     })
     connection.end()
 }
 
-const ventas_dia_totales = (data,callback) => {
+const ventas_dia_totales = (data, callback) => {
     const query = `SELECT DATE_FORMAT( vs.fecha, '%d-%m-%y') AS 'fecha', vs.cant FROM (
         SELECT DATE(v.fecha) AS 'fecha' , COUNT(v.idventa) AS 'cant'
         FROM venta v 
@@ -273,7 +267,7 @@ const ventas_dia_totales = (data,callback) => {
     //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query,(err,rows)=>{
+    connection.query(query, (err, rows) => {
         callback(rows)
     })
     connection.end()
@@ -282,11 +276,11 @@ const ventas_dia_totales = (data,callback) => {
 
 const totales_stock_ventas_periodo = (data, callback) => {
 
-    let {desde, hasta, idsucursal, codigo, cat, idcategoria} = data
-    let idfamilia = cat!='familia' ? -1 : idcategoria;
-    let idsubfamilia = cat!='subfamilia' ? -1 : idcategoria;
-    let idgrupo = cat!='grupo' ? -1 : idcategoria;
-    let idsubgrupo = cat!='subgrupo' ? -1 : idcategoria;
+    let { desde, hasta, idsucursal, codigo, cat, idcategoria } = data
+    let idfamilia = cat != 'familia' ? -1 : idcategoria;
+    let idsubfamilia = cat != 'subfamilia' ? -1 : idcategoria;
+    let idgrupo = cat != 'grupo' ? -1 : idcategoria;
+    let idsubgrupo = cat != 'subgrupo' ? -1 : idcategoria;
     const query = `
             SELECT 
                 sc.nombre as sucursal,
@@ -332,13 +326,13 @@ const totales_stock_ventas_periodo = (data, callback) => {
                 cc.idcodigo = cod.idcodigo	 
                 order by cc.cantidad desc
                     
-                        ;` 
+                        ;`
 
     //console.log(query)
 
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query, (err,rows)=>{
+    connection.query(query, (err, rows) => {
         callback(rows)
     })
     connection.end()
@@ -369,23 +363,51 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
     //console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
-    connection.query(query, (err,resp)=>{
+    connection.query(query, (err, resp) => {
         callback(resp)
     })
     connection.end()
 
 }
 
+
+const total_tarjetas_periodo = (data, callback) => {
+    const query = `SELECT 
+                    o.idtarjeta,
+                    o.tarjeta,
+                    SUM(o.monto) AS 'monto'
+                    FROM
+                    (
+                        SELECT 
+                        t.nombre AS 'tarjeta', 
+                        t.idtarjeta,
+                        cmp.monto 
+                        FROM 
+                        cobro_has_modo_pago cmp INNER JOIN tarjeta t ON t.idtarjeta=cmp.fk_tarjeta 
+                        WHERE cmp.modo_pago='tarjeta' AND 
+                        cmp.cobro_idcobro in
+                        (
+                            SELECT c.idcobro FROM cobro c WHERE 
+                            (case when ''<>'' then c.fecha > DATE('1970-01-01') ELSE TRUE END ) AND 
+                            (case when ''<>'' then c.fecha < DATE('2026-01-01') ELSE TRUE END ) AND 
+                            (case when ''<>'' then c.sucursal_idsucursal = 1 ELSE TRUE END) AND 
+                            c.anulado=0
+                        )
+                    ) o
+                    GROUP BY o.idtarjeta
+                    ;`
+}
+
 module.exports = {
     lista_ventas_sucursal_periodo,
     ventas_dia_totales,
-    obtener_operaciones, 
-    obtener_caja_dia_sucursal, 
+    obtener_operaciones,
+    obtener_caja_dia_sucursal,
     obtener_resumen_totales,
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
     totales_stock_ventas_periodo,
-    
     total_general_cobros,
     total_general_gastos,
+    total_tarjetas_periodo,
 }
