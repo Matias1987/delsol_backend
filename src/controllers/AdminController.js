@@ -76,7 +76,6 @@ const lista_ventas_sucursal_periodo = (req, res) => {
 }
 
 const total_tarjetas_periodo = (req, res) => {
-    console.log("LLEGA AL CONTROLLER")
     const {body} = req;
     adminService.total_tarjetas_periodo(body, (response)=>{
         res.send({status:"OK", data:response});

@@ -361,6 +361,10 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
 };
 
 const total_tarjetas_periodo = (data, callback) => {
+  //  console.log(JSON.stringify(data));
+    const desde = data.fecha_desde == '' ? '1970-01-01' : data.fecha_desde;
+    const hasta = data.fecha_hasta == '' ? '2100-01-01' : data.fecha_hasta;
+    const idsucursal = data.sucursal || -1;
   const query = `SELECT 
                     o.idtarjeta,
                     o.tarjeta,
@@ -377,16 +381,16 @@ const total_tarjetas_periodo = (data, callback) => {
                         cmp.cobro_idcobro in
                         (
                             SELECT c.idcobro FROM cobro c WHERE 
-                            (case when ''<>'' then c.fecha > DATE('1970-01-01') ELSE TRUE END ) AND 
-                            (case when ''<>'' then c.fecha < DATE('2026-01-01') ELSE TRUE END ) AND 
-                            (case when ''<>'' then c.sucursal_idsucursal = 1 ELSE TRUE END) AND 
+                            (case when '${data.fecha_desde}'<>'' then c.fecha > DATE('${desde}') ELSE TRUE END ) AND 
+                            (case when '${data.fecha_hasta}'<>'' then c.fecha < DATE('${hasta}') ELSE TRUE END ) AND 
+                            (case when '${idsucursal}'<>'-1' then c.sucursal_idsucursal = ${idsucursal} ELSE TRUE END) AND 
                             c.anulado=0
                         )
                     ) o
                     GROUP BY o.idtarjeta
                     ;`;
 
-  console.log(query);
+//  console.log(query);
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, response) => {
