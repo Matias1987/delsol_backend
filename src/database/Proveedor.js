@@ -22,7 +22,7 @@ const agregar_proveedor = (data,callback) => {
 const obtener_proveedores = (callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("SELECT * FROM proveedor p;",(err,rows,fields)=>{
+    connection.query("SELECT * FROM proveedor p order by p.nombre asc;",(err,rows,fields)=>{
         callback(rows)
     })
     connection.end();

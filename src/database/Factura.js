@@ -63,18 +63,22 @@ const lista_elementos_factura = (data, callback) => {
 
 const agregar_factura_v2 = (data, callback) => {
 
+    console.log(JSON.stringify(data))
     const connection = mysql_connection.getConnection()
     connection.connect()
 
+    const _fecha = data.fecha == "" ? "now()" : data.fecha;
     
-    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito  ) VALUES (
+    let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha) VALUES (
     ${connection.escape(data.nro)}, 
     ${connection.escape(data.fkproveedor)},
     ${connection.escape(data.total)},
     ${connection.escape(data.cant_productos)},
     ${connection.escape(data.tipo)},
     ${connection.escape(data.puntoVenta)}, 
-    ${connection.escape(data.esremito)});` //toDo
+    ${connection.escape(data.esremito)},
+    date(${connection.escape(data.fecha)})
+    );` //toDo
     
     //console.log(query_factura)
 
