@@ -82,10 +82,17 @@ const get_user_credentials = (data, callback) => {
   })
 }
 
+const obtener_vendedores = (callback) => {
+  UsuarioDB.obtener_vendedores((rows)=>{
+    callback(rows)
+  })
+}
+
 module.exports = {
     get_user_credentials,
     modificar_permisos,
     obtener_usuarios_permisos,
+    obtener_vendedores,
     obtenerUsuarios,
     obtenerUsuario,
     agregarUsuario,

@@ -70,6 +70,10 @@ router.post("/perm/u/a/m/",(req,res)=>{
   usuarioController.modificar_permisos(req,res)
 })
 
+router.get("/l/vendedores/",(req,res)=>{
+  usuarioController.obtener_vendedores(req,res)
+})
+
 
 
 

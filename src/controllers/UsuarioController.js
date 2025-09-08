@@ -166,7 +166,14 @@ const modificar_permisos = (req, res) => {
   })
 }
 
+const obtener_vendedores = (req, res) => {
+  usuarioService.obtener_vendedores((rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
+
 module.exports = {
+    obtener_vendedores,
     modificar_permisos,
     obtenerUsuarios,
     obtenerUsuario,
