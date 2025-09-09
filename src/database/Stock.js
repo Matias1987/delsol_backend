@@ -703,10 +703,8 @@ const obtener_stock_ventas = (filters, callback) => {
         c.subgrupo_idsubgrupo = sg.idsubgrupo AND
         sg.grupo_idgrupo = g.idgrupo AND 
         g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-        (
-            (case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end) or
-            (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) 
-        )and 
+        (case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end) and
+        (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and 
         s.sucursal_idsucursal=${filters.idSucursal} and 
         ${
           __filtro.length < 1
