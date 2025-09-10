@@ -381,8 +381,8 @@ const total_tarjetas_periodo = (data, callback) => {
                         cmp.cobro_idcobro in
                         (
                             SELECT c.idcobro FROM cobro c WHERE 
-                            (case when '${data.fecha_desde}'<>'' then c.fecha > DATE('${desde}') ELSE TRUE END ) AND 
-                            (case when '${data.fecha_hasta}'<>'' then c.fecha < DATE('${hasta}') ELSE TRUE END ) AND 
+                            (case when '${data.fecha_desde}'<>'' then date(c.fecha) >= DATE('${desde}') ELSE TRUE END ) AND 
+                            (case when '${data.fecha_hasta}'<>'' then date(c.fecha) <= DATE('${hasta}') ELSE TRUE END ) AND 
                             (case when '${idsucursal}'<>'-1' then c.sucursal_idsucursal = ${idsucursal} ELSE TRUE END) AND 
                             c.anulado=0
                         )
