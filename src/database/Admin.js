@@ -390,7 +390,7 @@ const total_tarjetas_periodo = (data, callback) => {
                     GROUP BY o.idtarjeta
                     ;`;
 
-//  console.log(query);
+  console.log(query);
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, response) => {
