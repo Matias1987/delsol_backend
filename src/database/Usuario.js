@@ -255,7 +255,7 @@ const obtener_usuarios = (callback) => {
 }
 
 const obtener_vendedores = (callback) => {
-    const query = `SELECT u.nombre, u.ventas, u.deposito_min, u.deposito, u.caja1, u.caja2 FROM usuario u WHERE u.ventas=1 ORDER BY u.nombre asc;`;
+    const query = `SELECT u.idusuario, u.nombre, u.ventas, u.deposito_min, u.deposito, u.caja1, u.caja2 FROM usuario u WHERE u.ventas=1 ORDER BY u.nombre asc;`;
     console.log(query);
     const connection = mysql_connection.getConnection();
     connection.connect();
