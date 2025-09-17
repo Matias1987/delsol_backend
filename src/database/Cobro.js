@@ -148,7 +148,7 @@ const do_agregar_cobro_v2 = (data , callback) => {
                     get_mp_obj({
                         monto: data.mp.cheque_monto,
                         tipo: 'cheque',
-                        fkbanco: null
+                        fkbanco: data.mp.fk_banco
                     }),
                     "cheque_monto")
                 
@@ -715,11 +715,13 @@ const lista_mp_cobro = (idcobro, callback) => {
     SELECT 
     cmp.* ,
     if(t.idtarjeta is null, '', t.nombre) as 'tarjeta',
-    if(m.idmutual is null, '', m.nombre) as 'mutual'
+    if(m.idmutual is null, '', m.nombre) as 'mutual',
+    if(bco.idbanco is null, '', bco.nombre) as 'banco' 
     FROM 
     cobro_has_modo_pago cmp 
         left join tarjeta t on t.idtarjeta=cmp.fk_tarjeta
         left join mutual m on m.idmutual = cmp.mutual_idmutual
+        left join banco bco on bco.idbanco = cmp.banco_idbanco 
     WHERE cmp.cobro_idcobro=${connection.escape(idcobro)};`
     connection.connect();
     //console.log(query)
