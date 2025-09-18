@@ -72,10 +72,8 @@ const login = (req,res)=>{
       req.session.logedIn = true;
 
       res.status(201).send({status:'OK', data: {loged:1}});*/
-
-      let token = jwt.sign({username: user_data.name},
-        config.secret,
-        { expiresIn: '1h' // expires in 24 hours
+      let multipleInstances = +(resp.udata.multInstances||"0")==1;
+      let token = multipleInstances ? 'sometoken' : jwt.sign( {username: user_data.name}, config.secret, { expiresIn: '1h' // expires in 24 hours
         }
       );
 

@@ -100,7 +100,7 @@ const mysql_connection = require("../lib/mysql_connection")
 
             let _logged = 0;
             if(res.length>0){
-                if(res[0].logged=='1')
+                if(res[0].logged=='1' || +(res[0].multInstances||"0")==1 )
                 { 
                     _logged=1;
                 }
