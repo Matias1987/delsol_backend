@@ -894,6 +894,8 @@ const modificar_cantidad = (data, callback) => {
     );
   }
 
+  const _cantidad = data?.cant_modif ? data?.cant_modif: data.cantidad;
+
   if (_idfactura > 0) {
     const query2 = `INSERT INTO codigo_factura (
                 stock_codigo_idcodigo,
@@ -901,7 +903,7 @@ const modificar_cantidad = (data, callback) => {
                 cantidad,
                 costo)(
                         SELECT c.idcodigo, '${data.idfactura}', '${
-      data.cantidad
+      _cantidad
     }', '${data.costo < 0 ? 0 : data.costo}' 
                         FROM codigo c WHERE c.idcodigo IN (${data.idcodigo}));`;
     //console.log(query2)
