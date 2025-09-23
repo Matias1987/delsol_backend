@@ -1,7 +1,8 @@
 const mysql_connection = require("../lib/mysql_connection");
-const { obtenerCajaAbierta } = require("./queries/cajaQueries");
+const { obtenerCajaAbierta, obtenerFFSucursal } = require("./queries/cajaQueries");
 const UsuarioDB = require("./Usuario");
 const CajaDB = require("./Caja");
+const { usar_ff_para_gastos } = require("../lib/global");
 const lista_gastos_admin = (callback) => {
   const query = `SELECT 
     cg.nombre AS 'concepto',
@@ -83,8 +84,8 @@ const do_agregar_gasto = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
 
-  connection.query(
-    obtenerCajaAbierta(data.sucursal_idsucursal),
+  //connection.query(usar_ff_para_gastos ? obtenerFFSucursal(data.sucursal_idsucursal) : obtenerCajaAbierta(data.sucursal_idsucursal),
+  connection.query(obtenerCajaAbierta(data.sucursal_idsucursal),
     (err, _rows) => {
       if (_rows.length < 1) {
         console.log("No hay caja!!!!!");
