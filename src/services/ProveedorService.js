@@ -36,9 +36,15 @@ const agregar_pago_proveedor = (data, callback) => {
     })
 }
 
+const pagos_atrasados_proveedores = (data, callback) => {
+    ProveedorDB.pagos_atrasados_proveedores(data,(resp)=>{
+        callback(resp)
+    })
+}
 
 
 module.exports = {
+    pagos_atrasados_proveedores,
     agregar_cm_proveedor,
     agregar_pago_proveedor,
     detalle_proveedor,

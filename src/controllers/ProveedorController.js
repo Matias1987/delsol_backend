@@ -63,6 +63,12 @@ const agregar_pago_proveedor = (req, res) => {
     })
 }
 
+const pagos_atrasados_proveedores = (req, res) => {
+    proveedorService.pagos_atrasados_proveedores({},(response)=>{
+        res.status(201).send({status:'OK',data:response})
+    })
+}
+
 module.exports = {
     agregar_cm_proveedor,
     agregar_pago_proveedor,
@@ -70,4 +76,5 @@ module.exports = {
     obtener_proveedores, 
     obtener_ficha_proveedor,
     detalle_proveedor,
+    pagos_atrasados_proveedores,
 }
