@@ -408,17 +408,17 @@ const ejemplo_codigo = (params, callback) => {
 
         if(!response)
         {
-            return callback("not found")   
+            return callback("-")   
         }
 
          if(typeof response.length === 'undefined')
         {
-            return callback("not found")   
+            return callback("-")   
         }
         
         if(response.length<1)
         {
-            return callback("not found")   
+            return callback("-")   
         }
 
         return callback(response[0].codigo)    
