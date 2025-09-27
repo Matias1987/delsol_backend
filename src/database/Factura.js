@@ -1,7 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection")
 
-
-
 const obtener_facturas = (idprov,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
@@ -68,6 +66,7 @@ const agregar_factura_v2 = (data, callback) => {
     connection.connect()
 
     const _fecha = data.fecha == "" ? "now()" : data.fecha;
+    let idfactura=-1;
     
     let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha) VALUES (
     ${connection.escape(data.nro)}, 
@@ -85,7 +84,11 @@ const agregar_factura_v2 = (data, callback) => {
     let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `
     let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto, tipo) VALUES `
     let query_percepciones = `INSERT INTO factura_percepcion (fk_factura, monto) VALUES `
-    let idfactura=-1;
+    //productos...
+    let query_productos = `INSERT INTO codigo_factura (factura_idfactura, stock_codigo_idcodigo, cantidad, costo) VALUES `
+
+     
+    
 
     const _process = (_queries) => {
         if(_queries.length<1)
@@ -95,6 +98,7 @@ const agregar_factura_v2 = (data, callback) => {
             return
         }
         const query = _queries.pop()
+        //console.log("Executing query: " + query)
         connection.query(query,(err,resp)=>{
             _process(_queries)
         })
@@ -121,6 +125,11 @@ const agregar_factura_v2 = (data, callback) => {
         .percepciones
         .forEach(row=>{_percepciones += (_percepciones.length>0?',':'') + `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(row.tipo)})`});
 
+        data
+        .productos
+        .forEach(row=>{query_productos += (query_productos.endsWith('VALUES ') ? '' : ',') + `(${idfactura}, ${connection.escape(row.idcodigo)}, ${connection.escape(row.cantidad)}, ${connection.escape(row.costo)})`});
+
+
         let queries=[]
 
         if(data.iva.length>0)
@@ -137,8 +146,11 @@ const agregar_factura_v2 = (data, callback) => {
         {
             queries.push(query_percepciones + _percepciones)
         }
-        //console.log(JSON.stringify(queries))
-        
+        if(data.productos.length>0)
+        {
+            queries.push(query_productos)
+        }
+ 
         _process(queries)
 
     })
@@ -155,8 +167,7 @@ const obtener_factura_por_nro = (nro, callback) =>{
 }
 
 const obtener_facturas_filtros = (data, callback) =>{
-    //console.log(JSON.stringify(data))
-
+ 
     const provids = data.idprovs.length<1 ? ['0'] : data.idprovs
     const from = data.desde == "" ? "2000-01-01" : data.desde
     const to = data.hasta =="" ? "2000-01-01" : data.hasta

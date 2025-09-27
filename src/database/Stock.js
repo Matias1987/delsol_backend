@@ -696,7 +696,8 @@ const obtener_stock_ventas = (filters, callback) => {
         c.descripcion ,
         if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
         if(c.modo_precio = 1,sg.precio_defecto_mayorista,c.precio_mayorista) AS 'precio_mayorista',
-        sg.idsubgrupo
+        sg.idsubgrupo,
+        c.costo
         FROM stock s , codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
         c.activo=1 AND 
         s.codigo_idcodigo = c.idcodigo AND 
