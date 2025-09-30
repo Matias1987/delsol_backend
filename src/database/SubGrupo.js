@@ -33,9 +33,11 @@ const modificar_precios_defecto = (data,callback) => {
         }
     const connection = mysql_connection.getConnection()
     
-    const modif_precio_mayorista = data.modif_precio_mayorista||"0" == "0" ? false : data.modif_precio_mayorista 
+    const modif_precio_mayorista = +(data.modif_precio_mayorista||"0") == 0 ? false : +data.modif_precio_mayorista==1 ;
 
-    let set_part = modif_precio_mayorista ? 
+    console.log("modif_precio_mayorista: " + modif_precio_mayorista)
+
+    let set_part = !modif_precio_mayorista ? 
     `SET sg.precio_defecto = truncate((sg.precio_defecto * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(data.valor)}`
     :
     `SET sg.precio_defecto_mayorista = truncate((sg.precio_defecto_mayorista * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(data.valor)}`
