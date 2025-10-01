@@ -169,54 +169,62 @@ const agregar_cm_proveedor = (data, callback) => {
 
 const pagos_atrasados_proveedores = (data, callback) => {
   const query = `SELECT 
-                    p0.nombre,
-                    p0.idproveedor,
-                    ops.*
-                    FROM proveedor p0 INNER JOIN 
+                    q1.idproveedor, 
+                    q1.nombre,
+                    if(q2.proveedor_idproveedor IS NULL, 0 , q1.diff) AS 'atraso',
+                    if(q2.proveedor_idproveedor IS NULL, '' , DATE_FORMAT(q1.fecha,'%d-%m-%Y')) AS 'ultimo_pago'
+                  from
+                  (
+                    SELECT 
+                    p.idproveedor, 
+                    DATEDIFF(date(NOW()), if(p1.fk_proveedor IS NULL, DATE('1970-01-01'), DATE(p1.fecha))) AS 'diff',
+                    if(p1.fk_proveedor IS NULL, DATE('1970-01-01'), DATE(p1.fecha)) AS 'fecha',
+                    p.nombre
+                    FROM proveedor p LEFT JOIN (
+                      SELECT pp1.fk_proveedor, pp1.fecha FROM pago_proveedor pp1 WHERE pp1.fecha = (SELECT MAX(pp.fecha) FROM pago_proveedor pp WHERE pp.fk_proveedor = pp1.fk_proveedor)
+                    ) p1 ON p1.fk_proveedor = p.idproveedor
+                    ORDER BY diff DESC 
+                  )q1 
+                  LEFT JOIN 
+                  (
+                    SELECT 
+                    ff.proveedor_idproveedor
+                    FROM 
+                    (
+                        SELECT SUM(f.monto) AS 'monto', f.proveedor_idproveedor FROM factura f WHERE DATE(f.fecha) < DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH ) GROUP BY f.proveedor_idproveedor
+                    ) AS ff,
                     (
                         SELECT 
-                        ff.proveedor_idproveedor,
-                        ff.monto AS 'd',
-                        pps.monto AS 'h'
-                        FROM 
-                        (
-                            SELECT SUM(f.monto) AS 'monto', f.proveedor_idproveedor FROM factura f WHERE DATE(f.fecha) < DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH ) GROUP BY f.proveedor_idproveedor
-                        ) AS ff,
-                        (
-                            SELECT 
-                                SUM(pp.monto) AS 'monto',
-                                SUM(pp.intime) AS 'intime', 
-                                pp.idproveedor 
-                                FROM  
-                                (
-                                    SELECT 
-                                    DATE('1970-1-1') AS 'fecha',
-                                    0 AS 'intime',		
-                                    0 AS 'monto',
-                                    p.idproveedor 
-                                    FROM proveedor p
-                                    UNION
-                                    SELECT 
-                                    DATE(pp1.fecha) AS 'fecha',
-                                    if(DATE(pp1.fecha) >= DATE_ADD(DATE(NOW()), INTERVAL -3 MONTH) , 1 , 0) AS 'intime',
-                                    pp1.monto,
-                                    pp1.fk_proveedor AS 'idproveedor' 
-                                    FROM pago_proveedor pp1
-                                )pp 
-                            GROUP BY pp.idproveedor
-                        ) pps
-                            WHERE 
-                            pps.intime = 0 AND 
-                            pps.monto < ff.monto AND 
-                            pps.idproveedor = ff.proveedor_idproveedor
-                    ) ops ON ops.proveedor_idproveedor = p0.idproveedor;
-                        ;
+                            SUM(pp.monto) AS 'monto',
+                            SUM(pp.intime) AS 'intime', 
+                            pp.idproveedor 
+                            FROM  
+                            (
+                                SELECT 
+                                0 AS 'intime',		
+                                0 AS 'monto',
+                                p.idproveedor 
+                                FROM proveedor p
+                              UNION
+                                SELECT 
+                                if(DATE(pp1.fecha) >= DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH) , 1 , 0) AS 'intime',
+                                pp1.monto,
+                                pp1.fk_proveedor AS 'idproveedor' 
+                                FROM pago_proveedor pp1
+                            )pp 
+                        GROUP BY pp.idproveedor
+                    ) pps
+                        WHERE 
+                        pps.intime = 0 AND pps.monto < ff.monto AND pps.idproveedor = ff.proveedor_idproveedor
+                  )q2
+                    ON q1.idproveedor = q2.proveedor_idproveedor
+                    ORDER BY if(q2.proveedor_idproveedor IS NULL, 0 , q1.diff) desc
                     `;
 
-        doQuery(query,(response)=>{
-            //console.log(JSON.stringify(response.data))
-            callback(response.data)
-        })
+  doQuery(query, (response) => {
+    //console.log(JSON.stringify(response.data))
+    callback(response.data);
+  });
 };
 
 module.exports = {
