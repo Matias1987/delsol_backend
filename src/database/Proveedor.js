@@ -159,7 +159,7 @@ const agregar_pago_proveedor = (data, callback) => {
 const agregar_cm_proveedor = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
-  const query = `INSERT INTO carga_manual_proveedor  (fk_proveedor, monto, comentarios, modo_ficha) VALUES (${data.fk_proveedor}, ${data.monto}, '${data.comentarios}', ${data.modo})`;
+  const query = `INSERT INTO carga_manual_proveedor  (fk_proveedor, monto, comentarios, modo_ficha, fecha) VALUES (${data.fk_proveedor}, ${data.monto}, '${data.comentarios}', ${data.modo}, date('${(data.fecha)}'))`;
   //console.log(query)
   connection.query(query, (err, resp) => {
     callback(resp);
@@ -191,7 +191,11 @@ const pagos_atrasados_proveedores = (data, callback) => {
                     ff.proveedor_idproveedor
                     FROM 
                     (
-                        SELECT SUM(f.monto) AS 'monto', f.proveedor_idproveedor FROM factura f WHERE DATE(f.fecha) < DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH ) GROUP BY f.proveedor_idproveedor
+                        SELECT SUM(_q.monto) AS 'monto', _q.proveedor_idproveedor FROM (
+                          SELECT f.monto, f.proveedor_idproveedor FROM factura f WHERE DATE(f.fecha) < DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH )
+                          union 
+                          SELECT cmp.monto, cmp.fk_proveedor AS 'proveedor_idproveedor' FROM carga_manual_proveedor cmp WHERE cmp.activo=1
+                        ) _q GROUP BY _q.proveedor_idproveedor
                     ) AS ff,
                     (
                         SELECT 

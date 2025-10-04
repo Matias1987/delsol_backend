@@ -73,6 +73,11 @@ const lista_elementos_factura = (data, callback) => {
 
 const agregar_factura_v2 = (data, callback) => {
   console.log(JSON.stringify(data));
+  if(data.nro==="" || +data.fkproveedor===-1 || +data.total===0){
+    console.log("Error en datos de factura");
+    callback(-1);
+    return;
+  }
   const connection = mysql_connection.getConnection();
 
   const _fecha = data.fecha == "" ? "now()" : data.fecha;
@@ -147,7 +152,7 @@ const agregar_factura_v2 = (data, callback) => {
         (query_productos.endsWith("VALUES ") ? "" : ",") +
         `(${idfactura}, ${connection.escape(row.idcodigo)}, ${connection.escape(
           row.cantidad
-        )}, ${connection.escape(row.costo)})`;
+        )}, ${connection.escape(+row.precio)})`;
     });
 
     let queries = [];
