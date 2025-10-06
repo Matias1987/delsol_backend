@@ -196,9 +196,10 @@ const obtener_detalle_subgrupo = (id,callback)=>{
                     f.nombre_corto AS 'familia',
                     sf.nombre_corto AS 'subfamilia',
                     g.nombre_corto AS 'grupo',
-                    sg.* 
+                    sg.* ,
+                    if(dc.iddetalle IS NOT NULL AND (sg.comentarios IS NULL OR sg.comentarios='null'),dc.descripcion, sg.comentarios) as 'comentarios'
                     FROM 
-                    subgrupo sg,
+                    subgrupo sg left join detalle_categoria dc on sg.idsubgrupo=dc.fkcategoria,
                     grupo g,
                     subfamilia sf,
                     familia f
@@ -207,6 +208,7 @@ const obtener_detalle_subgrupo = (id,callback)=>{
                     g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
                     sf.familia_idfamilia = f.idfamilia AND 
                     sg.idsubgrupo=${id};`;
+                    console.log(query)
     connection.query(query,(err,rows)=>{
         callback(rows)
     })

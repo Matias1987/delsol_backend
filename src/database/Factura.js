@@ -73,7 +73,7 @@ const lista_elementos_factura = (data, callback) => {
 
 const agregar_factura_v2 = (data, callback) => {
   console.log(JSON.stringify(data));
-  if(data.nro==="" || +data.fkproveedor===-1 || +data.total===0){
+  if(data.nro==="" || +data.fkproveedor===-1 ){
     console.log("Error en datos de factura");
     callback(-1);
     return;
@@ -83,7 +83,7 @@ const agregar_factura_v2 = (data, callback) => {
   const _fecha = data.fecha == "" ? "now()" : data.fecha;
   let idfactura = -1;
 
-  let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha) VALUES (
+  let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha, descuento, c_n_gravados, imp_int) VALUES (
     ${connection.escape(data.nro)}, 
     ${connection.escape(data.fkproveedor)},
     ${connection.escape(data.total)},
@@ -91,7 +91,10 @@ const agregar_factura_v2 = (data, callback) => {
     ${connection.escape(data.tipo)},
     ${connection.escape(data.puntoVenta)}, 
     ${connection.escape(data.esremito)},
-    date(${connection.escape(data.fecha)})
+    date(${connection.escape(data.fecha)}),
+    ${connection.escape(data.descuento)},
+    ${connection.escape(parseFloat(data.conceptosNoGravados||"0"))},
+    ${connection.escape(parseFloat(data.impuestosInternos||"0"))}
     );`; //toDo
 
   let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `;

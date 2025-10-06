@@ -660,6 +660,9 @@ const obtener_lista_stock_filtros = (data, callback) => {
 };
 
 const obtener_stock_ventas = (filters, callback) => {
+
+  const qtty_min = typeof filters.wouth_qtty === "undefined" ? "s.cantidad > 0 " : (filters.wouth_qtty ? "true" : "s.cantidad > 0 ");
+
   var str = "-1";
 
   const idcodigo =
@@ -712,7 +715,7 @@ const obtener_stock_ventas = (filters, callback) => {
             ? "true"
             : `((${__filtros_codigo}) or (${__filtros_desc}))`
         } and
-        s.cantidad > 0 
+        ${qtty_min}
         LIMIT 200
         ;`;
 
@@ -882,7 +885,7 @@ const modificar_cantidad = (data, callback) => {
 
   const query = `update stock s set s.cantidad=${data.cantidad} where s.sucursal_idsucursal=${data.fksucursal} and s.codigo_idcodigo=${data.idcodigo}`;
 
-  //console.log(query)
+  console.log(query)
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, response) => {
