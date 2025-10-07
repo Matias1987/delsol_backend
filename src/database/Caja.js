@@ -311,7 +311,7 @@ const obtener_caja_gasto = (data, callback) => {
     connection.connect();
     
     connection.query(query,(err,response)=>{
-        console.log(JSON.stringify(response))
+        //console.log(JSON.stringify(response))
 
         if(err)
         {

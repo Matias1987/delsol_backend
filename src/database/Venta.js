@@ -248,6 +248,12 @@ const cambiar_estado_venta = (data, callback) => {
     const query = `UPDATE venta v SET v.estado = '${data.estado}' ${__t}, v.en_laboratorio=if(v.tipo=1,0, ${en_laboratorio}), v.estado_taller='${estado_laboratorio}' WHERE v.idventa=${data.idventa};`
 
     connection.query(query,(err,results)=>{
+        if(err)
+        {
+            connection.end();
+            console.log(err);
+            return callback(null);
+        }
         callback(results)
         if(typeof data.removeMPRows !== 'undefined'){
             if(+data.removeMPRows == 1){
@@ -453,9 +459,11 @@ const do_insert_venta = (data, callback) => {
                     
                     connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
         
+                        connection.end();
+
                         callback(venta_id)
         
-                        connection.end();
+                        
                     })
                 })
                 }
@@ -463,14 +471,18 @@ const do_insert_venta = (data, callback) => {
                     if(_arr_items.length>0){
                         connection.query(venta_queries.query_items + _items_data,(err,__resp)=>{
         
+                            connection.end();
+
                             callback(venta_id)
             
-                            connection.end();
+                            
                         })
                     }
                     else{
-                        callback(venta_id)
                         connection.end();
+                        
+                        callback(venta_id)
+                        
                     }
                 }
             })

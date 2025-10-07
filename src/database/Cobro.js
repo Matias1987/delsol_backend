@@ -10,7 +10,7 @@ const doQuery = (query, callback=null) => {
     connection.query(query,(err,response)=>{
         if(err)
         {
-            console.log("Error " + JSON.stringify(err))
+            console.log("Error " + err)
             return callback?.(err,null)
         }
         callback?.(err,response)
@@ -22,12 +22,10 @@ const do_agregar_cobro_v2 = (data , callback) => {
 
     const connection = mysql_connection.getConnection();
 
-    console.log(JSON.stringify(data))
-    //console.log("using new version.....")
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     
     const get_mp_obj = vars => ({
-        monto: vars.monto,
+        monto: isNaN(vars.monto) ? 0 : vars.monto,
         tipo: vars.tipo,
         tarjeta: typeof vars.tarjeta === 'undefined' ? null : vars.tarjeta,
         fkmutual: typeof vars.fkmutual === 'undefined' ? null : vars.fkmutual,
@@ -92,9 +90,6 @@ const do_agregar_cobro_v2 = (data , callback) => {
                 date('${data.fecha}')
                 )`;
 
-
-            //console.log("insert cobro")
-            //console.log(JSON.stringify(__query))
 
             doQuery(__query,(err1, result1)=>{
                 if(err1)
@@ -282,20 +277,16 @@ const do_agregar_cobro_v2 = (data , callback) => {
                             //UPDATE DEBE AND HABER FIELDS IN VENTA
                             doQuery(`UPDATE venta  v SET v.descuento=${data.descuento}, v.debe=v.subtotal-${data.descuento},  v.monto_total=v.subtotal-${data.descuento},  v.haber=v.haber + ${total}, v.saldo = v.saldo - ${total} WHERE v.idventa=${(data.idventa||"0")};`)
                         }
+                        else{
+                            console.log("no id venta defined...");
+                        }
                         callback(idcobro);
                     })
                 }
-
                 //#endregion
-                
-            
-            
             })
-
         })
     )
-
-
 }
 
 const agregar_venta_mp_ctacte = (data,callback) =>
@@ -320,8 +311,6 @@ const agregar_venta_mp_ctacte = (data,callback) =>
                 ${data.mp.ctacte_cuotas},
                 ${data.mp.ctacte_monto_cuotas})` ;
     
-    //console.log(`QUERY: ${__query_venta_mp}`)
-
     const connection = mysql_connection.getConnection();
     connection.connect()
 
@@ -683,18 +672,6 @@ const lista_cobros = (data, callback) => {
     );
     connection.end();
 }
-/*
-const lista_cobros_sucursal = (data,callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    connection.query(
-        cobro_queries.queryListaCobrosSucursal(data.id),
-        (err,results)=>{
-            return callback(results);
-        }
-    );
-    connection.end();
-}*/
 
 const detalle_cobro = (idcobro, callback) => {
     const connection = mysql_connection.getConnection();

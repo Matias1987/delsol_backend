@@ -243,7 +243,7 @@ const operaciones_cliente = (data,callback) => {
      where 
      (case when '${data.idsucursal}'='-1' then true else ${data.idsucursal} = ops.idsucursal end)     
      order by ops.fecha asc, ops.orden asc;`
-     console.log(query)
+     //console.log(query)
     const connection = mysql_connection.getConnection();
     connection.connect();
     
@@ -266,6 +266,7 @@ const obtener_saldo_ctacte = (idcliente,callback) => {
     connection.query(query,(err,rows)=>{
         callback(rows)
     })
+    connection.end();
 }
 
 
@@ -275,6 +276,11 @@ const actualizar_saldo_cliente = (idcliente,callback)=>{
     
     connection.connect();
     connection.query(query,(err,rows)=>{
+        if(err){
+            connection.end();
+            console.log(err);
+            return callback(null);
+        }
         if(rows.length>0){
 
             const debe = parseFloat(rows[0].debe)
@@ -296,10 +302,6 @@ const actualizar_saldo_en_cobro = (idcobro,callback)=>{
     const connection = mysql_connection.getConnection();
     
     connection.connect();
-
-    //console.log(JSON.stringify(idcobro))
-
-    //console.log(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`)
 
     connection.query(`select c.cliente_idcliente from cobro c where c.idcobro=${idcobro}`,(__err, __row)=>{
 
