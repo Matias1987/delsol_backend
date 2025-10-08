@@ -30,10 +30,18 @@ const desactivar_tarjeta = (req, res) => {
     })
 }
 
+const cobros_tarjeta = (req,res) => {
+    const {body} = req
+    tarjetaService.cobros_tarjeta(body,(resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+}
+
 module.exports = {
     desactivar_tarjeta,
     obtenerTarjeta,
     obtenerTarjetas,
     agregarTarjeta,
-    editarTarjeta
+    editarTarjeta,
+    cobros_tarjeta,
 }

@@ -16,6 +16,10 @@ router.post("/", (req, res) => {
     tarjetaController.agregarTarjeta(req,res);
 });
 
+router.post("/cobros/t/",(req, res)=>{
+    tarjetaController.cobros_tarjeta(req,res);
+});
+
 router.post("/de/t/",(req, res)=>{
     tarjetaController.desactivar_tarjeta(req,res);
 })

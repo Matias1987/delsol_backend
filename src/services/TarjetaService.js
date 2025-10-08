@@ -20,10 +20,17 @@ const desactivar_tarjeta = (data,callback) => {
     })
 }
 
+const cobros_tarjeta = (data,callback) => {
+    TarjetaDB.cobros_tarjeta(data,(resp)=>{
+        callback(resp)
+    })
+}
+
 module.exports = {
     desactivar_tarjeta,
     obtenerTarjeta,
     obtenerTarjetas,
     agregarTarjeta,
-    editarTarjeta
+    editarTarjeta,
+    cobros_tarjeta,
 }
