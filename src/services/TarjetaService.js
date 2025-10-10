@@ -26,6 +26,14 @@ const cobros_tarjeta = (data,callback) => {
     })
 }
 
+const cuotas_pendientes = (data,callback) => {
+    TarjetaDB.cuotas_pendientes(data,(resp)=>{
+        callback(resp)
+    })
+}
+
+
+
 module.exports = {
     desactivar_tarjeta,
     obtenerTarjeta,
@@ -33,4 +41,5 @@ module.exports = {
     agregarTarjeta,
     editarTarjeta,
     cobros_tarjeta,
+    cuotas_pendientes,
 }

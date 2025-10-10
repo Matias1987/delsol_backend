@@ -63,9 +63,63 @@ const cobros_tarjeta = (data, callback) => {
   connection.end();
 };
 
+const cuotas_pendientes = (data, callback) => {
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  const query = `SELECT 
+                  c1.*,
+                  date_format(c1.fecha,'%d/%m/%Y') AS 'fecha_f', 
+                  t.nombre AS 'tarjeta' 
+                FROM 
+                  tarjeta t,
+                  (
+                    SELECT 
+                      c.idcobro, 
+                      TIMESTAMPDIFF(MONTH,DATE(c.fecha),DATE('${data.fecha}')) AS 'diff',
+                      TIMESTAMPDIFF(
+                      MONTH, 
+                      DATE(CONCAT(YEAR(c.fecha),'-',MONTH(c.fecha),'-1')),
+                      DATE(CONCAT(YEAR('${data.fecha}'),'-',MONTH('${data.fecha}'),'-1'))
+                      ) AS 'diff2',
+                      
+                      cmp.cant_cuotas, 
+                      c.fecha, 
+                      cmp.fk_tarjeta 
+                      
+                    FROM 
+                      cobro c 
+                      INNER JOIN cobro_has_modo_pago cmp ON cmp.cobro_idcobro = c.idcobro 
+                      AND c.anulado = 0 
+                      AND cmp.modo_pago = 'tarjeta' 
+                      AND cmp.fk_tarjeta IS NOT null
+                      WHERE DATE(c.fecha) < DATE('${data.fecha}')
+                  ) c1 
+                WHERE 
+                  t.idtarjeta = c1.fk_tarjeta AND 
+                  c1.diff>0 AND 
+                  DATE_ADD(
+                    DATE(c1.fecha), 
+                    INTERVAL CAST(c1.cant_cuotas AS UNSIGNED) MONTH
+                  ) >= DATE('${data.fecha}') 
+                  AND DATE(c1.fecha) > DATE_ADD(
+                    DATE('${data.fecha}'), 
+                    INTERVAL - (
+                      CAST(c1.cant_cuotas AS UNSIGNED) + 1
+                    ) MONTH
+                  )
+                  AND DAY(c1.fecha) = DAY('${data.fecha}')
+                ;`;
+  console.log(query);
+  connection.query(query, (err, resp) => {
+    callback(resp);
+  });
+  connection.end();
+}
+
 module.exports = {
   obtener_tarjetas,
   agregar_tarjeta,
   desactivar_tarjeta,
   cobros_tarjeta,
+  cuotas_pendientes,
 };

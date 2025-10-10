@@ -19,6 +19,9 @@ router.post("/", (req, res) => {
 router.post("/cobros/t/",(req, res)=>{
     tarjetaController.cobros_tarjeta(req,res);
 });
+router.post("/ctas_p/t/",(req, res)=>{
+    tarjetaController.cuotas_pendientes(req,res);
+});
 
 router.post("/de/t/",(req, res)=>{
     tarjetaController.desactivar_tarjeta(req,res);

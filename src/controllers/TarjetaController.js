@@ -37,6 +37,13 @@ const cobros_tarjeta = (req,res) => {
     })
 }
 
+const cuotas_pendientes = (req,res) => {
+    const {body} = req
+    tarjetaService.cuotas_pendientes(body,(resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+}
+
 module.exports = {
     desactivar_tarjeta,
     obtenerTarjeta,
@@ -44,4 +51,5 @@ module.exports = {
     agregarTarjeta,
     editarTarjeta,
     cobros_tarjeta,
+    cuotas_pendientes,
 }
