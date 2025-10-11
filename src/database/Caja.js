@@ -124,6 +124,29 @@ const obtener_caja_id = (idcaja, callback) => {
     connection.end();
 }
 
+const obtener_cajas_fecha = ( fecha, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f', s.nombre as 'sucursal' FROM caja c, sucursal s where s.idsucursal = c.sucursal_idsucursal AND DATE(c.fecha)=DATE(${connection.escape(fecha)});`;
+    console.log(sql);
+    connection.query(sql,(err,rows)=>{
+        if(rows==null)
+        {
+            callback({message:'error, no se encontro', status: 'error'})
+        }
+        else{
+            if(rows.length>0)
+            {
+                callback(rows)
+            }
+            else{
+                callback({message:'error, no se encontro', status: 'error'})
+                console.log("no hay rows");
+            }
+        }
+    })
+    connection.end();
+}
 
 const informe_caja = (idcaja, callback) =>{
     const connection = mysql_connection.getConnection();
@@ -340,4 +363,5 @@ module.exports = {
     caja_exists,
     resumen_caja,
     obtener_caja_gasto,
+    obtener_cajas_fecha,
 }

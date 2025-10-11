@@ -38,6 +38,10 @@ router.post("/exists/", (req, res) => {
 router.post("/", (req, res) => {
   cajaController.agregarCaja(req,res)
 });
+
+router.post("/caja/fecha/", (req, res) => {
+  cajaController.obtener_cajas_fecha(req,res)
+});
 /*
 router.patch("/:clienteId", (req, res) => {
   cajaController.cerrarCaja(req,res)

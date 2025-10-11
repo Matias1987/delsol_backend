@@ -56,6 +56,12 @@ const resumen_caja = (data, callback) => {
     })
 }
 
+const obtener_cajas_fecha = (fecha, callback) => {
+    CajaDB.obtener_cajas_fecha(fecha, (rows) => {
+        return callback(rows);
+    });
+}
+
 module.exports={
     agregarCaja,
     cerrarCaja,
@@ -66,4 +72,5 @@ module.exports={
     caja_abierta,
     caja_exists,
     resumen_caja,
+    obtener_cajas_fecha,
 }
