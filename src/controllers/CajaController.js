@@ -79,6 +79,14 @@ const obtener_cajas_fecha = (req, res) => {
     })
 }
 
+const cambiar_estado_caja = (req, res) => {
+    const {body:{idcaja, estado}} = req;
+    console.log(idcaja, estado);
+    cajaService.cambiar_estado_caja({idcaja, estado}, (resp)=>{
+        res.status(201).send({status:'OK', data:resp});
+    })
+}
+
 module.exports={
     obtenerCajasSucursal,
     agregarCaja,
@@ -90,4 +98,5 @@ module.exports={
     caja_exists,
     resumen_caja,
     obtener_cajas_fecha,
+    cambiar_estado_caja,
 }

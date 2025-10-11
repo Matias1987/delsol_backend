@@ -351,6 +351,25 @@ const obtener_caja_gasto = (data, callback) => {
 
 }
 
+const cambiar_estado_caja = ({idcaja, estado}, callback) => {
+    const query = `UPDATE caja SET estado='${estado}' WHERE idcaja=${idcaja};`;
+    console.log(query);
+    const connection = mysql_connection.getConnection();
+
+    connection.connect();
+
+    connection.query(query,(err,response)=>{
+        if(err)
+        {
+            return callback({err:1});
+        }
+
+        return callback(response);
+    });
+
+    connection.end();
+}
+
 module.exports = {
     obtener_caja_nro,
     agregarCaja,
@@ -364,4 +383,5 @@ module.exports = {
     resumen_caja,
     obtener_caja_gasto,
     obtener_cajas_fecha,
+    cambiar_estado_caja,
 }

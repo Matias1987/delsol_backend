@@ -62,6 +62,12 @@ const obtener_cajas_fecha = (fecha, callback) => {
     });
 }
 
+const cambiar_estado_caja = (data, callback) => {
+    CajaDB.cambiar_estado_caja(data, (response) => {
+        return callback(response);
+    });
+}
+
 module.exports={
     agregarCaja,
     cerrarCaja,
@@ -73,4 +79,5 @@ module.exports={
     caja_exists,
     resumen_caja,
     obtener_cajas_fecha,
+    cambiar_estado_caja
 }
