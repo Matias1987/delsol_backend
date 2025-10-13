@@ -109,7 +109,7 @@ const cuotas_pendientes = (data, callback) => {
                   )
                   AND DAY(c1.fecha) = DAY('${data.fecha}')
                 ;`;
-  console.log(query);
+  //console.log(query);
   connection.query(query, (err, resp) => {
     callback(resp);
   });
