@@ -54,6 +54,43 @@ WHERE
 	})
 }
 
+const totales_venta_codigo_periodo = (data, callback) =>{
+
+	const query = `SELECT c0.codigo, c0.descripcion, qtties.qtty FROM codigo c0,
+					(
+						SELECT 
+						vhs.stock_codigo_idcodigo AS 'idcodigo', 
+						SUM(vhs.cantidad) AS 'qtty' 
+						FROM 
+						venta_has_stock vhs 
+						WHERE 
+						vhs.stock_codigo_idcodigo IN 
+						(
+							SELECT c.idcodigo FROM codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
+							c.subgrupo_idsubgrupo = sg.idsubgrupo AND sg.grupo_idgrupo = g.idgrupo AND 
+							g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+							(case when ''<>'' then sg.idsubgrupo='' ELSE TRUE END) AND 
+							(case when ''<>'' then g.idgrupo='' ELSE TRUE END ) AND 
+							(case when ''<>'' then sf.idsubfamilia='' ELSE TRUE END ) AND 
+							(case when ''<>'' then sf.familia_idfamilia='' ELSE TRUE END)
+						) AND 
+						vhs.venta_idventa IN 
+						(
+							SELECT v.idventa FROM venta v WHERE DATE(v.fecha) >= DATE_ADD(DATE(NOW()), INTERVAL -30 DAY) AND v.estado='ENTREGADO'
+						)
+						GROUP BY vhs.stock_codigo_idcodigo
+					) qtties WHERE qtties.idcodigo = c0.idcodigo ORDER BY qtties.qtty desc;`;
+	console.log(query);
+	doQuery(query,({err,data})=>{
+		if(err)
+		{
+			//error
+		}
+		callback(data)
+	})
+}
+
 module.exports = {
 	totales_stock,
+	totales_venta_codigo_periodo,
 }

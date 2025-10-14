@@ -8,4 +8,12 @@ const totalesStock =  (req, res) => {
 
 }
 
-module.exports = {totalesStock};
+const totales_venta_codigo_periodo = (req, res) => {
+    const {body} = req
+    service.totales_venta_codigo_periodo(body,response=>{
+        res.status(201).send({status:'OK', data:response})
+    })
+
+}
+
+module.exports = {totalesStock, totales_venta_codigo_periodo};

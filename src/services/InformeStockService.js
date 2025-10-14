@@ -6,4 +6,10 @@ const totales_stock = (data, callback) => {
     });
 }
 
-module.exports = {totales_stock}
+const totales_venta_codigo_periodo = (data, callback) => {
+    db.totales_venta_codigo_periodo(data,response=>{
+        callback(response)
+    });
+}
+
+module.exports = {totales_stock, totales_venta_codigo_periodo}
