@@ -194,6 +194,9 @@ app.use("/api/v1/egresos", egresoRouter);
 const informeStockRouter = require("./v1/routes/InformesStockRoutes")
 app.use("/api/v1/infstck", informeStockRouter)
 
+const informeProveedoresRouter = require("./v1/routes/InformeProveedoresRoutes")
+app.use("/api/v1/infp", informeProveedoresRouter)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
