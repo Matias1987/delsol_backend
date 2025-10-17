@@ -197,6 +197,9 @@ app.use("/api/v1/infstck", informeStockRouter)
 const informeProveedoresRouter = require("./v1/routes/InformeProveedoresRoutes")
 app.use("/api/v1/infp", informeProveedoresRouter)
 
+const informeVentasRouter = require("./v1/routes/InformeVentasRoutes")
+app.use("/api/v1/infvtas", informeVentasRouter)
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })

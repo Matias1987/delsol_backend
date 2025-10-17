@@ -1,0 +1,11 @@
+const service = require("../services/InformeVentasService");
+
+const informe_venta_montos_mes = (req,res) => {
+    const {body} = req;
+    service.informe_venta_montos_mes(body,response=>{
+        res.status(201).send({status:'OK', data:response})
+    })
+
+}
+
+module.exports = {informe_venta_montos_mes}
