@@ -8,4 +8,11 @@ const informe_venta_montos_mes = (req,res) => {
 
 }
 
-module.exports = {informe_venta_montos_mes}
+const informe_ventas_medicos = (req, res) => {
+    const {body} = req;
+    service.informe_ventas_medicos(body,response=>{
+        res.status(201).send({status:"OK", data: response})
+    })
+}
+
+module.exports = {informe_venta_montos_mes, informe_ventas_medicos}
