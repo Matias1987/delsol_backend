@@ -24,6 +24,7 @@ const informe_venta_montos_mes = (data, callback) => {
                     ;
 
                     `;
+                    //console.log(query)
   doQuery(query, (response) => {
     callback(response.data);
   });
