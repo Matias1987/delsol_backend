@@ -1,8 +1,19 @@
- const db = require("../database/Ingreso");
+ const { getCajaMaster } = require("../database/CajaMaster");
+const db = require("../database/Ingreso");
 
 // Create ingreso
 function createIngreso(params, callback) {
-    db.createIngreso(params, callback);
+    if(+params.cm==1)
+    {
+        getCajaMaster(idcajamaster=>{
+            console.log("caja master id is " + idcajamaster)
+            db.createIngreso({...params, idcaja:idcajamaster},response=>{callback(response)})
+        })
+    }
+    else{
+        db.createIngreso(params, (response)=>{callback(response)});
+    }
+    
 }
 
 // Get all ingresos

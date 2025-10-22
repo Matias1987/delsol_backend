@@ -17,7 +17,7 @@ const getCajasSucursales = (callback) => {
 };
 
 const generarTransferenciaACajaMaster = (data, callback) => {
-  console.log(JSON.stringify(data));
+ // console.log(JSON.stringify(data));
   dbCajaMaster.getCajaMaster((id) => {
     if (!id) return callback(null);
 

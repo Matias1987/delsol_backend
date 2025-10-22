@@ -22,7 +22,8 @@ function obtenerIngresoPorId(req, res) {
 function crearIngreso(req, res) {
     Ingreso.createIngreso(req.body, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json(result);
+        //res.status(201).json(result);
+        res.status(201).send({status:"OK", data: result})
     });
 }
 

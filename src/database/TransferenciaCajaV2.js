@@ -33,7 +33,7 @@ const generarTransferenciaCaja = (data, callback) => {
         {
           idcaja: data.idCajaDestino,
           monto: data.monto_real ? data.monto_real : data.monto,
-          fuente:"transferencia",
+          fuente: data.comentarios,
         },
         (err, ingreso) => {
           if (err) return callback(err);
