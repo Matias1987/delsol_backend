@@ -58,9 +58,9 @@ const obtener_subgrupos_bygrupo_opt = (req,res)=>{
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  const {params: {grupoId}} = req;
+  const {params: {grupoId, ignorarOcultos}} = req;
 
-  subgrupoService.obtener_subgrupos_bygrupo_opt(grupoId,(rows)=>{
+  subgrupoService.obtener_subgrupos_bygrupo_opt({grupoId: grupoId, ignorarOcultos: ignorarOcultos? ignorarOcultos : 0},(rows)=>{
     res.status(201).send({status:'OK', data:rows});
   })
 

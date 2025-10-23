@@ -343,7 +343,9 @@ const informe_caja = (idcaja, callback) =>{
             c.anulado = 0
     ) AS ops;`;
     //v.caja_idcaja=${idcaja}
-    connection.query( idf_optica == 3 ? query_coexp_version : sql,(err,rows)=>{
+    const uquery = sql;// idf_optica == 3 ? query_coexp_version : sql;
+
+    connection.query(uquery,(err,rows)=>{
         
         callback(rows)
         
@@ -389,9 +391,9 @@ const resumen_caja = (data, callback) => {
                     g.anulado=0 and 
                     g.caja_idcaja = ${idcaja}
                     ;`
+        const uquery = query;// idf_optica == 3 ? query_coexp_version : query;
 
-
-        connection.query(idf_optica == 3 ? query_coexp_version : query,(err,response)=>{
+        connection.query(uquery,(err,response)=>{
             callback(response)
         })
         connection.end()

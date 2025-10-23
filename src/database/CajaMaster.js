@@ -36,10 +36,10 @@ function getBalance(callback) {
 SELECT 	
 	  '1970-01-01' AS 'fecha',
 	  '-' AS 'id',
-	  '-' AS 'fecha_f',
-	  'SALDO PREVIO' AS 'tipo',
+	  CONCAT('Saldo al ', date_format(date_add(date(now()), interval -1 day),'%d-%m-%y')) AS 'fecha_f',
+	  'SALDO' AS 'tipo',
      SUM(o1.monto) AS 'monto',
-     ' ' AS 'detalle',
+     'SALDO PREVIO ' AS 'detalle',
      0 AS 'ref_id'
       FROM (
        SELECT 
@@ -74,7 +74,7 @@ UNION
       e.monto, 
       cg.nombre as 'detalle' ,
       0 as 'ref_id'
-    FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster}
+    FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} and date(e.fecha) = date(now())
     union
     SELECT 
       i.fecha, 
@@ -84,15 +84,14 @@ UNION
       i.monto, 
       i.comentarios as 'detalle',
       if(tc.id_transferencia is null, 0 , tc.id_caja_origen) as 'ref_id'
-    FROM 
-    caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
-    WHERE i.fk_caja=${idCajaMaster}
+      FROM 
+      caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso WHERE date(i.fecha) = date(now()) AND i.fk_caja=${idCajaMaster}
   ) o
   ORDER BY o.fecha asc
   )
   ) oo ORDER BY oo.fecha asc 
                     `;
-    //console.log("Balance query: ", query);
+    console.log("Balance query: ", query);
 
     doQuery(query, (results) => {
       if (!results) return callback(null);

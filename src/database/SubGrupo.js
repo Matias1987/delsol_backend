@@ -151,11 +151,10 @@ const modificar_multiplicador_grupos = (
   connection.end();
 };
 
-const obtener_subgrupos_bygrupo_opt = (grupoid, callback) => {
+const obtener_subgrupos_bygrupo_opt = (params, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
-  connection.query(
-    `SELECT 
+  const query = `SELECT 
                         sg.*, 
                         (sg.precio_defecto * 2) as 'precio_par', 
                         sg.idsubgrupo as 'value', 
@@ -168,7 +167,12 @@ const obtener_subgrupos_bygrupo_opt = (grupoid, callback) => {
                         WHERE 
                         sg.grupo_idgrupo=g.idgrupo AND 
                         g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
-                        sg.grupo_idgrupo=${grupoid};`,
+                        sg.grupo_idgrupo=${params.grupoId} AND 
+                        (case when '${params.ignorarOcultos}'<>'0' then sg.visible_lp=1 else true end)
+                        ;`
+  console.log(query);
+  connection.query(
+    query,
     (err, rows, fields) => {
       return callback(rows);
     }
@@ -284,9 +288,11 @@ const obtener_descripcion_cat_subgrupo = (id, callback) => {
 const editarSubgrupo = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
+  console.log("updating subgrupo " + data.visible_lp)
 
-  connection.query(
-    `update subgrupo sg set sg.nombre_largo=${connection.escape(
+  const q = `update subgrupo sg set 
+    sg.visible_lp = ${connection.escape(data.visible_lp)},
+    sg.nombre_largo=${connection.escape(
       data.nombre_largo
     )}, sg.precio_defecto=${connection.escape(
       data.precio_defecto
@@ -294,7 +300,13 @@ const editarSubgrupo = (data, callback) => {
       data.comentarios
     )}, sg.precio_defecto_mayorista=${connection.escape(
       data.precio_defecto_mayorista
-    )} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`,
+    )} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`
+
+    //console.log(q)
+
+
+  connection.query(
+    q,
     (err, resp) => {
         if(err){
             console.log(err);
