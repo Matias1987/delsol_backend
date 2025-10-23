@@ -1,3 +1,4 @@
+const { idf_optica } = require("../lib/global");
 const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
@@ -151,6 +152,101 @@ const obtener_cajas_fecha = ( fecha, callback) => {
 const informe_caja = (idcaja, callback) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
+
+    const query_coexp_version = `SELECT 
+    ops.monto,
+    ops.operacion,
+    ops.cliente,
+    ops.recibo,
+    ops.detalle,
+    if(ops.modo_pago = 'efectivo',ops.monto,0) AS 'efectivo',
+    if(ops.modo_pago = 'tarjeta',ops.monto,0) AS 'tarjeta',
+    if(ops.modo_pago = 'mutual',ops.monto,0) AS 'mutual',
+    if(ops.modo_pago = 'cheque',ops.monto,0) AS 'cheque',
+    if(ops.modo_pago = 'ctacte',ops.monto,0) AS 'cuotas',
+    if(ops.modo_pago = 'cuota',ops.monto,0) AS 'ctacte',
+    if(ops.modo_pago = 'mercadopago',ops.monto,0) AS 'mercadopago',
+    if(ops.modo_pago = 'transferencia',ops.monto,0) AS 'transferencia'
+    from
+    (
+			/*CUOTAS efvo*/
+            SELECT 
+            replace(format(chmp.monto,2),',','') as 'monto',
+            if(chmp.modo_pago='efectivo','ctacte',chmp.modo_pago) AS 'modo_pago',
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'PAGO CUOTA' as 'detalle'
+            FROM 
+            cobro_has_modo_pago chmp,
+            cobro c,
+            cliente cl
+            WHERE 
+            c.cliente_idcliente = cl.idcliente AND 
+            chmp.cobro_idcobro = c.idcobro AND
+            c.caja_idcaja=${idcaja} AND 
+			chmp.modo_pago = 'efectivo' AND 
+            c.tipo='cuota' AND
+            c.anulado = 0
+        UNION /* cierre op */
+            SELECT 
+            replace(format(chmp.monto,2),',','') as 'monto',
+            chmp.modo_pago,
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'CIERRE OP.' as 'detalle'
+            FROM 
+            cobro_has_modo_pago chmp,
+            (SELECT c0.* FROM cobro c0 INNER JOIN venta v0 ON v0.idventa = c0.venta_idventa AND v0.caja_idcaja=${idcaja} WHERE c0.anulado=0) c,
+            cliente cl
+            WHERE 
+            c.cliente_idcliente = cl.idcliente AND 
+            chmp.cobro_idcobro = c.idcobro AND
+            c.tipo <> 'cuota' AND 
+            chmp.modo_pago <> 'ctacte' AND
+        UNION
+            SELECT 
+            replace(format(vhmp.monto_int,2),',','') as  'monto' ,
+            'cuota' AS 'modo_pago',
+            vhmp.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            '' AS 'recibo',
+            'PAGO EN CTA. CTE.' as 'detalle'
+            FROM 
+            venta_has_modo_pago vhmp,
+            venta v,
+            caja c,
+            cliente cl
+            WHERE 
+            c.idcaja=${idcaja} AND 
+            v.sucursal_idsucursal = c.sucursal_idsucursal AND 
+            v.estado='ENTREGADO' AND
+            v.cliente_idcliente = cl.idcliente AND 
+            vhmp.modo_pago = 'ctacte' AND 
+            vhmp.venta_idventa = v.idventa AND 
+            DATE(v.fecha_retiro) = DATE(c.fecha)
+		UNION /*CUOTA NO EFECTIVO (MERCADOPAGO, CHEQUE, ETC)*/
+			SELECT 
+            replace(format(chmp.monto,2),',','') as 'monto',
+            chmp.modo_pago,
+            c.venta_idventa AS 'operacion',
+            CONCAT(cl.apellido,' ', cl.nombre) AS 'cliente',
+            chmp.cobro_idcobro AS 'recibo',
+            'PAGO CUOTA' as 'detalle'
+            FROM 
+            cobro_has_modo_pago chmp,
+            cobro c,
+            cliente cl
+            WHERE 
+            c.cliente_idcliente = cl.idcliente AND 
+            chmp.cobro_idcobro = c.idcobro AND
+            c.caja_idcaja=${idcaja} AND 
+			chmp.modo_pago <> 'efectivo' AND 
+            c.tipo='cuota' AND
+            c.anulado = 0
+    ) AS ops;`
+
     const sql = `SELECT 
     ops.monto,
     ops.operacion,
@@ -247,7 +343,7 @@ const informe_caja = (idcaja, callback) =>{
             c.anulado = 0
     ) AS ops;`;
     //v.caja_idcaja=${idcaja}
-    connection.query(sql,(err,rows)=>{
+    connection.query( idf_optica == 3 ? query_coexp_version : sql,(err,rows)=>{
         
         callback(rows)
         
@@ -257,11 +353,8 @@ const informe_caja = (idcaja, callback) =>{
 
 const resumen_caja = (data, callback) => {
 
-    
     const connection = mysql_connection.getConnection()
 
-    
-    
     connection.connect()
 
     connection.query(obtenerCajaAbierta(data.idsucursal),(err,_rows)=>{
@@ -272,6 +365,17 @@ const resumen_caja = (data, callback) => {
         }
 
         const idcaja = _rows[0]?.idcaja
+
+        const query_coexp_version = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
+                                        cobro_has_modo_pago cmp 
+                                        INNER JOIN ( SELECT c.* from cobro c WHERE c.caja_idcaja=${idcaja} and c.anulado=0 ) c1 
+                                        ON c1.idcobro=cmp.cobro_idcobro 
+                                        WHERE 
+                                        cmp.modo_pago='efectivo'
+                                        union
+                                        SELECT SUM(g.monto) AS 'monto', 'egreso' AS 'tipo', 'Gastos' as 'detalle' FROM gasto g WHERE 
+                                        g.anulado=0 and 
+                                        g.caja_idcaja = ${idcaja}`;
 
         const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
                         cobro_has_modo_pago cmp 
@@ -287,7 +391,7 @@ const resumen_caja = (data, callback) => {
                     ;`
 
 
-        connection.query(query,(err,response)=>{
+        connection.query(idf_optica == 3 ? query_coexp_version : query,(err,response)=>{
             callback(response)
         })
         connection.end()
