@@ -27,71 +27,74 @@ function getCajaMaster(callback) {
   });
 }
 
-function getBalance(callback) {
+function getBalance({fullList},callback) {
   getCajaMaster((idCajaMaster) => {
     console.log("Caja master id: ", idCajaMaster);
     if (!idCajaMaster) return callback(null);
 
     const query = `SELECT * FROM (
-SELECT 	
-	  '1970-01-01' AS 'fecha',
-	  '-' AS 'id',
-	  CONCAT('Saldo al ', date_format(date_add(date(now()), interval -1 day),'%d-%m-%y')) AS 'fecha_f',
-	  'SALDO' AS 'tipo',
-     SUM(o1.monto) AS 'monto',
-     'SALDO PREVIO ' AS 'detalle',
-     0 AS 'ref_id'
-      FROM (
-       SELECT 
-         e.fecha, 
-         e.monto
-       FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())
-       union
-       SELECT 
-         i.fecha, 
-         i.monto
-       FROM 
-       caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
-       WHERE i.fk_caja=3555 AND DATE(i.fecha)<DATE(NOW())
-     ) o1
-   
-UNION
- (
-  SELECT 
-  o.fecha,
-  o.id,
-  o.fecha_f,
-  o.tipo, 
-  o.monto,
-  o.detalle,
-  o.ref_id
-  FROM (
-    SELECT 
-      e.fecha, 
-      e.idegreso AS 'id', 
-      date_format(e.fecha, '%d-%m-%y') AS 'fecha_f',  
-      'EGRESO' AS 'tipo', 
-      e.monto, 
-      cg.nombre as 'detalle' ,
-      0 as 'ref_id'
-    FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} and date(e.fecha) = date(now())
-    union
-    SELECT 
-      i.fecha, 
-      i.idingreso AS 'id', 
-      DATE_FORMAT(i.fecha, '%d-%m-%y') AS 'fecha_f', 
-      'INGRESO' AS 'tipo', 
-      i.monto, 
-      i.comentarios as 'detalle',
-      if(tc.id_transferencia is null, 0 , tc.id_caja_origen) as 'ref_id'
-      FROM 
-      caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso WHERE date(i.fecha) = date(now()) AND i.fk_caja=${idCajaMaster}
-  ) o
-  ORDER BY o.fecha asc
-  )
-  ) oo ORDER BY oo.fecha asc 
+                    SELECT 	
+                        '1970-01-01' AS 'fecha',
+                        '-' AS 'id',
+                        CONCAT('Saldo al ', date_format(date_add(date(now()), interval -1 day),'%d-%m-%y')) AS 'fecha_f',
+                        'SALDO' AS 'tipo',
+                        SUM(o1.monto) AS 'monto',
+                        'SALDO PREVIO ' AS 'detalle',
+                        0 AS 'ref_id'
+                          FROM (
+                          SELECT 
+                            e.fecha, 
+                            e.monto
+                          FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())
+                          union
+                          SELECT 
+                            i.fecha, 
+                            i.monto
+                          FROM 
+                          caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
+                          WHERE 
+                          i.fk_caja=${idCajaMaster} AND DATE(i.fecha)<DATE(NOW()) and 
+                          ${fullList ? 'TRUE' : 'FALSE'} 
+
+                        ) o1
+                      
+                    UNION
+                    (
+                      SELECT 
+                      o.fecha,
+                      o.id,
+                      o.fecha_f,
+                      o.tipo, 
+                      o.monto,
+                      o.detalle,
+                      o.ref_id
+                      FROM (
+                        SELECT 
+                          e.fecha, 
+                          e.idegreso AS 'id', 
+                          date_format(e.fecha, '%d-%m-%y') AS 'fecha_f',  
+                          'EGRESO' AS 'tipo', 
+                          e.monto, 
+                          cg.nombre as 'detalle' ,
+                          0 as 'ref_id'
+                        FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} and ${fullList? 'TRUE' : 'date(e.fecha) = date(now())'}
+                        union
+                        SELECT 
+                          i.fecha, 
+                          i.idingreso AS 'id', 
+                          DATE_FORMAT(i.fecha, '%d-%m-%y') AS 'fecha_f', 
+                          'INGRESO' AS 'tipo', 
+                          i.monto, 
+                          i.comentarios as 'detalle',
+                          if(tc.id_transferencia is null, 0 , tc.id_caja_origen) as 'ref_id'
+                          FROM 
+                          caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso WHERE ${fullList ? 'TRUE' : 'date(i.fecha) = date(now())'} AND i.fk_caja=${idCajaMaster}
+                      ) o
+                      ORDER BY o.fecha asc
+                      )
+                      ) oo ORDER BY oo.fecha asc 
                     `;
-    console.log("Balance query: ", query);
+   // console.log("Balance query: ", query);
 
     doQuery(query, (results) => {
       if (!results) return callback(null);
@@ -101,6 +104,7 @@ UNION
 }
 
 function getCajasSucursales(callback) {
+  ///////////////////////FALTAN LOS GASTOS!!
   const sql = `SELECT 
                     s.nombre AS 'sucursal', 
                     date_format(c.fecha, '%d-%m-%y') as 'fecha',
@@ -130,7 +134,7 @@ function getCajasSucursales(callback) {
                     WHERE 
                     c.idcaja = op.caja_idcaja
                     ;`;
-  console.log(sql);
+  console.log("GET LISTADO CAJA SUCURSALES");
   doQuery(sql, (results) => {
     if (!results) return callback(null);
     //console.log("Cajas sucursales: ", results);

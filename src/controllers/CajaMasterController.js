@@ -1,13 +1,15 @@
 const service = require("../services/CajaMasterService");
 
 const getBalance = (req, res) => {
-  service.getBalance((results) => {
+  const {params:{fullList}} = req;
+  service.getBalance({fullList: fullList==1},(results) => {
     if (!results) return res.status(500).json({ error: "Internal server error" });
     res.json(results);
   });
 };
 
 const getCajasSucursales = (req, res) => {
+  
   service.getCajasSucursales((results) => {
     console.log("Cajas sucursales: ", results);
     res.json(results);

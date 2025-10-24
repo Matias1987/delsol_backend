@@ -47,7 +47,7 @@ const cerrarCaja = (idcaja, callback) => {
     const connection = mysql_connection.getConnection();
 
     connection.connect();
-    const query = `UPDATE caja c SET c.estado='CERRADO' WHERE c.idcaja=${idcaja}`
+    const query = `UPDATE caja c SET c.estado='CERRADO', c.control_pendiente=1 WHERE c.idcaja=${idcaja}`
     
     //console.log(query)
     connection.query(query,(err,resp)=>{
@@ -458,7 +458,7 @@ const obtener_caja_gasto = (data, callback) => {
 }
 
 const cambiar_estado_caja = ({idcaja, estado}, callback) => {
-    const query = `UPDATE caja SET estado='${estado}' WHERE idcaja=${idcaja};`;
+    const query = `UPDATE caja SET estado='${estado}', control_pendiente=if('${estado}'='CERRADO',1,0) WHERE idcaja=${idcaja};`;
     console.log(query);
     const connection = mysql_connection.getConnection();
 

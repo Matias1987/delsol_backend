@@ -2,8 +2,8 @@ const dbCajaMaster = require("../database/CajaMaster");
 const dbEgreso = require("../database/Egreso");
 const dbIngreso = require("../database/Ingreso");
 const transferenciaDB = require("../database/TransferenciaCajaV2");
-const getBalance = (callback) => {
-  dbCajaMaster.getBalance((response) => {
+const getBalance = (data, callback) => {
+  dbCajaMaster.getBalance(data,(response) => {
     callback(response);
   });
 };

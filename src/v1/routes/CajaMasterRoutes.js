@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../../controllers/CajaMasterController")
 
-router.get("/", controller.getBalance);
-router.get("/cajas", controller.getCajasSucursales);
+router.get("/blc/:fullList", controller.getBalance);
+router.get("/cajas/p/s", controller.getCajasSucursales);
 router.post("/transferencia/a/master", controller.generarTransferenciaACajaMaster);
 router.post("/transferencia/a/ff", controller.generarTransferenciaAFF);
 router.post("/agregar_egreso", controller.agregarEgreso);
