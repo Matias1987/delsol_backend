@@ -106,34 +106,55 @@ function getBalance({fullList},callback) {
 function getCajasSucursales(callback) {
   ///////////////////////FALTAN LOS GASTOS!!
   const sql = `SELECT 
-                    s.nombre AS 'sucursal', 
-                    date_format(c.fecha, '%d-%m-%y') as 'fecha',
-                    c.estado,
-                    op.monto_efectivo,
-                    c.idcaja
-                    FROM 
-                    caja c INNER join sucursal s ON s.idsucursal=c.sucursal_idsucursal,
-                    (
-                        SELECT 
-                            cb.caja_idcaja, 
-                            SUM(cmp.monto) AS 'monto_efectivo'
-                        FROM 
-                            cobro cb, 
-                            cobro_has_modo_pago cmp
-                        WHERE 
-                            cmp.cobro_idcobro = cb.idcobro AND 
-                            cb.caja_idcaja IN 
-                            (
-                                SELECT _c.idcaja
-                                FROM caja _c
-                                WHERE _c.control_pendiente=1 and _c.nro=1 and _c.estado='CERRADO'
-                            ) AND 
-                            cmp.modo_pago='efectivo'
-                        GROUP BY cb.caja_idcaja
-                    ) op
-                    WHERE 
-                    c.idcaja = op.caja_idcaja
-                    ;`;
+  s.nombre AS 'sucursal', 
+  date_format(c.fecha, '%d-%m-%y') as 'fecha',
+  c.estado,
+  op.c,
+  op.g,
+  op.c -op.g  AS 's',
+  c.idcaja
+  FROM 
+  caja c INNER join sucursal s ON s.idsucursal=c.sucursal_idsucursal,
+  (
+		SELECT 
+			_o.caja_idcaja,
+		 	sum(if(_o.tipo='c',  cast(_o.monto AS float), 0 )) AS 'c',
+			sum(if(_o.tipo<>'c', cast(_o.monto AS float), 0 )) AS 'g'
+		from
+		(
+		      SELECT 
+					'c' AS 'tipo',
+			       cb.caja_idcaja, 
+			       SUM(cmp.monto) AS 'monto'
+			   FROM 
+			       cobro cb, 
+			       cobro_has_modo_pago cmp
+			   WHERE 
+			       cmp.cobro_idcobro = cb.idcobro AND 
+			       cb.caja_idcaja IN 
+			       (
+			           SELECT _c.idcaja
+			           FROM caja _c
+			           WHERE _c.control_pendiente=1 and _c.nro=1 and _c.estado='CERRADO'
+			       ) AND 
+			       cmp.modo_pago='efectivo'
+			   GROUP BY cb.caja_idcaja
+			union
+			  SELECT 
+			  		'e' AS 'tipo',
+				  g.caja_idcaja, 
+				  SUM(g.monto)  AS 'monto'
+				FROM gasto g 
+				WHERE 
+				g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE _c.control_pendiente=1 and _c.nro=1 and _c.estado='CERRADO')
+				GROUP BY g.caja_idcaja
+				) _o GROUP BY _o.caja_idcaja
+  ) op
+  WHERE 
+  c.idcaja = op.caja_idcaja
+  ;
+  
+  `;
   console.log("GET LISTADO CAJA SUCURSALES");
   doQuery(sql, (results) => {
     if (!results) return callback(null);
