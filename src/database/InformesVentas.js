@@ -1,7 +1,7 @@
 const { doQuery } = require("./helpers/queriesHelper");
 
 const informe_venta_montos_mes = (data, callback) => {
-  const query = `SELECT s.nombre AS 'sucursal', mnt.* FROM 
+  /*const query = `SELECT s.nombre AS 'sucursal', mnt.* FROM 
                     (
                         SELECT 
                         c.sucursal_idsucursal,
@@ -22,13 +22,43 @@ const informe_venta_montos_mes = (data, callback) => {
                     sucursal s 
                     WHERE mnt.sucursal_idsucursal = s.idsucursal
                     ;
-
-                    `;
+                    `;*/
+  const query = `SELECT s.nombre AS 'sucursal', mnt.* FROM 
+                (
+                    SELECT 
+                    c.sucursal_idsucursal,
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='efectivo', cmp.monto,0)) AS 'efectivo',
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='tarjeta', cmp.monto,0)) AS 'tarjeta',
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='ctacte', cmp.monto,0)) AS 'ctacte',
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='mercadopago', cmp.monto,0)) AS 'mercadopago',
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='transferencia', cmp.monto,0)) AS 'transferencia',
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='mutual', cmp.monto,0)) AS 'mutual',
+                    SUM( IF( c.cuota=0 AND cmp.modo_pago='cheque', cmp.monto,0)) AS 'cheque',
+                    SUM( if( c.cuota=1, cmp.monto,0)) AS 'cuotas',
+                    SUM( if( c.cuota=0,cmp.monto,0)) AS 'total_ventas',
+                    SUM( cmp.monto ) AS 'total'
+                    FROM 
+                    cobro_has_modo_pago cmp, 
+                    (
+                      SELECT c0.idcobro, c0.sucursal_idsucursal, 0 AS 'cuota' FROM cobro c0 INNER JOIN venta v ON v.estado <> 'ANULADO' AND v.idventa = c0.venta_idventa AND MONTH(v.fecha) = ${data.mes} AND YEAR(v.fecha) = ${data.anio} AND c0.anulado=0
+                      union
+                      SELECT c1.idcobro, c1.sucursal_idsucursal, 1 AS 'cuota' FROM cobro c1 WHERE c1.tipo = 'CUOTA' AND MONTH(c1.fecha) = ${data.mes} AND YEAR(c1.fecha) = ${data.anio} AND c1.anulado=0
+                    ) c 
+                    WHERE  
+                    c.idcobro = cmp.cobro_idcobro  
+                    GROUP BY c.sucursal_idsucursal
+                ) mnt, 
+                sucursal s 
+                WHERE mnt.sucursal_idsucursal = s.idsucursal
+                ;`
                     //console.log(query)
   doQuery(query, (response) => {
     callback(response.data);
   });
 };
+
+
+
 
 const informe_ventas_medicos = (data, callback) => {
   const query = `SELECT 
