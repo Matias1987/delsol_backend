@@ -11,7 +11,7 @@ const totales_stock = (data, callback) =>{
 		sucursal
 	} = data;
 
-	console.log(JSON.stringify(data))
+	//console.log(JSON.stringify(data))
 
     const query = `
 	select * from(
@@ -23,14 +23,19 @@ const totales_stock = (data, callback) =>{
 	sg.nombre_corto AS 'subgrupo',
 	c.codigo AS 'codigo',
 	c.descripcion,
-	sum(if(ss.codigo_idcodigo IS NULL , 0 , ss.cantidad)) AS 'cantidad'
+	sum(if(ss.codigo_idcodigo IS NULL , 0 , ss.cantidad)) AS 'cantidad',
+	if(c.modo_precio = 1,sg.precio_defecto,c.precio) AS 'precio_codigo',
+	if(tags_codigo.fk_codigo is null, '', tags_codigo.tags_c) AS 'tags'
 FROM 
 	familia f,
 	subfamilia sf, 
 	grupo g,
 	subgrupo sg,
-	codigo c LEFT JOIN 
+	codigo c 
+	LEFT JOIN 
 	( SELECT * from stock s WHERE (case when ${sucursal}<>-1 then s.sucursal_idsucursal=${sucursal} ELSE TRUE END )) ss ON c.idcodigo = ss.codigo_idcodigo
+	LEFT JOIN 
+	(SELECT cht.fk_codigo, GROUP_CONCAT(cht.fk_etiqueta) as 'tags_c' FROM codigo_has_tag cht INNER join tag t ON t.etiqueta = cht.fk_etiqueta GROUP BY cht.fk_codigo ) AS tags_codigo ON tags_codigo.fk_codigo = c.idcodigo
 WHERE
 	f.idfamilia = sf.familia_idfamilia AND 
 	sf.idsubfamilia = g.subfamilia_idsubfamilia AND 
@@ -80,7 +85,7 @@ const totales_venta_codigo_periodo = (data, callback) =>{
 						)
 						GROUP BY vhs.stock_codigo_idcodigo
 					) qtties WHERE qtties.idcodigo = c0.idcodigo ORDER BY qtties.qtty desc;`;
-	console.log(query);
+	//console.log(query);
 	doQuery(query,({err,data})=>{
 		if(err)
 		{
