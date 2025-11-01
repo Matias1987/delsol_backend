@@ -428,7 +428,12 @@ const ejemplo_codigo = (params, callback) => {
     connection.end()
 }
 
+const agregar_codigos = (data, callback) => {
+    //TODO
+}
+
 module.exports = {
+    agregar_codigos,
     editar_cantidad_ideal,
     editar_codigo_propiedades,
     obtener_codigos,

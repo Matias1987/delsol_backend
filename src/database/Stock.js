@@ -971,6 +971,34 @@ const obtener_grilla_stock = (params, callback) => {
   connection.end();
 };
 
+const distribuir_cantidad_a_sucursales = (data, callback) => {
+  var query = `INSERT INTO stock (codigo_idcodigo, sucursal_idsucursal,cantidad)
+                (
+                SELECT 
+                c.idcodigo,
+                s.idsucursal,
+                ${data.cantidad}
+                FROM 
+                (SELECT s0.idsucursal FROM sucursal s0 WHERE s0.idsucursal IN (${data.idsucursales.map(s=>s)})) s,
+                codigo c,
+                subgrupo sg,
+                grupo g, 
+                subfamilia sf 
+                WHERE
+                c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
+                sg.grupo_idgrupo = g.idgrupo AND
+                g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+                (case when '${data.idsubgrupo}'<>'0' then sg.idsubgrupo=${data.idsubgrupo} ELSE TRUE END ) AND 
+                (case when '${data.idgrupo}'<>'0' then g.idgrupo=${data.idgrupo} ELSE TRUE END ) AND 
+                (case when '${data.idsubfamilia}'<>'0' then sf.idsubfamilia=${data.idsubfamilia} ELSE TRUE END ) AND 
+                (case when '${data.idfamilia}'<>'0 then sf.familia_idfamilia=${data.idfamilia} ELSE TRUE END )
+                );`
+  ;
+  console.log(query)
+  callback({ok:1})
+}
+
+
 module.exports = {
   verificar_cantidades_productos,
   obtener_subgrupo_full,
@@ -994,4 +1022,5 @@ module.exports = {
   modificar_cantidad,
   modificar_cantidad_lista,
   obtener_grilla_stock,
+  distribuir_cantidad_a_sucursales,
 };
