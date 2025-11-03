@@ -203,6 +203,9 @@ app.use("/api/v1/infvtas", informeVentasRouter)
 const informesCaja = require("./v1/routes/InformesCajaRoutes")
 app.use("/api/v1/infcaja", informesCaja)
 
+const codigosRoutesExt = require("./v1/routes/CodigosRoutesExt");
+app.use("/api/v1/codigos_ext", codigosRoutesExt);
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })

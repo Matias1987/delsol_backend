@@ -147,6 +147,13 @@ const ejemplo_codigo = (req, res) => {
 
 }
 
+const agregarCodigos = (req, res) => {
+  const {body} = req;
+  codigoService.agregar_codigos(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp})
+  })
+}
+
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -162,4 +169,5 @@ module.exports = {
     obtener_codigos_categoria,
     cambiar_estado_activo,
     ejemplo_codigo,
+    agregarCodigos,
   };

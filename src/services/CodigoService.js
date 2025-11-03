@@ -83,7 +83,7 @@ const agregar_codigos = (data, callback) => {
         idgrupo: typeof data.idgrupo === 'undefined' ? 0 : data.idgrupo,
         idsubfamilia: typeof data.idsubfamilia === 'undefined' ? 0 : data.idsubfamilia,
         idfamilia: typeof data.idfamilia === 'undefined' ? 0 : data.idfamilia,
-        cantidad: data.cantidad,
+        cantidad_inicial: data.cantidad_inicial,
         idsucursales: data.idsucursales,
       },
       (response) => {
