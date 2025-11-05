@@ -33,6 +33,10 @@ router.post("/d/m/", (req, res) => {
   medicoController.deshabilitar_medico(req,res);
 });
 
+router.post("/ed/it/m/", (req, res) => {
+  medicoController.editarMedico(req,res);
+});
+
 
 
 router.patch("/:clienteId", (req, res) => {

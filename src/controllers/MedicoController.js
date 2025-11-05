@@ -47,7 +47,12 @@ const agregarMedico = (req,res) => {
         res.status(201).send({status: 'OK', data: medico_id});
     })
 }
-const editarMedico = (req,res) => {}
+const editarMedico = (req,res) => {
+    const {body} = req;
+    medicoService.editarMedico(body,(response)=>{
+        res.status(201).send({status:'OK', data: response})
+    })
+}
 
 const deshabilitar_medico = (req,res)=>{
     const {body} = req

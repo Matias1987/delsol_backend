@@ -47,7 +47,11 @@ const deshabilitar_medico = (data,callback) => {
     })
 }
 
-const editarMedico = (req,res) => {}
+const editarMedico = (data, callback) => {
+    MedicoDB.actualizar_medico(data,(resp)=>{
+        return callback(resp)
+    })
+}
 
 module.exports = {
     deshabilitar_medico,
