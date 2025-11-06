@@ -54,7 +54,7 @@ function getBalance({fullList},callback) {
                           caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
                           WHERE 
                           i.fk_caja=${idCajaMaster} AND DATE(i.fecha)<DATE(NOW()) and 
-                          ${fullList ? 'TRUE' : 'FALSE'} 
+                          ${fullList ? 'FALSE' : 'TRUE'} 
 
                         ) o1
                       

@@ -16,6 +16,7 @@ const parse_venta_data = (body)=> ( {
 	tipo: body?.tipo, 
 	horaRetiro: body?.horaRetiro,
 	json_items: body?.json_items,
+	uid: body?.uid||'',
 })
 
 const venta_insert_query = (data, idcaja=0) => ` 
@@ -37,7 +38,8 @@ INSERT INTO venta
 	debe,
 	saldo,
 	hora_retiro,
-	json_items
+	json_items,
+	uid
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -56,7 +58,8 @@ VALUES (
 	${data.monto_total},
 	${data.monto_total},
 	'${data.horaRetiro}',
-	'${data.json_items}'
+	'${data.json_items}',
+	'${data.uid}'
 );
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
