@@ -30,7 +30,8 @@ const ventas_medico = (data, callback) => {
 
 const ventas_medico_totales = (data, callback) => {
     //console.log(JSON.stringify(data))
-    const nombre = data.nombre.trim().length < 1 ? "-1" : data.nombre.trim()
+    const nombre = data.nombre.trim().length < 1 ? "-1" : data.nombre.trim();
+    const idmedico = +data.idmedico < 1 ? -1 : +data.idmedico;
 
     const _query = `SELECT m.nombre AS 'medico', m_op.* FROM 
 	medico m, 
@@ -51,7 +52,8 @@ const ventas_medico_totales = (data, callback) => {
 		YEAR(v.fecha_retiro) = ${data.anio} AND 
 		MONTH(v.fecha_retiro) = ${data.mes} AND 
 		v.estado = 'ENTREGADO' AND 
-        (case when '${data.idsucursal}'<>'-1' then ${data.idsucursal}=v.sucursal_idsucursal else true end) 
+        (case when '${data.idsucursal}'<>'-1' then ${data.idsucursal}=v.sucursal_idsucursal else true end) AND 
+        (case when '${idmedico}'<> '-1' then v.medico_idmedico=${idmedico} else true end)
 		GROUP BY v.medico_idmedico
 	)AS m_op
 	WHERE m_op.medico_idmedico = m.idmedico and (case when '${nombre}'<> '-1' then m.nombre like '%${nombre}%' else true end);`

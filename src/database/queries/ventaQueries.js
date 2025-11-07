@@ -346,11 +346,15 @@ const queryListaVentasSucursalEstado = (
 	venta v, 
 	cliente c, 
 	usuario u, 
-	sucursal s
-	WHERE
+	sucursal s,
+    caja ca 
+	WHERE 
+	v.caja_idcaja = ca.idcaja AND 
 	s.idsucursal = v.sucursal_idsucursal AND 
 	v.cliente_idcliente = c.idcliente AND
 	v.usuario_idusuario = u.idusuario AND
+	v.estado<>'ANULADO' and
+	v.estado<>'INGRESADO' and
 	(case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end) AND 
 	(case when '${estado}'<>'' then v.estado = '${estado}' ELSE TRUE END) AND
 	(case when '${tipo}'<>'' then v.tipo = '${tipo}' ELSE TRUE END) AND
@@ -358,11 +362,10 @@ const queryListaVentasSucursalEstado = (
 	(case when '${medico_idmedico}'<>'' then v.medico_idmedico = '${medico_idmedico}' ELSE TRUE END) AND
 	(case when '${id}'<>'' then v.idventa = '${id}' ELSE TRUE END) AND
 	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END) AND
-	(case when '${fecha}' <> '' then date(v.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end) AND
+	(case when '${fecha}' <> '' then date(ca.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end) AND
 	(case when '${idusuario}'<> '' then v.usuario_idusuario = '${idusuario}' else true end) AND 
 	(case when '${estado_taller}'<>'' then v.estado_taller = '${estado_taller}' else true end) 
-	ORDER by v.idventa desc
-	LIMIT 200
+	ORDER by v.idventa desc;
 	`
 )
 
