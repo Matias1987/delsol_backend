@@ -328,6 +328,8 @@ const queryListaVentasSucursalEstado = (
 	fecha="",
 	idusuario="",
 	estado_taller="",
+	evitar_ingresados=0,
+	evitar_anulados=0,
 	) => (
 	`SELECT 
 	v.idventa, 
@@ -353,8 +355,8 @@ const queryListaVentasSucursalEstado = (
 	s.idsucursal = v.sucursal_idsucursal AND 
 	v.cliente_idcliente = c.idcliente AND
 	v.usuario_idusuario = u.idusuario AND
-	v.estado<>'ANULADO' and
-	v.estado<>'INGRESADO' and
+	(case when '${evitar_anulados}'='1' then v.estado<>'ANULADO' else true end) AND
+	(case when '${evitar_ingresados}'='1' then v.estado<>'INGRESADO' else true end) AND
 	(case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end) AND 
 	(case when '${estado}'<>'' then v.estado = '${estado}' ELSE TRUE END) AND
 	(case when '${tipo}'<>'' then v.tipo = '${tipo}' ELSE TRUE END) AND
