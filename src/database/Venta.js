@@ -28,6 +28,8 @@ const cambiar_destinatario = (data, callback) => {
 };
 
 const lista_ventas_sucursal_mes = (data, callback) => {
+  const idsucursal =
+    data.fksucursal === typeof "undefined" ? "-1" : data.fksucursal;
   const query_fr = `SELECT s.nombre AS 'sucursal', t.* FROM 
     sucursal s,
     (
@@ -43,6 +45,7 @@ const lista_ventas_sucursal_mes = (data, callback) => {
         FROM 
             venta_has_modo_pago vmp, venta v 
         WHERE
+            (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal='${idsucursal}' else true end) and 
             vmp.venta_idventa = v.idventa AND 
             YEAR(v.fecha_retiro) = ${data.anio} AND 
             MONTH(v.fecha_retiro) = ${data.mes} AND 
@@ -68,6 +71,7 @@ const lista_ventas_sucursal_mes = (data, callback) => {
         FROM 
             venta_has_modo_pago vmp, venta v 
         WHERE
+          (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal='${idsucursal}' else true end) and 
             vmp.venta_idventa = v.idventa AND 
             YEAR(v.fecha) = ${data.anio} AND 
             MONTH(v.fecha) = ${data.mes} AND 
@@ -91,7 +95,7 @@ const lista_ventas_sucursal_mes = (data, callback) => {
 };
 
 const lista_ventas_vendedor_mes = (data, callback) => {
- /* const query = `SELECT 
+  /* const query = `SELECT 
     v.idventa, 
     DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro',
     CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
@@ -162,7 +166,7 @@ const totales_venta_vendedor = (data, callback) => {
     WHERE 
     t.usuario_idusuario = u.idusuario;`;
 
-    //console.log(query)
+  //console.log(query)
 
   const connection = mysql_connection.getConnection();
   connection.connect();
@@ -737,29 +741,26 @@ const lista_venta_sucursal_estado = (data, callback) => {
             ))
   */
 
-            const q = venta_queries.queryListaVentasSucursalEstado(
-      idsucursal,
-      typeof data.estado === "undefined" ? "" : data.estado,
-      typeof data.tipo === "undefined" ? "" : data.tipo,
-      idmedico,
-      iddestinatario,
-      idcliente,
-      idventa,
-      typeof data.en_laboratorio === "undefined" ? "" : data.en_laboratorio,
-      fecha,
-      idusuario,
-      typeof data.estado_taller === "undefined" ? "" : data.estado_taller
-    );
-
-    console.log(q);
-
-  connection.query(
-    q,
-    (err, data) => {
-      //    console.log(JSON.stringify(data))
-      callback(data);
-    }
+  const q = venta_queries.queryListaVentasSucursalEstado(
+    idsucursal,
+    typeof data.estado === "undefined" ? "" : data.estado,
+    typeof data.tipo === "undefined" ? "" : data.tipo,
+    idmedico,
+    iddestinatario,
+    idcliente,
+    idventa,
+    typeof data.en_laboratorio === "undefined" ? "" : data.en_laboratorio,
+    fecha,
+    idusuario,
+    typeof data.estado_taller === "undefined" ? "" : data.estado_taller
   );
+
+  console.log(q);
+
+  connection.query(q, (err, data) => {
+    //    console.log(JSON.stringify(data))
+    callback(data);
+  });
   connection.end();
 };
 

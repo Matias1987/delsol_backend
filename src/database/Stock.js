@@ -864,6 +864,7 @@ const modificar_cantidad_categoria = (_data, callback) => {
         ;
         `;
   //console.log(query)
+  //return callback(null)
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, resp) => {
