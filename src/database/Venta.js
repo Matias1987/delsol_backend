@@ -714,7 +714,8 @@ const lista_venta_sucursal_estado = (data, callback) => {
   let idcliente = data.idcliente || "";
   let fecha = data.fecha || "";
   let idsucursal = data.idsucursal || "";
-
+  let evitar_ingresados = typeof data.incIngresadas === 'undefined' ? 0 : (data.incIngresadas? 0:1);
+  let evitar_anulados = typeof data.incAnuladas === 'undefined' ? 0 : (data.incAnuladas? 0:1);
   idmedico = idmedico == "-1" ? "" : idmedico;
   iddestinatario = iddestinatario == "-1" ? "" : iddestinatario;
   idventa = idventa == "-1" ? "" : idventa;
@@ -752,7 +753,9 @@ const lista_venta_sucursal_estado = (data, callback) => {
     typeof data.en_laboratorio === "undefined" ? "" : data.en_laboratorio,
     fecha,
     idusuario,
-    typeof data.estado_taller === "undefined" ? "" : data.estado_taller
+    typeof data.estado_taller === "undefined" ? "" : data.estado_taller,
+    evitar_ingresados,
+    evitar_anulados
   );
 
   console.log(q);
