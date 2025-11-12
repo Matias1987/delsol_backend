@@ -987,6 +987,7 @@ const distribuir_cantidad_a_sucursales = (data, callback) => {
                 grupo g, 
                 subfamilia sf 
                 WHERE
+                c.pending=1 AND 
                 c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
                 sg.grupo_idgrupo = g.idgrupo AND
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
@@ -1000,7 +1001,10 @@ const distribuir_cantidad_a_sucursales = (data, callback) => {
   doQuery(query, (result)=>{
     console.log(query)
     console.log(result)
-    callback({ok:1})
+    doQuery("update codigo c set c.pending=0 where c.pending=1;",()=>{
+      callback({ok:1});
+    })
+    
   });
  
 }

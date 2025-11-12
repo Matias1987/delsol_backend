@@ -7,12 +7,14 @@ const obtenerBancos = (callback, _bancos_prov) => {
 
   connection.connect();
 
+
+
   connection.query(
     `select b.* 
     from banco b 
     where 
-    (case when '${bancos_prov}' = '1' then b.activo = 1  else b.activoSistProv=1 end )
-    order by b.nombre desc`,
+    (case when '${bancos_prov}' <>   '1' then b.activo = 1  else b.activoSistProv=1 end )
+    order by b.nombre asc`,
     (err, rows, fields) => {
       callback(rows);
     }

@@ -444,12 +444,12 @@ const agregar_codigos = (data, callback) => {
     }
      */
   //TODO
-  const query = `INSERT IGNORE INTO codigo (codigo, descripcion, subgrupo_idsubgrupo, costo, modo_precio, precio, hook) VALUES ${data.codigos
+  const query = `INSERT IGNORE INTO codigo (codigo, descripcion, subgrupo_idsubgrupo, costo, modo_precio, precio, hook, pending) VALUES ${data.codigos
     .map(
       (c) =>
         `('${c.codigo}','${c.descripcion}',${data.idsubgrupo},0,2,${
-          c.precio
-        },'bulk_insert_${Date.now()}')`
+          parseFloat(c.precio)
+        },'bulk_insert_${Date.now()}',1)`
     )
     .join(",")};`;
   console.log(query);
