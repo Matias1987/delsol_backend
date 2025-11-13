@@ -1,7 +1,7 @@
 const mysql_connection = require("../lib/mysql_connection");
 const tc2 = require("./TransferenciaCajaV2");
 const doQuery = (query, callback) => {
-  console.log(query);
+  //console.log(query);
   const connection = mysql_connection.getConnection();
   connection.connect();
   if (!connection) {
@@ -38,16 +38,18 @@ function getBalance({fullList},callback) {
                         '-' AS 'id',
                         CONCAT('Saldo al ', date_format(date_add(date(now()), interval -1 day),'%d-%m-%y')) AS 'fecha_f',
                         'SALDO' AS 'tipo',
-                        SUM(o1.monto) AS 'monto',
+                        SUM( if( o1.tipo = 'i', o1.monto, -o1.monto)) AS 'monto',
                         'SALDO PREVIO ' AS 'detalle',
                         0 AS 'ref_id'
                           FROM (
                           SELECT 
+                            'e' as 'tipo',
                             e.fecha, 
                             e.monto
                           FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())  AND ${fullList ? 'FALSE' : 'TRUE'} 
                           union
                           SELECT 
+                            'i' as 'tipo',
                             i.fecha, 
                             i.monto
                           FROM 
