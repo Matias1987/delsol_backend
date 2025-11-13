@@ -45,7 +45,7 @@ function getBalance({fullList},callback) {
                           SELECT 
                             e.fecha, 
                             e.monto
-                          FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())
+                          FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())  AND ${fullList ? 'FALSE' : 'TRUE'} 
                           union
                           SELECT 
                             i.fecha, 
@@ -53,8 +53,8 @@ function getBalance({fullList},callback) {
                           FROM 
                           caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
                           WHERE 
-                          i.fk_caja=${idCajaMaster} AND DATE(i.fecha)<DATE(NOW()) and 
-                          ${fullList ? 'FALSE' : 'TRUE'} 
+                          i.fk_caja=${idCajaMaster} AND 
+                          DATE(i.fecha)<DATE(NOW()) AND ${fullList ? 'FALSE' : 'TRUE'} 
 
                         ) o1
                       
