@@ -99,4 +99,27 @@ const informe_ventas_medicos = (data, callback) => {
   });
 };
 
-module.exports = { informe_venta_montos_mes, informe_ventas_medicos };
+
+const informe_ventas_filtros = ({fecha_desde, fecha_hasta, monto_igual_a, valor_desde, valor_hasta}, callback) =>{
+  const fechaDesde = fecha_desde ?? "";
+  const fechaHasta = fecha_hasta ?? "";
+  const montoIgualA = monto_igual_a ?? "";
+  const valorDesde = valor_desde ?? "" ;
+  const valorHasta = valor_hasta ?? "" ;
+
+  const query = `SELECT s.nombre, CONCAT(c.apellido,' ',c.nombre) AS 'cliente', v.idventa, v.monto_total, DATE(v.fecha) FROM venta v, cliente c, sucursal s WHERE
+                v.cliente_idcliente = c.idcliente AND 
+                v.sucursal_idsucursal = s.idsucursal AND 
+                (case when ''<>'${fechaDesde}' then DATE(v.fecha)>=DATE('1970-1-1') ELSE TRUE END) AND 
+                (case when ''<>'${fechaHasta}' then DATE(v.fecha)<=DATE('1970-1-1') ELSE TRUE END) AND 
+                (case when ''<>'${montoIgualA}' then v.monto_total=0 ELSE TRUE END ) AND 
+                (case when ''<>'${valorHasta}' then v.monto_total<0 ELSE TRUE END ) AND 
+                (case when ''<>'${valorDesde}' then v.monto_total>0 ELSE TRUE END )
+                ;`
+
+  doQuery(query,(response)=>{
+    callback(response)
+  })
+}
+
+module.exports = { informe_venta_montos_mes, informe_ventas_medicos,informe_ventas_filtros };
