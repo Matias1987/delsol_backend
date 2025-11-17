@@ -101,8 +101,8 @@ const informe_ventas_medicos = (data, callback) => {
 
 
 const informe_ventas_filtros = ({fecha_desde, fecha_hasta, monto_igual_a, valor_desde, valor_hasta}, callback) =>{
-  const fechaDesde = fecha_desde ?? "";
-  const fechaHasta = fecha_hasta ?? "";
+  const fechaDesde = fecha_desde ?? "1970-1-1";
+  const fechaHasta = fecha_hasta ?? "1970-1-1";
   const montoIgualA = monto_igual_a ?? "";
   const valorDesde = valor_desde ?? "" ;
   const valorHasta = valor_hasta ?? "" ;
@@ -110,15 +110,17 @@ const informe_ventas_filtros = ({fecha_desde, fecha_hasta, monto_igual_a, valor_
   const query = `SELECT s.nombre, CONCAT(c.apellido,' ',c.nombre) AS 'cliente', v.idventa, v.monto_total, DATE(v.fecha) FROM venta v, cliente c, sucursal s WHERE
                 v.cliente_idcliente = c.idcliente AND 
                 v.sucursal_idsucursal = s.idsucursal AND 
-                (case when ''<>'${fechaDesde}' then DATE(v.fecha)>=DATE('1970-1-1') ELSE TRUE END) AND 
-                (case when ''<>'${fechaHasta}' then DATE(v.fecha)<=DATE('1970-1-1') ELSE TRUE END) AND 
-                (case when ''<>'${montoIgualA}' then v.monto_total=0 ELSE TRUE END ) AND 
-                (case when ''<>'${valorHasta}' then v.monto_total<0 ELSE TRUE END ) AND 
-                (case when ''<>'${valorDesde}' then v.monto_total>0 ELSE TRUE END )
+                (case when ''<>'${fechaDesde}' then DATE(v.fecha)>=DATE('${fechaDesde}') ELSE TRUE END) AND 
+                (case when ''<>'${fechaHasta}' then DATE(v.fecha)<=DATE('${fechaHasta}') ELSE TRUE END) AND 
+                (case when '-1'<>'${montoIgualA}' then v.monto_total=${montoIgualA} ELSE TRUE END ) AND 
+                (case when ''<>'${valorHasta}' then v.monto_total<${valorHasta} ELSE TRUE END ) AND 
+                (case when ''<>'${valorDesde}' then v.monto_total>${valorDesde} ELSE TRUE END )
                 ;`
 
+  console.log(query);
+
   doQuery(query,(response)=>{
-    callback(response)
+    callback(response.data)
   })
 }
 

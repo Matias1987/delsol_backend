@@ -9,6 +9,9 @@ router.post("/inf/vtas/mes/",(req, res)=>{
 router.post("/inf/vtas/med/",(req, res)=>{
     controller.informe_ventas_medicos(req,res)
 })
+router.post("/inf/vtas/ff/",(req, res)=>{
+    controller.informe_ventas_filtros(req,res)
+})
 
 
 
