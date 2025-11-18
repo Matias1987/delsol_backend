@@ -253,7 +253,6 @@ const search_stock_envio = (data, callback) => {
                 (case when '${data.idfamilia}'<>'-1' then f.idfamilia=${data.idfamilia} ELSE TRUE END ) AND 
                 (case when '${data.idsubgrupo}'<>'-1' then c.subgrupo_idsubgrupo=${data.idsubgrupo} ELSE TRUE END) AND 
                 (case when '${data.idgrupo}'<>'-1' then sg.grupo_idgrupo=${data.idgrupo} ELSE TRUE END )
-                limit 100
                 ;
                 `
                 //console.log(query)
