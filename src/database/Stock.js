@@ -693,7 +693,7 @@ const obtener_stock_ventas = (filters, callback) => {
       (__filtros_desc.length < 1 ? "" : " and ") +
       `concat(c.descripcion, ' ' , g.nombre_corto, ' ', sg.nombre_corto)  like '%${r}%' `;
   });
-
+//(case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end) 
   const _query = `SELECT 
         c.idcodigo, 
         c.codigo, 
@@ -708,14 +708,19 @@ const obtener_stock_ventas = (filters, callback) => {
         c.subgrupo_idsubgrupo = sg.idsubgrupo AND
         sg.grupo_idgrupo = g.idgrupo AND 
         g.subfamilia_idsubfamilia = sf.idsubfamilia AND
-        (case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end) and
         (case when '${str}' <> '-1' then sf.familia_idfamilia IN (${str}) ELSE TRUE end) and 
         s.sucursal_idsucursal=${filters.idSucursal} and 
+        (
+        c.idcodigo='${idcodigo}' or 
+        (
         ${
           __filtro.length < 1
             ? "true"
             : `((${__filtros_codigo}) or (${__filtros_desc}))`
-        } and
+        } 
+        )
+        )
+        and
         ${qtty_min}
         LIMIT 200
         ;`;
