@@ -14,6 +14,9 @@ router.get("/df/:idfactura", (req, res) => {
 router.get("/elementos/:idfactura", (req, res) => {
   facturaController.lista_elementos_factura(req,res);
 });
+router.get("/mont/adic/fact/:idfactura", (req, res) => {
+  facturaController.obtener_factura_montos_adic(req,res);
+});
 router.post("/detalle/factura/nro/", (req, res) => {
   facturaController.lista_elementos_factura(req,res);
 });
