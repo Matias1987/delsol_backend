@@ -30,4 +30,10 @@ const obtener_items_operacion = (data, callback) => {
     })
 }
 
-module.exports = {marcar_como_calibrando, marcar_como_terminado, agregar_pedido, obtener_lista_operaciones, obtener_items_operacion}
+const marcar_como_laboratorio = (data, callback) => {
+    ventaTallerDB.marcar_como_laboratorio(data,(resp)=>{
+        callback(resp)
+    })
+}
+
+module.exports = {marcar_como_calibrando, marcar_como_terminado, agregar_pedido, obtener_lista_operaciones, obtener_items_operacion, marcar_como_laboratorio}

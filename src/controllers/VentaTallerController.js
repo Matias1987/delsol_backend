@@ -36,9 +36,18 @@ const obtener_lista_operaciones = (req, res) => {
 
 }
 
+const marcar_como_laboratorio = (req, res) => {
+    const {body}=req
+    ventaTallerService.marcar_como_laboratorio(body,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
+
 module.exports = {
     marcar_como_calibrando, 
     marcar_como_terminado, 
     agregar_pedido, 
     obtener_lista_operaciones, 
-    obtener_items_operacion}
+    obtener_items_operacion,
+    marcar_como_laboratorio
+}

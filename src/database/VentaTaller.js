@@ -98,4 +98,15 @@ const obtener_lista_operaciones = (data,callback) => {
 
 }
 
-module.exports = {obtener_items_operacion, obtener_lista_operaciones, marcar_como_calibrando, marcar_como_terminado, agregar_pedido}
+const marcar_como_laboratorio = (data,callback) => {
+    const query =  `update venta v set v.estado_taller='LAB' where v.idventa = ${data.idventa}`;
+    console.log(query)
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query, (err,resp)=>{
+        callback(resp)
+    })
+    connection.end();
+}
+
+module.exports = {obtener_items_operacion, obtener_lista_operaciones, marcar_como_calibrando, marcar_como_terminado, agregar_pedido, marcar_como_laboratorio}

@@ -15,6 +15,9 @@ router.post("/c/est/dep/ter/",(req,res)=>{
 router.post("/c/est/dep/cal/",(req,res)=>{
     ventaTallerController.marcar_como_calibrando(req,res)
 })
+router.post("/c/est/dep/lab/",(req,res)=>{
+    ventaTallerController.marcar_como_laboratorio(req,res)
+})
 
 
 router.post("/items/op/",(req,res)=>{
