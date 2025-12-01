@@ -24,4 +24,12 @@ router.post("/items/op/",(req,res)=>{
     ventaTallerController.obtener_items_operacion(req,res)
 })
 
+router.post("/inf/cons/per/",(req,res)=>{
+    ventaTallerController.informe_consumo_periodo(req,res)
+})
+
+router.post("/det/cons/cod/",(req,res)=>{
+    ventaTallerController.detalle_consumo_codigo(req,res)
+})
+
 module.exports = router
