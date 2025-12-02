@@ -57,6 +57,13 @@ const detalle_consumo_codigo = (req, res) => {
     })
 }
 
+const contadores_estado_taller = (req, res) => {
+    const {body}=req
+    ventaTallerService.contadores_estado_taller(body,(resp)=>{
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
+
 module.exports = {
     marcar_como_calibrando, 
     marcar_como_terminado, 
@@ -65,5 +72,6 @@ module.exports = {
     obtener_items_operacion,
     marcar_como_laboratorio,
     informe_consumo_periodo,
-    detalle_consumo_codigo
+    detalle_consumo_codigo,
+    contadores_estado_taller
 }

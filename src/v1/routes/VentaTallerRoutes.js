@@ -32,4 +32,8 @@ router.post("/det/cons/cod/",(req,res)=>{
     ventaTallerController.detalle_consumo_codigo(req,res)
 })
 
+router.post("/cont/est/tal/",(req,res)=>{
+    ventaTallerController.contadores_estado_taller(req,res)
+})
+
 module.exports = router

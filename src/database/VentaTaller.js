@@ -115,7 +115,7 @@ const informe_consumo_periodo = (data, callback) => {
   console.log("DATA SERVICE: " + JSON.stringify(data));
   const query = `SELECT * FROM 
                     (
-                    SELECT op.codigo, SUM(op.cantidad) AS 'cantidad' FROM (
+                    SELECT op.fk_codigo, op.codigo, SUM(op.cantidad) AS 'cantidad' FROM (
                     SELECT sa.fk_sucursal, sa.fk_codigo, sa.tipo, sa.cantidad, sa.fecha_alta, v.idventa, v.fecha_retiro, v.cliente_idcliente, v.sucursal_idsucursal, c.codigo
                     FROM sobre_adicionales sa 
                     INNER JOIN  codigo c ON c.idcodigo = sa.fk_codigo 
@@ -132,18 +132,41 @@ const informe_consumo_periodo = (data, callback) => {
 
 const detalle_consumo_codigo = (data, callback) => {
   console.log("DATA SERVICE DETALLE: " + JSON.stringify(data));
-  const query = `SELECT sa.fk_sucursal, sa.fk_codigo, sa.tipo, sa.cantidad, sa.fecha_alta, v.idventa, v.fecha_retiro, v.cliente_idcliente, v.sucursal_idsucursal
-                    FROM sobre_adicionales sa 
-                    INNER JOIN  codigo c ON c.idcodigo = sa.fk_codigo 
-                    INNER JOIN venta v ON v.idventa = sa.fk_venta
-                    WHERE 
+ //const query = `SELECT sa.fk_sucursal, sa.fk_codigo, sa.tipo, sa.cantidad, sa.fecha_alta, v.idventa, v.fecha_retiro, v.cliente_idcliente, v.sucursal_idsucursal
+ //                  FROM sobre_adicionales sa 
+ //                  INNER JOIN  codigo c ON c.idcodigo = sa.fk_codigo 
+ //                  INNER JOIN venta v ON v.idventa = sa.fk_venta
+ //                  
+ //                  WHERE 
+ //                  sa.fk_codigo=${data.fk_codigo} AND 
+ //                  sa.fk_venta IN (SELECT v0.idventa FROM venta v0 WHERE date(v0.fecha_retiro)>=date('${data.fecha_desde}') AND date(v0.fecha_retiro)<=date('${data.fecha_hasta}') AND v0.estado='ENTREGADO');`;
+  const query = `SELECT s.nombre AS 'sucursal', sa.fk_sucursal, sa.fk_codigo, sa.tipo, sa.cantidad, sa.fecha_alta, v.idventa, v.fecha_retiro, v.cliente_idcliente, v.sucursal_idsucursal, c.codigo
+                    FROM sobre_adicionales sa
+                    INNER JOIN  codigo c ON c.idcodigo = sa.fk_codigo,
+                    venta v, 
+                    sucursal s 
+                    WHERE
+                    v.idventa = sa.fk_venta AND 
+                    s.idsucursal = v.sucursal_idsucursal AND 
                     sa.fk_codigo=${data.fk_codigo} AND 
                     sa.fk_venta IN (SELECT v0.idventa FROM venta v0 WHERE date(v0.fecha_retiro)>=date('${data.fecha_desde}') AND date(v0.fecha_retiro)<=date('${data.fecha_hasta}') AND v0.estado='ENTREGADO');`;
-  console.log(query);
+  //console.log(query);
   doQuery(query, (resp) => {
     callback(resp.data);
   });
 };
+
+const contadores_estado_taller = (data, callback) => {
+  const query = `SELECT 
+SUM(1) AS 'total',
+SUM(if(v.estado_taller='LAB',1,0)) AS 'laboratorio',
+SUM(if(v.estado_taller='CALIBRADO',1,0)) AS 'calibrado', 
+SUM(if(v.estado_taller='PEDIDO',1,0)) AS 'pedido'
+FROM venta v WHERE v.en_laboratorio=1;`;
+  doQuery(query, (resp) => {
+    callback(resp.data);
+  });
+}
 
 module.exports = {
   obtener_items_operacion,
@@ -153,5 +176,6 @@ module.exports = {
   agregar_pedido,
   marcar_como_laboratorio,
   informe_consumo_periodo,
-  detalle_consumo_codigo
+  detalle_consumo_codigo,
+  contadores_estado_taller
 };

@@ -48,6 +48,12 @@ const detalle_consumo_codigo = (data, callback) => {
   });
 };
 
+const contadores_estado_taller = (data, callback) => {
+  ventaTallerDB.contadores_estado_taller(data, (resp) => {
+    callback(resp);
+  });
+};
+
 module.exports = {
   marcar_como_calibrando,
   marcar_como_terminado,
@@ -56,5 +62,6 @@ module.exports = {
   obtener_items_operacion,
   marcar_como_laboratorio,
   informe_consumo_periodo,
-  detalle_consumo_codigo
+  detalle_consumo_codigo,
+  contadores_estado_taller
 };
