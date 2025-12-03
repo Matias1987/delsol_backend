@@ -390,10 +390,11 @@ const ejemplo_codigo = (params, callback) => {
                     ) mc
                     ON c1.idcodigo = mc.id
                     ;`;
-  //console.log(query)
+  console.log(query)
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, response) => {
+    
     if (err) {
       return callback({ err: 1 });
     }
@@ -409,7 +410,7 @@ const ejemplo_codigo = (params, callback) => {
     if (response.length < 1) {
       return callback("-");
     }
-
+console.log("ejemplo codigo response: ", JSON.stringify(response));
     return callback(response[0].codigo);
   });
 

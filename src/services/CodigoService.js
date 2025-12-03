@@ -72,7 +72,7 @@ const cambiar_estado_activo = (data, callback) => {
 };
 
 const ejemplo_codigo = (data, callback) => {
-  CodigoDB.ejemplo_codigo(data, (response) => {});
+  CodigoDB.ejemplo_codigo(data, (response) => {return callback(response);});
 };
 
 const agregar_codigos = (data, callback) => {
