@@ -343,7 +343,8 @@ const queryListaVentasSucursalEstado = (
 	v.sucursal_idsucursal,
 	v.cliente_idcliente,
 	v.en_laboratorio,
-	s.nombre as 'sucursal'
+	s.nombre as 'sucursal',
+	if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller'
 	FROM 
 	venta v, 
 	cliente c, 
