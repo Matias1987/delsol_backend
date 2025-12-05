@@ -709,7 +709,7 @@ const lista_mp_cobro = (idcobro, callback) => {
 
 }
 
-
+/*
 const anular_cobro = (data, callback) => {
     
     const connection = mysql_connection.getConnection()
@@ -720,7 +720,25 @@ const anular_cobro = (data, callback) => {
     })
     connection.end()
 }
+*/
+//anular cobro
+const anular_cobro = ({idcobro}, callback) =>{
 
+	const update_cobro_query = `update cobro c set c.anulado=1 where c.idcobro = ${idcobro}`;
+
+	const update_venta_query = `
+		update venta v inner join cobro c on c.venta_idventa = v.idventa and  c.idcobro = ${idcobro} 
+		set  v.haber = cast( v.haber as float )- c.monto, v.saldo = cast(v.saldo as float) + c.monto limit 1`;
+		
+	doQuery(update_cobro_query, response=>{
+		
+		doQuery(update_venta_query, resp1=>{
+			callback(resp1)
+		})
+
+	})
+
+}
 
 module.exports = {
     agregar_cobro,

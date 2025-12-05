@@ -21,6 +21,10 @@ router.post("/", (req, res) => {
   gastoController.agregarGasto(req,res)
 });
 
+router.post("/anular", (req, res) => {
+  gastoController.anularGasto(req,res)
+});
+
 router.patch("/:clienteId", (req, res) => {
   res.send("Update an existing workout");
 });

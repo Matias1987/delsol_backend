@@ -24,7 +24,11 @@ const agregarGasto = (data,callback) => {
 
 const editarGasto = (req,res) => {}
 
-
+const anularGasto = (data, callback) => {
+    GastoDB.anular_gasto(data,(response)=>{
+        return callback(response);
+    })
+}
 
 module.exports = {
     obtenerGasto,
@@ -32,4 +36,5 @@ module.exports = {
     agregarGasto,
     editarGasto,
     obtenerGastosCaja,
+    anularGasto
 }

@@ -28,6 +28,14 @@ const agregarGasto = (req,res) => {
 
 const editarGasto = (req,res) => {}
 
+const anularGasto = (req,res) => {
+    const {body} = req;
+
+    gastoService.anularGasto(body,(response)=>{
+        res.status(201).send({status:'OK', data:response});
+    })
+}
+
 
 module.exports = {
     obtenerGasto,
@@ -35,4 +43,5 @@ module.exports = {
     agregarGasto,
     editarGasto,
     obtenerGastosCaja,
+    anularGasto
 }

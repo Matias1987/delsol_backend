@@ -3,6 +3,21 @@ const { obtenerCajaAbierta, obtenerFFSucursal } = require("./queries/cajaQueries
 const UsuarioDB = require("./Usuario");
 const CajaDB = require("./Caja");
 const { usar_ff_para_gastos } = require("../lib/global");
+
+const doQuery = (query, callback=null) => {
+    const connection = mysql_connection.getConnection()
+    connection.connect()
+    connection.query(query,(err,response)=>{
+        if(err)
+        {
+            console.log("Error " + err)
+            return callback?.(err,null)
+        }
+        callback?.(err,response)
+    })
+    connection.end()
+}
+
 const lista_gastos_admin = (callback) => {
   const query = `SELECT 
     cg.nombre AS 'concepto',
@@ -133,9 +148,18 @@ const agregar_gasto = (data, callback) => {
   );
 };
 
+const anular_gasto = ({idgasto}, callback) => {
+	const query = `update gasto g set g.anulado=1 where g.idgasto = ${idgasto} limit 1`
+	console.log(query);
+	doQuery(query,(response)=>{
+		callback(response);
+	})
+}
+
 module.exports = {
   obtener_gasto,
   agregar_gasto,
+  anular_gasto,
   obtener_gastos_sucursal,
   obtener_gastos_caja,
   lista_gastos_admin,

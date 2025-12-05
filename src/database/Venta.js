@@ -758,7 +758,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
     evitar_anulados
   );
 
-  console.log(q);
+  //console.log(q);
 
   connection.query(q, (err, data) => {
     //    console.log(JSON.stringify(data))
