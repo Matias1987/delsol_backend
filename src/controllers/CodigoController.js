@@ -154,6 +154,13 @@ const agregarCodigos = (req, res) => {
   })
 }
 
+const modificar_precios_indv_categoria = (req, res) =>{
+  const {body} = req;
+  codigoService.modificar_precios_indv_categoria(body,(response)=>{
+    res.status(201).send({status:'OK', data: response})
+  })
+}
+
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -170,4 +177,5 @@ module.exports = {
     cambiar_estado_activo,
     ejemplo_codigo,
     agregarCodigos,
+    modificar_precios_indv_categoria,
   };

@@ -129,7 +129,7 @@ const obtener_cajas_fecha = ( fecha, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
     const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f', s.nombre as 'sucursal' FROM caja c, sucursal s where s.idsucursal = c.sucursal_idsucursal AND DATE(c.fecha)=DATE(${connection.escape(fecha)});`;
-    console.log(sql);
+    //console.log(sql);
     connection.query(sql,(err,rows)=>{
         if(rows==null)
         {
@@ -461,7 +461,7 @@ const obtener_caja_gasto = (data, callback) => {
 
 const cambiar_estado_caja = ({idcaja, estado}, callback) => {
     const query = `UPDATE caja SET estado='${estado}', control_pendiente=if('${estado}'='CERRADO',1,0) WHERE idcaja=${idcaja};`;
-    console.log(query);
+    //console.log(query);
     const connection = mysql_connection.getConnection();
 
     connection.connect();

@@ -390,7 +390,7 @@ const ejemplo_codigo = (params, callback) => {
                     ) mc
                     ON c1.idcodigo = mc.id
                     ;`;
-  console.log(query)
+  //console.log(query)
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, response) => {
@@ -453,7 +453,7 @@ const agregar_codigos = (data, callback) => {
         },'bulk_insert_${Date.now()}',1)`
     )
     .join(",")};`;
-  console.log(query);
+  //console.log(query);
   doQuery(query, (err, resp) => {
     if (err) {
       console.log("Error inserting bulk codes: ", err);

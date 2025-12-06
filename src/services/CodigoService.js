@@ -1,4 +1,5 @@
 const CodigoDB = require("../database/Codigo");
+const CodigoExtDB = require("../database/CodigoExt");
 const StockDB = require("../database/Stock");
 const search_codigos = (data, callback) => {
   CodigoDB.search_codigos(data, (rows) => {
@@ -93,6 +94,12 @@ const agregar_codigos = (data, callback) => {
   });
 };
 
+const modificar_precios_indv_categoria = (data, callback) => {
+  CodigoExtDB.modificar_precios_indv(data, (response) => {
+    return callback(response);
+  });
+};
+
 module.exports = {
   agregar_codigos,
   editar_cantidad_ideal,
@@ -109,4 +116,5 @@ module.exports = {
   obtener_codigos_categoria,
   cambiar_estado_activo,
   ejemplo_codigo,
+  modificar_precios_indv_categoria,
 };
