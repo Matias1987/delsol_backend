@@ -953,6 +953,7 @@ const obtener_grilla_stock = (params, callback) => {
             c.codigo ,   
             s.cantidad,
             c.stock_ideal,
+            c.stock_critico,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
             CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') AS DECIMAL(10,2)) AS 'eje_dec' ,

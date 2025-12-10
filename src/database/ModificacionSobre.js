@@ -61,10 +61,7 @@ const getUpdatedValues = (data, callback) => {
 };
 
 const obtenerConsumoSubgrupoMes = (
-  idsucursal,
-  idsubgrupo,
-  mes,
-  anio,
+  { idsucursal, idsubgrupo, mes, anio },
   callback
 ) => {
   const query = `SELECT 
@@ -72,6 +69,7 @@ c.subgrupo_idsubgrupo,
 c.idcodigo, 
 c.codigo, 
 c.stock_ideal,
+c.stock_critico,
 if(con.fk_codigo IS NULL, 0 , con.qtty) AS 'cantidad',
 CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
 CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
@@ -84,8 +82,12 @@ FROM sobre_adicionales sa
 WHERE MONTH(sa.fecha_alta)=${mes} AND YEAR(sa.fecha_alta)=${anio} GROUP BY sa.fk_codigo) con
 ON con.fk_codigo = c.idcodigo
 WHERE c.subgrupo_idsubgrupo = ${idsubgrupo};`;
-  doQuery(query, (rows) => {
-    callback(rows);
+
+
+
+  doQuery(query, (resp) => {
+    
+    callback(resp.data);
   });
 };
 

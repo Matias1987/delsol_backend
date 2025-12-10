@@ -1,7 +1,7 @@
 const db = require("../database/ModificacionSobre");
 
-const obtenerConsumoSubgrupoMes = ({ idsucursal, idsubgrupo, mes, anio }, callback) => {
-  db.obtenerConsumoSubgrupoMes({ idsucursal, idsubgrupo, mes, anio }, (rows) => {
+const obtenerConsumoSubgrupoMes = (data, callback) => {
+  db.obtenerConsumoSubgrupoMes(data, (rows) => {
     return callback(rows);
   });
 };

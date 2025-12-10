@@ -1,7 +1,9 @@
 const express = require("express");
-const controller = require("../../controllers/ModificacionSobreService");
+const controller = require("../../controllers/ModificacionSobreController");
 const router = express.Router();
 
-router.get("/consumo-subgrupo-mes", controller.obtenerConsumoSubgrupoMes);
+router.post("/consumo-subgrupo-mes/", (req, res) => {
+  controller.obtenerConsumoSubgrupoMes(req, res);
+});
 
 module.exports = router;
