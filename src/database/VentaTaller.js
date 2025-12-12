@@ -149,7 +149,7 @@ const detalle_consumo_codigo = (data, callback) => {
                     v.idventa = sa.fk_venta AND 
                     s.idsucursal = v.sucursal_idsucursal AND 
                     sa.fk_codigo=${data.fk_codigo} AND 
-                    sa.fk_venta IN (SELECT v0.idventa FROM venta v0 WHERE date(v0.fecha_retiro)>=date('${data.fecha_desde}') AND date(v0.fecha_retiro)<=date('${data.fecha_hasta}') AND v0.estado='ENTREGADO');`;
+                    sa.fk_venta IN (SELECT v0.idventa FROM venta v0 WHERE date(v0.fecha_retiro)>=date('${data.fecha_desde}') AND date(v0.fecha_retiro)<=date('${data.fecha_hasta}') AND v0.estado<>'ANULADO');`;
   //console.log(query);
   doQuery(query, (resp) => {
     callback(resp.data);
