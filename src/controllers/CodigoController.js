@@ -161,6 +161,13 @@ const modificar_precios_indv_categoria = (req, res) =>{
   })
 }
 
+const modificar_cant_critica = (req, res) =>{
+  const {body} = req;
+  codigoService.modificar_cant_critica(body,(response)=>{
+    res.status(201).send({status:'OK', data: response})
+  })
+}
+
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -178,4 +185,5 @@ module.exports = {
     ejemplo_codigo,
     agregarCodigos,
     modificar_precios_indv_categoria,
+    modificar_cant_critica,
   };

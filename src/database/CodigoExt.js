@@ -27,4 +27,11 @@ const modificar_precios_indv = ({
     })
 }
 
-module.exports = {modificar_precios_indv}
+const modificar_cant_critica = ({idcodigo, cantidad}, callback) => {
+    const query = `update codigo c set c.stock_critico=${cantidad} where c.idcodigo=${idcodigo}`;
+    doQuery(query,(response)=>{
+        callback(response.data)
+    })
+}
+
+module.exports = {modificar_precios_indv, modificar_cant_critica}

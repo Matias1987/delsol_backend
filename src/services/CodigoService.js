@@ -100,6 +100,12 @@ const modificar_precios_indv_categoria = (data, callback) => {
   });
 };
 
+const modificar_cant_critica = (data, callback) =>{
+  CodigoExtDB.modificar_cant_critica(data, (response)=>{
+    return callback(response)
+  })
+}
+
 module.exports = {
   agregar_codigos,
   editar_cantidad_ideal,
@@ -117,4 +123,5 @@ module.exports = {
   cambiar_estado_activo,
   ejemplo_codigo,
   modificar_precios_indv_categoria,
+  modificar_cant_critica,
 };

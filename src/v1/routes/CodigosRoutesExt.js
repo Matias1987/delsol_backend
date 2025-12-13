@@ -11,4 +11,8 @@ router.post("/modificar/precios/indv/cat/",(req,  res)=>{
   codigoController.modificar_precios_indv_categoria(req,res)
 })
 
+router.post("/modificar/cant/critica/",(req, res)=>{
+  codigoController.modificar_cant_critica(req,res)
+})
+
 module.exports = router;
