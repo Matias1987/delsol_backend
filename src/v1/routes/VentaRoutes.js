@@ -1,6 +1,16 @@
 const express = require("express");
 const ventaController = require("../../controllers/VentaController");
+const { checkToken } = require("../../../middleware");
 const router = express.Router();
+/*
+router.use((req, res, next) => {
+    if(req.method=='GET')
+    {
+      next();
+      return;
+    }
+    checkToken(req,res, next)
+});*/
 
 router.get("/", (req, res) => {
   ventaController.obtenerVentas(req,res)

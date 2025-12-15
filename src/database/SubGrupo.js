@@ -37,7 +37,7 @@ const modificar_precios_defecto = (data, callback) => {
       ? false
       : +data.modif_precio_mayorista == 1;
 
-  console.log("modif_precio_mayorista: " + modif_precio_mayorista);
+  //console.log("modif_precio_mayorista: " + modif_precio_mayorista);
 
   let set_part = !modif_precio_mayorista
     ? `SET sg.precio_defecto = truncate((sg.precio_defecto * ${parseFloat(
@@ -170,7 +170,7 @@ const obtener_subgrupos_bygrupo_opt = (params, callback) => {
                         sg.grupo_idgrupo=${params.grupoId} AND 
                         (case when '${params.ignorarOcultos}'<>'0' then sg.visible_lp=1 else true end)
                         ;`
-  console.log(query);
+  //console.log(query);
   connection.query(
     query,
     (err, rows, fields) => {
@@ -268,7 +268,7 @@ const obtener_detalle_subgrupo = (id, callback) => {
                     g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
                     sf.familia_idfamilia = f.idfamilia AND 
                     sg.idsubgrupo=${id};`;
-  console.log(query);
+  //console.log(query);
   connection.query(query, (err, rows) => {
     callback(rows);
   });
@@ -288,7 +288,7 @@ const obtener_descripcion_cat_subgrupo = (id, callback) => {
 const editarSubgrupo = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
-  console.log("updating subgrupo " + data.visible_lp)
+  //console.log("updating subgrupo " + data.visible_lp)
 
   const q = `update subgrupo sg set 
     sg.visible_lp = ${connection.escape(data.visible_lp)},

@@ -40,6 +40,14 @@ routes
 ALSO FROM: https://stackoverflow.com/questions/31875621/how-to-properly-return-a-result-from-mysql-with-node
 */
 
+const requestLogger = function (req, res, next) {
+  //const timestamp = new Date().toISOString();
+  //console.log(`${timestamp} - ${req.method} request to ${req.url}`);
+  next(); // Pass control to the next middleware function or route handler
+};
+
+app.use(requestLogger);
+
 
 const cajaRouter = require("./v1/routes/CajaRoutes");
 app.use("/api/v1/caja",cajaRouter);

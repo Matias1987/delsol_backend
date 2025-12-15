@@ -87,6 +87,7 @@ const mysql_connection = require("../lib/mysql_connection")
     }
 
     const checkIfUserLoggedIn = (token, callback) => {
+        //console.log(token)
         const connection = mysql_connection.getConnection();
         connection.connect()
         let q = `select * from usuario u where u.token = ${connection.escape(token)};`
