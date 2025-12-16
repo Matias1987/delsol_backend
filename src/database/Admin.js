@@ -337,7 +337,8 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
 	 CONCAT(c.apellido, ' ', c.nombre) AS 'cliente',
 	 u.nombre AS 'vendedor',
 	 replace(format(v.monto_total,2),',','') AS 'monto',
-     DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro_f'
+     DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro_f',
+     DATE_FORMAT(v.fecha_retiro,'%Y-%m-%d') AS 'fecha_retiro_f1'
     FROM 
     venta v, 
     cliente c,
