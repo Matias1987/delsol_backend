@@ -46,7 +46,7 @@ const generarTransferenciaCaja = (data, callback) => {
               id_caja_origen: data.idCajaOrigen,
               id_caja_destino: data.idCajaDestino,
               monto: data.monto,
-              monto_real: data.monto_real ? data.monto_real : data.monto,
+              monto_real: data.monto_real,
               //observaciones: data.observaciones,
               comentarios: data.comentarios,
             },
@@ -62,7 +62,7 @@ const generarTransferenciaCaja = (data, callback) => {
 
 const generar_transferencia = (data, callback) => {
   const query = `
-    insert into caja_master.transferencia_caja
+    insert into caja_master.cm_transferencia_caja
     (
       c_egreso_idegreso,
       c_ingreso_idingreso,
@@ -70,7 +70,8 @@ const generar_transferencia = (data, callback) => {
       id_caja_origen, 
       id_caja_destino,
       fecha,
-      comentarios
+      comentarios,
+      monto_real
     )
     values
   (
@@ -80,10 +81,11 @@ const generar_transferencia = (data, callback) => {
     ${data.id_caja_origen},
     ${data.id_caja_destino},
     date(now()),
-    '${data.comentarios}'
+    '${data.comentarios}',
+    ${data.monto_real}
   )
   `;
-  console.log("Query de transferencia: " + query);
+  //console.log("Query de transferencia: " + query);
   doQuery(query, (result) => {
     callback(result);
   });

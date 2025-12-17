@@ -217,6 +217,9 @@ app.use("/api/v1/codigos_ext", codigosRoutesExt);
 const modifSobres = require("./v1/routes/ModificacionSobreRoutes");
 app.use("/api/v1/mod_sob", modifSobres);
 
+const stockExtRoutes = require("./v1/routes/StockExtRoutes");
+app.use("/api/v1/stock_ext", stockExtRoutes);
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })

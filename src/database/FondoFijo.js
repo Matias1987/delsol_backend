@@ -62,7 +62,7 @@ function GetOperacionesFF(data, callback) {
                 date_format(i.fecha, '%d/%m/%Y') AS 'fecha_fmt',
                 format(i.monto,2,'pt_BR') as 'monto',
                 '' AS 'concepto'
-                FROM caja_master.c_ingreso i 
+                FROM caja_master.cm_ingreso i 
                 WHERE i.fk_caja=${data.idcaja}
                 union
                 SELECT 
@@ -72,7 +72,7 @@ function GetOperacionesFF(data, callback) {
                 date_format(e.fecha, '%d/%m/%Y') AS 'fecha_fmt',
                 format(e.monto,2,'pt_BR') as 'monto',
                 'egreso' AS 'concepto'
-                FROM caja_master.c_egreso e 
+                FROM caja_master.cm_egreso e 
                 WHERE e.fk_caja=${data.idcaja}
                 ) op
                 ORDER BY op.fecha ASC;`;

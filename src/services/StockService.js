@@ -1,4 +1,5 @@
 const StockDB = require("../database/Stock")
+const StockExtDB = require("../database/StockExt")
 
 const verificar_cantidades_productos = (data,callback) => {
   StockDB.verificar_cantidades_productos(data,(resp)=>{
@@ -131,6 +132,13 @@ const obtener_grilla_stock = (params, callback)=>{
   })
 }
 
+
+const add_stock_quick = (params, callback) =>{
+  StockExtDB.agregarStock(params,(resp)=>{
+    return callback(resp)
+  })
+}
+
 module.exports = {
   modificar_cantidad,
   modificar_cantidad_lista,
@@ -155,4 +163,5 @@ module.exports = {
   modificar_cantidad_categoria,
   verificar_cantidades_productos,
   obtener_grilla_stock,
+  add_stock_quick,
   };

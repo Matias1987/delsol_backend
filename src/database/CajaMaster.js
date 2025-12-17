@@ -46,14 +46,14 @@ function getBalance({fullList},callback) {
                             'e' as 'tipo',
                             e.fecha, 
                             e.monto
-                          FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())  AND ${fullList ? 'FALSE' : 'TRUE'} 
+                          FROM caja_master.cm_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} AND DATE(e.fecha)<DATE(NOW())  AND ${fullList ? 'FALSE' : 'TRUE'} 
                           union
                           SELECT 
                             'i' as 'tipo',
                             i.fecha, 
                             i.monto
                           FROM 
-                          caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
+                          caja_master.cm_ingreso i left join caja_master.cm_transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso
                           WHERE 
                           i.fk_caja=${idCajaMaster} AND 
                           DATE(i.fecha)<DATE(NOW()) AND ${fullList ? 'FALSE' : 'TRUE'} 
@@ -79,7 +79,7 @@ function getBalance({fullList},callback) {
                           e.monto, 
                           cg.nombre as 'detalle' ,
                           0 as 'ref_id'
-                        FROM caja_master.c_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} and ${fullList? 'TRUE' : 'date(e.fecha) = date(now())'}
+                        FROM caja_master.cm_egreso e inner join concepto_gasto cg on cg.idconcepto_gasto = e.fk_motivo WHERE e.fk_caja=${idCajaMaster} and ${fullList? 'TRUE' : 'date(e.fecha) = date(now())'}
                         union
                         SELECT 
                           i.fecha, 
@@ -90,7 +90,7 @@ function getBalance({fullList},callback) {
                           i.comentarios as 'detalle',
                           if(tc.id_transferencia is null, 0 , tc.id_caja_origen) as 'ref_id'
                           FROM 
-                          caja_master.c_ingreso i left join caja_master.transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso WHERE ${fullList ? 'TRUE' : 'date(i.fecha) = date(now())'} AND i.fk_caja=${idCajaMaster}
+                          caja_master.cm_ingreso i left join caja_master.cm_transferencia_caja tc on tc.c_ingreso_idingreso = i.idingreso WHERE ${fullList ? 'TRUE' : 'date(i.fecha) = date(now())'} AND i.fk_caja=${idCajaMaster}
                       ) o
                       ORDER BY o.fecha asc
                       )

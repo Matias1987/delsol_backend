@@ -230,6 +230,13 @@ const obtener_grilla_stock = (req, res) => {
   })
 }
 
+const add_stock_quick = (req, res) =>{
+  const {body} = req;
+  stockService.add_stock_quick(body,(resp)=>{
+    res.status(201).send({status:'OK', data: resp})
+  })
+}
+
 module.exports = {
   modificar_cantidad_lista,
   modificar_cantidad,
@@ -253,4 +260,5 @@ module.exports = {
   modificar_cantidad_categoria,
   verificar_cantidades_productos,
   obtener_grilla_stock,
+  add_stock_quick,
   };
