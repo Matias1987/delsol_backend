@@ -237,6 +237,13 @@ const add_stock_quick = (req, res) =>{
   })
 }
 
+const distribuir_cantidad_a_sucursales = (req, res) => {
+  const {body} = req;
+  stockService.distribuir_cantidad_a_sucursales(body,(response)=>{
+    res.status(201).send({status:"OK", data: response})
+  })
+}
+
 module.exports = {
   modificar_cantidad_lista,
   modificar_cantidad,
@@ -261,4 +268,5 @@ module.exports = {
   verificar_cantidades_productos,
   obtener_grilla_stock,
   add_stock_quick,
+  distribuir_cantidad_a_sucursales,
   };

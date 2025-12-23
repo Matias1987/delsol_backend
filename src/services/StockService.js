@@ -139,7 +139,14 @@ const add_stock_quick = (params, callback) =>{
   })
 }
 
+const distribuir_cantidad_a_sucursales = (params, callback) => {
+  StockDB.distribuir_cantidad_a_sucursales(params,(response)=>{
+    return callback(response)
+  })
+}
+
 module.exports = {
+  distribuir_cantidad_a_sucursales,
   modificar_cantidad,
   modificar_cantidad_lista,
   obtener_subgrupo_full,

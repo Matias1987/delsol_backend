@@ -1003,9 +1003,9 @@ const distribuir_cantidad_a_sucursales = (data, callback) => {
                 (case when '${data.idfamilia}'<>'0' then sf.familia_idfamilia=${data.idfamilia} ELSE TRUE END )
                 );`
   ;
-
+  console.log(query)
   doQuery(query, (result)=>{
-    console.log(query)
+    
     console.log(result)
     doQuery("update codigo c set c.pending=0 where c.pending=1;",()=>{
       callback({ok:1});
