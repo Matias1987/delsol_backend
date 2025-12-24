@@ -725,6 +725,8 @@ const lista_venta_sucursal_estado = (data, callback) => {
 
   idusuario = idusuario == "-1" ? "" : idusuario;
 
+  let limit = typeof data.limit === 'undefined' ? -1 : +data.limit;
+
   /*console.log(JSON.stringify(data))
 
     console.log(venta_queries.queryListaVentasSucursalEstado(
@@ -755,7 +757,8 @@ const lista_venta_sucursal_estado = (data, callback) => {
     idusuario,
     typeof data.estado_taller === "undefined" ? "" : data.estado_taller,
     evitar_ingresados,
-    evitar_anulados
+    evitar_anulados,
+    limit
   );
 
   //console.log(q);
