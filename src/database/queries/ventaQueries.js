@@ -330,6 +330,7 @@ const queryListaVentasSucursalEstado = (
 	estado_taller="",
 	evitar_ingresados=0,
 	evitar_anulados=0,
+	limit=-1
 	) => (
 	`SELECT 
 	v.idventa, 
@@ -368,7 +369,7 @@ const queryListaVentasSucursalEstado = (
 	(case when '${fecha}' <> '' then date(ca.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end) AND
 	(case when '${idusuario}'<> '' then v.usuario_idusuario = '${idusuario}' else true end) AND 
 	(case when '${estado_taller}'<>'' then v.estado_taller = '${estado_taller}' else true end) 
-	ORDER by v.idventa desc;
+	ORDER by v.idventa desc ${limit!=-1 ? 'limit 300' : ''};
 	`
 )
 
