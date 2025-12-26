@@ -220,6 +220,9 @@ app.use("/api/v1/mod_sob", modifSobres);
 const stockExtRoutes = require("./v1/routes/StockExtRoutes");
 app.use("/api/v1/stock_ext", stockExtRoutes);
 
+const listaRoutes = require("./v1/routes/ListaRoutes");
+app.use("/api/v1/lst", listaRoutes);
+
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
