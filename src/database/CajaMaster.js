@@ -132,6 +132,7 @@ function getCajasSucursales(callback) {
 			       cobro cb, 
 			       cobro_has_modo_pago cmp
 			   WHERE 
+             cb.anulado=0 AND
 			       cmp.cobro_idcobro = cb.idcobro AND 
 			       cb.caja_idcaja IN 
 			       (
@@ -148,6 +149,7 @@ function getCajasSucursales(callback) {
 				  SUM(g.monto)  AS 'monto'
 				FROM gasto g 
 				WHERE 
+        g.anulado=0 AND 
 				g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE _c.control_pendiente=1 and _c.nro=1 and _c.estado='CERRADO')
 				GROUP BY g.caja_idcaja
 				) _o GROUP BY _o.caja_idcaja
