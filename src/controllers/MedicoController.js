@@ -61,6 +61,13 @@ const deshabilitar_medico = (req,res)=>{
     })
 }
 
+const pin_medico = (req, res) => {
+    const {body} = req
+    medicoService.pin_medico(body,(response)=>{
+        res.status(201).send({status:"OK", data:response})
+    })
+}
+
 module.exports = {
     deshabilitar_medico,
     obtenerMedico,
@@ -71,4 +78,5 @@ module.exports = {
     ventas_medico_totales,
     ventas_medico,
     obtenerMedicosOpt,
+    pin_medico,
 }

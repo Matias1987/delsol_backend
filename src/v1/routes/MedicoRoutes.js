@@ -37,6 +37,9 @@ router.post("/ed/it/m/", (req, res) => {
   medicoController.editarMedico(req,res);
 });
 
+router.post("/pin/",(req,res)=>{
+  medicoController.pin_medico(req,res);
+})
 
 
 router.patch("/:clienteId", (req, res) => {

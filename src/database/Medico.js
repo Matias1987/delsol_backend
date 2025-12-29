@@ -1,4 +1,5 @@
-const mysql_connection = require("../lib/mysql_connection")
+const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 
 const ventas_medico = (data, callback) => {
     const query = `SELECT 
@@ -34,7 +35,7 @@ const ventas_medico_totales = (data, callback) => {
     const nombre = data.nombre.trim().length < 1 ? "-1" : data.nombre.trim();
     const idmedico = +data.idmedico < 1 ? -1 : +data.idmedico;
 
-    const _query = `SELECT m.nombre AS 'medico', m_op.* FROM 
+    const _query = `SELECT m.nombre AS 'medico', m.pinned, m_op.* FROM 
 	medico m, 
 	(SELECT 
 		v.medico_idmedico,
@@ -150,6 +151,16 @@ const deshabilitar_medico = (data, callback) => {
     connection.end()
 }
 
+const pin_medico = ({idmedico, pin},callback) =>{
+    console.log(JSON.stringify({idmedico, pin}));
+
+    const query = `update medico m set m.pinned=${pin} where m.idmedico=${idmedico};`;
+    console.log(query);
+    doQuery(query,(response)=>{
+        callback(response)
+    })
+}
+
 module.exports = {
     actualizar_medico,
     deshabilitar_medico,
@@ -160,4 +171,5 @@ module.exports = {
     obtener_medico,
     buscar_medico,
     obtener_medicos_opt,
+    pin_medico,
 }

@@ -53,6 +53,12 @@ const editarMedico = (data, callback) => {
     })
 }
 
+const pin_medico = (data, callback) => {
+    MedicoDB.pin_medico(data,(response)=>{
+        return callback(response)
+    })
+}
+
 module.exports = {
     deshabilitar_medico,
     obtenerMedico,
@@ -63,4 +69,5 @@ module.exports = {
     ventas_medico_totales,
     ventas_medico,
     obtenerMedicosOpt,
+    pin_medico,
 }
