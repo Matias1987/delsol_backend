@@ -1,26 +1,97 @@
 const config = require("./lib/global");
 const express = require("express");
 const bodyParser = require("body-parser");
-var cors = require('cors')
+var cors = require("cors");
+const usuarios_db = require("./database/Usuario");
+const http = require("http");
+const { Server } = require("socket.io");
+
 //const session = require("express-session");
 //const cookieParser = require("cookie-parser");
 ///const session = require('express-session');
 
 const app = express();
-const port = process.env.port || config.server_port;//release
+const port = process.env.port || config.server_port; //release
 //const port = process.env.port || 3002;//for testing
 
-app.use(cors(/*{origin: ['http://54.174.39.15:3000','http://77.37.68.128:3000/','http://localhost:3000']}*/));//RELEASE
+const isValidToken = (token, callback) => {
+  usuarios_db.checkIfUserLoggedIn(token, (res) => {
+    callback(+res.logged === 1);
+  });
+};
+
+app.use(
+  cors(/*{origin: ['http://54.174.39.15:3000','http://77.37.68.128:3000/','http://localhost:3000']}*/)
+); //RELEASE
 //app.use(bodyParser.json());
 //FROM https://stackoverflow.com/questions/24543847/req-body-empty-on-posts
-app.use(bodyParser.urlencoded({
-    extended: true
-  }));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
-  app.use('/static',express.static('uploads'));
+app.use("/static", express.static("uploads"));
 
-//app.use(express.urlencoded({ extended: true }));  
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Allow all origins for testing; restrict in production
+  },
+});
 
+// Track client heartbeat
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  // Mark client as alive
+  socket.isAlive = true;
+
+  // Listen for pong from client
+  socket.on("pong", () => {
+    socket.isAlive = true;
+    console.log(`Pong received from ${socket.id}`);
+  });
+
+  // Example: handle messages
+  socket.on("message", (msg) => {
+    console.log(`Message from ${socket.id}: ${msg}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Client disconnected: ${socket.id}`);
+  });
+});
+
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token; // or socket.handshake.query.token
+  console.log("Authenticating socket with token:", token);
+  isValidToken(token, (isValid) => {
+    if (isValid) {
+      console.log("Socket authenticated:", socket.id);
+      return next();
+    }
+    console.log("Socket authentication failed:", socket.id);
+    socket.disconnect();
+    return next(new Error("Authentication error"));
+  });
+});
+
+// Periodically ping clients
+setInterval(() => {
+  console.log("Pinging clients...");
+  io.sockets.sockets.forEach((socket) => {
+    console.log(`Checking client ${socket.id}...`);
+    if (!socket.isAlive) {
+      console.log(`Client ${socket.id} not alive, disconnecting...`);
+      return socket.disconnect(true);
+    }
+    socket.isAlive = false;
+    socket.emit("ping"); // custom ping event
+  });
+}, 5000); // every 30 seconds
+
+//app.use(express.urlencoded({ extended: true }));
 
 //const oneDay = 1000 * 60 * 60 * 24;
 /*app.use(session({
@@ -46,38 +117,65 @@ const requestLogger = function (req, res, next) {
   next(); // Pass control to the next middleware function or route handler
 };
 
-app.use(requestLogger);
+app.use(async (req, res, next) => {
+  
+  if(req.method === "POST")
+  {
+    const token = req.headers.authorization?.split(" ")[1];
+    console.log("Authenticating request with token:", token);
+    if(token){
+      isValidToken(token, (isValid) => {
+        if (isValid) {
+          console.log("Request authenticated");
+          return next();
+        } else {
+          console.log("Request authentication failed");
+          return res.status(401).json({ error: "Unauthorized" });
+        }
+    });
+  }
+  else {
+    console.log("No token provided");
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  } else {
+    next();
+}});
 
+
+//app.use(requestLogger);
+
+app.get("/", (req, res) => {
+  res.send("Socket.IO server with keep-alive running");
+});
 
 const cajaRouter = require("./v1/routes/CajaRoutes");
-app.use("/api/v1/caja",cajaRouter);
+app.use("/api/v1/caja", cajaRouter);
 
 const familiaRouter = require("./v1/routes/FamiliaRoutes");
-app.use("/api/v1/familia",familiaRouter);
-
+app.use("/api/v1/familia", familiaRouter);
 
 const clienteRouter = require("./v1/routes/ClienteRoutes");
 app.use("/api/v1/clientes", clienteRouter);
 
-const ventasRouter =  require("./v1/routes/VentaRoutes");
+const ventasRouter = require("./v1/routes/VentaRoutes");
 app.use("/api/v1/ventas", ventasRouter);
 
 const cobroRouter = require("./v1/routes/CobroRoutes");
-app.use("/api/v1/cobros",cobroRouter);
-
+app.use("/api/v1/cobros", cobroRouter);
 
 const subFamiliaRouter = require("./v1/routes/SubFamiliaRoutes");
-app.use("/api/v1/subfamilia",subFamiliaRouter)
+app.use("/api/v1/subfamilia", subFamiliaRouter);
 
 const grupoRouter = require("./v1/routes/GrupoRoutes");
-app.use("/api/v1/grupos",grupoRouter)
+app.use("/api/v1/grupos", grupoRouter);
 
 const codigosRoutes = require("./v1/routes/CodigoRoutes");
 app.use("/api/v1/codigos", codigosRoutes);
 
 const subGruposRoutes = require("./v1/routes/SubGrupoRoutes");
 app.use("/api/v1/subgrupos", subGruposRoutes);
- 
+
 const stockRoutes = require("./v1/routes/StockRoutes");
 app.use("/api/v1/stock", stockRoutes);
 
@@ -97,94 +195,93 @@ const mutualRoutes = require("./v1/routes/MutualRoutes");
 app.use("/api/v1/mutuales", mutualRoutes);
 
 const conceptoGastoRoutes = require("./v1/routes/ConceptoGastoRoutes");
-app.use("/api/v1/conceptogastos",conceptoGastoRoutes);
+app.use("/api/v1/conceptogastos", conceptoGastoRoutes);
 
 const cargaManualRoutes = require("./v1/routes/CargaManualRoutes");
-app.use("/api/v1/cargamanual",cargaManualRoutes);
+app.use("/api/v1/cargamanual", cargaManualRoutes);
 
 const tarjetaRoutes = require("./v1/routes/TarjetaRoutes");
-app.use("/api/v1/tarjetas",tarjetaRoutes);
+app.use("/api/v1/tarjetas", tarjetaRoutes);
 
 const facturaRoutes = require("./v1/routes/FacturaRoutes");
-app.use("/api/v1/facturas",facturaRoutes);
+app.use("/api/v1/facturas", facturaRoutes);
 
 const proveedorRoutes = require("./v1/routes/ProveedorRoutes");
-app.use("/api/v1/proveedores",proveedorRoutes);
+app.use("/api/v1/proveedores", proveedorRoutes);
 
 const envioRoutes = require("./v1/routes/EnvioRoutes");
-app.use("/api/v1/envio",envioRoutes);
+app.use("/api/v1/envio", envioRoutes);
 
 const envioStockRoutes = require("./v1/routes/EnvioHasStockRoutes");
-app.use("/api/v1/enviostock",envioStockRoutes);
-
+app.use("/api/v1/enviostock", envioStockRoutes);
 
 const bajaDesperfectoRoutes = require("./v1/routes/BajaDesperfectoRoutes");
-app.use("/api/v1/bajadesperfecto",bajaDesperfectoRoutes);
+app.use("/api/v1/bajadesperfecto", bajaDesperfectoRoutes);
 
 const gastosRoutes = require("./v1/routes/GastoRoutes");
-app.use("/api/v1/gastos",gastosRoutes);
+app.use("/api/v1/gastos", gastosRoutes);
 
 const transferenciaRoutes = require("./v1/routes/TransferenciaRoutes");
-app.use("/api/v1/transferencias",transferenciaRoutes);
+app.use("/api/v1/transferencias", transferenciaRoutes);
 
 const adminRoutes = require("./v1/routes/AdminRoutes");
-app.use("/api/v1/admin",adminRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 const mensajeRoutes = require("./v1/routes/MensajeRoutes");
-app.use("/api/v1/mensajes",mensajeRoutes)
+app.use("/api/v1/mensajes", mensajeRoutes);
 
 const pagareRoutes = require("./v1/routes/PagareRoutes");
-app.use("/api/v1/pagares",pagareRoutes)
+app.use("/api/v1/pagares", pagareRoutes);
 
 const intcuotaRoutes = require("./v1/routes/InteresCuotaRoutes");
-app.use("/api/v1/ic",intcuotaRoutes)
+app.use("/api/v1/ic", intcuotaRoutes);
 
 const localidadRoutes = require("./v1/routes/LocalidadRoutes");
-app.use("/api/v1/localidad",localidadRoutes)
+app.use("/api/v1/localidad", localidadRoutes);
 
-const llamadaRoutes = require("./v1/routes/LlamadaClienteRoutes")
-app.use("/api/v1/llamadas",llamadaRoutes)
+const llamadaRoutes = require("./v1/routes/LlamadaClienteRoutes");
+app.use("/api/v1/llamadas", llamadaRoutes);
 
-const eventoRoutes = require("./v1/routes/EventoRoutes")
-app.use("/api/v1/evt",eventoRoutes)
+const eventoRoutes = require("./v1/routes/EventoRoutes");
+app.use("/api/v1/evt", eventoRoutes);
 
-const adicRoutes = require("./v1/routes/ItemAdicionalesRoutes")
-app.use("/api/v1/adic",adicRoutes)
+const adicRoutes = require("./v1/routes/ItemAdicionalesRoutes");
+app.use("/api/v1/adic", adicRoutes);
 
-const ctrlStock = require("./v1/routes/ControlStockRoutes")
-app.use("/api/v1/cs",ctrlStock)
+const ctrlStock = require("./v1/routes/ControlStockRoutes");
+app.use("/api/v1/cs", ctrlStock);
 
-const taller = require("./v1/routes/VentaTallerRoutes")
-app.use("/api/v1/tl",taller)
+const taller = require("./v1/routes/VentaTallerRoutes");
+app.use("/api/v1/tl", taller);
 
-const anotacionRoutes = require("./v1/routes/AnotacionRoutes")
-app.use("/api/v1/anot",anotacionRoutes)
+const anotacionRoutes = require("./v1/routes/AnotacionRoutes");
+app.use("/api/v1/anot", anotacionRoutes);
 
-const tagRoutes = require("./v1/routes/TagRoutes")
-app.use("/api/v1/tag",tagRoutes)
+const tagRoutes = require("./v1/routes/TagRoutes");
+app.use("/api/v1/tag", tagRoutes);
 
-const opticaRoutes = require("./v1/routes/OpticaRoutes")
-app.use("/api/v1/op",opticaRoutes)
+const opticaRoutes = require("./v1/routes/OpticaRoutes");
+app.use("/api/v1/op", opticaRoutes);
 
-const tareaRoutes = require("./v1/routes/TareaRoutes")
-app.use("/api/v1/t",tareaRoutes)
+const tareaRoutes = require("./v1/routes/TareaRoutes");
+app.use("/api/v1/t", tareaRoutes);
 
-const cambioRoutes = require("./v1/routes/CambioVentaRoutes")
-app.use("/api/v1/cb",cambioRoutes)
+const cambioRoutes = require("./v1/routes/CambioVentaRoutes");
+app.use("/api/v1/cb", cambioRoutes);
 
 const sorteoRoutes = require("./v1/routes/SorteoRoutes");
-app.use("/api/v1/srt",sorteoRoutes)
+app.use("/api/v1/srt", sorteoRoutes);
 
-const imgRouter = require("./v1/routes/ImageRoutes")
-app.use("/api/v1/img", imgRouter)
+const imgRouter = require("./v1/routes/ImageRoutes");
+app.use("/api/v1/img", imgRouter);
 
-const objetivoSucursalRouter = require("./v1/routes/ObjetivoSucursalRoutes")
-app.use("/api/v1/objs", objetivoSucursalRouter)
+const objetivoSucursalRouter = require("./v1/routes/ObjetivoSucursalRoutes");
+app.use("/api/v1/objs", objetivoSucursalRouter);
 
-const settingsRouter = require("./v1/routes/SettingsRoutes")
-app.use("/api/v1/stt", settingsRouter)
+const settingsRouter = require("./v1/routes/SettingsRoutes");
+app.use("/api/v1/stt", settingsRouter);
 
-const importerRouter = require("./v1/routes/ImporterRoutes")
+const importerRouter = require("./v1/routes/ImporterRoutes");
 app.use("/api/v1/importer", importerRouter);
 
 const fondoFijoRouter = require("./v1/routes/FondoFijoRoutes");
@@ -199,17 +296,17 @@ app.use("/api/v1/ingresos", ingresoRouter);
 const egresoRouter = require("./v1/routes/EgresoRoutes");
 app.use("/api/v1/egresos", egresoRouter);
 
-const informeStockRouter = require("./v1/routes/InformesStockRoutes")
-app.use("/api/v1/infstck", informeStockRouter)
+const informeStockRouter = require("./v1/routes/InformesStockRoutes");
+app.use("/api/v1/infstck", informeStockRouter);
 
-const informeProveedoresRouter = require("./v1/routes/InformeProveedoresRoutes")
-app.use("/api/v1/infp", informeProveedoresRouter)
+const informeProveedoresRouter = require("./v1/routes/InformeProveedoresRoutes");
+app.use("/api/v1/infp", informeProveedoresRouter);
 
-const informeVentasRouter = require("./v1/routes/InformeVentasRoutes")
-app.use("/api/v1/infvtas", informeVentasRouter)
+const informeVentasRouter = require("./v1/routes/InformeVentasRoutes");
+app.use("/api/v1/infvtas", informeVentasRouter);
 
-const informesCaja = require("./v1/routes/InformesCajaRoutes")
-app.use("/api/v1/infcaja", informesCaja)
+const informesCaja = require("./v1/routes/InformesCajaRoutes");
+app.use("/api/v1/infcaja", informesCaja);
 
 const codigosRoutesExt = require("./v1/routes/CodigosRoutesExt");
 app.use("/api/v1/codigos_ext", codigosRoutesExt);
@@ -223,8 +320,12 @@ app.use("/api/v1/stock_ext", stockExtRoutes);
 const listaRoutes = require("./v1/routes/ListaRoutes");
 app.use("/api/v1/lst", listaRoutes);
 
+/*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
 
 
+*/ server.listen(port, () => {
+  console.log(`Socket.IO server running at http://localhost:${port}/`);
+});

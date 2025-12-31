@@ -91,7 +91,7 @@ const mysql_connection = require("../lib/mysql_connection")
         const connection = mysql_connection.getConnection();
         connection.connect()
         let q = `select * from usuario u where u.token = ${connection.escape(token)};`
-        
+        //onsole.log(q);
         connection.query(q,(err,res)=>{
             
             if(res==null)

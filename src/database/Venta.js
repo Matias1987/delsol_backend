@@ -84,7 +84,7 @@ const lista_ventas_sucursal_mes = (data, callback) => {
 
   const query = idf_optica == 3 ? query_fa : query_fr;
 
-  //console.log(query);
+  console.log(query);
 
   const connection = mysql_connection.getConnection();
   connection.connect();
