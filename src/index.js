@@ -79,7 +79,7 @@ io.use((socket, next) => {
 
 // Periodically ping clients
 setInterval(() => {
-  console.log("Pinging clients...");
+  //console.log("Pinging clients...");
   io.sockets.sockets.forEach((socket) => {
     console.log(`Checking client ${socket.id}...`);
     if (!socket.isAlive) {
@@ -118,30 +118,36 @@ const requestLogger = function (req, res, next) {
 };
 
 app.use(async (req, res, next) => {
-  
-  if(req.method === "POST")
-  {
-    const token = req.headers.authorization?.split(" ")[1];
-    console.log("Authenticating request with token:", token);
-    if(token){
-      isValidToken(token, (isValid) => {
-        if (isValid) {
-          console.log("Request authenticated");
-          return next();
-        } else {
-          console.log("Request authentication failed");
-          return res.status(401).json({ error: "Unauthorized" });
-        }
-    });
-  }
-  else {
-    console.log("No token provided");
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  console.log(`Incoming ${req.method} request to ${req.url}`);
+  if (req.method === "POST") {
+    if (
+      req.url !== "/api/v1/usuarios/login/" &&
+      req.url !== "/api/v1/usuarios/refresh_token/"
+    ) {
+      const token = req.headers.authorization?.split(" ")[1];
+      console.log("Authenticating request with token:", token);
+      if (token) {
+        isValidToken(token, (isValid) => {
+          if (isValid) {
+            console.log("Request authenticated");
+            return next();
+          } else {
+            console.log("Request authentication failed");
+            return res.status(401).json({ error: "Unauthorized" });
+          }
+        });
+      }else {
+      console.log("No token provided");
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    } else{
+      next();
+    }
+    
   } else {
     next();
-}});
-
+  }
+});
 
 //app.use(requestLogger);
 
