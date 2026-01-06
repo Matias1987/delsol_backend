@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
+    console.log(`############################ Client disconnected: ${socket.id}`);
   });
 });
 
@@ -86,10 +86,18 @@ setInterval(() => {
       console.log(`Client ${socket.id} not alive, disconnecting...`);
       return socket.disconnect(true);
     }
+
+    usuarios_db.checkIfUserLoggedIn(socket.handshake.auth.token, (res) => {
+      if (+res.logged !== 1) {
+        console.log(`Client ${socket.id} token invalid, disconnecting...`);
+        return socket.disconnect(true);
+      }
+    });
+
     socket.isAlive = false;
     socket.emit("ping"); // custom ping event
   });
-}, 5000); // every 30 seconds
+}, 15000); // every 30 seconds
 
 //app.use(express.urlencoded({ extended: true }));
 
@@ -118,6 +126,7 @@ const requestLogger = function (req, res, next) {
 };
 
 app.use(async (req, res, next) => {
+  console.log("Authenticating incoming request...");
   console.log(`Incoming ${req.method} request to ${req.url}`);
   if (req.method === "POST") {
     if (
