@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
   // Listen for pong from client
   socket.on("pong", () => {
     socket.isAlive = true;
-    console.log(`Pong received from ${socket.id}`);
+    //console.log(`Pong received from ${socket.id}`);
   });
 
   // Example: handle messages
@@ -126,15 +126,15 @@ const requestLogger = function (req, res, next) {
 };
 
 app.use(async (req, res, next) => {
-  console.log("Authenticating incoming request...");
-  console.log(`Incoming ${req.method} request to ${req.url}`);
+  //console.log("Authenticating incoming request...");
+  //console.log(`Incoming ${req.method} request to ${req.url}`);
   if (req.method === "POST") {
     if (
       req.url !== "/api/v1/usuarios/login/" &&
       req.url !== "/api/v1/usuarios/refresh_token/"
     ) {
       const token = req.headers.authorization?.split(" ")[1];
-      console.log("Authenticating request with token:", token);
+      //console.log("Authenticating request with token:", token);
       if (token) {
         isValidToken(token, (isValid) => {
           if (isValid) {
@@ -157,8 +157,6 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-
-//app.use(requestLogger);
 
 app.get("/", (req, res) => {
   res.send("Socket.IO server with keep-alive running");
