@@ -970,7 +970,7 @@ const obtener_grilla_stock = (params, callback) => {
         ORDER BY
         c.esf, c.cil, c.eje;
         `;
-  console.log(query)
+  //console.log(query)
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, rows) => {

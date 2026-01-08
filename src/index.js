@@ -124,7 +124,7 @@ const requestLogger = function (req, res, next) {
   //console.log(`${timestamp} - ${req.method} request to ${req.url}`);
   next(); // Pass control to the next middleware function or route handler
 };
-
+/*
 app.use(async (req, res, next) => {
   //console.log("Authenticating incoming request...");
   //console.log(`Incoming ${req.method} request to ${req.url}`);
@@ -157,7 +157,7 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-
+*/
 app.get("/", (req, res) => {
   res.send("Socket.IO server with keep-alive running");
 });
