@@ -363,9 +363,9 @@ const lista_ventas_sucursal_periodo = (data, callback) => {
 
 const total_tarjetas_periodo = (data, callback) => {
   //  console.log(JSON.stringify(data));
-    const desde = data.fecha_desde == '' ? '1970-01-01' : data.fecha_desde;
-    const hasta = data.fecha_hasta == '' ? '2100-01-01' : data.fecha_hasta;
-    const idsucursal = data.sucursal || -1;
+  const desde = data.fecha_desde == "" ? "1970-01-01" : data.fecha_desde;
+  const hasta = data.fecha_hasta == "" ? "2100-01-01" : data.fecha_hasta;
+  const idsucursal = data.sucursal || -1;
   const query = `SELECT 
                     o.idtarjeta,
                     o.tarjeta,
@@ -402,6 +402,19 @@ const total_tarjetas_periodo = (data, callback) => {
   });
 };
 
+const total_cobros_efectivo_periodo = (data, callback) => {
+  const query = `SELECT c.sucursal_idsucursal, round(SUM(cast(cmp.monto AS FLOAT)),2) AS 'monto'
+                  FROM 
+                  cobro_has_modo_pago cmp,
+                  cobro c 
+                  WHERE 
+                  cmp.cobro_idcobro IN (SELECT c0.idcobro FROM cobro c0 WHERE DATE(c0.fecha) >= DATE('2024-01-01') AND DATE(c0.fecha) <= DATE(NOW())) AND 
+                  cmp.modo_pago='efectivo' AND 
+                  c.idcobro = cmp.cobro_idcobro
+                  GROUP BY c.sucursal_idsucursal
+;
+`;
+};
 module.exports = {
   lista_ventas_sucursal_periodo,
   ventas_dia_totales,
@@ -414,4 +427,5 @@ module.exports = {
   total_general_cobros,
   total_general_gastos,
   total_tarjetas_periodo,
+  total_cobros_efectivo_periodo,
 };

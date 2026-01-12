@@ -618,7 +618,8 @@ const do_insert_venta = (data, callback) => {
                         ${p.monto_cuota},
                         ${p.fk_tarjeta},
                         '${p.modo_pago}',
-                        '${p.tarjeta_nro}'
+                        '${p.tarjeta_nro}',
+                        ${p.fk_banco_transferencia}
                         )`;
           });
 

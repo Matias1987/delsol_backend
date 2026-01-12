@@ -74,7 +74,8 @@ const query_mp = `INSERT INTO venta_has_modo_pago
 					monto_cuota,
 					fk_tarjeta,
 					modo_pago,
-					tarjeta_nro
+					tarjeta_nro,
+					fk_banco_transferencia
 					) VALUES `;
 					
 const query_items = `INSERT INTO venta_has_stock 
@@ -133,6 +134,7 @@ const get_mp = (data, idventa) => {
 				fk_tarjeta: null,
 				modo_pago: 'efectivo',
 				tarjeta_nro: null,
+				fk_banco_transferencia: null
 			})
 		}
 		if(data?.mp?.tarjeta_monto!==0){
@@ -147,7 +149,8 @@ const get_mp = (data, idventa) => {
 				monto_cuota:0,
 				fk_tarjeta: data.mp.fk_tarjeta,
 				modo_pago: 'tarjeta',
-				tarjeta_nro: (typeof data.mp.tarjeta_nro === 'undefined' ? 0 : data.mp.tarjeta_nro)
+				tarjeta_nro: (typeof data.mp.tarjeta_nro === 'undefined' ? 0 : data.mp.tarjeta_nro),
+				fk_banco_transferencia: null
 			})
 		}
 		if(data?.mp?.ctacte_monto!==0){
@@ -163,6 +166,7 @@ const get_mp = (data, idventa) => {
 				fk_tarjeta: null,
 				modo_pago: 'ctacte',
 				tarjeta_nro: null,
+				fk_banco_transferencia: null
 			})
 		}
 		if(data?.mp?.cheque_monto!==0){
@@ -178,6 +182,7 @@ const get_mp = (data, idventa) => {
 				fk_tarjeta: null,
 				modo_pago: 'cheque',
 				tarjeta_nro: null,
+				fk_banco_transferencia: null
 			})
 		}
 		if(data?.mp?.mutual_monto!==0){
@@ -193,6 +198,7 @@ const get_mp = (data, idventa) => {
 				fk_tarjeta: null,
 				modo_pago: 'mutual',
 				tarjeta_nro: null,
+				fk_banco_transferencia: null
 			})
 		}
 		if(data?.mp?.mercadopago_monto!==0){
@@ -208,6 +214,7 @@ const get_mp = (data, idventa) => {
 				fk_tarjeta: null,
 				modo_pago: 'mercadopago',
 				tarjeta_nro: null,
+				fk_banco_transferencia: null
 			})
 		}
 		if(data?.mp?.transferencia_monto!==0){
@@ -223,6 +230,7 @@ const get_mp = (data, idventa) => {
 				fk_tarjeta: null,
 				modo_pago: 'transferencia',
 				tarjeta_nro: null,
+				fk_banco_transferencia: data.mp.fk_banco_transferencia
 			})
 		}
 		if(data?.mp?.tarjeta1_monto!==0){
@@ -237,7 +245,8 @@ const get_mp = (data, idventa) => {
 				monto_cuota:0,
 				fk_tarjeta: data.mp.fk_tarjeta1,
 				modo_pago: 'tarjeta1',
-				tarjeta_nro: (typeof data.mp.tarjeta1_nro === 'undefined' ? 0 : data.mp.tarjeta1_nro)
+				tarjeta_nro: (typeof data.mp.tarjeta1_nro === 'undefined' ? 0 : data.mp.tarjeta1_nro),
+				fk_banco_transferencia: null
 			})
 		}
 	}
