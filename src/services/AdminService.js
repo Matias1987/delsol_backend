@@ -71,8 +71,8 @@ const total_tarjetas_periodo = (data, callback) => {
     })
 }
 
-const total_cobros_efectivo_periodo = (data, callback) => {
-    AdminDB.total_cobros_efectivo_periodo(data,(response)=>{
+const total_cobros_tipo_periodo = (data, callback) => {
+    AdminDB.total_cobros_tipo_periodo(data,(response)=>{
         callback(response)
     })
 }
@@ -90,5 +90,5 @@ module.exports = {
     obtener_caja_dia_sucursal,
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
-    total_cobros_efectivo_periodo,
+    total_cobros_tipo_periodo,
 }

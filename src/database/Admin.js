@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 
 const total_general_gastos = (data, callback) => {
   const query = `SELECT 
@@ -402,18 +403,18 @@ const total_tarjetas_periodo = (data, callback) => {
   });
 };
 
-const total_cobros_efectivo_periodo = (data, callback) => {
-  const query = `SELECT c.sucursal_idsucursal, round(SUM(cast(cmp.monto AS FLOAT)),2) AS 'monto'
+const total_cobros_tipo_periodo = ({ fecha_desde, fecha_hasta }, callback) => {
+  const query = `SELECT cmp.modo_pago, round(SUM(cast(cmp.monto AS FLOAT)),2) AS 'total'
                   FROM 
-                  cobro_has_modo_pago cmp,
-                  cobro c 
+                  cobro_has_modo_pago cmp
                   WHERE 
-                  cmp.cobro_idcobro IN (SELECT c0.idcobro FROM cobro c0 WHERE DATE(c0.fecha) >= DATE('2024-01-01') AND DATE(c0.fecha) <= DATE(NOW())) AND 
-                  cmp.modo_pago='efectivo' AND 
-                  c.idcobro = cmp.cobro_idcobro
-                  GROUP BY c.sucursal_idsucursal
-;
-`;
+                  cmp.cobro_idcobro IN (SELECT c0.idcobro FROM cobro c0 WHERE DATE(c0.fecha) >= DATE('${fecha_desde}') AND DATE(c0.fecha) <= DATE('${fecha_hasta}') AND c0.anulado=0)  
+                  GROUP BY cmp.modo_pago;
+  ;`;
+  console.log(query);
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
 };
 module.exports = {
   lista_ventas_sucursal_periodo,
@@ -427,5 +428,5 @@ module.exports = {
   total_general_cobros,
   total_general_gastos,
   total_tarjetas_periodo,
-  total_cobros_efectivo_periodo,
+  total_cobros_tipo_periodo,
 };

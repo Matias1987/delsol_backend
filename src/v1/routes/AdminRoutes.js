@@ -24,6 +24,10 @@ router.post("/inf/stock/ventas/periodo",(req,res)=>{
     adminController.totales_stock_ventas_periodo(req,res)
 })
 
+router.post("/total/cobros/tipo/periodo",(req,res)=>{
+    adminController.total_cobros_tipo_periodo(req,res)
+})
+
 router.get("/resumen_op_sucursal/:idcaja",(req,res)=>{
     adminController.obtener_resumen_operaciones_sucursal(req,res)
 })
@@ -47,9 +51,7 @@ router.post("/obtener/ventas/sucursal/periodo/",(req,res)=>{
     adminController.lista_ventas_sucursal_periodo(req,res)
 })
 
-router.get("/total/cobros/efectivo/periodo/",(req,res)=>{
-    adminController.total_cobros_efectivo_periodo(req,res)
-})
+
 
 router.post("/obtener/totales/tarjetas/periodo/",(req,res)=>{
     adminController.total_tarjetas_periodo(req,res)

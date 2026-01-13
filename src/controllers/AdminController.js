@@ -82,9 +82,9 @@ const total_tarjetas_periodo = (req, res) => {
     })
 }
 
-const total_cobros_efectivo_periodo = (req, res) => {
+const total_cobros_tipo_periodo = (req, res) => {
     const {body} = req;
-    adminService.total_cobros_efectivo_periodo(body, (response)=>{
+    adminService.total_cobros_tipo_periodo(body, (response)=>{
         res.send({status:"OK", data:response});
     })
 }
@@ -102,5 +102,5 @@ module.exports = {
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
     total_tarjetas_periodo,
-    total_cobros_efectivo_periodo,
+    total_cobros_tipo_periodo,
 }
