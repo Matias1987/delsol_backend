@@ -128,7 +128,53 @@ const obtener_caja_id = (idcaja, callback) => {
 const obtener_cajas_fecha = ( fecha, callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f', s.nombre as 'sucursal' FROM caja c, sucursal s where s.idsucursal = c.sucursal_idsucursal AND DATE(c.fecha)=DATE(${connection.escape(fecha)});`;
+    const sql = `
+    SELECT 
+    c.*, 
+    date_format(c.fecha, '%d-%m-%Y') as 'fecha_f', 
+    s.nombre as 'sucursal' ,
+    sdo.total as 'saldo'
+    FROM 
+    caja c, 
+    sucursal s,
+    (
+        SELECT 
+            _o.caja_idcaja,
+            SUM(if(_o.tipo='c',cast(_o.monto AS FLOAT), - cast(_o.monto AS FLOAT) ) ) AS 'total'
+        from
+        (
+        SELECT 
+            'c' AS 'tipo',
+            cb.caja_idcaja, 
+            SUM(cmp.monto) AS 'monto'
+        FROM 
+            cobro cb, 
+            cobro_has_modo_pago cmp
+        WHERE 
+            cb.anulado=0 AND
+            cmp.cobro_idcobro = cb.idcobro AND 
+            cb.caja_idcaja IN 
+            (
+                SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)})
+            ) AND 
+            cmp.modo_pago='efectivo'
+        GROUP BY cb.caja_idcaja
+        union
+        SELECT 
+                'e' AS 'tipo',
+                g.caja_idcaja, 
+                SUM(g.monto)  AS 'monto'
+            FROM gasto g 
+            WHERE 
+                g.anulado=0 AND 
+                g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)}))
+            GROUP BY g.caja_idcaja
+            ) _o GROUP BY _o.caja_idcaja 
+    ) sdo
+    where 
+    sdo.caja_idcaja = c.idcaja AND
+    s.idsucursal = c.sucursal_idsucursal AND 
+    DATE(c.fecha)=DATE(${connection.escape(fecha)});`;
     //console.log(sql);
     connection.query(sql,(err,rows)=>{
         if(rows==null)

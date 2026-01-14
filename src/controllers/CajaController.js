@@ -73,7 +73,7 @@ const resumen_caja = (req, res) => {
 
 const obtener_cajas_fecha = (req, res) => {
     const {body} = req;
-    console.log(JSON.stringify(body));
+    //console.log(JSON.stringify(body));
     cajaService.obtener_cajas_fecha(body.fecha, (resp)=>{
         res.status(201).send({status:'OK', data:resp});
     })

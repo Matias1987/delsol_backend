@@ -11,7 +11,7 @@ const getBalance = (req, res) => {
 const getCajasSucursales = (req, res) => {
   
   service.getCajasSucursales((results) => {
-    console.log("Cajas sucursales: ", results);
+    //console.log("Cajas sucursales: ", results);
     res.json(results);
   });
 };
