@@ -416,6 +416,57 @@ const total_cobros_tipo_periodo = ({ fecha_desde, fecha_hasta }, callback) => {
     callback(response.data);
   });
 };
+
+const total_ventas_periodo_sucursal = ({idsucursal, cantMeses, modo="cantidad"}, callback) => {
+  const query = modo=='cantidad' ? `SELECT o.mes, s.nombre, o.monto FROM 
+                  sucursal s,
+                  (
+                    SELECT 
+                      oo.mes, 
+                      oo.idsucursal, 
+                      count(oo.idventa) as 'monto'
+                    FROM 
+                    (
+                      SELECT  
+                      CONCAT(YEAR(v.fecha_retiro),'-', MONTH(v.fecha_retiro)) AS 'mes',
+                      v.sucursal_idsucursal AS 'idsucursal',
+                      v.idventa
+                      FROM 
+                      venta v 
+                      WHERE 
+                        v.estado='ENTREGADO' AND 
+                        DATE(v.fecha_retiro)>= DATE_ADD(DATE( concat(YEAR(NOW()), '-', MONTH(NOW()), '-1' ) ) , INTERVAL -${cantMeses}  MONTH)
+                    ) oo GROUP by oo.mes, oo.idsucursal 
+                  ) o WHERE s.idsucursal = o.idsucursal AND s.idsucursal=${idsucursal} ORDER BY  DATE(CONCAT(o.mes, '-', '01')) ASC, o.idsucursal ASC ;`
+                   :
+                   `SELECT o.mes, s.nombre, o.monto FROM 
+                  sucursal s,
+                  (
+                    SELECT 
+                      oo.mes, 
+                      oo.idsucursal, 
+                      sum(oo.monto) as 'monto'
+                    FROM 
+                    (
+                      SELECT  
+                      CONCAT(YEAR(v.fecha_retiro),'-', MONTH(v.fecha_retiro)) AS 'mes',
+                      v.sucursal_idsucursal AS 'idsucursal',
+                      v.monto_total as 'monto'
+                      FROM 
+                      venta v 
+                      WHERE 
+                        v.estado='ENTREGADO' AND 
+                        DATE(v.fecha_retiro)>= DATE_ADD(DATE( concat(YEAR(NOW()), '-', MONTH(NOW()), '-1' ) ) , INTERVAL -${cantMeses}  MONTH)
+                    ) oo GROUP by oo.mes, oo.idsucursal 
+                  ) o WHERE s.idsucursal = o.idsucursal AND s.idsucursal=${idsucursal} ORDER BY  DATE(CONCAT(o.mes, '-', '01')) ASC, o.idsucursal ASC ;`
+                   
+                  ;
+  //console.log(query);
+   doQuery(query,(response)=>{
+    callback(response.data)
+   })             
+}
+  
 module.exports = {
   lista_ventas_sucursal_periodo,
   ventas_dia_totales,
@@ -429,4 +480,5 @@ module.exports = {
   total_general_gastos,
   total_tarjetas_periodo,
   total_cobros_tipo_periodo,
+  total_ventas_periodo_sucursal,
 };

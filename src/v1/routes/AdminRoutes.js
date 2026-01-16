@@ -51,6 +51,10 @@ router.post("/obtener/ventas/sucursal/periodo/",(req,res)=>{
     adminController.lista_ventas_sucursal_periodo(req,res)
 })
 
+router.post("/total/ventas/periodo/sucursal/",(req,res)=>{
+    adminController.total_ventas_periodo_sucursal(req,res)
+})
+
 
 
 router.post("/obtener/totales/tarjetas/periodo/",(req,res)=>{

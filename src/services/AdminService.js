@@ -77,6 +77,12 @@ const total_cobros_tipo_periodo = (data, callback) => {
     })
 }
 
+const total_ventas_periodo_sucursal = (data, callback) => {
+    AdminDB.total_ventas_periodo_sucursal(data,(response)=>{
+        callback(response)
+    })
+}
+
 module.exports = {
     total_tarjetas_periodo,
     lista_ventas_sucursal_periodo,
@@ -91,4 +97,5 @@ module.exports = {
     obtener_totales_vendedores_dia,
     obtener_ventas_dia_vendedor,
     total_cobros_tipo_periodo,
+    total_ventas_periodo_sucursal,
 }
