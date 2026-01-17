@@ -10,6 +10,7 @@ module.exports = {
             }
 
             callback?.({data:resp})
-        })
+        });
+        connection.end();
     }
 }
