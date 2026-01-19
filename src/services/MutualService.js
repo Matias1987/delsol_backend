@@ -6,10 +6,10 @@ const buscarMutual = (value,callback)=>{
     })
 }
 
-const obtenerMutuales = (callback) => {
+const obtenerMutuales = ( callback , todos=false) => {
     MutualDB.obtener_mutuales((rows)=>{
         callback(rows)
-    })
+    },todos)
 }
 const obtenerMutual = (id, callback) => {
     MutualDB.obtener_mutual(id,(rows)=>{
@@ -23,6 +23,12 @@ const agregarMutual = (data,callback) => {
     })
 
 }
+
+const activar_mutual = (data,callback) => {
+    MutualDB.activar_mutual(data,(result)=>{
+        return callback(result)
+    })
+};
 const editarMutual = (req,res) => {}
 
 module.exports = {
@@ -31,4 +37,5 @@ module.exports = {
     agregarMutual,
     editarMutual,
     buscarMutual,
+    activar_mutual,
 }

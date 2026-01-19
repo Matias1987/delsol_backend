@@ -1,4 +1,5 @@
-const mysql_connection = require("../lib/mysql_connection")
+const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 
 const buscar_mutual = (value, callback) => {
     const _value = decodeURIComponent(value);
@@ -11,10 +12,10 @@ const buscar_mutual = (value, callback) => {
     connection.end();
 }
 
-const obtener_mutuales = (callback) => {
+const obtener_mutuales = (callback,todos=false) => {
     const connection = mysql_connection.getConnection();
     connection.connect();
-    connection.query("select * from mutual",(err,rows,fields)=>{
+    connection.query("select m.* from mutual m "+ (todos ? "" : "where m.activo = 1"),(err,rows,fields)=>{
         return callback(rows);
     })
     connection.end();
@@ -44,10 +45,19 @@ const agregar_mutual = (data,callback) => {
     connection.end();
 }
 
+const activar_mutual = ({id, activo},callback) => {
+    console.log("activar_mutual", id, activo);
+
+    doQuery(`update mutual set activo = ${activo} where idmutual = ${id}`,(result)=>{
+        console.log("activar_mutual result", result);
+        return callback(result.data)
+    });
+}
 
 module.exports = {
     obtener_mutuales,
     agregar_mutual,
     obtener_mutual,
     buscar_mutual,
+    activar_mutual,
 }

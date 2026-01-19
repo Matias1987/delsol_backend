@@ -17,8 +17,8 @@ const doQuery = (query, callback) => {
    */
 const generarTransferenciaCaja = (data, callback) => {
 
-  console.log("Agregar transferencia");
-  console.log(JSON.stringify(data));
+  //console.log("Agregar transferencia");
+  //console.log(JSON.stringify(data));
   //return callback({}); //only for testing
   dbEgreso.createEgreso(
     {

@@ -15,6 +15,11 @@ const obtenerMutuales = (req,res) => {
         res.status(201).send({status:'OK', data:rows});
     })
 }
+const obtenerTodasLasMutuales = (req,res) => {
+    mutualService.obtenerMutuales((rows)=>{
+        res.status(201).send({status:'OK', data:rows});
+    },true)
+}
 
 const obtenerMutual = (req,res) => {
     const {params:{idmutual}} = req;
@@ -34,12 +39,22 @@ const agregarMutual = (req,res) => {
     })
 
 }
+
+const activar_mutual = (req,res) => {
+    const {body} = req;
+    mutualService.activar_mutual(body,(result)=>{
+        res.status(201).send({status:'OK', data:result});
+    })
+}
+
 const editarMutual = (req,res) => {}
 
 module.exports = {
+    activar_mutual,
     obtenerMutual,
     obtenerMutuales,
     agregarMutual,
     editarMutual,
     buscarMutual,
+    obtenerTodasLasMutuales,
 }

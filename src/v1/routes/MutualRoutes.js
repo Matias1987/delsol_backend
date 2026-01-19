@@ -5,6 +5,9 @@ const router = express.Router();
 router.get("/", (req, res) => {
   mutualController.obtenerMutuales(req,res);
 });
+router.get("/todos/", (req, res) => {
+  mutualController.obtenerTodasLasMutuales(req,res);
+});
 
 router.get("/:idmutual", (req, res) => {
   mutualController.obtenerMutual(req,res)
@@ -15,6 +18,10 @@ router.get("/buscar/:value", (req, res) => {
 
 router.post("/", (req, res) => {
   mutualController.agregarMutual(req,res);
+});
+
+router.post("/modif/activo/", (req, res) => {
+  mutualController.activar_mutual(req,res);
 });
 
 router.patch("/:clienteId", (req, res) => {
