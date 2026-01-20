@@ -40,11 +40,7 @@ const modificar_precios_defecto = (data, callback) => {
   //console.log("modif_precio_mayorista: " + modif_precio_mayorista);
 
   let set_part = !modif_precio_mayorista
-    ? `SET sg.precio_defecto = truncate((sg.precio_defecto * ${parseFloat(
-        data.multiplicador
-      )} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(
-        data.valor
-      )}`
+    ? `SET sg.precio_defecto = truncate((sg.precio_defecto + sg.precio_defecto * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor}`
     : `SET sg.precio_defecto_mayorista = truncate((sg.precio_defecto_mayorista * ${parseFloat(
         data.multiplicador
       )} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(
@@ -67,8 +63,8 @@ const modificar_precios_defecto = (data, callback) => {
     (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = ${data.idsubgrupo} ELSE TRUE END)
     ;`;
 
-  //console.log(query)
-  //    return
+  console.log(query)
+    //  return callback({message: "Modificando precios..."});
 
   connection.connect();
   connection.query(query, (err, resp) => {
