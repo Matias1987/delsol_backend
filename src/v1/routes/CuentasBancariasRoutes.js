@@ -4,6 +4,8 @@ const cuentaBancariaController = require("../../controllers/CuentaBancariaContro
 
 router.get("/",(req,res)=>{cuentaBancariaController.listaCuentasBancarias(req,res)});
 
+router.get("/tipos_cuentas/",(req,res)=>{cuentaBancariaController.obtenerTiposCuentas(req,res)});
+
 router.post("/",(req,res)=>{cuentaBancariaController.agregarCuentaBancaria(req,res)});
 
 router.post("/activar/",(req,res)=>{cuentaBancariaController.activarCuentaBancaria(req,res)});

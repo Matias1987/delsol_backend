@@ -20,6 +20,12 @@ const activarCuentaBancaria = (req,res) =>{
     })
 }
 
+const obtenerTiposCuentas = (req,res)=>{
+    service.obtenerTiposCuentas(response=>{
+
+    })
+}
+
 module.exports ={
-    agregarCuentaBancaria,listaCuentasBancarias,activarCuentaBancaria
+    agregarCuentaBancaria,listaCuentasBancarias,activarCuentaBancaria, obtenerTiposCuentas
 }

@@ -21,6 +21,13 @@ const activarCuentaBancaria = ({idcuenta, activo}, callback) =>{
     })
 }
 
+const obtenerTiposCuentas = (callback) =>{
+    const query = `select * from banco_tipo_cuenta;`;
+    doQuery(query,(response)=>{
+        callback(response)
+    })
+}
+
 module.exports ={
-    agregarCuentaBancaria,listaCuentasBancarias,activarCuentaBancaria
+    agregarCuentaBancaria,listaCuentasBancarias,activarCuentaBancaria, obtenerTiposCuentas,
 }

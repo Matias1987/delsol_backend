@@ -17,7 +17,14 @@ const activarCuentaBancaria = (data, callback) => {
     })
 };
 
+const obtenerTiposCuentas = (callback) =>{
+    db.obtenerTiposCuentas(response=>{
+        callback(response)
+    })
+}
+
 module.exports = {
+  obtenerTiposCuentas,
   agregarCuentaBancaria,
   listaCuentasBancarias,
   activarCuentaBancaria,
