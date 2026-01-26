@@ -563,6 +563,8 @@ const obtener_lista_stock_filtros = (data, callback) => {
         (
             SELECT 
             sc.nombre as 'sucursal', 
+            _c.stock_ideal,
+            _c.stock_critico,
             s.cantidad,
             _c.idcodigo,
             _c.codigo,
