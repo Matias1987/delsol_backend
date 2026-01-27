@@ -57,7 +57,7 @@ const resumen_caja = (data, callback) => {
 }
 
 const obtener_cajas_fecha = (fecha, callback) => {
-    CajaDB.obtener_cajas_fecha(fecha, (rows) => {
+    CajaDB.obtener_cajas_fecha_b(fecha, (rows) => {
         return callback(rows);
     });
 }

@@ -175,7 +175,80 @@ const obtener_cajas_fecha = ( fecha, callback) => {
     sdo.caja_idcaja = c.idcaja AND
     s.idsucursal = c.sucursal_idsucursal AND 
     DATE(c.fecha)=DATE(${connection.escape(fecha)});`;
-    //console.log(sql);
+    console.log(sql);
+    connection.query(sql,(err,rows)=>{
+        if(rows==null)
+        {
+            callback({message:'error, no se encontro', status: 'error'})
+        }
+        else{
+            if(rows.length>0)
+            {
+                callback(rows)
+            }
+            else{
+                callback({message:'error, no se encontro', status: 'error'})
+                console.log("no hay rows");
+            }
+        }
+    })
+    connection.end();
+}
+const obtener_cajas_fecha_b = ( fecha, callback) => {
+    const connection = mysql_connection.getConnection();
+    connection.connect();
+    const sql = `
+    SELECT
+    q1.*,
+    date_format(DATE(${connection.escape(fecha)}), '%d-%m-%Y') as 'fecha_f',
+    if(sdo.caja_idcaja IS NULL, 0 , sdo.total) as 'saldo'
+    FROM
+    (
+    	SELECT 
+	    if(c.idcaja IS NULL, 'SIN ABRIR', c.estado) AS 'estado',
+	    if(c.idcaja IS NULL, -1, c.idcaja) AS 'idcaja',
+	    s.nombre as 'sucursal'
+	    FROM  
+	    sucursal s
+	    LEFT JOIN caja c ON s.idsucursal = c.sucursal_idsucursal AND DATE(c.fecha)=DATE(${connection.escape(fecha)})
+    )q1
+    LEFT JOIN 
+    (
+        SELECT
+            _o.caja_idcaja,
+            SUM(if(_o.tipo='c',cast(_o.monto AS FLOAT), - cast(_o.monto AS FLOAT) ) ) AS 'total'
+        from
+        (
+        SELECT
+            'c' AS 'tipo',
+            cb.caja_idcaja,
+            SUM(cmp.monto) AS 'monto'
+        FROM
+            cobro cb,
+            cobro_has_modo_pago cmp
+        WHERE
+            cb.anulado=0 AND
+            cmp.cobro_idcobro = cb.idcobro AND
+            cb.caja_idcaja IN
+            (
+                SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)})
+            ) AND
+            cmp.modo_pago='efectivo'
+        GROUP BY cb.caja_idcaja
+        union
+        SELECT
+                'e' AS 'tipo',
+                g.caja_idcaja,
+                SUM(g.monto)  AS 'monto'
+            FROM gasto g
+            WHERE
+                g.anulado=0 AND
+                g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)}))
+            GROUP BY g.caja_idcaja
+            ) _o GROUP BY _o.caja_idcaja
+    ) sdo ON sdo.caja_idcaja = q1.idcaja
+	 ;`;
+    console.log(sql);
     connection.query(sql,(err,rows)=>{
         if(rows==null)
         {
@@ -538,4 +611,5 @@ module.exports = {
     obtener_caja_gasto,
     obtener_cajas_fecha,
     cambiar_estado_caja,
+    obtener_cajas_fecha_b,
 }

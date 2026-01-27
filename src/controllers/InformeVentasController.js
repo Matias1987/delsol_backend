@@ -22,4 +22,10 @@ const informe_ventas_filtros = (req, res) =>{
     })
 }
 
-module.exports = {informe_venta_montos_mes, informe_ventas_medicos, informe_ventas_filtros}
+const cantidades_ventas_taller = (req, res) =>{
+    service.cantidades_ventas_taller(response=>{
+        res.status(201).send({status:"OK", data:response})
+    })
+}
+
+module.exports = {informe_venta_montos_mes, informe_ventas_medicos, informe_ventas_filtros, cantidades_ventas_taller}

@@ -50,15 +50,12 @@ const informe_venta_montos_mes = (data, callback) => {
                 ) mnt, 
                 sucursal s 
                 WHERE mnt.sucursal_idsucursal = s.idsucursal
-                ;`
-                    //console.log(query)
+                ;`;
+  //console.log(query)
   doQuery(query, (response) => {
     callback(response.data);
   });
 };
-
-
-
 
 const informe_ventas_medicos = (data, callback) => {
   const query = `SELECT 
@@ -99,13 +96,15 @@ const informe_ventas_medicos = (data, callback) => {
   });
 };
 
-
-const informe_ventas_filtros = ({fecha_desde, fecha_hasta, monto_igual_a, valor_desde, valor_hasta}, callback) =>{
+const informe_ventas_filtros = (
+  { fecha_desde, fecha_hasta, monto_igual_a, valor_desde, valor_hasta },
+  callback,
+) => {
   const fechaDesde = fecha_desde ?? "1970-1-1";
   const fechaHasta = fecha_hasta ?? "1970-1-1";
   const montoIgualA = monto_igual_a ?? "";
-  const valorDesde = valor_desde ?? "" ;
-  const valorHasta = valor_hasta ?? "" ;
+  const valorDesde = valor_desde ?? "";
+  const valorHasta = valor_hasta ?? "";
 
   const query = `SELECT s.nombre, CONCAT(c.apellido,' ',c.nombre) AS 'cliente', v.idventa, v.monto_total, DATE(v.fecha) FROM venta v, cliente c, sucursal s WHERE
                 v.cliente_idcliente = c.idcliente AND 
@@ -115,13 +114,25 @@ const informe_ventas_filtros = ({fecha_desde, fecha_hasta, monto_igual_a, valor_
                 (case when '-1'<>'${montoIgualA}' then v.monto_total=${montoIgualA} ELSE TRUE END ) AND 
                 (case when ''<>'${valorHasta}' then v.monto_total<${valorHasta} ELSE TRUE END ) AND 
                 (case when ''<>'${valorDesde}' then v.monto_total>${valorDesde} ELSE TRUE END )
-                ;`
+                ;`;
 
   console.log(query);
 
-  doQuery(query,(response)=>{
-    callback(response.data)
-  })
-}
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
 
-module.exports = { informe_venta_montos_mes, informe_ventas_medicos,informe_ventas_filtros };
+const cantidades_ventas_taller = (callback) => {
+  const query = `SELECT COUNT(v.idventa) AS 'qtty', v.estado, v.estado_taller  FROM venta v WHERE v.estado='PENDIENTE' AND v.en_laboratorio=1  GROUP BY v.estado_taller;`;
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
+
+module.exports = {
+  informe_venta_montos_mes,
+  informe_ventas_medicos,
+  informe_ventas_filtros,
+  cantidades_ventas_taller,
+};

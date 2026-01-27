@@ -13,6 +13,10 @@ router.post("/inf/vtas/ff/",(req, res)=>{
     controller.informe_ventas_filtros(req,res)
 })
 
+router.get("/inf/vtas/taller/cantidades",(req, res)=>{
+    controller.cantidades_ventas_taller(req,res)
+});
+
 
 
 module.exports = router;

@@ -17,4 +17,10 @@ const informe_ventas_filtros = (data, callback) =>{
     })
 }
 
-module.exports = {informe_venta_montos_mes, informe_ventas_medicos, informe_ventas_filtros}
+const cantidades_ventas_taller = (callback) =>{
+    db.cantidades_ventas_taller(response=>{
+        callback(response)
+    })
+}
+
+module.exports = {informe_venta_montos_mes, informe_ventas_medicos, informe_ventas_filtros, cantidades_ventas_taller}
