@@ -2,6 +2,8 @@ const mysql_connection = require("../lib/mysql_connection")
 
 const agregar_pago_proveedor = (data,callback) => {
 
+    console.log('data pago proveedor:',JSON.stringify(data));
+
     const connection = mysql_connection.getConnection()
 
     connection.connect()
@@ -13,11 +15,11 @@ const agregar_pago_proveedor = (data,callback) => {
         //go thru mp
         let mp=''
         data.mp.forEach(mp=>{
-            mp+= (mp.length>0?',':'') +`(${connection.escape(mp.modo_pago)},${connection.escape(resp.inserId)},${connection.escape(mp.monto)})`
+            mp+= (mp.length>0?',':'') +`(${connection.escape(mp.modo_pago)},${connection.escape(resp.inserId)},${connection.escape(mp.monto)},${connection.escape(mp.fkcta_bancaria)})`
         })
 
-        const query_modo = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ${mp};`
-        
+        const query_modo = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ${mp};`
+        console.log(query_modo);
         connection.query(query_modo,(_resp)=>{
             callback(_resp)
         })

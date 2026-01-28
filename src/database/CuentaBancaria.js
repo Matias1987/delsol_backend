@@ -9,7 +9,9 @@ const agregarCuentaBancaria = (data, callback)=>{
 
 const listaCuentasBancarias = (callback) => {
     const query = `select * from banco_cuenta_bancaria;`;
+    console.log(query)
     doQuery(query,(response)=>{
+        console.log(JSON.stringify(response))
         callback(response)
     })
 }

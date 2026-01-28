@@ -143,11 +143,11 @@ const agregar_pago_proveedor = (data, callback) => {
       connection.query(_q);
     }
     if (data.cheque.checked) {
-      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('cheque', ${resp.insertId}, ${data.cheque.monto}, ${data.cheque.fkbanco});`;
+      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ('cheque', ${resp.insertId}, ${data.cheque.monto}, ${data.cheque.fkcta_bancaria});`;
       connection.query(_q);
     }
     if (data.transferencia.checked) {
-      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_banco) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkbanco});`;
+      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkcta_bancaria});`;
       //console.log(_q)
       connection.query(_q);
     }
