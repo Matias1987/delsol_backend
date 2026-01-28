@@ -124,7 +124,7 @@ const setToken = (data, callback) => {
 const logout = (token,callback) => {
     const connection = mysql_connection.getConnection();
     connection.connect()
-    let q = `update usuario u set u.logged = '0' where u.token = ${connection.escape(token)}`
+    let q = `update usuario u set u.logged = '0' where u.token = ${connection.escape(token)}`;
     connection.query(q,(err,data)=>{
         return callback(data)
     })

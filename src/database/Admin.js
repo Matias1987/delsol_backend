@@ -428,7 +428,7 @@ const total_ventas_periodo_sucursal = ({idsucursal, cantMeses, modo="cantidad"},
                     FROM 
                     (
                       SELECT  
-                      CONCAT(YEAR(v.fecha_retiro),'-', MONTH(v.fecha_retiro)) AS 'mes',
+                      CONCAT(DATE_FORMAT(v.fecha_retiro, '%y'),'-', MONTH(v.fecha_retiro)) AS 'mes',
                       v.sucursal_idsucursal AS 'idsucursal',
                       v.idventa
                       FROM 
@@ -449,7 +449,7 @@ const total_ventas_periodo_sucursal = ({idsucursal, cantMeses, modo="cantidad"},
                     FROM 
                     (
                       SELECT  
-                      CONCAT(YEAR(v.fecha_retiro),'-', MONTH(v.fecha_retiro)) AS 'mes',
+                      CONCAT(DATE_FORMAT(v.fecha_retiro, '%y'),'-', MONTH(v.fecha_retiro)) AS 'mes',
                       v.sucursal_idsucursal AS 'idsucursal',
                       v.monto_total as 'monto'
                       FROM 
