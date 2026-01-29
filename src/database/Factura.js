@@ -12,7 +12,7 @@ const obtener_facturas = (idprov, callback) => {
     ;`,
     (err, rows) => {
       callback(rows);
-    }
+    },
   );
   connection.end();
 };
@@ -24,7 +24,7 @@ const agregar_factura = (data, callback) => {
     `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad) VALUES ('${data.numero}', ${data.proveedor_idproveedor},${data.monto},${data.cantidad});`,
     (err, result) => {
       callback(result.insertId);
-    }
+    },
   );
   connection.end();
 };
@@ -52,7 +52,7 @@ const detalle_factura = (data, callback) => {
     WHERE p.idproveedor = f.proveedor_idproveedor AND f.idfactura = ${data};`,
     (err, rows) => {
       callback(rows);
-    }
+    },
   );
   connection.end();
 };
@@ -70,14 +70,14 @@ const lista_elementos_factura = (data, callback) => {
     cf.factura_idfactura=${data};`,
     (err, rows) => {
       callback(rows);
-    }
+    },
   );
   connection.end();
 };
 
 const agregar_factura_v2 = (data, callback) => {
   console.log(JSON.stringify(data));
-  if(data.nro==="" || +data.fkproveedor===-1 ){
+  if (data.nro === "" || +data.fkproveedor === -1) {
     console.log("Error en datos de factura");
     callback(-1);
     return;
@@ -97,8 +97,8 @@ const agregar_factura_v2 = (data, callback) => {
     ${connection.escape(data.esremito)},
     date(${connection.escape(data.fecha)}),
     ${connection.escape(data.descuento)},
-    ${connection.escape(parseFloat(data.conceptosNoGravados||"0"))},
-    ${connection.escape(parseFloat(data.impuestosInternos||"0"))}
+    ${connection.escape(parseFloat(data.conceptosNoGravados || "0"))},
+    ${connection.escape(parseFloat(data.impuestosInternos || "0"))}
     );`; //toDo
 
   let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `;
@@ -106,7 +106,7 @@ const agregar_factura_v2 = (data, callback) => {
   let query_percepciones = `INSERT INTO factura_percepcion (fk_factura, monto) VALUES `;
   let query_productos = `INSERT INTO codigo_factura (factura_idfactura, stock_codigo_idcodigo, cantidad, costo) VALUES `;
   let query_increase_quantities = (
-    _idfactura
+    _idfactura,
   ) => `UPDATE stock s, ( SELECT * from codigo_factura cf0 WHERE cf0.factura_idfactura=${_idfactura} ) cf
                                 SET s.cantidad = s.cantidad + cf.cantidad
                                 WHERE
@@ -136,7 +136,7 @@ const agregar_factura_v2 = (data, callback) => {
       _iva +=
         (_iva.length > 0 ? "," : "") +
         `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(
-          row.tipo
+          row.tipo,
         )})`;
     });
 
@@ -156,7 +156,7 @@ const agregar_factura_v2 = (data, callback) => {
       query_productos +=
         (query_productos.endsWith("VALUES ") ? "" : ",") +
         `(${idfactura}, ${connection.escape(row.idcodigo)}, ${connection.escape(
-          row.cantidad
+          row.cantidad,
         )}, ${connection.escape(+row.precio)})`;
     });
 
@@ -183,7 +183,7 @@ const agregar_factura_v2 = (data, callback) => {
 };
 const agregar_factura_v3 = (data, callback) => {
   console.log(JSON.stringify(data));
-  if(data.nro==="" || +data.fkproveedor===-1 ){
+  if (data.nro === "" || +data.fkproveedor === -1) {
     console.log("Error en datos de factura");
     callback(-1);
     return;
@@ -203,9 +203,9 @@ const agregar_factura_v3 = (data, callback) => {
     ${connection.escape(data.esremito)},
     date(${connection.escape(data.fecha)}),
     ${connection.escape(data.descuento)},
-    ${connection.escape(parseFloat(data.netoNoGravado||"0"))},
-    ${connection.escape(parseFloat(data.impuestosInternos||"0"))},
-    ${connection.escape(parseFloat(data.netoGravado||"0"))}
+    ${connection.escape(parseFloat(data.netoNoGravado || "0"))},
+    ${connection.escape(parseFloat(data.impuestosInternos || "0"))},
+    ${connection.escape(parseFloat(data.netoGravado || "0"))}
     );`; //toDo
 
   let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `;
@@ -213,7 +213,7 @@ const agregar_factura_v3 = (data, callback) => {
   let query_percepciones = `INSERT INTO factura_percepcion (fk_factura, monto) VALUES `;
   let query_productos = `INSERT INTO codigo_factura (factura_idfactura, stock_codigo_idcodigo, cantidad, costo) VALUES `;
   let query_increase_quantities = (
-    _idfactura
+    _idfactura,
   ) => `UPDATE stock s, ( SELECT * from codigo_factura cf0 WHERE cf0.factura_idfactura=${_idfactura} ) cf
                                 SET s.cantidad = s.cantidad + cf.cantidad
                                 WHERE
@@ -243,7 +243,7 @@ const agregar_factura_v3 = (data, callback) => {
       _iva +=
         (_iva.length > 0 ? "," : "") +
         `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(
-          row.tipo
+          row.tipo,
         )})`;
     });
 
@@ -263,7 +263,7 @@ const agregar_factura_v3 = (data, callback) => {
       query_productos +=
         (query_productos.endsWith("VALUES ") ? "" : ",") +
         `(${idfactura}, ${connection.escape(row.idcodigo)}, ${connection.escape(
-          row.cantidad
+          row.cantidad,
         )}, ${connection.escape(+row.precio)})`;
     });
 
@@ -310,16 +310,16 @@ const obtener_facturas_filtros = (data, callback) => {
         ? " or f.es_remito=1 "
         : ""
       : +data.ver_remitos == 1
-      ? " f.es_remito=1"
-      : " f.es_remito=-1 ";
+        ? " f.es_remito=1"
+        : " f.es_remito=-1 ";
 
   const query = `SELECT DATE_FORMAT(f.fecha,'%d-%m-%y') AS 'fecha_f', f.*, p.nombre AS 'proveedor' FROM factura f, proveedor p WHERE
                 p.idproveedor=f.proveedor_idproveedor and 
                 (case when '${
                   data.idprovs.length
                 }'<>'0' then f.proveedor_idproveedor IN (${provids.map(
-    (id) => id
-  )}) ELSE TRUE END) AND 
+                  (id) => id,
+                )}) ELSE TRUE END) AND 
                 (case when '${
                   data.desde
                 }'<>'' then DATE(f.fecha)>=DATE('${from}') ELSE TRUE END ) AND 
@@ -361,7 +361,28 @@ const obtener_factura_montos_adic = (idfactura, callback) => {
   doQuery(query, (resp) => {
     callback(resp.data);
   });
-}
+};
+
+const obtener_facturas_saldo = (idprov, callback) => {
+  const query = `SELECT * FROM (
+                  SELECT 
+                  f.idfactura,
+                  f.numero,
+                  f.monto,
+                  if(pp.fk_compra IS NULL, 0, pp.monto) as 'monto_pagado',
+                  f.monto -  if(pp.fk_compra IS NULL, 0, pp.monto) AS 'saldo'
+                  FROM factura f LEFT JOIN 
+                  (SELECT ppc.fk_compra, SUM(ppc.monto) AS 'monto' FROM pago_proveedor_compra ppc GROUP BY ppc.fk_compra) pp
+                  ON f.idfactura = pp.fk_compra
+                  WHERE
+                  f.proveedor_idproveedor=${idprov}
+                  ) d WHERE d.saldo>0 
+                  ;`;
+  console.log(query)
+  doQuery(query, (resp) => {
+    callback(resp.data);
+  });
+};
 
 module.exports = {
   obtener_facturas_filtros,
@@ -371,5 +392,6 @@ module.exports = {
   detalle_factura,
   lista_elementos_factura,
   agregar_factura_v3,
-  obtener_factura_montos_adic
+  obtener_factura_montos_adic,
+  obtener_facturas_saldo,
 };

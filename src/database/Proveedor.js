@@ -151,7 +151,23 @@ const agregar_pago_proveedor = (data, callback) => {
       //console.log(_q)
       connection.query(_q);
     }
-    callback(resp);
+
+    if(data.compras && data.compras.length>0){
+      let compras_values = '';
+      data.compras.forEach((compra)=>{
+        compras_values += (compras_values.length>0?',':'') + `(${resp.insertId}, ${compra.idfactura}, ${compra.monto_a_pagar})`
+      });
+      const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
+      console.log(query);
+      doQuery(query,(_resp)=>{
+        callback(resp);
+      });
+    }
+    else{
+      callback(resp);
+    }
+
+    
     connection.end();
   });
 };

@@ -29,6 +29,10 @@ router.post("/obtener/fact/uras/filtros/",(req, res)=>{
   facturaController.obtener_facturas_filtros(req, res)
 })
 
+router.post("/obtener/facturas/saldo/",(req, res)=>{
+  facturaController.obtener_facturas_saldo(req, res)
+})
+
 router.patch("/:facturaId", (req, res) => {
   res.send("actualizar una factura");
 });

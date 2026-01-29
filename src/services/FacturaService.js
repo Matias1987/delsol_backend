@@ -41,6 +41,11 @@ const obtener_factura_montos_adic = (idfactura, callback) => {
     })
 }
 
+const obtener_facturas_saldo = (idprov, callback) => {
+    FacturaDB.obtener_facturas_saldo(idprov, (resp) => {
+        return callback(resp)
+    })}
+
 module.exports = {
     obtener_factura_montos_adic,
     obtener_facturas_filtros,
@@ -48,5 +53,6 @@ module.exports = {
     lista_elementos_factura,
     detalle_factura,
     obtener_facturas,
-    agregar_factura
+    agregar_factura,
+    obtener_facturas_saldo,
 }

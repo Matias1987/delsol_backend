@@ -64,6 +64,14 @@ const obtener_factura_montos_adic = (req, res) => {
     })
 }
 
+const obtener_facturas_saldo = (req, res) => {
+    const {body} = req;
+    const {idproveedor} = body;
+    facturaService.obtener_facturas_saldo(idproveedor, (resp) => {
+        res.status(201).send({status:'OK', data:resp})
+    })
+}
+
 module.exports = {
     obtener_facturas,
     agregar_factura,
@@ -72,4 +80,5 @@ module.exports = {
     obtener_factura_por_nro,
     obtener_facturas_filtros,
     obtener_factura_montos_adic,
+    obtener_facturas_saldo,
 }
