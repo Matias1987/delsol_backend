@@ -49,6 +49,7 @@ const ventas_medico_totales = (data, callback) => {
 	FROM 
 		venta_has_modo_pago vmp, venta v 
 	WHERE
+        v.recibe_premio=1 and 
 		v.medico_idmedico IS NOT NULL AND 
 		vmp.venta_idventa = v.idventa AND 
 		YEAR(v.fecha_retiro) = ${data.anio} AND 

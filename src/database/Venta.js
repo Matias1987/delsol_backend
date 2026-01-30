@@ -49,7 +49,8 @@ const lista_ventas_sucursal_mes = (data, callback) => {
             vmp.venta_idventa = v.idventa AND 
             YEAR(v.fecha_retiro) = ${data.anio} AND 
             MONTH(v.fecha_retiro) = ${data.mes} AND 
-            v.estado = 'ENTREGADO' 
+            v.estado = 'ENTREGADO' AND 
+            v.recibe_premio=1
             GROUP BY v.sucursal_idsucursal
             
     ) AS t
@@ -159,7 +160,8 @@ const totales_venta_vendedor = (data, callback) => {
             MONTH(v.fecha_retiro) = ${data.mes} AND 
             v.estado = 'ENTREGADO' AND
             (case when '${fkvendedor}'<>'-1' then ${fkvendedor} = v.usuario_idusuario else true end) and  
-            (case when '${fksucursal}'<>'-1' then ${fksucursal} = v.sucursal_idsucursal else true end)
+            (case when '${fksucursal}'<>'-1' then ${fksucursal} = v.sucursal_idsucursal else true end) and 
+            v.recibe_premio=1
             GROUP BY v.usuario_idusuario
             
     ) AS t
