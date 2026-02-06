@@ -24,7 +24,7 @@ const obtener_stock = (data, callback) => {
     const query = `select * from stock_cristales s where s.fk_sucursal = 0 and `
     let codigos = "";
     data.codigos.forEach(c=>{
-        codigos += (codigos.length>0 ? ' or ':'') + `(s.fk_codigo=${c.fk_codigo} and s.esf=${c.esf} and s.cil='${c.cil}')`;
+        codigos += (codigos.length>0 ? ' or ':'') + `(s.fk_codigo=${c.idcodigo} and s.esf=${c.esf} and s.cil='${c.cil}')`;
     });
     doQuery(query,(response)=>{
         callback?.(response.data);

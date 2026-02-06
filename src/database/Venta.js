@@ -322,6 +322,7 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) => {
 };
 
 const do_insert_venta = (data, callback) => {
+  console.log(JSON.stringify(data))
   const __now = new Date();
 
   if (data.fechaRetiro == null) {
