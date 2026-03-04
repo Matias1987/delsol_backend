@@ -16,6 +16,9 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
     EgresoController.crearEgreso(req, res);
 });
+router.post("/v2/", (req, res) => {
+    EgresoController.createEgresoV2(req, res);
+});
 
 // Update egreso by ID
 router.put("/:id", (req, res) => {

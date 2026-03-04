@@ -25,10 +25,16 @@ function deleteEgreso(params, callback) {
     Egreso.delete(params.id, callback);
 }
 
+function createEgresoV2(params, callback) {
+    Egreso.createEgresoV2(params, callback);
+}
+
 module.exports = {
     createEgreso,
     getAllEgresos,
     getEgresoById,
     updateEgreso,
-    deleteEgreso
+    deleteEgreso,
+    createEgresoV2,
+
 };

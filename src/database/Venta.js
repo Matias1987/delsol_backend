@@ -41,7 +41,8 @@ const lista_ventas_sucursal_mes = (data, callback) => {
             sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
             sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
             sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
-            SUM(vmp.monto) AS 'total'
+            SUM(vmp.monto) AS 'total',
+            count(distinct vmp.venta_idventa) as 'cantidad_ventas'
         FROM 
             venta_has_modo_pago vmp, venta v 
         WHERE
@@ -68,7 +69,8 @@ const lista_ventas_sucursal_mes = (data, callback) => {
             sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
             sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
             sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
-            SUM(vmp.monto) AS 'total'
+            SUM(vmp.monto) AS 'total',
+            count(distinct vmp.venta_idventa) as 'cantidad_ventas'
         FROM 
             venta_has_modo_pago vmp, venta v 
         WHERE
@@ -986,7 +988,7 @@ module.exports = {
   obtener_lista_pagares,
   obtener_categorias_productos_venta,
   totales_venta_vendedor,
-  lista_ventas_vendedor_mes,
+  //lista_ventas_vendedor_mes,
   lista_ventas_sucursal_mes,
   cambiar_responsable,
   cambiar_destinatario,

@@ -75,7 +75,7 @@ router.post("/inf/v/totales_v/", (req, res) => {
 });
 
 router.post("/inf/v/lista_vtas_mes/", (req, res) => {
-  ventaController.lista_ventas_vendedor_mes(req,res)
+  ventaController.obtener_ventas_vendedor_mes(req,res)
 });
 
 router.post("/inf/v/lista_ventas_sucursal_mes/", (req, res) => {

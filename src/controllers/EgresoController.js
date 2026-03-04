@@ -43,10 +43,18 @@ function eliminarEgreso(req, res) {
     });
 }
 
+function createEgresoV2(req, res) {
+    service.createEgresoV2(req.body, (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json(result);
+    });
+}
+
 module.exports = {
     obtenerEgresos,
     obtenerEgresoPorId,
     crearEgreso,
     actualizarEgreso,
-    eliminarEgreso
+    eliminarEgreso,
+    createEgresoV2,
 }

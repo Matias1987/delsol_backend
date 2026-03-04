@@ -167,6 +167,13 @@ const obtener_ventas_subgrupo = (req, res) =>
   })
 }
 
+const obtener_ventas_vendedor_mes = (req, res) => {
+  const {body} = req
+  ventaService.obtener_ventas_mes_vendedor(body,(rows)=>{
+    res.status(201).send({status:'OK', data:rows})
+  })
+}
+
 module.exports = {
     obtener_ventas_subgrupo,
     cambiar_destinatario,
@@ -188,6 +195,7 @@ module.exports = {
     obtener_lista_pagares,
     obtener_categorias_productos_venta,
     totales_venta_vendedor,
-    lista_ventas_vendedor_mes,
+   // lista_ventas_vendedor_mes,
     lista_ventas_sucursal_mes,
+    obtener_ventas_vendedor_mes,
   };

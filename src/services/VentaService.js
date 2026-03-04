@@ -1,5 +1,5 @@
 const ventaDB = require("../database/Venta")
-
+const ventaDBExt = require("../database/VentaExt")
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data,(rows)=>{
     callback(rows)
@@ -122,6 +122,12 @@ const obtener_ventas_subgrupo = (data, callback) => {
   })
 }
 
+const obtener_ventas_mes_vendedor = (data, callback) => {
+  ventaDBExt.ventas_mes_vendedor(data,(resp)=>{
+    callback(resp)
+  });
+}
+
 module.exports = {
     obtener_ventas_subgrupo,
     cambiar_destinatario,
@@ -145,4 +151,5 @@ module.exports = {
     totales_venta_vendedor,
     lista_ventas_vendedor_mes,
     lista_ventas_sucursal_mes,
+    obtener_ventas_mes_vendedor,
   };
