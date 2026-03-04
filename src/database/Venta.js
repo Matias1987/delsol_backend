@@ -151,7 +151,8 @@ const totales_venta_vendedor = (data, callback) => {
             sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
             sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
             sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
-            SUM(vmp.monto) AS 'total'
+            SUM(vmp.monto) AS 'total',
+            COUNT( DISTINCT vmp.venta_idventa) as 'cantidad_ventas'
         FROM 
             venta_has_modo_pago vmp, venta v 
         WHERE
