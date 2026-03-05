@@ -12,5 +12,10 @@ module.exports = {
             callback?.({data:resp})
         });
         connection.end();
+    },
+
+    escapeHelper: (data) => {
+        const connection = mysql_connection.getConnection()
+        return connection.escape(data)
     }
 }

@@ -1,0 +1,799 @@
+const { idf_optica } = require("../lib/global");
+const { obtenerCajaAbierta } = require("./queries/cajaQueries");
+const { insertEvento } = require("./queries/eventoQueries");
+const venta_queries = require("./queries/ventaQueries");
+const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
+
+const cambiar_responsable = (data, callback) => {
+  const query = `UPDATE venta v  SET v.cliente_idcliente = ${data.idresponsable} WHERE v.idventa=${data.idventa};`;
+
+  doQuery(query, (resp) => { callback(resp) });
+  
+};
+
+const cambiar_destinatario = (data, callback) => {
+  const query = `UPDATE venta v SET v.fk_destinatario = ${data.iddestinatario} WHERE v.idventa=${data.idventa};`;
+
+  doQuery(query, (resp) => { callback(resp) });
+};
+
+const lista_ventas_sucursal_mes = (data, callback) => {
+  const idsucursal =
+    data.fksucursal === typeof "undefined" ? "-1" : data.fksucursal;
+  const query_fr = `SELECT s.nombre AS 'sucursal', t.* FROM 
+    sucursal s,
+    (
+        SELECT 
+            v.sucursal_idsucursal,
+            sum(if(vmp.modo_pago='efectivo',vmp.monto,0)) AS 'efectivo',
+            sum(if(vmp.modo_pago='tarjeta',vmp.monto,0)) AS 'tarjeta',
+            sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
+            sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
+            sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
+            SUM(vmp.monto) AS 'total',
+            count(distinct vmp.venta_idventa) as 'cantidad_ventas'
+        FROM 
+            venta_has_modo_pago vmp, venta v 
+        WHERE
+            (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal='${idsucursal}' else true end) and 
+            vmp.venta_idventa = v.idventa AND 
+            YEAR(v.fecha_retiro) = ${data.anio} AND 
+            MONTH(v.fecha_retiro) = ${data.mes} AND 
+            v.estado = 'ENTREGADO' AND 
+            v.recibe_premio=1
+            GROUP BY v.sucursal_idsucursal
+            
+    ) AS t
+    WHERE 
+    t.sucursal_idsucursal = s.idsucursal;`;
+
+  const query_fa = `SELECT s.nombre AS 'sucursal', t.* FROM 
+    sucursal s,
+    (
+        SELECT 
+            v.sucursal_idsucursal,
+            sum(if(vmp.modo_pago='efectivo',vmp.monto,0)) AS 'efectivo',
+            sum(if(vmp.modo_pago='tarjeta',vmp.monto,0)) AS 'tarjeta',
+            sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
+            sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
+            sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
+            SUM(vmp.monto) AS 'total',
+            count(distinct vmp.venta_idventa) as 'cantidad_ventas'
+        FROM 
+            venta_has_modo_pago vmp, venta v 
+        WHERE
+          (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal='${idsucursal}' else true end) and 
+            vmp.venta_idventa = v.idventa AND 
+            YEAR(v.fecha) = ${data.anio} AND 
+            MONTH(v.fecha) = ${data.mes} AND 
+            v.estado = 'ENTREGADO' 
+            GROUP BY v.sucursal_idsucursal
+            
+    ) AS t
+    WHERE 
+    t.sucursal_idsucursal = s.idsucursal;`;
+
+  const query = idf_optica == 3 ? query_fa : query_fr;
+  doQuery(query, (resp) => { callback(resp) });
+};
+
+
+const totales_venta_vendedor = (data, callback) => {
+  const fkvendedor =
+    typeof data.fkvendedor === "undefined" ? "-1" : data.fkvendedor;
+  const fksucursal =
+    typeof data.fksucursal === "undefined" ? "-1" : data.fksucursal;
+  const query = `SELECT u.nombre AS 'usuario', t.* FROM 
+    usuario u,
+    (
+        SELECT 
+            v.usuario_idusuario,
+            sum(if(vmp.modo_pago='efectivo',vmp.monto,0)) AS 'efectivo',
+            sum(if(vmp.modo_pago='tarjeta',vmp.monto,0)) AS 'tarjeta',
+            sum(if(vmp.modo_pago='cheque',vmp.monto,0)) AS 'cheque',
+            sum(if(vmp.modo_pago='ctacte',vmp.monto,0)) AS 'ctacte',
+            sum(if(vmp.modo_pago='mutual',vmp.monto,0)) AS 'mutual',
+            sum(if(vmp.modo_pago='mercadopago',vmp.monto,0)) AS 'mp',
+            SUM(vmp.monto) AS 'total',
+            COUNT( DISTINCT vmp.venta_idventa) as 'cantidad_ventas'
+        FROM 
+            venta_has_modo_pago vmp, venta v 
+        WHERE
+            vmp.venta_idventa = v.idventa AND 
+            YEAR(v.fecha_retiro) = ${data.anio} AND 
+            MONTH(v.fecha_retiro) = ${data.mes} AND 
+            v.estado = 'ENTREGADO' AND
+            (case when '${fkvendedor}'<>'-1' then ${fkvendedor} = v.usuario_idusuario else true end) and  
+            (case when '${fksucursal}'<>'-1' then ${fksucursal} = v.sucursal_idsucursal else true end) and 
+            v.recibe_premio=1
+            GROUP BY v.usuario_idusuario
+            
+    ) AS t
+    WHERE 
+    t.usuario_idusuario = u.idusuario;`;
+
+    doQuery(query, (resp) => { callback(resp) });
+
+};
+
+const lista_ventas_admin = (callback) => {
+  const query = `SELECT
+    CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
+    u.nombre AS 'vendedor', 
+    v.idventa, 
+    v.monto_total,
+    s.nombre as 'sucursal',
+    s.color,
+    v.estado
+    FROM cliente c, usuario u, venta v, sucursal s 
+    WHERE 
+    /*date(v.fecha) = date(now()) and */
+    v.cliente_idcliente = c.idcliente AND 
+    v.usuario_idusuario = u.idusuario AND 
+    v.sucursal_idsucursal = s.idsucursal ORDER BY v.fecha desc;`;
+
+    doQuery(query, (resp) => { callback(resp) });
+    
+};
+
+
+const desc_cantidades_stock_venta = (data, callback) => {
+
+  const query = `update stock s,
+    (
+            SELECT 
+                vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                sum(vhs.cantidad) AS 'cantidad' 
+            FROM venta_has_stock vhs 
+                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  AND vhs.descontable=1
+                  GROUP BY vhs.stock_codigo_idcodigo
+    ) AS vs
+    SET s.cantidad = s.cantidad - vs.cantidad
+    where
+    vs.idcodigo = s.codigo_idcodigo AND 
+    s.sucursal_idsucursal=${data.idsucursal}
+    ;`;
+
+    doQuery(query, (resp) => { callback(resp) });
+
+};
+const inc_cantidades_stock_venta = (data, callback) => {
+  const query = `update stock s,
+    (
+            SELECT 
+                vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                sum(vhs.cantidad) AS 'cantidad' 
+            FROM venta_has_stock vhs 
+                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  AND vhs.descontable=1
+                  GROUP BY vhs.stock_codigo_idcodigo
+    ) AS vs
+    SET s.cantidad = s.cantidad + vs.cantidad
+    where
+    vs.idcodigo = s.codigo_idcodigo AND 
+    s.sucursal_idsucursal=${data.idsucursal}`;
+
+
+    doQuery(query, (resp) => { callback(resp) });
+
+};
+
+const cambiar_estado_venta = (data, callback) => {
+
+  const fr = typeof data.fecha_retiro === "undefined" ? "" : data.fecha_retiro;
+
+  const __t = data.estado == "ENTREGADO" ? `, v.fecha_retiro='${fr}' ` : "";
+
+  const en_laboratorio = 0; //  (data.estado=="PENDIENTE") ? 1 : 0
+
+  const estado_laboratorio = en_laboratorio ? "PENDIENTE" : "";
+
+  const query = `UPDATE venta v SET v.estado = '${data.estado}' ${__t}, v.en_laboratorio=if(v.tipo=1,0, ${en_laboratorio}), v.estado_taller='${estado_laboratorio}' WHERE v.idventa=${data.idventa};`;
+
+  doQuery(query, (resp) => {
+    if (!resp) {
+      console.log("error al cambiar estado de venta");
+      return callback(null);
+    }
+    callback(results);
+    if (typeof data.removeMPRows !== "undefined") {
+      if (+data.removeMPRows == 1) {
+        doQuery(
+          `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`, (_)=>{}
+        );
+      }
+    }
+  });
+};
+
+const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) => {
+    const estado_laboratorio = +en_laboratorio == 1 ? "PENDIENTE" : "";
+    const query = `UPDATE venta v SET v.en_laboratorio = ${en_laboratorio}, v.estado_taller='${estado_laboratorio}'  WHERE v.idventa=${idventa};`;
+
+    doQuery(query, (resp) => { callback(resp) });
+
+};
+
+const do_insert_venta = (data, callback) => {
+  const __now = new Date();
+
+  if (data.fechaRetiro == null) {
+    data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`; //parse_date_for_mysql(`${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}` )
+  }
+
+  const do_push = (orden, arr, val, tipo, descontable) =>
+    (val || 0) === 0
+      ? arr
+      : val.codigo == null || val.idcodigo < 0
+      ? arr
+      : [
+          ...arr,
+          { ...val, tipo: tipo, orden: orden, descontable: descontable },
+        ];
+
+  var venta_id = -1;
+  var _arr_items = [];
+  var _quantities = {};
+  var idx = [];
+
+  const prepare_qtty_array = (elements) => {
+    //accum by idcodigo
+    elements.forEach((e) => {
+      if (typeof _quantities[e.idcodigo] === "undefined") {
+        _quantities = {
+          ..._quantities,
+          [e.idcodigo]: { cantidad: e.cantidad, idcodigo: e.idcodigo },
+        };
+        idx.push(e.idcodigo);
+      } else {
+        _quantities[e.idcodigo].cantidad += e.cantidad;
+      }
+    });
+  };
+
+  const get_query_str = (items) => {
+    var _str = "";
+    items.forEach((e) => {
+      _str +=
+        (_str.length > 0 ? "," : "") +
+        `(
+            ${venta_id},
+            '${data.fksucursal}', 
+            ${e.idcodigo},
+            ${e.cantidad},
+            '${e.tipo}',
+            ${e.precio},
+            ${typeof e.total === "undefined" ? e.precio : e.total}, 
+            '${typeof e.esf === "undefined" ? 0 : e.esf}', 
+            '${typeof e.cil === "undefined" ? 0 : e.cil}', 
+            '${typeof e.eje === "undefined" ? 0 : e.eje}',
+            ${typeof e.orden === "undefined" ? 0 : e.orden},
+            ${typeof e.descontable === "undefined" ? 1 : e.descontable},
+            '${typeof e.cb === "undefined" ? 0 : e.cb}',
+            '${typeof e.diametro === "undefined" ? 0 : e.diametro}'
+            )`;
+    });
+    return _str;
+  };
+
+  const prepare_venta_directa_items = (__data) => {
+    _arr_items = __data.productos;
+  };
+
+  const prepare_lclab_items = (__data) => {
+    _arr_items = do_push(1, _arr_items, __data.productos.oi, "oi", 1);
+    _arr_items = do_push(0, _arr_items, __data.productos.od, "od", 1);
+    _arr_items = do_push(2, _arr_items, __data.productos.insumo, "insumo", 1);
+  };
+
+  const prepare_lclstock_items = (__data) => {
+    _arr_items = do_push(1, _arr_items, __data.productos.oi, "oi", 1);
+    _arr_items = do_push(0, _arr_items, __data.productos.od, "od", 1);
+    _arr_items = do_push(2, _arr_items, __data.productos.insumo, "insumo", 1);
+  };
+
+  const prepare_monoflab_items = (__data) => {
+    _arr_items = do_push(
+      2,
+      _arr_items,
+      __data.productos.lejos_armazon,
+      "lejos_armazon",
+      1
+    );
+    _arr_items = do_push(
+      0,
+      _arr_items,
+      __data.productos.lejos_od,
+      "lejos_od",
+      1
+    );
+    _arr_items = do_push(
+      1,
+      _arr_items,
+      __data.productos.lejos_oi,
+      "lejos_oi",
+      1
+    );
+    _arr_items = do_push(
+      3,
+      _arr_items,
+      __data.productos.lejos_tratamiento,
+      "lejos_tratamiento",
+      1
+    );
+    _arr_items = do_push(
+      6,
+      _arr_items,
+      __data.productos.cerca_armazon,
+      "cerca_armazon",
+      1
+    );
+    _arr_items = do_push(
+      4,
+      _arr_items,
+      __data.productos.cerca_od,
+      "cerca_od",
+      1
+    );
+    _arr_items = do_push(
+      5,
+      _arr_items,
+      __data.productos.cerca_oi,
+      "cerca_oi",
+      1
+    );
+    _arr_items = do_push(
+      7,
+      _arr_items,
+      __data.productos.cerca_tratamiento,
+      "cerca_tratamiento",
+      1
+    );
+  };
+
+  const prepare_multiflab_items = (__data) => {
+    _arr_items = do_push(2, _arr_items, __data.productos.armazon, "armazon", 1);
+    _arr_items = do_push(0, _arr_items, __data.productos.od, "od", 1);
+    _arr_items = do_push(1, _arr_items, __data.productos.oi, "oi", 1);
+    _arr_items = do_push(
+      3,
+      _arr_items,
+      __data.productos.tratamiento,
+      "tratamiento",
+      1
+    );
+  };
+
+  const prepare_recstock_items = (__data) => {
+    _arr_items = do_push(
+      2,
+      _arr_items,
+      __data.productos.lejos_armazon,
+      "lejos_armazon",
+      1
+    );
+    _arr_items = do_push(
+      0,
+      _arr_items,
+      __data.productos.lejos_od,
+      "lejos_od",
+      1
+    );
+    _arr_items = do_push(
+      1,
+      _arr_items,
+      __data.productos.lejos_oi,
+      "lejos_oi",
+      1
+    );
+    _arr_items = do_push(
+      3,
+      _arr_items,
+      __data.productos.lejos_tratamiento,
+      "lejos_tratamiento",
+      1
+    );
+
+    _arr_items = do_push(
+      6,
+      _arr_items,
+      __data.productos.cerca_armazon,
+      "cerca_armazon",
+      1
+    );
+    _arr_items = do_push(
+      4,
+      _arr_items,
+      __data.productos.cerca_od,
+      "cerca_od",
+      1
+    );
+    _arr_items = do_push(
+      5,
+      _arr_items,
+      __data.productos.cerca_oi,
+      "cerca_oi",
+      1
+    );
+    _arr_items = do_push(
+      7,
+      _arr_items,
+      __data.productos.cerca_tratamiento,
+      "cerca_tratamiento",
+      1
+    );
+  };
+
+  switch (+data.tipo) {
+    case 1:
+      prepare_venta_directa_items(data);
+      break;
+    case 2:
+      prepare_recstock_items(data);
+      break;
+    case 3:
+      prepare_lclstock_items(data);
+      break;
+    case 4:
+      prepare_monoflab_items(data);
+      break;
+    case 5:
+      prepare_multiflab_items(data);
+      break;
+    case 6:
+      prepare_lclab_items(data);
+      break;
+  }
+
+  prepare_qtty_array(_arr_items);
+
+  //get caja!
+  doQuery(obtenerCajaAbierta(data.fksucursal), (resp) => {
+    const _rows = resp.data;
+    if (_rows.length < 1) {
+      console.log("No hay caja!!!!!");
+      doQuery(
+        insertEvento(
+          "NULL CAJA (CLIENTE REF)",
+          data.fkusuario,
+          data.fksucursal,
+          data.fkcliente,
+          "VENTA"
+        )
+        ,
+        (_)=>{}
+      );
+      callback(null);
+      return;
+    } else {
+      if (_rows[0].idcaja != data.fkcaja) {
+        console.log(
+          "<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... "
+        );
+        doQuery(
+          insertEvento(
+            "CAJA ID MISMATCH (CLIENTE REF)",
+            data.fkusuario,
+            data.fksucursal,
+            data.fkcliente,
+            "VENTA"
+          )
+          ,(_)=>{}
+        );
+      }
+      const idcaja = _rows[0].idcaja;
+
+      doQuery(
+        venta_queries.venta_insert_query(
+          venta_queries.parse_venta_data(data),
+          idcaja
+        ),
+        (resp2) => {
+          const resp = resp2.data;
+          venta_id = parseInt(resp.insertId);
+          var mp = "";
+          venta_queries.get_mp(data, venta_id).forEach((p) => {
+            mp +=
+              (mp.length > 0 ? "," : "") +
+              `(
+                        ${venta_id},
+                        ${p.modo_pago_idmodo_pago},
+                        ${p.banco_idbanco},
+                        ${p.mutual_idmutual},
+                        ${p.monto},
+                        ${p.monto_int},
+                        ${p.cant_cuotas},
+                        ${p.monto_cuota},
+                        ${p.fk_tarjeta},
+                        '${p.modo_pago}',
+                        '${p.tarjeta_nro}',
+                        ${p.fk_banco_transferencia}
+                        )`;
+          });
+
+          var _items_data = get_query_str(_arr_items);
+
+          if (mp.length > 0) {
+            doQuery(venta_queries.query_mp + mp, (resp) => {
+              doQuery(
+                venta_queries.query_items + _items_data,
+                (__resp) => {
+                  callback(venta_id);
+                }
+              );
+            });
+          } else {
+            if (_arr_items.length > 0) {
+              doQuery(
+                venta_queries.query_items + _items_data,
+                (__resp) => {
+                  callback(venta_id);
+                }
+              );
+            } else {
+              callback(venta_id);
+            }
+          }
+        }
+      );
+      //#endregion
+    }
+  });
+};
+
+const insert_venta = (data, callback) => {
+  do_insert_venta(data, callback);
+  /*
+    UsuarioDB.validar_usuario_be(
+        {
+            tk: data.tk,
+            permisos: "venta"
+        },
+        ()=>{do_insert_venta(data,callback)},
+        ()=>{callback({msg:"error"})}
+    )*/
+};
+
+const detalle_venta = (idventa, callback) => {
+  doQuery(venta_queries.queryDetalleVenta(idventa), (resp) => { callback(resp) });
+};
+
+const lista_ventas = (callback) => {
+  doQuery(venta_queries.queryListaVentasTotal(), (resp) => { callback(resp) });
+};
+
+const lista_ventas_sucursal = (data, callback) => {
+  doQuery(venta_queries.queryListaVentasSucursal(data.id), (resp) => { callback(resp) });
+};
+
+const lista_venta_sucursal_estado = (data, callback) => {
+
+  let idmedico = data.idmedico || "";
+  let iddestinatario = data.iddestinatario || "";
+  let idventa = data.id || "";
+  let idcliente = data.idcliente || "";
+  let fecha = data.fecha || "";
+  let idsucursal = data.idsucursal || "";
+  let evitar_ingresados = typeof data.incIngresadas === 'undefined' ? 0 : (data.incIngresadas? 0:1);
+  let evitar_anulados = typeof data.incAnuladas === 'undefined' ? 0 : (data.incAnuladas? 0:1);
+  idmedico = idmedico == "-1" ? "" : idmedico;
+  iddestinatario = iddestinatario == "-1" ? "" : iddestinatario;
+  idventa = idventa == "-1" ? "" : idventa;
+  idcliente = idcliente == "-1" ? "" : idcliente;
+
+  let idusuario = typeof data.idusuario === "undefined" ? "" : data.idusuario;
+
+  idusuario = idusuario == "-1" ? "" : idusuario;
+
+  let limit = typeof data.limit === 'undefined' ? -1 : +data.limit;
+
+  const q = venta_queries.queryListaVentasSucursalEstado(
+    idsucursal,
+    typeof data.estado === "undefined" ? "" : data.estado,
+    typeof data.tipo === "undefined" ? "" : data.tipo,
+    idmedico,
+    iddestinatario,
+    idcliente,
+    idventa,
+    typeof data.en_laboratorio === "undefined" ? "" : data.en_laboratorio,
+    fecha,
+    idusuario,
+    typeof data.estado_taller === "undefined" ? "" : data.estado_taller,
+    evitar_ingresados,
+    evitar_anulados,
+    limit
+  );
+
+  doQuery(q, (resp) => { callback(resp) });
+};
+
+const lista_venta_mp = (idventa, callback) => {
+
+    const query = `SELECT vmp.*,
+                    if(t.idtarjeta IS NULL , '' , t.nombre) AS 'nombre_tarjeta',
+                    if(b.idbanco IS NULL ,'', b.nombre) AS 'nombre_banco'
+                    FROM 
+                    venta_has_modo_pago vmp 
+                        left  JOIN tarjeta t ON vmp.fk_tarjeta = t.idtarjeta
+                        
+                        LEFT JOIN banco  b ON b.idbanco = vmp.banco_idbanco 
+                    WHERE vmp.venta_idventa = ${idventa};`;
+
+  doQuery(query, (resp) => { callback(resp) });
+};
+
+
+const lista_venta_mp_cta_cte = (idventa, callback) => {
+
+    const query = `SELECT vmp.*  FROM venta_has_modo_pago vmp
+    WHERE vmp.modo_pago = 'ctacte'  AND
+     vmp.venta_idventa = ${idventa};`;
+    doQuery(query, (resp) => { callback(resp) });
+};
+
+const lista_venta_item = (idventa, callback) => {
+
+  doQuery(venta_queries.queryListaVentaStock(idventa), (resp) => { callback(resp) });
+};
+
+const obtener_datos_pagare = (data, callback) => {
+  /**
+   * AGREGAR pagare_impreso en tabla venta_has_modo_pago
+   */
+
+  const query_mp_ctacte = `SELECT 
+    vmp.id_modopago,
+    v.idventa,
+    v.cliente_idcliente,
+    vmp.monto,
+    vmp.monto_int,
+    vmp.cant_cuotas,
+    vmp.monto_cuota,
+    v.monto_total AS 'vta_monto'
+     FROM 
+    venta_has_modo_pago vmp, 
+    venta v 
+    WHERE v.idventa = ${data} AND 
+    v.estado <> 'ANULADO' AND 
+    vmp.venta_idventa = v.idventa AND 
+    vmp.modo_pago = 'ctacte';`;
+
+  /**
+    get list of 'modopago', because pagos are not done yet, so the only way of 
+    gessing the amount that the client paid, is by getting the list of 'modopago'...
+    */
+  const query_mp = `SELECT sum(vmp.monto) as 'monto_sum' FROM venta_has_modo_pago vmp 
+    WHERE vmp.venta_idventa = ${data}
+    AND vmp.modo_pago <> 'ctacte';`;
+
+  
+  doQuery(query_mp_ctacte, (resp) => {
+    const rows = resp.data;
+    if (rows.length < 1) {
+      /** no record found */
+      callback({ err: -1 });
+    } else {
+      const r = rows[0];
+
+      doQuery(query_mp, (resp) => {
+        var monto_entrega = 0;
+        const _rows = resp.data;
+        if (_rows.length > 0) {
+          //entrega found
+          monto_entrega = parseFloat(_rows[0].monto_sum);
+        }
+        callback({
+          idventa: r.idventa,
+          idcliente: r.cliente_idcliente,
+          monto: r.monto, //monto mp cta cte sin interes
+          monto_int: r.monto_int, //monto mp cta cte con interes
+          cant_cuotas: r.cant_cuotas,
+          monto_cuota: r.monto_cuota,
+          monto_entrega: monto_entrega,
+          vta_monto: r.vta_monto,
+          vta_monto_int: parseFloat(r.vta_monto) - r.monto + r.monto_int,
+        });
+      });
+    }
+  });
+};
+
+const obtener_lista_pagares = (data, callback) => {
+  const query = `SELECT v.idventa , vhmp.monto_int AS 'monto', DATE_FORMAT(v.fecha, '%d-%m-%y') AS 'fecha'
+    FROM venta v, venta_has_modo_pago vhmp WHERE 
+    vhmp.modo_pago = 'ctacte'  AND 
+    vhmp.venta_idventa=v.idventa AND 
+    v.estado <> 'ANULADO' AND 
+    v.cliente_idcliente = ${data} 
+    order by v.idventa desc;`;
+
+  doQuery(query, (resp) => { callback(resp) });
+};
+
+const obtener_categorias_productos_venta = (data, callback) => {
+  const query = `SELECT distinct * FROM 
+    (
+        SELECT f.nombre_largo FROM venta_has_stock vhs,  codigo c, subgrupo sg, grupo g, subfamilia sf, familia f
+            WHERE 
+                    vhs.stock_codigo_idcodigo = c.idcodigo and
+            c.subgrupo_idsubgrupo = sg.idsubgrupo and
+            sg.grupo_idgrupo = g.idgrupo AND 
+            g.subfamilia_idsubfamilia = sf.idsubfamilia and
+            sf.familia_idfamilia = f.idfamilia AND 
+            vhs.venta_idventa=${data}
+    ) AS t`;
+
+  doQuery(query, (resp) => { callback(resp) });
+};
+
+const obtener_ventas_subgrupo = (data, callback) => {
+  const query = `
+    SELECT * FROM 
+    (
+        SELECT 
+        ${data.idsubgrupo} as 'subgrupo_idsubgrupo',
+        c.idcodigo,
+        c.codigo ,   
+        0 as 'stock_ideal',
+        CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
+        CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
+        CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') AS DECIMAL(10,2)) AS 'eje_dec' ,
+        REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '')  AS 'esf',  
+        REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil',
+        REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '')  AS 'eje',  
+        if( cant.stock_codigo_idcodigo IS NULL , 0 , cant.cant  ) AS 'cantidad'
+        FROM 
+            (
+                SELECT _c.codigo, _c.idcodigo FROM codigo _c WHERE _c.subgrupo_idsubgrupo = ${data.idsubgrupo}
+            ) c
+        LEFT JOIN 
+            (
+                SELECT 
+                    COUNT(vhs.stock_codigo_idcodigo) AS 'cant',
+                    vhs.stock_codigo_idcodigo
+                FROM 
+                    venta v, venta_has_stock vhs 
+                WHERE 
+                    vhs.venta_idventa=v.idventa AND 
+                    DATE(v.fecha)>=DATE('${data.desde}') AND
+                    DATE(v.fecha)<=DATE('${data.hasta}') 
+                    GROUP BY vhs.stock_codigo_idcodigo
+            ) cant
+            on c.idcodigo = cant.stock_codigo_idcodigo
+            WHERE 
+            (case when '${data.eje}'<>'-1' then '${data.eje}' = REPLACE(  REGEXP_SUBSTR(c.codigo, 'EJE[\+\-\.0-9]+'), 'EJE', '') else true end)
+        ) AS __c
+    ORDER BY
+    __c.esf, __c.cil, __c.eje
+    ;
+    `;
+
+  doQuery(query, (resp) => { callback(resp) });
+};
+
+module.exports = {
+  obtener_ventas_subgrupo,
+  lista_ventas_admin,
+  insert_venta,
+  detalle_venta,
+  lista_ventas,
+  lista_ventas_sucursal,
+  lista_venta_mp,
+  lista_venta_sucursal_estado,
+  lista_venta_item,
+  cambiar_estado_venta,
+  lista_venta_mp_cta_cte,
+  cambiar_venta_sucursal_deposito,
+  desc_cantidades_stock_venta,
+  inc_cantidades_stock_venta,
+  obtener_datos_pagare,
+  obtener_lista_pagares,
+  obtener_categorias_productos_venta,
+  totales_venta_vendedor,
+  lista_ventas_sucursal_mes,
+  cambiar_responsable,
+  cambiar_destinatario,
+};
