@@ -1,5 +1,6 @@
 const ventaDB = require("../database/Venta")
 const ventaDBExt = require("../database/VentaExt")
+const cobroDB = require("../database/Cobro")
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data,(rows)=>{
     callback(rows)
@@ -45,8 +46,35 @@ const obtenerVentasSucursal = (data, callback) => {
 }
 
 const agregarVenta = (data,callback) => {
+  console.log(data);
+  console.log("**********************************");
   ventaDB.insert_venta(data, (id) => {
-    return callback(id);
+    if(data.cobrar){
+      var params = {
+        mp: data.mp,
+        tipo: "ingreso",
+        monto: data.mp.total,
+        caja_idcaja: data.fkcaja,
+        usuario_idusuario: data.fkusuario,
+        sucursal_idsucursal: data.fksucursal,
+        descuento: data.descuento,
+        idcliente: data.fkcliente,
+        idventa: id,
+        fecha: "2026-01-01", //data.fecha,
+        tk: data.tk,
+        removeMPRows: true,
+      };
+      console.log("############# Por cobrar:");
+      console.log(params);
+      //return callback({idCobro: null, idVenta: id});
+      cobroDB.agregar_cobro(params,(idCobro)=>{
+        return callback({idCobro: idCobro, idVenta: id});
+      })
+    }
+    else{
+      return callback(id);
+    }
+    
   })
 }
 const obtenerVenta = (data,callback) => {
