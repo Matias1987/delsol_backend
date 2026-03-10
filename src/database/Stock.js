@@ -724,7 +724,7 @@ const obtener_stock_ventas = (filters, callback) => {
         )
         and
         ${qtty_min}
-        LIMIT 200
+        order by LENGTH(c.codigo) asc LIMIT 300  
         ;`;
 
   //console.log(_query)
