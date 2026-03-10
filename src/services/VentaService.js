@@ -49,7 +49,10 @@ const agregarVenta = (data,callback) => {
   console.log(data);
   console.log("**********************************");
   ventaDB.insert_venta(data, (id) => {
-    if(data.cobrar){
+    let doCobrar = data.cobrar && data.mp;
+    doCobrar = doCobrar && (data.mp ? data.mp.total>0 : false) 
+    if(doCobrar){
+
       var params = {
         mp: data.mp,
         tipo: "ingreso",
@@ -72,7 +75,7 @@ const agregarVenta = (data,callback) => {
       })
     }
     else{
-      return callback(id);
+      return callback({idVenta:id});
     }
     
   })
