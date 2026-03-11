@@ -161,24 +161,40 @@ const desc_cantidades_stock_venta = (data, callback) => {
 
 };
 const inc_cantidades_stock_venta = (data, callback) => {
-  const query = `update stock s,
-    (
-            SELECT 
-                vhs.stock_codigo_idcodigo AS 'idcodigo', 
-                sum(vhs.cantidad) AS 'cantidad' 
-            FROM venta_has_stock vhs 
-                  WHERE vhs.venta_idventa= ${data.idventa} 
-                  AND vhs.descontable=1
-                  GROUP BY vhs.stock_codigo_idcodigo
-    ) AS vs
-    SET s.cantidad = s.cantidad + vs.cantidad
-    where
-    vs.idcodigo = s.codigo_idcodigo AND 
-    s.sucursal_idsucursal=${data.idsucursal}`;
+  doQuery(
+    `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`,
+    (resp) => {
+      if (!resp.data || resp.data.length == 0) {
+        return callback({ error: "Venta no encontrada" });
+      }
 
+      const id_sucursal = resp.data[0].sucursal_idsucursal;
 
-    doQuery(query, (resp) => { callback(resp) });
+      const query = `update stock s,
+        (
+                SELECT 
+                    vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                    sum(vhs.cantidad) AS 'cantidad' 
+                FROM venta_has_stock vhs 
+                      WHERE vhs.venta_idventa= ${data.idventa} 
+                      AND vhs.descontable=1
+                      GROUP BY vhs.stock_codigo_idcodigo
+        ) AS vs
+        SET s.cantidad = s.cantidad + vs.cantidad
+        where
+        vs.idcodigo = s.codigo_idcodigo AND 
+        s.sucursal_idsucursal=${id_sucursal}`;
 
+      console.log(query);
+
+      doQuery(query, (resp1) => {
+        if (!resp1) {
+          return callback({ error: "Error al incrementar stock" });
+        }
+        callback(resp1);
+      });
+    },
+  );
 };
 
 const cambiar_estado_venta = (data, callback) => {
@@ -774,6 +790,13 @@ const obtener_ventas_subgrupo = (data, callback) => {
   doQuery(query, (resp) => { callback(resp) });
 };
 
+const anular_venta_cobros = ({idventa}, callback) =>{
+  const query = `UPDATE cobro c SET c.anulado = 1 WHERE c.venta_idventa=${idventa};`;
+  doQuery(query, (resp) => {
+    callback(resp);
+  });
+} 
+
 module.exports = {
   obtener_ventas_subgrupo,
   lista_ventas_admin,
@@ -796,4 +819,5 @@ module.exports = {
   lista_ventas_sucursal_mes,
   cambiar_responsable,
   cambiar_destinatario,
+  anular_venta_cobros,
 };

@@ -20,8 +20,23 @@ const totales_venta_vendedor = (data, callback) => {
 }
 
 const cambiar_estado_venta = (data,callback) => {
+  
   ventaDB.cambiar_estado_venta(data,(results)=>{
-    callback(results)
+    
+    if(data.estado=="ANULADO"){
+      //restaurar stock de la venta anulada
+      ventaDB.inc_cantidades_stock_venta({idventa: data.idventa},(resp)=>{
+        console.log("Stock restaurado por anulación de venta id: "+data.idventa);
+
+        ventaDB.anular_venta_cobros({idventa: data.idventa},(resp)=>{
+          console.log("Cobros relacionados a venta id "+data.idventa+" anulados");
+          callback(results);
+        });
+      });
+    }
+    else{
+      callback(results);
+    }
   })
 }
 const desc_cantidades_stock_venta = (data,callback) => {

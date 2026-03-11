@@ -1,6 +1,7 @@
 const { idf_optica } = require("../lib/global");
 const { parse_date_for_mysql } = require("../lib/helpers");
 const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
 const venta_queries = require("./queries/ventaQueries");
@@ -254,26 +255,40 @@ const desc_cantidades_stock_venta = (data, callback) => {
   connection.end();
 };
 const inc_cantidades_stock_venta = (data, callback) => {
-  const query = `update stock s,
-    (
-            SELECT 
-                vhs.stock_codigo_idcodigo AS 'idcodigo', 
-                sum(vhs.cantidad) AS 'cantidad' 
-            FROM venta_has_stock vhs 
-                  WHERE vhs.venta_idventa= ${data.idventa} 
-                  AND vhs.descontable=1
-                  GROUP BY vhs.stock_codigo_idcodigo
-    ) AS vs
-    SET s.cantidad = s.cantidad + vs.cantidad
-    where
-    vs.idcodigo = s.codigo_idcodigo AND 
-    s.sucursal_idsucursal=${data.idsucursal}`;
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
-    callback(resp);
-  });
-  connection.end();
+  doQuery(
+    `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`,
+    (resp) => {
+      if (!resp.data || resp.data.length == 0) {
+        return callback({ error: "Venta no encontrada" });
+      }
+
+      const id_sucursal = resp.data[0].sucursal_idsucursal;
+
+      const query = `update stock s,
+        (
+                SELECT 
+                    vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                    sum(vhs.cantidad) AS 'cantidad' 
+                FROM venta_has_stock vhs 
+                      WHERE vhs.venta_idventa= ${data.idventa} 
+                      AND vhs.descontable=1
+                      GROUP BY vhs.stock_codigo_idcodigo
+        ) AS vs
+        SET s.cantidad = s.cantidad + vs.cantidad
+        where
+        vs.idcodigo = s.codigo_idcodigo AND 
+        s.sucursal_idsucursal=${id_sucursal}`;
+
+      console.log(query);
+
+      doQuery(query, (resp1) => {
+        if (!resp1) {
+          return callback({ error: "Error al incrementar stock" });
+        }
+        callback(resp1);
+      });
+    },
+  );
 };
 
 const cambiar_estado_venta = (data, callback) => {
@@ -302,7 +317,7 @@ const cambiar_estado_venta = (data, callback) => {
     if (typeof data.removeMPRows !== "undefined") {
       if (+data.removeMPRows == 1) {
         connection.query(
-          `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`
+          `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`,
         );
       }
     }
@@ -319,13 +334,13 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) => {
     `UPDATE venta v SET v.en_laboratorio = ${en_laboratorio}, v.estado_taller='${estado_laboratorio}'  WHERE v.idventa=${idventa};`,
     (err, resp) => {
       callback(resp);
-    }
+    },
   );
   connection.end();
 };
 
 const do_insert_venta = (data, callback) => {
-  console.log(JSON.stringify(data))
+  console.log(JSON.stringify(data));
   const __now = new Date();
 
   if (data.fechaRetiro == null) {
@@ -336,11 +351,11 @@ const do_insert_venta = (data, callback) => {
     (val || 0) === 0
       ? arr
       : val.codigo == null || val.idcodigo < 0
-      ? arr
-      : [
-          ...arr,
-          { ...val, tipo: tipo, orden: orden, descontable: descontable },
-        ];
+        ? arr
+        : [
+            ...arr,
+            { ...val, tipo: tipo, orden: orden, descontable: descontable },
+          ];
 
   var venta_id = -1;
   var _arr_items = [];
@@ -409,56 +424,56 @@ const do_insert_venta = (data, callback) => {
       _arr_items,
       __data.productos.lejos_armazon,
       "lejos_armazon",
-      1
+      1,
     );
     _arr_items = do_push(
       0,
       _arr_items,
       __data.productos.lejos_od,
       "lejos_od",
-      1
+      1,
     );
     _arr_items = do_push(
       1,
       _arr_items,
       __data.productos.lejos_oi,
       "lejos_oi",
-      1
+      1,
     );
     _arr_items = do_push(
       3,
       _arr_items,
       __data.productos.lejos_tratamiento,
       "lejos_tratamiento",
-      1
+      1,
     );
     _arr_items = do_push(
       6,
       _arr_items,
       __data.productos.cerca_armazon,
       "cerca_armazon",
-      1
+      1,
     );
     _arr_items = do_push(
       4,
       _arr_items,
       __data.productos.cerca_od,
       "cerca_od",
-      1
+      1,
     );
     _arr_items = do_push(
       5,
       _arr_items,
       __data.productos.cerca_oi,
       "cerca_oi",
-      1
+      1,
     );
     _arr_items = do_push(
       7,
       _arr_items,
       __data.productos.cerca_tratamiento,
       "cerca_tratamiento",
-      1
+      1,
     );
   };
 
@@ -471,7 +486,7 @@ const do_insert_venta = (data, callback) => {
       _arr_items,
       __data.productos.tratamiento,
       "tratamiento",
-      1
+      1,
     );
   };
 
@@ -481,28 +496,28 @@ const do_insert_venta = (data, callback) => {
       _arr_items,
       __data.productos.lejos_armazon,
       "lejos_armazon",
-      1
+      1,
     );
     _arr_items = do_push(
       0,
       _arr_items,
       __data.productos.lejos_od,
       "lejos_od",
-      1
+      1,
     );
     _arr_items = do_push(
       1,
       _arr_items,
       __data.productos.lejos_oi,
       "lejos_oi",
-      1
+      1,
     );
     _arr_items = do_push(
       3,
       _arr_items,
       __data.productos.lejos_tratamiento,
       "lejos_tratamiento",
-      1
+      1,
     );
 
     _arr_items = do_push(
@@ -510,28 +525,28 @@ const do_insert_venta = (data, callback) => {
       _arr_items,
       __data.productos.cerca_armazon,
       "cerca_armazon",
-      1
+      1,
     );
     _arr_items = do_push(
       4,
       _arr_items,
       __data.productos.cerca_od,
       "cerca_od",
-      1
+      1,
     );
     _arr_items = do_push(
       5,
       _arr_items,
       __data.productos.cerca_oi,
       "cerca_oi",
-      1
+      1,
     );
     _arr_items = do_push(
       7,
       _arr_items,
       __data.productos.cerca_tratamiento,
       "cerca_tratamiento",
-      1
+      1,
     );
   };
 
@@ -575,8 +590,8 @@ const do_insert_venta = (data, callback) => {
           data.fkusuario,
           data.fksucursal,
           data.fkcliente,
-          "VENTA"
-        )
+          "VENTA",
+        ),
       );
       callback(null);
       connection.end();
@@ -584,7 +599,7 @@ const do_insert_venta = (data, callback) => {
     } else {
       if (_rows[0].idcaja != data.fkcaja) {
         console.log(
-          "<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... "
+          "<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ",
         );
         connection.query(
           insertEvento(
@@ -592,8 +607,8 @@ const do_insert_venta = (data, callback) => {
             data.fkusuario,
             data.fksucursal,
             data.fkcliente,
-            "VENTA"
-          )
+            "VENTA",
+          ),
         );
       }
       const idcaja = _rows[0].idcaja;
@@ -605,7 +620,7 @@ const do_insert_venta = (data, callback) => {
       connection.query(
         venta_queries.venta_insert_query(
           venta_queries.parse_venta_data(data),
-          idcaja
+          idcaja,
         ),
         (err, resp) => {
           venta_id = parseInt(resp.insertId);
@@ -641,7 +656,7 @@ const do_insert_venta = (data, callback) => {
                   connection.end();
 
                   callback(venta_id);
-                }
+                },
               );
             });
           } else {
@@ -652,7 +667,7 @@ const do_insert_venta = (data, callback) => {
                   connection.end();
 
                   callback(venta_id);
-                }
+                },
               );
             } else {
               connection.end();
@@ -660,7 +675,7 @@ const do_insert_venta = (data, callback) => {
               callback(venta_id);
             }
           }
-        }
+        },
       );
       //#endregion
     }
@@ -706,7 +721,7 @@ const lista_ventas_sucursal = (data, callback) => {
     venta_queries.queryListaVentasSucursal(data.id),
     (err, results) => {
       return callback(results);
-    }
+    },
   );
   connection.end();
 };
@@ -721,8 +736,10 @@ const lista_venta_sucursal_estado = (data, callback) => {
   let idcliente = data.idcliente || "";
   let fecha = data.fecha || "";
   let idsucursal = data.idsucursal || "";
-  let evitar_ingresados = typeof data.incIngresadas === 'undefined' ? 0 : (data.incIngresadas? 0:1);
-  let evitar_anulados = typeof data.incAnuladas === 'undefined' ? 0 : (data.incAnuladas? 0:1);
+  let evitar_ingresados =
+    typeof data.incIngresadas === "undefined" ? 0 : data.incIngresadas ? 0 : 1;
+  let evitar_anulados =
+    typeof data.incAnuladas === "undefined" ? 0 : data.incAnuladas ? 0 : 1;
   idmedico = idmedico == "-1" ? "" : idmedico;
   iddestinatario = iddestinatario == "-1" ? "" : iddestinatario;
   idventa = idventa == "-1" ? "" : idventa;
@@ -732,7 +749,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
 
   idusuario = idusuario == "-1" ? "" : idusuario;
 
-  let limit = typeof data.limit === 'undefined' ? -1 : +data.limit;
+  let limit = typeof data.limit === "undefined" ? -1 : +data.limit;
 
   /*console.log(JSON.stringify(data))
 
@@ -765,7 +782,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
     typeof data.estado_taller === "undefined" ? "" : data.estado_taller,
     evitar_ingresados,
     evitar_anulados,
-    limit
+    limit,
   );
 
   //console.log(q);
@@ -792,7 +809,7 @@ const lista_venta_mp = (idventa, callback) => {
                     WHERE vmp.venta_idventa = ${idventa};`,
     (err, rows) => {
       return callback(rows);
-    }
+    },
   );
   connection.end();
 };
@@ -805,7 +822,7 @@ const lista_venta_mp_cta_cte = (idventa, callback) => {
      vmp.venta_idventa = ${idventa};`,
     (err, rows) => {
       return callback(rows);
-    }
+    },
   );
   connection.end();
 };
@@ -969,6 +986,13 @@ const obtener_ventas_subgrupo = (data, callback) => {
   connection.end();
 };
 
+const anular_venta_cobros = ({idventa}, callback) =>{
+  const query = `UPDATE cobro c SET c.anulado = 1 WHERE c.venta_idventa=${idventa};`;
+  doQuery(query, (resp) => {
+    callback(resp);
+  });
+} 
+
 module.exports = {
   obtener_ventas_subgrupo,
   lista_ventas_admin,
@@ -992,4 +1016,5 @@ module.exports = {
   lista_ventas_sucursal_mes,
   cambiar_responsable,
   cambiar_destinatario,
+  anular_venta_cobros,
 };
