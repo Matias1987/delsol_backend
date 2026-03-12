@@ -12,7 +12,7 @@ const guardar_stock_cristales = (data, callback) => {
 
     rows_str +=` ON DUPLICATE KEY UPDATE cantidad= VALUES(cantidad);`
 
-    console.log(base_query + rows_str);
+    //console.log(base_query + rows_str);
     //return callback?.({ok:1});
     
     doQuery(base_query + rows_str,(response)=>{
@@ -21,12 +21,15 @@ const guardar_stock_cristales = (data, callback) => {
 }
 
 const obtener_stock = (data, callback) => {
-    const query = `select * from stock_cristales s where s.fk_sucursal = 0 and `
+    const query = `select * from stock_cristales s where s.fk_sucursal = ${data.fk_sucursal} and `
     let codigos = "";
     data.codigos.forEach(c=>{
-        codigos += (codigos.length>0 ? ' or ':'') + `(s.fk_codigo=${c.idcodigo} and s.esf=${c.esf} and s.cil='${c.cil}')`;
+        codigos += (codigos.length>0 ? ' or ':'') + `(s.fk_codigo=${c.idcodigo} and s.esf='${c.esf}' and s.cil='${c.cil}')`;
     });
-    doQuery(query,(response)=>{
+
+    console.log(query + codigos);
+
+    doQuery(query + codigos,(response)=>{
         callback?.(response.data);
     })
 }

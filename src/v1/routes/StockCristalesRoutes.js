@@ -19,4 +19,9 @@ router.get("/get/codigos/",(req,res)=>{
     controller.obtener_codigos_cristales(req,res);
 })
 
+
+router.post("/check_stock/",(req,res)=>{
+    controller.check_stock_cristales(req,res);
+});
+
 module.exports = router;

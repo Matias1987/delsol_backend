@@ -2,15 +2,15 @@ const mysql_connection = require("../lib/mysql_connection");
 const { doQuery } = require("./helpers/queriesHelper");
 
 const verificar_cantidades_productos = (data, callback) => {
-    
+  const { ignore_cristales } = data;
   const doPush = (idx, obj, _arr) =>
     !obj.hasOwnProperty(idx)
       ? _arr
       : obj[idx] == null
-      ? _arr
-      : obj[idx].codigo == null || +obj[idx].idcodigo < 0
-      ? _arr
-      : [..._arr, obj[idx]];
+        ? _arr
+        : obj[idx].codigo == null || +obj[idx].idcodigo < 0
+          ? _arr
+          : [..._arr, obj[idx]];
   const productos = data.productos;
 
   var arr = [];
@@ -21,10 +21,12 @@ const verificar_cantidades_productos = (data, callback) => {
       });
       break;
     case 2: //REC STOCK
-      arr = doPush("lejos_od", productos, arr);
-      arr = doPush("lejos_oi", productos, arr);
-      arr = doPush("cerca_od", productos, arr);
-      arr = doPush("cerca_oi", productos, arr);
+      if (!ignore_cristales) {
+        arr = doPush("lejos_od", productos, arr);
+        arr = doPush("lejos_oi", productos, arr);
+        arr = doPush("cerca_od", productos, arr);
+        arr = doPush("cerca_oi", productos, arr);
+      }
       arr = doPush("lejos_armazon", productos, arr);
       arr = doPush("cerca_armazon", productos, arr);
       arr = doPush("lejos_tratamiento", productos, arr);
@@ -90,7 +92,8 @@ const verificar_cantidades_productos = (data, callback) => {
 
   connection.connect();
 
-  connection.query(query, (err, rows) => {
+  doQuery(query, (resp) => {
+    const rows = resp.data;
     /**
      * check if there are codes with less than the required quantity!
      */
@@ -120,7 +123,6 @@ const verificar_cantidades_productos = (data, callback) => {
     callback({ error: error, ref: c });
   });
 
-  connection.end();
 };
 
 const incrementar_cantidad = (data, callback) => {
@@ -135,8 +137,8 @@ const incrementar_cantidad = (data, callback) => {
   if (data.cantidad > -1) {
     queries.push(`UPDATE stock s 
         SET s.cantidad = ${data.incrementarCantidad ? "s.cantidad + " : ""} ${
-      data.cantidad
-    } 
+          data.cantidad
+        } 
         WHERE s.sucursal_idsucursal=${
           data.idsucursal
         } AND s.codigo_idcodigo  in (${codigos});`);
@@ -150,14 +152,14 @@ const incrementar_cantidad = (data, callback) => {
             cantidad,
             costo)(
                     SELECT c.idcodigo, '${data.fkfactura}', '${
-      data.cantidad
-    }', '${data.costo < 0 ? 0 : data.costo}' 
+                      data.cantidad
+                    }', '${data.costo < 0 ? 0 : data.costo}' 
                     FROM codigo c WHERE c.idcodigo IN (${codigos}));`);
   }
   //update costo
   if (data.costo > 0) {
     queries.push(
-      `UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`
+      `UPDATE codigo c SET c.costo = ${data.costo} WHERE c.idcodigo in (${codigos});`,
     );
   }
 
@@ -216,7 +218,7 @@ const search_stock_envio = (
   idcodigo,
   categoria,
   idcat,
-  callback
+  callback,
 ) => {
   const search_value = decodeURIComponent(_search_value);
   const connection = mysql_connection.getConnection();
@@ -516,7 +518,7 @@ const descontar_cantidad_por_codigo = (_data, callback) => {
       }
 
       connection.end();
-    }
+    },
   );
 };
 
@@ -528,7 +530,7 @@ const obtener_lista_stock_filtros = (data, callback) => {
     tags.length < 1
       ? ` ( select 0 as 'cnt', c.* from codigo c) `
       : `(SELECT c.* FROM (SELECT COUNT(1) AS 'qtty', cht.fk_codigo FROM codigo_has_tag cht WHERE cht.fk_etiqueta IN (${tags.map(
-          (_t, idx) => `'${_t}'`
+          (_t, idx) => `'${_t}'`,
         )}) GROUP BY cht.fk_codigo) ci INNER JOIN codigo c ON c.idcodigo = ci.fk_codigo WHERE ci.qtty>=${
           tags.length
         })`;
@@ -604,50 +606,50 @@ const obtener_lista_stock_filtros = (data, callback) => {
         ) AS c
          WHERE
         (case when '${data.sucursal}'<>'-1' then c.idsucursal = ${
-    data.sucursal
-  } else true end) and
+          data.sucursal
+        } else true end) and
         (case when '${data.codigo_contenga_a}' <> '' then c.codigo like '%${
-    data.codigo_contenga_a
-  }%' else TRUE end) and
+          data.codigo_contenga_a
+        }%' else TRUE end) and
         (case when '${data.codigo_igual_a}' <> '' then c.codigo = '${
-    data.codigo_igual_a
-  }' else true end) and
+          data.codigo_igual_a
+        }' else true end) and
         (case when '${data.precio_mayor_a}' <> '' then c.precio > '${
-    data.precio_mayor_a
-  }' else true end) and
+          data.precio_mayor_a
+        }' else true end) and
         (case when '${data.precio_menor_a}' <> '' then c.precio < '${
-    data.precio_menor_a
-  }' else true end) and
+          data.precio_menor_a
+        }' else true end) and
         (case when '${data.precio_igual_a}' <> '' then c.precio = '${
-    data.precio_igual_a
-  }' else true end) and
+          data.precio_igual_a
+        }' else true end) and
         (case when '${data.cantidad_igual_a}' <> '' then c.cantidad = '${
-    data.cantidad_igual_a
-  }' else true end) and
+          data.cantidad_igual_a
+        }' else true end) and
         (case when '${data.cantidad_mayor_a}' <> '' then c.cantidad > '${
-    data.cantidad_mayor_a
-  }' else true end) and
+          data.cantidad_mayor_a
+        }' else true end) and
         (case when '${data.cantidad_menor_a}' <> '' then c.cantidad < '${
-    data.cantidad_menor_a
-  }' else true end) and
+          data.cantidad_menor_a
+        }' else true end) and
         (case when '${data.descripcion}' <> '' then c.descripcion like '%${
-    data.descripcion
-  }%' else true end) and
+          data.descripcion
+        }%' else true end) and
         (case when '${data.subgrupo}' <> '' then c.idsubgrupo = '${
-    data.subgrupo
-  }' else true end) and
+          data.subgrupo
+        }' else true end) and
         (case when '${data.grupo}' <> '' then c.idgrupo = '${
-    data.grupo
-  }' else true end) and
+          data.grupo
+        }' else true end) and
         (case when '${data.subfamilia}' <> '' then c.idsubfamilia = '${
-    data.subfamilia
-  }' else true end) and
+          data.subfamilia
+        }' else true end) and
         (case when '${data.familia}' <> '' then c.idfamilia = '${
-    data.familia
-  }' else true end) and 
+          data.familia
+        }' else true end) and 
         (case when '${data.grupo_contenga_a || ""}' <> '' then c.grupo like '%${
-    data.grupo_contenga_a
-  }%' else true end)
+          data.grupo_contenga_a
+        }%' else true end)
         ${order}
          ${limit};
         `;
@@ -663,8 +665,12 @@ const obtener_lista_stock_filtros = (data, callback) => {
 };
 
 const obtener_stock_ventas = (filters, callback) => {
-
-  const qtty_min = typeof filters.wouth_qtty === "undefined" ? "s.cantidad > 0 " : (filters.wouth_qtty ? "true" : "s.cantidad > 0 ");
+  const qtty_min =
+    typeof filters.wouth_qtty === "undefined"
+      ? "s.cantidad > 0 "
+      : filters.wouth_qtty
+        ? "true"
+        : "s.cantidad > 0 ";
 
   var str = "-1";
 
@@ -695,7 +701,7 @@ const obtener_stock_ventas = (filters, callback) => {
       (__filtros_desc.length < 1 ? "" : " and ") +
       `concat(c.descripcion, ' ' , g.nombre_corto, ' ', sg.nombre_corto)  like '%${r}%' `;
   });
-//(case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end) 
+  //(case when '${idcodigo}' <> '-1' then c.idcodigo='${idcodigo}' else true end)
   const _query = `SELECT 
         c.idcodigo, 
         c.codigo, 
@@ -760,8 +766,6 @@ const obtener_stock_detalles_venta = (data, callback) => {
   connection.end();
 };
 
-
-
 const obtener_subgrupo_full = (callback) => {
   const query = `SELECT 
         f.nombre_corto AS 'familia',
@@ -824,7 +828,6 @@ const modificar_cantidad_categoria = (_data, callback) => {
   connection.end();
 };
 
-
 const modificar_cantidad = (data, callback) => {
   const _idfactura =
     typeof data.idfactura === "undefined" ? -1 : data.idfactura;
@@ -844,11 +847,11 @@ const modificar_cantidad = (data, callback) => {
 
   if (_costo > -1) {
     connection.query(
-      `UPDATE codigo c SET c.costo=${_costo} WHERE c.idcodigo=${data.idcodigo};`
+      `UPDATE codigo c SET c.costo=${_costo} WHERE c.idcodigo=${data.idcodigo};`,
     );
   }
 
-  const _cantidad = data?.cant_modif ? data?.cant_modif: data.cantidad;
+  const _cantidad = data?.cant_modif ? data?.cant_modif : data.cantidad;
 
   if (_idfactura > 0) {
     const query2 = `INSERT INTO codigo_factura (
@@ -857,8 +860,8 @@ const modificar_cantidad = (data, callback) => {
                 cantidad,
                 costo)(
                         SELECT c.idcodigo, '${data.idfactura}', '${
-      _cantidad
-    }', '${data.costo < 0 ? 0 : data.costo}' 
+                          _cantidad
+                        }', '${data.costo < 0 ? 0 : data.costo}' 
                         FROM codigo c WHERE c.idcodigo IN (${data.idcodigo}));`;
     //console.log(query2)
     connection.query(query2, (err, response) => {});
@@ -878,7 +881,7 @@ const modificar_cantidad_lista = (data, callback) => {
   connection.query(query, (err, response) => {
     callback(response);
     const _q = `INSERT INTO control_stock ( json, fkusuario, fksucursal, tipo, comentarios) VALUES ( '${JSON.stringify(
-      data
+      data,
     )}', ${data.fkusuario}, ${data.fksucursal}, 'carga', 'carga');`;
     connection.query(_q);
     connection.end();
@@ -930,7 +933,7 @@ const distribuir_cantidad_a_sucursales = (data, callback) => {
                 s.idsucursal,
                 ${data.cantidad_inicial}
                 FROM 
-                (SELECT s0.idsucursal FROM sucursal s0 WHERE s0.idsucursal IN (${data.idsucursales.map(s=>s)})) s,
+                (SELECT s0.idsucursal FROM sucursal s0 WHERE s0.idsucursal IN (${data.idsucursales.map((s) => s)})) s,
                 codigo c,
                 subgrupo sg,
                 grupo g, 
@@ -944,19 +947,15 @@ const distribuir_cantidad_a_sucursales = (data, callback) => {
                 (case when '${data.idgrupo}'<>'0' then g.idgrupo=${data.idgrupo} ELSE TRUE END ) AND 
                 (case when '${data.idsubfamilia}'<>'0' then sf.idsubfamilia=${data.idsubfamilia} ELSE TRUE END ) AND 
                 (case when '${data.idfamilia}'<>'0' then sf.familia_idfamilia=${data.idfamilia} ELSE TRUE END )
-                );`
-  ;
-  console.log(query)
-  doQuery(query, (result)=>{
-    
-    console.log(result)
-    doQuery("update codigo c set c.pending=0 where c.pending=1;",()=>{
-      callback({ok:1});
-    })
-    
+                );`;
+  console.log(query);
+  doQuery(query, (result) => {
+    console.log(result);
+    doQuery("update codigo c set c.pending=0 where c.pending=1;", () => {
+      callback({ ok: 1 });
+    });
   });
- 
-}
+};
 
 /**const verificar_cantidades_stock_sucursal = (data, callback) => {
   var _quantities = [];
@@ -1015,7 +1014,6 @@ const distribuir_cantidad_a_sucursales = (data, callback) => {
   });
   connection.end();
 }; */
-
 
 module.exports = {
   verificar_cantidades_productos,

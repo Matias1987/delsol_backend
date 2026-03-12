@@ -25,6 +25,13 @@ const obtener_codigos_cristales = (req, res) =>{
     })
 }
 
-module.exports = {guardar_stock_cristales,obtener_grilla, obtener_stock, obtener_codigos_cristales}
+const check_stock_cristales = (req,res)=>{
+    const {body} = req;
+    service.check_stock_cristales(body,(response)=>{
+        res.status(201).send({status:'OK', data:response});
+    })
+}
+
+module.exports = {guardar_stock_cristales,obtener_grilla, obtener_stock, obtener_codigos_cristales, check_stock_cristales}
 
 

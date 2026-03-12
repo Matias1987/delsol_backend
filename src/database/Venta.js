@@ -359,9 +359,11 @@ const do_insert_venta = (data, callback) => {
 
   var venta_id = -1;
   var _arr_items = [];
-  var _quantities = {};
+  
+  /*
   var idx = [];
-
+  var _quantities = {};
+  
   const prepare_qtty_array = (elements) => {
     //accum by idcodigo
     elements.forEach((e) => {
@@ -375,7 +377,7 @@ const do_insert_venta = (data, callback) => {
         _quantities[e.idcodigo].cantidad += e.cantidad;
       }
     });
-  };
+  };*/
 
   const get_query_str = (items) => {
     var _str = "";
@@ -573,7 +575,7 @@ const do_insert_venta = (data, callback) => {
 
   //check quantities
 
-  prepare_qtty_array(_arr_items);
+  //prepare_qtty_array(_arr_items);
 
   const connection = mysql_connection.getConnection();
   connection.connect();
