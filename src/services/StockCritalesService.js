@@ -1,3 +1,4 @@
+const { doQuery } = require("../database/helpers/queriesHelper");
 const db = require("../database/StockCristales");
 
 const guardar_stock_cristales = (data, callback) => {
@@ -25,6 +26,7 @@ const obtener_codigos_cristales = (callback) => {
 };
 
 const check_stock_cristales = (data, callback) => {
+  console.log("Checking stock for cristales with data:");
   const addToArray = (parentObj, field, arr) =>
     parentObj[field] ? [...arr, parentObj[field]] : arr;
 
@@ -70,12 +72,24 @@ const check_stock_cristales = (data, callback) => {
 
   db.obtener_stock(
     {
-      fk_sucursal: data.fk_sucursal,
+      fk_sucursal: data.fksucursal,
       codigos: arrayQtties,
     },
     (response) => {
+      console.log(JSON.stringify(response));
       if (!response) {
+        console.log("Error: No se pudo obtener el stock de cristales.");
         return callback?.({ ok: 0, message: "Error al obtener el stock" });
+      }
+
+      if (response.length === 0) {
+        console.log(
+          "No se encontraron registros de stock para los cristales solicitados.",
+        );
+        return callback?.({
+          ok: 0,
+          message: "No se encontró stock para los cristales solicitados",
+        });
       }
       //compare requested quantities with stock quantities
       const responseWithQtty = response.map((stockRecord) => {
@@ -85,15 +99,77 @@ const check_stock_cristales = (data, callback) => {
             requested.esf === stockRecord.esf &&
             requested.cil === stockRecord.cil,
         );
-        return {
+
+        const response = {
           ...stockRecord,
           requestedCantidad: requestedQtty ? requestedQtty.cantidad : 0,
-          strockSuficiente: requestedQtty
+          stockSuficiente: requestedQtty
             ? stockRecord.cantidad >= requestedQtty.cantidad
             : true,
         };
+
+        console.log(
+          `Stock record for codigo ${stockRecord.fk_codigo}, esf ${stockRecord.esf}, cil ${stockRecord.cil}:`,
+        );
+        console.log(`- Stock cantidad: ${stockRecord.cantidad}`);
+        console.log(`- Requested cantidad: ${response.requestedCantidad}`);
+        console.log(
+          `- Stock suficiente: ${response.stockSuficiente ? "Sí" : "No"}`,
+        );
+
+        return response;
       });
       callback?.({ ok: 1, arrayQtties, responseWithQtty });
+    },
+  );
+};
+
+const acutalizar_stock_cristales = (data, callback) => {
+  db.obtener_stock(
+    { fk_sucursal: data.fk_sucursal, codigos: data.codigos },
+    (response) => {
+      if (!response) {
+        console.log(
+          "Error: No se pudo obtener el stock de cristales para actualizar.",
+        );
+        return callback?.({
+          ok: 0,
+          message: "Error al obtener el stock para actualizar",
+        });
+      }
+      if (response.length === 0) {
+        console.log(
+          "No se encontraron registros de stock para los cristales solicitados para actualizar.",
+        );
+        return callback?.({
+          ok: 0,
+          message:
+            "No se encontró stock para los cristales solicitados para actualizar",
+        });
+      }
+      //update stock quantities by subtracting requested quantities
+      const query = `UPDATE stock_cristales sc SET 
+      sc.cantidad=sc.cantidad-${data.cantidad} 
+      WHERE 
+      sc.fk_sucursal=${data.fk_sucursal} AND 
+      sc.fk_codigo=${data.fk_codigo} AND 
+      sc.esf=${data.esf} AND 
+      sc.cil=${data.cil} AND 
+      sc.side=${data.side};`;
+
+      doQuery(query, (updateResponse) => {
+        if (updateResponse.error) {
+          console.log("Error al actualizar el stock de cristales:");
+          console.log(updateResponse);
+          return callback?.({
+            ok: 0,
+            message: "Error al actualizar el stock de cristales",
+            details: updateResponse.error,
+          });
+        }
+
+        return callback?.({ ok: 1, message: "Stock de cristales actualizado correctamente" });
+        });
     },
   );
 };
@@ -104,4 +180,5 @@ module.exports = {
   obtener_stock,
   obtener_codigos_cristales,
   check_stock_cristales,
+  acutalizar_stock_cristales,
 };

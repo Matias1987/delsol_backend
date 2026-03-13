@@ -26,7 +26,7 @@ const obtener_stock = (data, callback) => {
     data.codigos.forEach(c=>{
         codigos += (codigos.length>0 ? ' or ':'') + `(s.fk_codigo=${c.idcodigo} and s.esf='${c.esf}' and s.cil='${c.cil}')`;
     });
-
+    console.log("Query to obtain stock for cristales:");
     console.log(query + codigos);
 
     doQuery(query + codigos,(response)=>{

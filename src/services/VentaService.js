@@ -102,7 +102,7 @@ const verificar_stock_venta = (data, callback) => {
     const {validarCristalesModo2} = data;
   console.log(data);
   console.log("Check for stock availability before adding the venta...");
-  stockDB.verificar_cantidades_productos({data, ignoreCristales: validarCristalesModo2?? false}, (response) => {
+  stockDB.verificar_cantidades_productos({data, ignoreCristales: true, idsucursal: data.fksucursal}, (response) => {
     if (response.error == 1) {
       console.log("Stock verification failed:");
       console.log(response);
@@ -113,9 +113,21 @@ const verificar_stock_venta = (data, callback) => {
     }
     //check for cristales
     stockCristalesService.check_stock_cristales(data, (resp) => {
+      
+      if(resp.ok==0)
+      {
+        console.log("1-Stock verification failed for cristales:");
+        console.log(resp);
+        return callback({
+          error:
+            "No se pudo verificar el stock de cristales para completar la venta",
+          details: resp.message,
+        });
+      }
+
       if (resp) {
-        if (resp.responseWithQtty.some((r) => !r.strockSuficiente)) {
-          console.log("Stock verification failed for cristales:");
+        if (resp.responseWithQtty.some((r) => !r.stockSuficiente)) {
+          console.log("2-Stock verification failed for cristales:");
           console.log(resp);
           return callback({
             error:
@@ -124,14 +136,28 @@ const verificar_stock_venta = (data, callback) => {
           });
         }
       }
+
       console.log("Stock verification passed. Adding venta...");
-      doAgregarVenta(data, callback);
+
+      doAgregarVenta(data, (__response) => {
+        desc_cantidades_stock_venta(data, (resp) => {
+          console.log("Stock de productos actualizado:");
+          console.log(resp);
+          stockCristalesService.acutalizar_stock_cristales(data, (resp)=>{
+            console.log("Stock de cristales actualizado:");
+            console.log(resp);
+            callback(__response);
+          });
+        });
+      });
     });
   });
 }
 
 const agregarVenta = (data, callback) => {
-  doAgregarVenta(data, response=>{
+  console.log(JSON.stringify(data));
+  //return callback({ error: "Función de agregar venta deshabilitada temporalmente para pruebas" });
+  verificar_stock_venta(data, response=>{
     return callback(response);
   });
 

@@ -583,6 +583,7 @@ const do_insert_venta = (data, callback) => {
 
   //get caja!
   //console.log("Obteniendo caja...")
+  console.log(obtenerCajaAbierta(data.fksucursal));
   connection.query(obtenerCajaAbierta(data.fksucursal), (err, _rows) => {
     if (_rows.length < 1) {
       console.log("No hay caja!!!!!");
