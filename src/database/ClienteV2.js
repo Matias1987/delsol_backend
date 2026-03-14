@@ -88,7 +88,7 @@ const obtener_lista_clientes = (callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -98,7 +98,7 @@ const detalle_cliente_dni = (dni, callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -108,7 +108,7 @@ const detalle_cliente = (id, callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -132,7 +132,7 @@ const buscar_cliente = (value, callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -228,7 +228,7 @@ const operaciones_cliente = (data, callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -241,7 +241,7 @@ const obtener_saldo_ctacte = (idcliente, callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -261,7 +261,7 @@ const actualizar_saldo_cliente = (idcliente, callback) => {
       doQuery(
         `UPDATE cliente c SET c.saldo =${debe - haber} WHERE c.idcliente=${idcliente};`,
         (resp1) => {
-          return callback(resp1);
+          return callback(resp1.data);
         },
       );
     }
@@ -283,7 +283,7 @@ const actualizar_saldo_en_cobro = (idcobro, callback) => {
           const haber = parseFloat(rows[0].haber);
           const query2 = `UPDATE cobro c SET c.saldo_actual = ${debe - haber} WHERE c.idcobro=${idcobro}`;
           doQuery(query2, (resp2) => {
-            return callback(resp2);
+            return callback(resp2.data);
           });
         }
       });
@@ -303,7 +303,7 @@ const bloquear_cuenta = (data, callback) => {
     ${escapeHelper(data.idsucursal)}, 
     ${escapeHelper(data.idusuario)});`;
     doQuery(query2, (resp2) => {
-      callback(resp2);
+      callback(resp2.data);
     });
   });
 };
@@ -312,7 +312,7 @@ const desbloquear_cuenta = (idcliente, callback) => {
   const query = `update cliente c set c.bloqueado = 0 where c.idcliente = ${idcliente};`;
 
   doQuery(query, (resp) => {
-    callback(resp);
+    callback(resp.data||null);
   });
 };
 
@@ -347,7 +347,7 @@ const obtener_clientes_morosos = (data, callback) => {
                     ;`;
 
   doQuery(query, (resp) => {
-    callback(resp);
+    callback(resp.data);
   });
 };
 
@@ -355,7 +355,7 @@ const add_flag = (data, callback) => {
   const query = `update cliente c set c.flag='${data.flag}' where c.idcliente=${data.idcliente}`;
 
   doQuery(query, (resp) => {
-    callback(resp);
+    callback(resp.data||null);
   });
 };
 
@@ -385,7 +385,7 @@ const obtener_ultimas_graduaciones = (data, callback) => {
     )_	ORDER BY _.orden1 ASC, _.orden ASC   `;
 
   doQuery(query, (resp) => {
-    callback(resp);
+    callback(resp.data||null);
   });
 };
 

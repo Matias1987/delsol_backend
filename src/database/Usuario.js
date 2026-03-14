@@ -1,5 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
-
+const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 /**
  * sessions
  */
@@ -36,17 +36,16 @@ const cambiar_estado_autorizacion = (data, callback) => {
 };
 
 const check_session = (uid, sucursalid, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
   const _query = `SELECT s.idsesion, s.estado, u.fksucursal_default 
                         FROM sesion s, usuario u WHERE 
                         u.idusuario = s.fkaccount AND 
-                        s.fksucursal=${connection.escape(sucursalid)} AND 
-                        s.fkaccount=${connection.escape(uid)} 
+                        s.fksucursal=${escapeHelper(sucursalid)} AND 
+                        s.fkaccount=${escapeHelper(uid)} 
                         AND DATE(NOW()) = DATE(s.fecha)`;
 
-  connection.query(_query, (err, rows) => {
-    if (rows == null) {
+  doQuery(_query, (response) => {
+    const rows = response.data;
+    if (!response || !rows) {
       return callback(null);
     }
     if (rows.length > 0) {
@@ -68,7 +67,6 @@ const check_session = (uid, sucursalid, callback) => {
       callback(null);
     }
   });
-  connection.end();
 };
 
 const create_session = (data, callback) => {
@@ -83,12 +81,13 @@ const create_session = (data, callback) => {
 };
 
 const checkIfUserLoggedIn = (token, callback) => {
-  //console.log(token)
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  let q = `select * from usuario u where u.token = ${connection.escape(token)};`;
+  let q = `select * from usuario u where u.token = ${escapeHelper(token)};`;
   //onsole.log(q);
-  connection.query(q, (err, res) => {
+  doQuery(q, (response) => {
+    if (!response || response.err) {
+      return callback({ logged: 0 });
+    }
+    const res = response.data;
     if (res == null) {
       return callback({ logged: 0 });
     }
@@ -101,32 +100,24 @@ const checkIfUserLoggedIn = (token, callback) => {
     }
     return callback({ logged: _logged });
   });
-  connection.end();
 };
 
 const setToken = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  let q = `UPDATE usuario u SET u.logged = '1', u.token = ${connection.escape(data.token)} WHERE u.nombre=${connection.escape(data.nombre)} AND u.passwd=md5(${connection.escape(data.password)});`;
-  connection.query(q, (err, resp) => {
-    return callback(resp);
+ 
+  let q = `UPDATE usuario u SET u.logged = '1', u.token = ${escapeHelper(data.token)} WHERE u.nombre=${escapeHelper(data.nombre)} AND u.passwd=md5(${escapeHelper(data.password)});`;
+  doQuery(q, (response) => {
+    return callback(response.data);
   });
-  connection.end();
 };
 
 const logout = (token, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  let q = `update usuario u set u.logged = '0' where u.token = ${connection.escape(token)}`;
-  connection.query(q, (err, data) => {
-    return callback(data);
+  let q = `update usuario u set u.logged = '0' where u.token = ${escapeHelper(token)}`;
+  doQuery(q, (response) => {
+    return callback(response.data);
   });
-  connection.end();
 };
 
 const get_user_credentials = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
 
   const query = `SELECT 
                 u.idusuario,
@@ -146,22 +137,20 @@ const get_user_credentials = (data, callback) => {
                 if(ups.idpermiso IS NULL, u.admin_prov, ups.admin_prov) AS 'admin_prov'
             from usuario u 
                 LEFT JOIN usuario_permiso_sucursal ups ON 
-                ups.fk_sucursal = ${connection.escape(data.idsucursal)} AND 
+                ups.fk_sucursal = ${escapeHelper(data.idsucursal)} AND 
                 ups.fk_usuario = u.idusuario
             WHERE 
-            u.idusuario=${connection.escape(data.idusuario)}`;
+            u.idusuario=${escapeHelper(data.idusuario)}`;
 
   //console.log(query)
 
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  doQuery(query, (response) => {
+    callback(response.data);
   });
-  connection.end();
 };
 
 const validar_usuario_login = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
+ 
   let q = `SELECT 
                 u.idusuario,
                 u.nombre,
@@ -180,74 +169,71 @@ const validar_usuario_login = (data, callback) => {
                 if(ups.idpermiso IS NULL, u.admin_prov, ups.admin_prov) AS 'admin_prov'
             from usuario u 
                 LEFT JOIN usuario_permiso_sucursal ups ON 
-                ups.fk_sucursal = ${connection.escape(data.sucursal)} AND 
+                ups.fk_sucursal = ${escapeHelper(data.sucursal)} AND 
                 ups.fk_usuario = u.idusuario
             WHERE 
-            u.nombre = ${connection.escape(data.name)} AND 
-            u.passwd = MD5(${connection.escape(data.pass)})`;
+            u.nombre = ${escapeHelper(data.name)} AND 
+            u.passwd = MD5(${escapeHelper(data.pass)})`;
 
   //console.log(q)
 
-  connection.query(q, (err, rows, fields) => {
+  doQuery(q, (response) => {
+    if(!response || response.err )
+    {
+      return callback({ logged: 0 });
+    }
+    const rows = response.data || [];
     if ((rows || []).length > 0) {
       let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${rows[0].idusuario}`;
-      connection.query(_q, (err, _rows) => {
+      doQuery(_q, (response) => {
         callback({ logged: 1, uid: rows[0].idusuario, udata: rows[0] });
-        /* register session */
       });
-      connection.end();
     } else {
       callback({ logged: 0 });
-      connection.end();
     }
   });
 };
 const validar_usuario_login_b = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
+
   let q = `SELECT  u.* from usuario u         
             WHERE 
-            u.nombre = ${connection.escape(data.name)} AND 
-            u.passwd = MD5(${connection.escape(data.pass)})`;
+            u.nombre = ${escapeHelper(data.name)} AND 
+            u.passwd = MD5(${escapeHelper(data.pass)})`;
 
   //console.log(q)
 
-  connection.query(q, (err, rows, fields) => {
+  doQuery(q, (response) => {
+    if(!response || response.err) {
+      return callback({ logged: 0 });
+    }
+    const rows = response.data || [];
     if ((rows || []).length > 0) {
-      let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${connection.escape(rows[0].idusuario)}`;
-      connection.query(_q, (err, _rows) => {
+      let _q = `UPDATE usuario u SET u.logged = 1 WHERE u.idusuario = ${escapeHelper(rows[0].idusuario)}`;
+      doQuery(_q, (response) => {
         callback({ logged: 1, uid: rows[0].idusuario, udata: rows[0] });
-        /* register session */
       });
-      connection.end();
     } else {
       callback({ logged: 0 });
-      connection.end();
     }
   });
 };
 
 const obtener_usuarios = (callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query("select * from usuario", (err, rows, fields) => {
-    return callback(rows);
+  doQuery("select * from usuario", (response) => {
+    return callback(response.data);
   });
-  connection.end();
+ 
 };
 
 const obtener_vendedores = (callback) => {
   const query = `SELECT u.idusuario, u.nombre, u.ventas, u.deposito_min, u.deposito, u.caja1, u.caja2 FROM usuario u WHERE u.ventas=1 ORDER BY u.nombre asc;`;
-  console.log(query);
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    if (err) {
+  
+  doQuery(query, (response) => {
+    if (response.err) {
       return callback([]);
     }
-    return callback(rows);
+    return callback(response.data);
   });
-  connection.end();
 };
 
 const agregar_usuario = (data, callback) => {
@@ -308,14 +294,12 @@ const agregar_usuario = (data, callback) => {
 };
 
 const obtener_detalle_vendedor = (idusuario, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  var sql = `SELECT u.* FROM usuario u WHERE u.idusuario=${connection.escape(idusuario)};`;
 
-  connection.query(sql, (err, rows) => {
-    return callback(rows[0]);
+  var sql = `SELECT u.* FROM usuario u WHERE u.idusuario=${escapeHelper(idusuario)};`;
+
+  doQuery(sql, (response) => {
+    return callback(response.data[0]);
   });
-  connection.end();
 };
 
 const obtener_usuarios_permisos = (callback) => {
@@ -352,12 +336,10 @@ const obtener_usuarios_permisos = (callback) => {
         ) AS u 
     ORDER BY u.id`;
   //console.log(query)
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+
+  doQuery(query, (response) => {
+    callback(response.data);
   });
-  connection.end();
 };
 
 const modificar_permisos = (data, callback) => {
@@ -390,19 +372,17 @@ const modificar_permisos = (data, callback) => {
 };
 
 const validar_usuario_be = (data, onOK, onError) => {
-  //console.log(`user with token: ${data.tk} validated`)
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(
-    `SELECT u.idusuario, u.logged FROM usuario u WHERE u.token=${connection.escape(data.tk)};`,
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+
+  doQuery(
+    `SELECT u.idusuario, u.logged FROM usuario u WHERE u.token=${escapeHelper(data.tk)};`,
+    (response) => {
+      if (response.err) {
+        console.log(response.err);
         onError();
         return;
       }
-      const resp = rows || [];
-      if (rows.length > 0) {
+      const resp = response.data || [];
+      if (response.data.length > 0) {
         if (+resp[0].logged == 1) {
           onOK();
         } else {
@@ -413,7 +393,6 @@ const validar_usuario_be = (data, onOK, onError) => {
       }
     },
   );
-  connection.end();
 };
 
 module.exports = {

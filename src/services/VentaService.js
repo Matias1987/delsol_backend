@@ -1,8 +1,9 @@
 const ventaDB = require("../database/Venta");
 const ventaDBExt = require("../database/VentaExt");
-const cobroDB = require("../database/Cobro");
-const stockDB = require("../database/Stock");
+const cobroService = require("./CobroService");
+const stockService = require("./StockService");
 const stockCristalesService = require("./StockCritalesService");
+
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data, (rows) => {
     callback(rows);
@@ -47,16 +48,19 @@ const desc_cantidades_stock_venta = (data, callback) => {
     callback(results);
   });
 };
+
 const inc_cantidades_stock_venta = (data, callback) => {
   ventaDB.inc_cantidades_stock_venta(data, (results) => {
     callback(results);
   });
 };
+
 const obtenerVentas = (callback) => {
   ventaDB.lista_ventas((rows) => {
     callback(rows);
   });
 };
+
 const obtenerVentasSucursal = (data, callback) => {
   ventaDB.lista_ventas(data, (rows) => {
     callback(rows);
@@ -89,7 +93,7 @@ const doAgregarVenta = (data, callback) => {
       console.log("############# Por cobrar:");
       console.log(params);
       //return callback({idCobro: null, idVenta: id});
-      cobroDB.agregar_cobro(params, (idCobro) => {
+      cobroService.agregarCobro(params, (idCobro) => {
         return callback({ idCobro: idCobro, idVenta: id });
       });
     } else {
@@ -100,9 +104,48 @@ const doAgregarVenta = (data, callback) => {
 
 const verificar_stock_venta = (data, callback) => {
     const {validarCristalesModo2} = data;
+
+    const addToArray = (parentObj, field, arr) =>
+        parentObj[field] ? [...arr, parentObj[field]] : arr;
+    
+    const updateCodeQttyArray = (obj, _array) =>
+      _array.find(
+        (record) =>
+          record.idcodigo == obj.idcodigo &&
+          record.esf == obj.esf &&
+          record.cil == obj.cil,
+      )
+        ? _array.map((_record) =>
+            _record.idcodigo == obj.idcodigo &&
+            _record.esf == obj.esf &&
+            _record.cil == obj.cil
+              ? { ..._record, cantidad: +_record.cantidad + +obj.cantidad }
+              : _record,
+          )
+        : [
+            ..._array,
+            {
+              idcodigo: obj.idcodigo,
+              esf: obj.esf,
+              cil: obj.cil,
+              cantidad: obj.cantidad,
+            },
+          ];
+  
+    let arrayQttiesCristales = [];
+    let elementsArrCristales = [];
+    elementsArrCristales = addToArray(data.productos, "lejos_od", elementsArrCristales);
+    elementsArrCristales = addToArray(data.productos, "lejos_oi", elementsArrCristales);
+    elementsArrCristales = addToArray(data.productos, "cerca_oi", elementsArrCristales);
+    elementsArrCristales = addToArray(data.productos, "cerca_od", elementsArrCristales);
+  
+    elementsArrCristales.forEach((element) => {
+      arrayQttiesCristales = updateCodeQttyArray(element, arrayQttiesCristales);
+    });
+
   console.log(data);
   console.log("Check for stock availability before adding the venta...");
-  stockDB.verificar_cantidades_productos({data, ignoreCristales: true, idsucursal: data.fksucursal}, (response) => {
+  stockService.verificar_cantidades_productos({data, ignoreCristales: true, idsucursal: data.fksucursal}, (response) => {
     if (response.error == 1) {
       console.log("Stock verification failed:");
       console.log(response);
@@ -112,7 +155,12 @@ const verificar_stock_venta = (data, callback) => {
       });
     }
     //check for cristales
-    stockCristalesService.check_stock_cristales(data, (resp) => {
+    stockCristalesService
+    .check_stock_cristales(
+      {...data, 
+        elementsArr:elementsArrCristales, 
+        arrayQtties:arrayQttiesCristales
+      }, (resp) => {
       
       if(resp.ok==0)
       {
@@ -143,7 +191,7 @@ const verificar_stock_venta = (data, callback) => {
         desc_cantidades_stock_venta(data, (resp) => {
           console.log("Stock de productos actualizado:");
           console.log(resp);
-          stockCristalesService.acutalizar_stock_cristales(data, (resp)=>{
+          stockCristalesService.acutalizar_stock_cristales({fksucursal: data.fksucursal, arrayQtties: arrayQttiesCristales}, (resp)=>{
             console.log("Stock de cristales actualizado:");
             console.log(resp);
             callback(__response);
@@ -162,6 +210,7 @@ const agregarVenta = (data, callback) => {
   });
 
 };
+
 const obtenerVenta = (data, callback) => {
   ventaDB.detalle_venta(data, (row) => {
     return callback(row);
@@ -173,6 +222,7 @@ const obtenerVentaMP = (idventa, callback) => {
     return callback(row);
   });
 };
+
 const obtenerVentaMPCtaCte = (idventa, callback) => {
   ventaDB.lista_venta_mp_cta_cte(idventa, (row) => {
     return callback(row);

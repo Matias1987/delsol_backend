@@ -1,4 +1,4 @@
-const CobroDB = require("../database/Cobro")
+const CobroDB = require("../database/CobroV2")
 
 const obtenerCobros = (data,callback) => {
   CobroDB.lista_cobros(data, (rows)=>{

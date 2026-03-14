@@ -25,45 +25,11 @@ const obtener_codigos_cristales = (callback) => {
   });
 };
 
-const check_stock_cristales = (data, callback) => {
+const check_stock_cristales = (
+  { fksucursal, elementsArr, arrayQtties },
+  callback,
+) => {
   console.log("Checking stock for cristales with data:");
-  const addToArray = (parentObj, field, arr) =>
-    parentObj[field] ? [...arr, parentObj[field]] : arr;
-
-  const updateCodeQttyArray = (obj, _array) =>
-    _array.find(
-      (record) =>
-        record.idcodigo == obj.idcodigo &&
-        record.esf == obj.esf &&
-        record.cil == obj.cil,
-    )
-      ? _array.map((_record) =>
-          _record.idcodigo == obj.idcodigo &&
-          _record.esf == obj.esf &&
-          _record.cil == obj.cil
-            ? { ..._record, cantidad: +_record.cantidad + +obj.cantidad }
-            : _record,
-        )
-      : [
-          ..._array,
-          {
-            idcodigo: obj.idcodigo,
-            esf: obj.esf,
-            cil: obj.cil,
-            cantidad: obj.cantidad,
-          },
-        ];
-
-  let arrayQtties = [];
-  let elementsArr = [];
-  elementsArr = addToArray(data.productos, "lejos_od", elementsArr);
-  elementsArr = addToArray(data.productos, "lejos_oi", elementsArr);
-  elementsArr = addToArray(data.productos, "cerca_oi", elementsArr);
-  elementsArr = addToArray(data.productos, "cerca_od", elementsArr);
-
-  elementsArr.forEach((element) => {
-    arrayQtties = updateCodeQttyArray(element, arrayQtties);
-  });
 
   console.log("elementsArr");
   console.log(elementsArr);
@@ -72,7 +38,7 @@ const check_stock_cristales = (data, callback) => {
 
   db.obtener_stock(
     {
-      fk_sucursal: data.fksucursal,
+      fk_sucursal: fksucursal,
       codigos: arrayQtties,
     },
     (response) => {
@@ -82,7 +48,7 @@ const check_stock_cristales = (data, callback) => {
         return callback?.({ ok: 0, message: "Error al obtener el stock" });
       }
 
-      if (response.length === 0) {
+      if (response.length === 0 || !response.length) {
         console.log(
           "No se encontraron registros de stock para los cristales solicitados.",
         );
@@ -124,54 +90,27 @@ const check_stock_cristales = (data, callback) => {
   );
 };
 
-const acutalizar_stock_cristales = (data, callback) => {
-  db.obtener_stock(
-    { fk_sucursal: data.fk_sucursal, codigos: data.codigos },
-    (response) => {
-      if (!response) {
-        console.log(
-          "Error: No se pudo obtener el stock de cristales para actualizar.",
-        );
-        return callback?.({
-          ok: 0,
-          message: "Error al obtener el stock para actualizar",
-        });
-      }
-      if (response.length === 0) {
-        console.log(
-          "No se encontraron registros de stock para los cristales solicitados para actualizar.",
-        );
-        return callback?.({
-          ok: 0,
-          message:
-            "No se encontró stock para los cristales solicitados para actualizar",
-        });
-      }
-      //update stock quantities by subtracting requested quantities
-      const query = `UPDATE stock_cristales sc SET 
-      sc.cantidad=sc.cantidad-${data.cantidad} 
-      WHERE 
-      sc.fk_sucursal=${data.fk_sucursal} AND 
-      sc.fk_codigo=${data.fk_codigo} AND 
-      sc.esf=${data.esf} AND 
-      sc.cil=${data.cil} AND 
-      sc.side=${data.side};`;
+const acutalizar_stock_cristales = ({ fksucursal, arrayQtties }, callback) => {
+  if (arrayQtties.length < 1) {
+    return callback?.({
+      ok: 1,
+      message: "No hay cristales para actualizar",
+    });
+  }
+  const clonedArr = [...arrayQtties];
 
-      doQuery(query, (updateResponse) => {
-        if (updateResponse.error) {
-          console.log("Error al actualizar el stock de cristales:");
-          console.log(updateResponse);
-          return callback?.({
-            ok: 0,
-            message: "Error al actualizar el stock de cristales",
-            details: updateResponse.error,
-          });
-        }
-
-        return callback?.({ ok: 1, message: "Stock de cristales actualizado correctamente" });
-        });
-    },
-  );
+  const doUpdate = ()=>{
+    if(clonedArr.length>0){
+      const codigo = clonedArr.pop();
+      db.acutalizar_stock_cristales({...codigo, fk_sucursal: fksucursal}, (_) => {
+      doUpdate();
+    });
+    }
+    else{
+      return callback?.({status: "ok", message: "Stock de cristales actualizado correctamente"});
+    }
+  }
+  doUpdate();
 };
 
 module.exports = {

@@ -1,6 +1,5 @@
 const VentasDB = require("../database/Venta")
 const GastosDB = require("../database/Gasto")
-const CobroDB = require("../database/Cobro")
 const EnvioDB = require("../database/TransferenciaCaja")
 const AdminDB = require("../database/Admin")
 

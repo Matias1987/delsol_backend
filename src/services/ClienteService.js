@@ -1,4 +1,4 @@
-const ClienteDB = require("../database/Cliente")
+const ClienteDB = require("../database/ClienteV2")
 
 const update_cliente = (data,callback) => {
   ClienteDB.update_cliente(data,(resp)=>{

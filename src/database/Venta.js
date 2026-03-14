@@ -98,46 +98,6 @@ const lista_ventas_sucursal_mes = (data, callback) => {
   connection.end();
 };
 
-const lista_ventas_vendedor_mes = (data, callback) => {
-  /* const query = `SELECT 
-    v.idventa, 
-    DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro',
-    CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
-    v.monto_total
-    FROM 
-    venta v, cliente c 
-    WHERE 
-    v.cliente_idcliente = c.idcliente AND 
-    YEAR(v.fecha_retiro) = 2023 AND 
-    MONTH(v.fecha_retiro) = 12 AND 
-    v.estado='ENTREGADO' AND 
-    v.usuario_idusuario=0;`;
-
-  const query_exp = `SELECT 
-    v.idventa, 
-    DATE_FORMAT(v.fecha_retiro,'%d-%m-%y') AS 'fecha_retiro',
-    CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
-    v.monto_total
-    FROM 
-    venta v, cliente c 
-    WHERE 
-    v.cliente_idcliente = c.idcliente AND 
-    YEAR(v.fecha_retiro) = 2023 AND 
-    MONTH(v.fecha_retiro) = 12 AND 
-    v.estado<>'ANULADO' AND 
-    v.usuario_idusuario=0;`;
-
-    const uquery = idf_optica == 3 ? query_exp : query;
-
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(uquery, (err, rows) => {
-    callback(rows);
-  });
-  connection.end();*/
-  callback({});
-};
-
 const totales_venta_vendedor = (data, callback) => {
   const fkvendedor =
     typeof data.fkvendedor === "undefined" ? "-1" : data.fkvendedor;
@@ -209,27 +169,10 @@ const lista_ventas_admin = (callback) => {
   connection.end();
 };
 
-const anular_venta = (data, callback) => {
-  /**
-   * restaurar stock y marcar venta como anulada
-   */
-};
 
 const desc_cantidades_stock_venta = (data, callback) => {
-  /*const query = `UPDATE stock s, 
-    (
-        SELECT 
-        vhs.idventaitem,
-        vhs.stock_sucursal_idsucursal AS 'idsucursal',
-        vhs.stock_codigo_idcodigo AS 'idcodigo', 
-        vhs.cantidad 
-        FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa}  AND vhs.descontable=1
-    ) AS vs
-    SET s.cantidad = s.cantidad - vs.cantidad WHERE
-    s.codigo_idcodigo = vs.idcodigo AND 
-    s.sucursal_idsucursal = vs.idsucursal;`*/
 
-  ///FALTA LA SUCURSAL!!!!!!!
+  console.log("Descontando stock de venta id: " + data.idventa);
 
   const query = `update stock s,
     (
@@ -247,12 +190,13 @@ const desc_cantidades_stock_venta = (data, callback) => {
     s.sucursal_idsucursal=${data.idsucursal}
     ;`;
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
+  doQuery(query, (resp) => {
+    if (!resp) {
+      console.log("Error al descontar el stock de cristales:");
+      return callback({ error: "Error al descontar el stock de cristales" });
+    }
     callback(resp);
   });
-  connection.end();
 };
 const inc_cantidades_stock_venta = (data, callback) => {
   doQuery(
@@ -359,25 +303,6 @@ const do_insert_venta = (data, callback) => {
 
   var venta_id = -1;
   var _arr_items = [];
-  
-  /*
-  var idx = [];
-  var _quantities = {};
-  
-  const prepare_qtty_array = (elements) => {
-    //accum by idcodigo
-    elements.forEach((e) => {
-      if (typeof _quantities[e.idcodigo] === "undefined") {
-        _quantities = {
-          ..._quantities,
-          [e.idcodigo]: { cantidad: e.cantidad, idcodigo: e.idcodigo },
-        };
-        idx.push(e.idcodigo);
-      } else {
-        _quantities[e.idcodigo].cantidad += e.cantidad;
-      }
-    });
-  };*/
 
   const get_query_str = (items) => {
     var _str = "";
@@ -989,12 +914,12 @@ const obtener_ventas_subgrupo = (data, callback) => {
   connection.end();
 };
 
-const anular_venta_cobros = ({idventa}, callback) =>{
+const anular_venta_cobros = ({ idventa }, callback) => {
   const query = `UPDATE cobro c SET c.anulado = 1 WHERE c.venta_idventa=${idventa};`;
   doQuery(query, (resp) => {
     callback(resp);
   });
-} 
+};
 
 module.exports = {
   obtener_ventas_subgrupo,
