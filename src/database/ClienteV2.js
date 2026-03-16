@@ -45,20 +45,19 @@ const do_agregar_cliente = (data, callback) => {
       if (rows.length < 1) {
         
         doQuery(
-          queries.queryAgregarCliente(),
-          [
-            [
-              data.localidad_idlocalidad,
-              data.nombre,
-              data.apellido,
-              data.direccion,
-              data.dni,
-              data.telefono1,
-              data.telefono2,
-              data.destinatario,
-              data.fechaNac,
-            ],
-          ],
+          queries.queryAgregarCliente(
+            {
+              localidad_idlocalidad: data.localidad_idlocalidad,
+              nombre: data.nombre,
+              apellido: data.apellido,
+              direccion: data.direccion,
+              dni: data.dni,
+              telefono1: data.telefono1,
+              telefono2: data.telefono2,
+              destinatario: data.destinatario,
+              fechaNac: data.fechaNac,
+            }
+          ),
           (resp) => {
             return callback(resp.data.insertId);
           },

@@ -1,31 +1,23 @@
 const { idf_optica } = require("../lib/global");
-const { parse_date_for_mysql } = require("../lib/helpers");
-const mysql_connection = require("../lib/mysql_connection");
 const { doQuery } = require("./helpers/queriesHelper");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
 const venta_queries = require("./queries/ventaQueries");
-const UsuarioDB = require("./Usuario");
+
 const cambiar_responsable = (data, callback) => {
   const query = `UPDATE venta v  SET v.cliente_idcliente = ${data.idresponsable} WHERE v.idventa=${data.idventa};`;
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const cambiar_destinatario = (data, callback) => {
   const query = `UPDATE venta v SET v.fk_destinatario = ${data.iddestinatario} WHERE v.idventa=${data.idventa};`;
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const lista_ventas_sucursal_mes = (data, callback) => {
@@ -90,12 +82,9 @@ const lista_ventas_sucursal_mes = (data, callback) => {
 
   console.log(query);
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const totales_venta_vendedor = (data, callback) => {
@@ -132,14 +121,9 @@ const totales_venta_vendedor = (data, callback) => {
     WHERE 
     t.usuario_idusuario = u.idusuario;`;
 
-  //console.log(query)
-
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const lista_ventas_admin = (callback) => {
@@ -158,20 +142,13 @@ const lista_ventas_admin = (callback) => {
     v.usuario_idusuario = u.idusuario AND 
     v.sucursal_idsucursal = s.idsucursal ORDER BY v.fecha desc;`;
 
-  const connection = mysql_connection.getConnection();
-
-  connection.connect();
-
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
 
-  connection.end();
 };
 
-
 const desc_cantidades_stock_venta = (data, callback) => {
-
   console.log("Descontando stock de venta id: " + data.idventa);
 
   const query = `update stock s,
@@ -195,9 +172,10 @@ const desc_cantidades_stock_venta = (data, callback) => {
       console.log("Error al descontar el stock de cristales:");
       return callback({ error: "Error al descontar el stock de cristales" });
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
+
 const inc_cantidades_stock_venta = (data, callback) => {
   doQuery(
     `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`,
@@ -229,15 +207,13 @@ const inc_cantidades_stock_venta = (data, callback) => {
         if (!resp1) {
           return callback({ error: "Error al incrementar stock" });
         }
-        callback(resp1);
+        callback(resp1.data);
       });
     },
   );
 };
 
 const cambiar_estado_venta = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
   /**
    * if estado==entregado, update fecha_retiro
    */
@@ -251,44 +227,39 @@ const cambiar_estado_venta = (data, callback) => {
 
   const query = `UPDATE venta v SET v.estado = '${data.estado}' ${__t}, v.en_laboratorio=if(v.tipo=1,0, ${en_laboratorio}), v.estado_taller='${estado_laboratorio}' WHERE v.idventa=${data.idventa};`;
 
-  connection.query(query, (err, results) => {
-    if (err) {
-      connection.end();
-      console.log(err);
+  doQuery(query, (resp) => {
+    if (!resp) {
       return callback(null);
     }
-    callback(results);
+    
     if (typeof data.removeMPRows !== "undefined") {
       if (+data.removeMPRows == 1) {
-        connection.query(
+        doQuery(
           `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`,
         );
       }
     }
-    connection.end();
+    return callback(resp.data);
   });
 };
 
 const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
+ 
   const estado_laboratorio = +en_laboratorio == 1 ? "PENDIENTE" : "";
 
-  connection.query(
+  doQuery(
     `UPDATE venta v SET v.en_laboratorio = ${en_laboratorio}, v.estado_taller='${estado_laboratorio}'  WHERE v.idventa=${idventa};`,
-    (err, resp) => {
-      callback(resp);
+    (resp) => {
+      callback(resp.data);
     },
   );
-  connection.end();
 };
 
-const do_insert_venta = (data, callback) => {
-  console.log(JSON.stringify(data));
+const do_insert_venta = (data, callback) => { 
   const __now = new Date();
 
   if (data.fechaRetiro == null) {
-    data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`; //parse_date_for_mysql(`${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}` )
+    data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;
   }
 
   const do_push = (orden, arr, val, tipo, descontable) =>
@@ -498,21 +469,11 @@ const do_insert_venta = (data, callback) => {
       break;
   }
 
-  //check quantities
-
-  //prepare_qtty_array(_arr_items);
-
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  //check quantities
-
-  //get caja!
-  //console.log("Obteniendo caja...")
-  console.log(obtenerCajaAbierta(data.fksucursal));
-  connection.query(obtenerCajaAbierta(data.fksucursal), (err, _rows) => {
+  doQuery(obtenerCajaAbierta(data.fksucursal), (resp1) => {
+    const _rows = resp1.data;
     if (_rows.length < 1) {
       console.log("No hay caja!!!!!");
-      connection.query(
+      doQuery(
         insertEvento(
           "NULL CAJA (CLIENTE REF)",
           data.fkusuario,
@@ -521,15 +482,14 @@ const do_insert_venta = (data, callback) => {
           "VENTA",
         ),
       );
-      callback(null);
-      connection.end();
-      return;
+      return callback(null);
+      
     } else {
       if (_rows[0].idcaja != data.fkcaja) {
         console.log(
           "<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ",
         );
-        connection.query(
+        doQuery(
           insertEvento(
             "CAJA ID MISMATCH (CLIENTE REF)",
             data.fkusuario,
@@ -540,124 +500,93 @@ const do_insert_venta = (data, callback) => {
         );
       }
       const idcaja = _rows[0].idcaja;
-      //#region save dependent data
-      //console.log("###################################");
-      //console.log(venta_queries.venta_insert_query(venta_queries.parse_venta_data(data)));
-      //console.log("###################################");
 
-      connection.query(
+      doQuery(
         venta_queries.venta_insert_query(
           venta_queries.parse_venta_data(data),
           idcaja,
         ),
-        (err, resp) => {
+        (resp2) => {
+          const resp = resp2.data;
+          console.log("Venta insertada, id: " + resp.insertId);
           venta_id = parseInt(resp.insertId);
           var mp = "";
           venta_queries.get_mp(data, venta_id).forEach((p) => {
             mp +=
               (mp.length > 0 ? "," : "") +
               `(
-                        ${venta_id},
-                        ${p.modo_pago_idmodo_pago},
-                        ${p.banco_idbanco},
-                        ${p.mutual_idmutual},
-                        ${p.monto},
-                        ${p.monto_int},
-                        ${p.cant_cuotas},
-                        ${p.monto_cuota},
-                        ${p.fk_tarjeta},
-                        '${p.modo_pago}',
-                        '${p.tarjeta_nro}',
-                        ${p.fk_banco_transferencia}
-                        )`;
+                ${venta_id},
+                ${p.modo_pago_idmodo_pago},
+                ${p.banco_idbanco},
+                ${p.mutual_idmutual},
+                ${p.monto},
+                ${p.monto_int},
+                ${p.cant_cuotas},
+                ${p.monto_cuota},
+                ${p.fk_tarjeta},
+                '${p.modo_pago}',
+                '${p.tarjeta_nro}',
+                ${p.fk_banco_transferencia}
+                )`;
           });
 
           var _items_data = get_query_str(_arr_items);
 
-          //console.log(venta_queries.query_items + _items_data)
-
           if (mp.length > 0) {
-            connection.query(venta_queries.query_mp + mp, (err, _resp) => {
-              connection.query(
+            doQuery(venta_queries.query_mp + mp, (_resp3) => {
+              doQuery(
                 venta_queries.query_items + _items_data,
-                (err, __resp) => {
-                  connection.end();
-
+                (err, _resp4) => {
                   callback(venta_id);
                 },
               );
             });
           } else {
             if (_arr_items.length > 0) {
-              connection.query(
+              doQuery(
                 venta_queries.query_items + _items_data,
-                (err, __resp) => {
-                  connection.end();
-
+                (err, _resp5) => {
                   callback(venta_id);
                 },
               );
             } else {
-              connection.end();
-
               callback(venta_id);
             }
           }
         },
       );
-      //#endregion
     }
   });
 };
 
 const insert_venta = (data, callback) => {
   do_insert_venta(data, callback);
-  /*
-    UsuarioDB.validar_usuario_be(
-        {
-            tk: data.tk,
-            permisos: "venta"
-        },
-        ()=>{do_insert_venta(data,callback)},
-        ()=>{callback({msg:"error"})}
-    )*/
 };
 
 const detalle_venta = (idventa, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-
-  connection.query(venta_queries.queryDetalleVenta(idventa), (err, results) => {
-    return callback(results);
+  doQuery(venta_queries.queryDetalleVenta(idventa), (resp) => {
+    return callback(resp.data);
   });
-  connection.end();
+
 };
 
 const lista_ventas = (callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(venta_queries.queryListaVentasTotal(), (err, results) => {
-    return callback(results);
+  doQuery(venta_queries.queryListaVentasTotal(), (resp) => {
+    return callback(resp.data);
   });
-  connection.end();
 };
 
 const lista_ventas_sucursal = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(
+  doQuery(
     venta_queries.queryListaVentasSucursal(data.id),
-    (err, results) => {
-      return callback(results);
+    (resp) => {
+      return callback(resp.data);
     },
   );
-  connection.end();
+
 };
 
 const lista_venta_sucursal_estado = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-
   let idmedico = data.idmedico || "";
   let iddestinatario = data.iddestinatario || "";
   let idventa = data.id || "";
@@ -679,23 +608,6 @@ const lista_venta_sucursal_estado = (data, callback) => {
 
   let limit = typeof data.limit === "undefined" ? -1 : +data.limit;
 
-  /*console.log(JSON.stringify(data))
-
-    console.log(venta_queries.queryListaVentasSucursalEstado(
-        (typeof data.idsucursal === 'undefined' ? "" : data.idsucursal),
-        (typeof data.estado === 'undefined' ? "" : data.estado),
-        (typeof data.tipo === 'undefined' ? "" : data.tipo),
-        idmedico,
-        iddestinatario,
-        idcliente,
-        idventa,
-        (typeof data.en_laboratorio === 'undefined'? "" : data.en_laboratorio),
-        fecha,
-        idusuario,
-        (typeof data.estado_taller === 'undefined' ? "" : data.estado_taller),
-            ))
-  */
-
   const q = venta_queries.queryListaVentasSucursalEstado(
     idsucursal,
     typeof data.estado === "undefined" ? "" : data.estado,
@@ -713,19 +625,14 @@ const lista_venta_sucursal_estado = (data, callback) => {
     limit,
   );
 
-  //console.log(q);
-
-  connection.query(q, (err, data) => {
-    //    console.log(JSON.stringify(data))
-    callback(data);
+  doQuery(q, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const lista_venta_mp = (idventa, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(
+
+  doQuery(
     `SELECT vmp.*,
                     if(t.idtarjeta IS NULL , '' , t.nombre) AS 'nombre_tarjeta',
                     if(b.idbanco IS NULL ,'', b.nombre) AS 'nombre_banco'
@@ -735,33 +642,27 @@ const lista_venta_mp = (idventa, callback) => {
                         
                         LEFT JOIN banco  b ON b.idbanco = vmp.banco_idbanco 
                     WHERE vmp.venta_idventa = ${idventa};`,
-    (err, rows) => {
-      return callback(rows);
+    (resp) => {
+      return callback(resp.data);
     },
   );
-  connection.end();
 };
 const lista_venta_mp_cta_cte = (idventa, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(
+
+  doQuery(
     `SELECT vmp.*  FROM venta_has_modo_pago vmp
     WHERE vmp.modo_pago = 'ctacte'  AND
      vmp.venta_idventa = ${idventa};`,
-    (err, rows) => {
-      return callback(rows);
+    (resp) => {
+      return callback(resp.data);
     },
   );
-  connection.end();
 };
 
 const lista_venta_item = (idventa, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(venta_queries.queryListaVentaStock(idventa), (err, rows) => {
-    callback(rows);
+  doQuery(venta_queries.queryListaVentaStock(idventa), (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const obtener_datos_pagare = (data, callback) => {
@@ -794,16 +695,16 @@ const obtener_datos_pagare = (data, callback) => {
     WHERE vmp.venta_idventa = ${data}
     AND vmp.modo_pago <> 'ctacte';`;
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query_mp_ctacte, (err, rows) => {
+  doQuery(query_mp_ctacte, (resp) => {
+    const rows = resp.data;
     if (rows.length < 1) {
       /** no record found */
       callback({ err: -1 });
     } else {
       const r = rows[0];
 
-      connection.query(query_mp, (_err, _rows) => {
+      doQuery(query_mp, (resp1) => {
+        const _rows = resp1;
         var monto_entrega = 0;
 
         if (_rows.length > 0) {
@@ -823,7 +724,6 @@ const obtener_datos_pagare = (data, callback) => {
         });
       });
     }
-    connection.end();
   });
 };
 
@@ -835,12 +735,10 @@ const obtener_lista_pagares = (data, callback) => {
     v.estado <> 'ANULADO' AND 
     v.cliente_idcliente = ${data} 
     order by v.idventa desc;`;
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const obtener_categorias_productos_venta = (data, callback) => {
@@ -856,16 +754,12 @@ const obtener_categorias_productos_venta = (data, callback) => {
             vhs.venta_idventa=${data}
     ) AS t`;
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const obtener_ventas_subgrupo = (data, callback) => {
-  const connection = mysql_connection.getConnection();
   const query = `
     SELECT * FROM 
     (
@@ -906,12 +800,10 @@ const obtener_ventas_subgrupo = (data, callback) => {
     __c.esf, __c.cil, __c.eje
     ;
     `;
-  //console.log(query)
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const anular_venta_cobros = ({ idventa }, callback) => {
@@ -940,7 +832,6 @@ module.exports = {
   obtener_lista_pagares,
   obtener_categorias_productos_venta,
   totales_venta_vendedor,
-  //lista_ventas_vendedor_mes,
   lista_ventas_sucursal_mes,
   cambiar_responsable,
   cambiar_destinatario,

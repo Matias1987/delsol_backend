@@ -18,7 +18,19 @@ const queryObtenerListaClientes = () => {
      FROM cliente c where c.destinatario=0 limit 50;`;
 }
 
-const queryAgregarCliente = () => {
+const queryAgregarCliente = (
+    {
+        localidad_idlocalidad,
+        nombre,
+        apellido,
+        direccion,
+        dni,
+        telefono1,
+        telefono2,
+        destinatario,
+        fechaNac,
+    }
+) => {
     return `INSERT INTO cliente (
         localidad_idlocalidad, 
         nombre, 
@@ -29,7 +41,17 @@ const queryAgregarCliente = () => {
         telefono2,
         destinatario,
         fecha_nacimiento
-        ) values (?)`;
+        ) values (
+        '${localidad_idlocalidad}',
+        '${nombre}',
+        '${apellido}',
+        '${direccion}',
+        '${dni}',
+        '${telefono1}',
+        '${telefono2}',
+        '${destinatario}',
+        '${fechaNac}' 
+        )`;
 }
 
 const queryObtenerBalance = (idcliente) => {

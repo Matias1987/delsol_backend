@@ -36,6 +36,11 @@ const check_stock_cristales = (
   console.log("arrayQtties");
   console.log(arrayQtties);
 
+  if(elementsArr.length<1 || arrayQtties.length<1){
+    console.log("No hay cristales para verificar. Saltando verificación de stock de cristales.");
+    return callback?.({ok:1, message: "No hay cristales para verificar"});
+  }
+
   db.obtener_stock(
     {
       fk_sucursal: fksucursal,
@@ -92,6 +97,7 @@ const check_stock_cristales = (
 
 const acutalizar_stock_cristales = ({ fksucursal, arrayQtties }, callback) => {
   if (arrayQtties.length < 1) {
+    console.log("No hay cristales para actualizar. Saltando actualización de stock de cristales.");
     return callback?.({
       ok: 1,
       message: "No hay cristales para actualizar",

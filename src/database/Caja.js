@@ -1,5 +1,6 @@
 const { idf_optica } = require("../lib/global");
 const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
 const UsuarioDB = require("./Usuario")
@@ -15,9 +16,9 @@ const caja_exists = (data,callback) => {
 
 const caja_abierta = (idsucursal,callback) =>{
     const query = `SELECT c.idcaja AND if(date(c.fecha) = DATE(NOW()),1,0) AS 'actual' FROM caja c WHERE c.estado='ABIERTA' AND c.sucursal_idsucursal=${idsucursal};`
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query,(err,rows)=>{
+    console.log(query);
+    doQuery(query,(resp)=>{
+        const rows = resp.data;
         if(rows!=null){
             if(rows.length>0)
             {
@@ -30,8 +31,7 @@ const caja_abierta = (idsucursal,callback) =>{
         else{
             callback({abierta:0,current:0})
         }
-    })
-    connection.end()
+    });
 }
 
 const obtener_lista_cajas_sucursal = (idsucursal, callback) => {

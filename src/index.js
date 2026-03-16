@@ -15,6 +15,7 @@ const port = process.env.port || config.server_port; //release
 //const port = process.env.port || 3002;//for testing
 
 const isValidToken = (token, callback) => {
+  console.log("checking token");
   usuarios_db.checkIfUserLoggedIn(token, (res) => {
     callback(+res.logged === 1);
   });
@@ -79,7 +80,7 @@ io.use((socket, next) => {
 
 // Periodically ping clients
 setInterval(() => {
-  //console.log("Pinging clients...");
+  console.log("Pinging clients...");
   io.sockets.sockets.forEach((socket) => {
     console.log(`Checking client ${socket.id}...`);
     if (!socket.isAlive) {

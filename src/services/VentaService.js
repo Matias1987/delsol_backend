@@ -67,148 +67,238 @@ const obtenerVentasSucursal = (data, callback) => {
   });
 };
 
+const agregarCobrosVenta = (data, id, callback) => {
+  let doCobrar = data.cobrar && data.mp;
+  doCobrar = doCobrar && (data.mp ? data.mp.total > 0 : false);
+  const today = new Date();
+  const formattedDate =
+    today.getFullYear() +
+    "-" +
+    String(today.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(today.getDate()).padStart(2, "0");
+  if (doCobrar) {
+    var params = {
+      mp: data.mp,
+      tipo: "ingreso",
+      monto: data.mp.total,
+      caja_idcaja: data.fkcaja,
+      usuario_idusuario: data.fkusuario,
+      sucursal_idsucursal: data.fksucursal,
+      descuento: data.descuento,
+      idcliente: data.fkcliente,
+      idventa: id,
+      fecha: formattedDate, //data.fecha,
+      tk: data.tk,
+      removeMPRows: true,
+    };
+    cobroService.agregarCobro(params, (idCobro) => {
+      return callback({ idCobro: idCobro, idVenta: id });
+    });
+  } else {
+    return callback({ idVenta: id });
+  }
+};
+
 const doAgregarVenta = (data, callback) => {
   ventaDB.insert_venta(data, (id) => {
-    let doCobrar = data.cobrar && data.mp;
-    doCobrar = doCobrar && (data.mp ? data.mp.total > 0 : false);
-    const today = new Date();
-    const formattedDate = today.getFullYear() + '-' +
-    String(today.getMonth() + 1).padStart(2, '0') + '-' +
-    String(today.getDate()).padStart(2, '0');
-    if (doCobrar) {
-      var params = {
-        mp: data.mp,
-        tipo: "ingreso",
-        monto: data.mp.total,
-        caja_idcaja: data.fkcaja,
-        usuario_idusuario: data.fkusuario,
-        sucursal_idsucursal: data.fksucursal,
-        descuento: data.descuento,
-        idcliente: data.fkcliente,
-        idventa: id,
-        fecha: formattedDate, //data.fecha,
-        tk: data.tk,
-        removeMPRows: true,
-      };
-      console.log("############# Por cobrar:");
-      console.log(params);
-      //return callback({idCobro: null, idVenta: id});
-      cobroService.agregarCobro(params, (idCobro) => {
-        return callback({ idCobro: idCobro, idVenta: id });
-      });
-    } else {
-      return callback({ idVenta: id });
-    }
+    callback({ idventa: id });
   });
 };
 
 const verificar_stock_venta = (data, callback) => {
-    const {validarCristalesModo2} = data;
+  const { validarCristalesModo2 } = data;
 
-    const addToArray = (parentObj, field, arr) =>
-        parentObj[field] ? [...arr, parentObj[field]] : arr;
-    
-    const updateCodeQttyArray = (obj, _array) =>
-      _array.find(
-        (record) =>
-          record.idcodigo == obj.idcodigo &&
-          record.esf == obj.esf &&
-          record.cil == obj.cil,
-      )
-        ? _array.map((_record) =>
-            _record.idcodigo == obj.idcodigo &&
-            _record.esf == obj.esf &&
-            _record.cil == obj.cil
-              ? { ..._record, cantidad: +_record.cantidad + +obj.cantidad }
-              : _record,
-          )
-        : [
-            ..._array,
-            {
-              idcodigo: obj.idcodigo,
-              esf: obj.esf,
-              cil: obj.cil,
-              cantidad: obj.cantidad,
-            },
-          ];
-  
-    let arrayQttiesCristales = [];
-    let elementsArrCristales = [];
-    elementsArrCristales = addToArray(data.productos, "lejos_od", elementsArrCristales);
-    elementsArrCristales = addToArray(data.productos, "lejos_oi", elementsArrCristales);
-    elementsArrCristales = addToArray(data.productos, "cerca_oi", elementsArrCristales);
-    elementsArrCristales = addToArray(data.productos, "cerca_od", elementsArrCristales);
-  
-    elementsArrCristales.forEach((element) => {
-      arrayQttiesCristales = updateCodeQttyArray(element, arrayQttiesCristales);
-    });
+  const addToArray = (parentObj, field, arr) =>
+    parentObj[field] && parentObj[field]?.idcodigo>0 ? [...arr, parentObj[field]] : arr;
+
+  const updateCodeQttyArray = (obj, _array) =>
+    _array.find(
+      (record) =>
+        record.idcodigo == obj.idcodigo &&
+        record.esf == obj.esf &&
+        record.cil == obj.cil,
+    )
+      ? _array.map((_record) =>
+          _record.idcodigo == obj.idcodigo &&
+          _record.esf == obj.esf &&
+          _record.cil == obj.cil
+            ? { ..._record, cantidad: +_record.cantidad + +obj.cantidad }
+            : _record,
+        )
+      : [
+          ..._array,
+          {
+            idcodigo: obj.idcodigo,
+            esf: obj.esf,
+            cil: obj.cil,
+            cantidad: obj.cantidad,
+          },
+        ];
+
+  let arrayQttiesCristales = [];
+  let elementsArrCristales = [];
+  elementsArrCristales = addToArray(
+    data.productos,
+    "lejos_od",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "lejos_oi",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "cerca_oi",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "cerca_od",
+    elementsArrCristales,
+  );
+
+  elementsArrCristales.forEach((element) => {
+    arrayQttiesCristales = updateCodeQttyArray(element, arrayQttiesCristales);
+  });
 
   console.log(data);
   console.log("Check for stock availability before adding the venta...");
-  stockService.verificar_cantidades_productos({data, ignoreCristales: true, idsucursal: data.fksucursal}, (response) => {
-    if (response.error == 1) {
-      console.log("Stock verification failed:");
-      console.log(response);
-      return callback({
-        error: "No hay suficiente stock para completar la venta",
-        details: response,
-      });
-    }
-    //check for cristales
-    stockCristalesService
-    .check_stock_cristales(
-      {...data, 
-        elementsArr:elementsArrCristales, 
-        arrayQtties:arrayQttiesCristales
-      }, (resp) => {
-      
-      if(resp.ok==0)
-      {
-        console.log("1-Stock verification failed for cristales:");
-        console.log(resp);
+  stockService.verificar_cantidades_productos(
+    { data, ignoreCristales: true, idsucursal: data.fksucursal },
+    (response) => {
+      if (response.error == 1) {
+        console.log("Stock verification failed:");
+        console.log(response);
         return callback({
-          error:
-            "No se pudo verificar el stock de cristales para completar la venta",
-          details: resp.message,
+          error: "No hay suficiente stock para completar la venta",
+          details: response,
+          arrayQttiesCristales,
+          elementsArrCristales,
         });
       }
-
-      if (resp) {
-        if (resp.responseWithQtty.some((r) => !r.stockSuficiente)) {
-          console.log("2-Stock verification failed for cristales:");
-          console.log(resp);
-          return callback({
-            error:
-              "No hay suficiente stock de cristales para completar la venta",
-            details: resp.responseWithQtty.filter((r) => !r.strockSuficiente),
-          });
-        }
-      }
-
-      console.log("Stock verification passed. Adding venta...");
-
-      doAgregarVenta(data, (__response) => {
-        desc_cantidades_stock_venta(data, (resp) => {
-          console.log("Stock de productos actualizado:");
-          console.log(resp);
-          stockCristalesService.acutalizar_stock_cristales({fksucursal: data.fksucursal, arrayQtties: arrayQttiesCristales}, (resp)=>{
-            console.log("Stock de cristales actualizado:");
+      //check for cristales
+      stockCristalesService.check_stock_cristales(
+        {
+          ...data,
+          elementsArr: elementsArrCristales,
+          arrayQtties: arrayQttiesCristales,
+        },
+        (resp) => {
+          if (resp.ok == 0) {
+            console.log("1-Stock verification failed for cristales:");
             console.log(resp);
-            callback(__response);
+            return callback({
+              error:
+                "No se pudo verificar el stock de cristales para completar la venta",
+              details: resp.message,
+              arrayQttiesCristales,
+              elementsArrCristales,
+            });
+          }
+
+          if (resp && resp.responseWithQtty) {
+            if (resp.responseWithQtty.some((r) => !r.stockSuficiente)) {
+              console.log("2-Stock verification failed for cristales:");
+              console.log(resp);
+              return callback({
+                error:
+                  "No hay suficiente stock de cristales para completar la venta",
+                details: resp.responseWithQtty.filter(
+                  (r) => !r.stockSuficiente,
+                ),
+                arrayQttiesCristales,
+                elementsArrCristales,
+              });
+            }
+          }
+
+          console.log("Stock verification passed. Adding venta...");
+
+          return callback({
+            ok: 1,
+            message: "Stock verificado correctamente",
+            arrayQttiesCristales,
+            elementsArrCristales,
           });
-        });
-      });
-    });
-  });
-}
+        },
+      );
+    },
+  );
+};
 
 const agregarVenta = (data, callback) => {
   console.log(JSON.stringify(data));
-  //return callback({ error: "Función de agregar venta deshabilitada temporalmente para pruebas" });
-  verificar_stock_venta(data, response=>{
-    return callback(response);
-  });
+  verificar_stock_venta(data, (verifStockResponse) => {
+    if (verifStockResponse.error) {
+      console.log("Error al verificar stock antes de agregar venta:");
+      console.log(data);
+      return callback({
+        error: "Error al verificar stock antes de agregar venta",
+        details: data.details,
+      });
+    }
 
+    doAgregarVenta(data, (agregarVentaResponse) => {
+      console.log("Venta agregada, id: " + agregarVentaResponse.idventa);
+      if (agregarVentaResponse.error) {
+        console.log("Error al agregar venta después de verificar stock:");
+        console.log(agregarVentaResponse);
+        return callback({
+          error: "Error al agregar venta después de verificar stock",
+          details: agregarVentaResponse.error,
+        });
+      }
+
+      desc_cantidades_stock_venta(
+        { idventa: agregarVentaResponse.idventa, idsucursal: data.fksucursal },
+        (responseDescStock) => {
+          if (responseDescStock.error) {
+            console.log("Error al actualizar stock de productos:");
+            console.log(responseDescStock);
+            return callback({
+              error: "Error al actualizar stock de productos",
+              details: responseDescStock.error,
+            });
+          }
+
+          console.log("Stock de productos actualizado:");
+          console.log(responseDescStock);
+          stockCristalesService.acutalizar_stock_cristales(
+            {
+              fksucursal: data.fksucursal,
+              arrayQtties: verifStockResponse.arrayQttiesCristales,
+            },
+            (responseDescStockCristales) => {
+              console.log("Stock de cristales actualizado:");
+              console.log(responseDescStockCristales);
+
+              agregarCobrosVenta(
+                data,
+                agregarVentaResponse.idventa,
+                (cobrosResponse) => {
+                  if (cobrosResponse.error) {
+                    console.log("Error al agregar cobros para la venta:");
+                    console.log(cobrosResponse);
+                    return callback({
+                      error: "Error al agregar cobros para la venta",
+                      details: cobrosResponse.error,
+                    });
+                  }
+                  return callback({
+                    ...cobrosResponse,
+                    stockResponse: responseDescStock,
+                    stockCristalesResponse: responseDescStockCristales,
+                  });
+                },
+              );
+            },
+          );
+        },
+      );
+    });
+  });
 };
 
 const obtenerVenta = (data, callback) => {

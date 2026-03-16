@@ -82,7 +82,7 @@ const create_session = (data, callback) => {
 
 const checkIfUserLoggedIn = (token, callback) => {
   let q = `select * from usuario u where u.token = ${escapeHelper(token)};`;
-  //onsole.log(q);
+ 
   doQuery(q, (response) => {
     if (!response || response.err) {
       return callback({ logged: 0 });

@@ -16,7 +16,6 @@ module.exports = {
     },*/
 
     doQuery: async (query, callback) => {
-        //console.log("Ejecutando consulta (pool):");
         try {
             const [rows, fields] = await pool.query(query);
             callback?.({ data: rows });

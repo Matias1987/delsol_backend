@@ -300,8 +300,6 @@ const agregar_venta_mp_ctacte = (data,callback) =>
                 ${data.mp.ctacte_cuotas},
                 ${data.mp.ctacte_monto_cuotas})` ;
     
-    const connection = mysql_connection.getConnection();
-    connection.connect()
 
     if(typeof data.removeMPRows !== 'undefined'){
         if(+data.removeMPRows == 1){
@@ -311,19 +309,14 @@ const agregar_venta_mp_ctacte = (data,callback) =>
 
     if(typeof data.removeCtaCteRow !== 'undefined'){
         if(+data.removeCtaCteRow == 1){
-            //console.log("ELIMINAR MODO DE PAGOS MP")
-            connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`)
+            doQuery2(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`,()=>{});
         }
     }
-    connection.query(__query_venta_mp,(err,resp)=>{
+    doQuery2(__query_venta_mp,(err,resp)=>{
         callback(0);
     })
 
-    connection.query(`UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`)
-
-    connection.end()
-
-
+    doQuery2(`UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`);
     
 }
 
@@ -341,8 +334,7 @@ const lista_cobros = (data, callback) => {
     const _fecha = typeof data.fecha === 'undefined' ? '' : data.fecha
     const _anulado = typeof data.anulado === 'undefined'? '' : data.anulado
 
-    const connection = mysql_connection.getConnection();
-    connection.connect();
+    
     const _q = `SELECT 
     c.* , 
     date_format(c.fecha,'%d-%m-%Y') as 'fecha_formated',
@@ -362,13 +354,12 @@ const lista_cobros = (data, callback) => {
     order by c.idcobro desc
     limit 500;`
     //console.log(_q)
-    connection.query(
+    doQuery2(
         _q,
         (err,results)=>{
             callback(results);
         }
     );
-    connection.end();
 }
 
 const detalle_cobro = (idcobro, callback) => {
