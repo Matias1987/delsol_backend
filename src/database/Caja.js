@@ -1,134 +1,119 @@
 const { idf_optica } = require("../lib/global");
-const mysql_connection = require("../lib/mysql_connection");
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
-const UsuarioDB = require("./Usuario")
-const caja_exists = (data,callback) => {
-    const query = `SELECT c.idcaja FROM caja c WHERE DATE(c.fecha) = DATE('${data.fecha}') AND c.sucursal_idsucursal=${data.idsucursal};`
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query,(err,rows)=>{
-        callback(rows)
-    })
-    connection.end()
-}
+const UsuarioDB = require("./Usuario");
 
-const caja_abierta = (idsucursal,callback) =>{
-    const query = `SELECT c.idcaja AND if(date(c.fecha) = DATE(NOW()),1,0) AS 'actual' FROM caja c WHERE c.estado='ABIERTA' AND c.sucursal_idsucursal=${idsucursal};`
-    console.log(query);
-    doQuery(query,(resp)=>{
-        const rows = resp.data;
-        if(rows!=null){
-            if(rows.length>0)
-            {
-                callback({abierta:1,current:rows[0].actual == 1 ? 1:0})
-            }
-            else{
-                callback({abierta:0,current:0})
-            }
-        }
-        else{
-            callback({abierta:0,current:0})
-        }
-    });
-}
+const caja_exists = (data, callback) => {
+  const query = `SELECT c.idcaja FROM caja c WHERE DATE(c.fecha) = DATE('${data.fecha}') AND c.sucursal_idsucursal=${data.idsucursal};`;
+
+  doQuery(query, (resp) => {
+    callback(resp.data);
+  });
+};
+
+const caja_abierta = (idsucursal, callback) => {
+  const query = `SELECT c.idcaja AND if(date(c.fecha) = DATE(NOW()),1,0) AS 'actual' FROM caja c WHERE c.estado='ABIERTA' AND c.sucursal_idsucursal=${idsucursal};`;
+  console.log(query);
+  doQuery(query, (resp) => {
+    const rows = resp.data;
+    if (rows != null) {
+      if (rows.length > 0) {
+        callback({ abierta: 1, current: rows[0].actual == 1 ? 1 : 0 });
+      } else {
+        callback({ abierta: 0, current: 0 });
+      }
+    } else {
+      callback({ abierta: 0, current: 0 });
+    }
+  });
+};
 
 const obtener_lista_cajas_sucursal = (idsucursal, callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect()
-    connection.query(`SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f'  FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} ORDER BY c.idcaja desc`,(err,rows)=>{
-        callback(rows)
-    })
-    connection.end()
-}
+  doQuery(
+    `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f'  FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} ORDER BY c.idcaja desc`,
+    (resp) => {
+      callback(resp.data);
+    },
+  );
+};
 
 const cerrarCaja = (idcaja, callback) => {
-    const connection = mysql_connection.getConnection();
+  const query = `UPDATE caja c SET c.estado='CERRADO', c.control_pendiente=1 WHERE c.idcaja=${idcaja}`;
 
-    connection.connect();
-    const query = `UPDATE caja c SET c.estado='CERRADO', c.control_pendiente=1 WHERE c.idcaja=${idcaja}`
-    
-    //console.log(query)
-    connection.query(query,(err,resp)=>{
-        callback(resp)
-    })
-    connection.query(insertEvento("CIERRE CAJA",0,0,idcaja,"CAJA"))
-    connection.end();
-}
+  doQuery(query, (resp) => {
+    callback(resp.data);
+  });
+  doQuery(insertEvento("CIERRE CAJA", 0, 0, idcaja, "CAJA"));
+};
 
-const do_agregarCaja = (data, callback) =>{
-    const connection = mysql_connection.getConnection();
+const do_agregarCaja = (data, callback) => {
+ 
+  const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) 
+  values 
+  (
+  ${escapeHelper(data.sucursal_idsucursal)},
+  ${escapeHelper(data.monto_inicial)},
+  '${"ABIERTA"}', 
+  date(${escapeHelper(data.fecha)}))`;
 
-    connection.connect();
-    //console.log(connection.escape(data.fecha))
-    const sql = `insert into caja (sucursal_idsucursal,monto_inicial,estado, fecha) values (${connection.escape(data.sucursal_idsucursal)},${connection.escape(data.monto_inicial)},'${"ABIERTA"}', date(${connection.escape(data.fecha)}))`
-    //console.log(sql)
-    connection.query(sql,(err,result,fields)=>{
-        const _id = result.insertId
+  doQuery(sql, (resp) => {
+    const result = resp.data;
+    const _id = result.insertId;
+    doQuery(
+      insertEvento(
+        "ABRIR CAJA",
+        data.usuario_idusuario,
+        data.sucursal_idsucursal,
+        _id,
+        "CAJA",
+      ),
+    );
 
-        connection.query(insertEvento("ABRIR CAJA",data.usuario_idusuario,data.sucursal_idsucursal,_id,"CAJA"))
+    return callback(_id);
+  });
+};
 
-        connection.end();
+const agregarCaja = (data, callback) => {
+  UsuarioDB.validar_usuario_be(
+    {
+      tk: data.tk,
+      permisos: "venta",
+    },
+    () => {
+      do_agregarCaja(data, callback);
+    },
+    () => {},
+  );
+};
 
-        return callback(_id);
-    })
-}
+const obtener_caja = (idsucursal, callback) => {
 
-const agregarCaja = (data,callback) =>
-{
-    UsuarioDB.validar_usuario_be(
-        {
-            tk: data.tk,
-            permisos: "venta"
-        },
-        ()=>{do_agregarCaja(data,callback)},
-        ()=>{}
-    )
-    
-}
+  const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} AND c.estado='ABIERTA';`;
+  doQuery(sql, (resp) => {
+    const rows = resp.data;
+    if (rows == null) {
+      callback({ message: "error, no se encontro", status: "error" });
+    } else {
+      if (rows.length > 0) {
+        callback({ ...rows[0], status: "OK" });
+      } else {
+        callback({ message: "error, no se encontro", status: "error" });
+      }
+    }
+  });
 
-const obtener_caja = (idsucursal, callback) =>{
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    const sql = `SELECT c.*, date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.sucursal_idsucursal=${idsucursal} AND c.estado='ABIERTA';`;
-    connection.query(sql,(err,rows)=>{
-        
-        if(rows==null)
-        {
-            callback({message:'error, no se encontro', status: 'error'})
-        }
-        else{
-            if(rows.length>0)
-            {
-                callback({...rows[0],status:'OK'})
-            }
-            else{
-                callback({message:'error, no se encontro', status: 'error'})
-            }
-        }
-        
-        
-    })
-    connection.end();
-}
+};
 
 const obtener_caja_id = (idcaja, callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    const sql = `SELECT c.*,  date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.idcaja=${idcaja};`;
-    connection.query(sql,(err,rows)=>{
-        
-        callback(rows)
-        
-    })
-    connection.end();
-}
+  const sql = `SELECT c.*,  date_format(c.fecha, '%d-%m-%Y') as 'fecha_f' FROM caja c WHERE c.idcaja=${idcaja};`;
+  doQuery(sql, (resp) => {
+    callback(resp.data);
+  });
+};
 
-const obtener_cajas_fecha = ( fecha, callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    const sql = `
+const obtener_cajas_fecha = (fecha, callback) => {
+  const sql = `
     SELECT 
     c.*, 
     date_format(c.fecha, '%d-%m-%Y') as 'fecha_f', 
@@ -155,7 +140,7 @@ const obtener_cajas_fecha = ( fecha, callback) => {
             cmp.cobro_idcobro = cb.idcobro AND 
             cb.caja_idcaja IN 
             (
-                SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)})
+                SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${escapeHelper(fecha)})
             ) AND 
             cmp.modo_pago='efectivo'
         GROUP BY cb.caja_idcaja
@@ -167,40 +152,35 @@ const obtener_cajas_fecha = ( fecha, callback) => {
             FROM gasto g 
             WHERE 
                 g.anulado=0 AND 
-                g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)}))
+                g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${escapeHelper(fecha)}))
             GROUP BY g.caja_idcaja
             ) _o GROUP BY _o.caja_idcaja 
     ) sdo
     where 
     sdo.caja_idcaja = c.idcaja AND
     s.idsucursal = c.sucursal_idsucursal AND 
-    DATE(c.fecha)=DATE(${connection.escape(fecha)});`;
-    console.log(sql);
-    connection.query(sql,(err,rows)=>{
-        if(rows==null)
-        {
-            callback({message:'error, no se encontro', status: 'error'})
-        }
-        else{
-            if(rows.length>0)
-            {
-                callback(rows)
-            }
-            else{
-                callback({message:'error, no se encontro', status: 'error'})
-                console.log("no hay rows");
-            }
-        }
-    })
-    connection.end();
-}
-const obtener_cajas_fecha_b = ( fecha, callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    const sql = `
+    DATE(c.fecha)=DATE(${escapeHelper(fecha)});`;
+  console.log(sql);
+  doQuery(sql, (resp) => {
+    const rows = resp.data || null;
+    if (rows == null) {
+      callback({ message: "error, no se encontro", status: "error" });
+    } else {
+      if (rows.length > 0) {
+        callback(rows);
+      } else {
+        callback({ message: "error, no se encontro", status: "error" });
+        console.log("no hay rows");
+      }
+    }
+  });
+};
+const obtener_cajas_fecha_b = (fecha, callback) => {
+  
+  const sql = `
     SELECT
     q1.*,
-    date_format(DATE(${connection.escape(fecha)}), '%d-%m-%Y') as 'fecha_f',
+    date_format(DATE(${escapeHelper(fecha)}), '%d-%m-%Y') as 'fecha_f',
     if(sdo.caja_idcaja IS NULL, 0 , sdo.total) as 'saldo'
     FROM
     (
@@ -210,7 +190,7 @@ const obtener_cajas_fecha_b = ( fecha, callback) => {
 	    s.nombre as 'sucursal'
 	    FROM  
 	    sucursal s
-	    LEFT JOIN caja c ON s.idsucursal = c.sucursal_idsucursal AND DATE(c.fecha)=DATE(${connection.escape(fecha)})
+	    LEFT JOIN caja c ON s.idsucursal = c.sucursal_idsucursal AND DATE(c.fecha)=DATE(${escapeHelper(fecha)})
     )q1
     LEFT JOIN 
     (
@@ -231,7 +211,7 @@ const obtener_cajas_fecha_b = ( fecha, callback) => {
             cmp.cobro_idcobro = cb.idcobro AND
             cb.caja_idcaja IN
             (
-                SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)})
+                SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${escapeHelper(fecha)})
             ) AND
             cmp.modo_pago='efectivo'
         GROUP BY cb.caja_idcaja
@@ -243,36 +223,29 @@ const obtener_cajas_fecha_b = ( fecha, callback) => {
             FROM gasto g
             WHERE
                 g.anulado=0 AND
-                g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${connection.escape(fecha)}))
+                g.caja_idcaja IN (SELECT _c.idcaja FROM caja _c WHERE DATE(_c.fecha)=DATE(${escapeHelper(fecha)}))
             GROUP BY g.caja_idcaja
             ) _o GROUP BY _o.caja_idcaja
     ) sdo ON sdo.caja_idcaja = q1.idcaja
 	 ;`;
-    console.log(sql);
-    connection.query(sql,(err,rows)=>{
-        if(rows==null)
-        {
-            callback({message:'error, no se encontro', status: 'error'})
-        }
-        else{
-            if(rows.length>0)
-            {
-                callback(rows)
-            }
-            else{
-                callback({message:'error, no se encontro', status: 'error'})
-                console.log("no hay rows");
-            }
-        }
-    })
-    connection.end();
-}
+  console.log(sql);
+  doQuery(sql, (resp) => {
+    const rows = resp.data ||  null;
+    if (rows == null) {
+      callback({ message: "error, no se encontro", status: "error" });
+    } else {
+      if (rows.length > 0) {
+        callback(rows);
+      } else {
+        callback({ message: "error, no se encontro", status: "error" });
+        console.log("no hay rows");
+      }
+    }
+  });
+};
 
-const informe_caja = (idcaja, callback) =>{
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-
-    const query_coexp_version = `SELECT 
+const informe_caja = (idcaja, callback) => {
+  const query_coexp_version = `SELECT 
     ops.monto,
     ops.operacion,
     ops.cliente,
@@ -364,9 +337,9 @@ const informe_caja = (idcaja, callback) =>{
 			chmp.modo_pago <> 'efectivo' AND 
             c.tipo='cuota' AND
             c.anulado = 0
-    ) AS ops;`
+    ) AS ops;`;
 
-    const sql = `SELECT 
+  const sql = `SELECT 
     ops.monto,
     ops.operacion,
     ops.cliente,
@@ -461,35 +434,26 @@ const informe_caja = (idcaja, callback) =>{
             c.tipo='cuota' AND
             c.anulado = 0
     ) AS ops;`;
-    //v.caja_idcaja=${idcaja}
-    const uquery =  idf_optica == 3 ? query_coexp_version : sql;
 
-    //console.log(uquery)
+  const uquery = idf_optica == 3 ? query_coexp_version : sql;
 
-    connection.query(uquery,(err,rows)=>{
-        
-        callback(rows)
-        
-    })
-    connection.end();
-}
+  doQuery(uquery, (resp) => {
+    callback(resp.data);
+  });
+};
 
 const resumen_caja = (data, callback) => {
 
-    const connection = mysql_connection.getConnection()
+  doQuery(obtenerCajaAbierta(data.idsucursal), (resp) => {
+    if (!resp) {
+      return;
+    }
 
-    connection.connect()
+    const _rows = resp.data;
 
-    connection.query(obtenerCajaAbierta(data.idsucursal),(err,_rows)=>{
-        if(err)
-        {
-            connection.end()
-            return
-        }
+    const idcaja = _rows[0]?.idcaja;
 
-        const idcaja = _rows[0]?.idcaja
-
-        const query_coexp_version = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
+    const query_coexp_version = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
                                         cobro_has_modo_pago cmp 
                                         INNER JOIN ( SELECT c.* from cobro c WHERE c.caja_idcaja=${idcaja} and c.anulado=0 ) c1 
                                         ON c1.idcobro=cmp.cobro_idcobro 
@@ -500,7 +464,7 @@ const resumen_caja = (data, callback) => {
                                         g.anulado=0 and 
                                         g.caja_idcaja = ${idcaja}`;
 
-        const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
+    const query = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
                         cobro_has_modo_pago cmp 
                         INNER JOIN ( SELECT c.* from cobro c WHERE c.caja_idcaja=${idcaja} and c.anulado=0 ) c1 
                     ON c1.idcobro=cmp.cobro_idcobro 
@@ -511,41 +475,28 @@ const resumen_caja = (data, callback) => {
                    
                     g.anulado=0 and 
                     g.caja_idcaja = ${idcaja}
-                    ;`
-        const uquery =  idf_optica == 3 ? query_coexp_version : query;
+                    ;`;
+    const uquery = idf_optica == 3 ? query_coexp_version : query;
 
-        connection.query(uquery,(err,response)=>{
-            callback(response)
-        })
-        connection.end()
+    doQuery(uquery, (resp) => {
+      callback(resp.data);
+    });
+  });
+};
 
-    })
-
-    
-
-    
-}
-
-const obtener_caja_nro = (data,callback) => {
-    const query = `SELECT  * FROM caja c WHERE c.nro=${data.nro} AND c.sucursal_idsucursal=${data.nro} AND c.estado='${data.nro}';`;
-    const connection = mysql_connection.getConnection();
-
-    connection.connect();
-
-    connection.query(query,(err,response)=>{
-        if(err)
-        {
-            return callback({err:1})
-        }
-
-        return callback(response)
-    })
-
-    connection.end();
-}
+const obtener_caja_nro = (data, callback) => {
+  const query = `SELECT  * FROM caja c WHERE c.nro=${data.nro} AND c.sucursal_idsucursal=${data.nro} AND c.estado='${data.nro}';`;
+  
+  doQuery(query, (resp) => {
+    if (!resp) {
+      return callback({ err: 1 });
+    }
+    return callback(resp.data);
+  });
+};
 
 const obtener_caja_gasto = (data, callback) => {
-    const query = `SELECT 
+  const query = `SELECT 
                         c.idcaja
                     FROM   
                         sucursal s, 
@@ -555,61 +506,48 @@ const obtener_caja_gasto = (data, callback) => {
                         s.idsucursal = c.sucursal_idsucursal AND 
                         c.estado='ABIERTA' AND 
                         (case when s.usar_fondo_fijo=1 then c.nro=2 else c.nro=1 end ) ;`;
-    
-    const connection = mysql_connection.getConnection();
-    
-    connection.connect();
-    
-    connection.query(query,(err,response)=>{
-        //console.log(JSON.stringify(response))
 
-        if(err)
-        {
-            return callback({err:1});
-        }
-        if(response.length<1)
-        {
-            return callback({err:1});
-        }
-        return callback(response[0].idcaja);
-    });
 
-    connection.end();
+  doQuery(query, (resp) => {
+   
+    const response = resp.data;
+    if (!resp) {
+      return callback({ err: 1 });
+    }
+    if (response.length < 1) {
+      return callback({ err: 1 });
+    }
+    return callback(response[0].idcaja);
+  });
 
-}
+};
 
-const cambiar_estado_caja = ({idcaja, estado}, callback) => {
-    const query = `UPDATE caja SET estado='${estado}', control_pendiente=if('${estado}'='CERRADO',1,0) WHERE idcaja=${idcaja};`;
-    //console.log(query);
-    const connection = mysql_connection.getConnection();
+const cambiar_estado_caja = ({ idcaja, estado }, callback) => {
+  const query = `UPDATE caja SET estado='${estado}', control_pendiente=if('${estado}'='CERRADO',1,0) WHERE idcaja=${idcaja};`;
 
-    connection.connect();
+  doQuery(query, (resp) => {
+    if (!resp) {
+      return callback({ err: 1 });
+    }
 
-    connection.query(query,(err,response)=>{
-        if(err)
-        {
-            return callback({err:1});
-        }
+    return callback(resp.data);
+  });
 
-        return callback(response);
-    });
-
-    connection.end();
-}
+};
 
 module.exports = {
-    obtener_caja_nro,
-    agregarCaja,
-    obtener_caja,
-    cerrarCaja,
-    informe_caja,
-    obtener_lista_cajas_sucursal,
-    obtener_caja_id,
-    caja_abierta,
-    caja_exists,
-    resumen_caja,
-    obtener_caja_gasto,
-    obtener_cajas_fecha,
-    cambiar_estado_caja,
-    obtener_cajas_fecha_b,
-}
+  obtener_caja_nro,
+  agregarCaja,
+  obtener_caja,
+  cerrarCaja,
+  informe_caja,
+  obtener_lista_cajas_sucursal,
+  obtener_caja_id,
+  caja_abierta,
+  caja_exists,
+  resumen_caja,
+  obtener_caja_gasto,
+  obtener_cajas_fecha,
+  cambiar_estado_caja,
+  obtener_cajas_fecha_b,
+};

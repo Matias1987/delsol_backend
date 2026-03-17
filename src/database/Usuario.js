@@ -82,8 +82,9 @@ const create_session = (data, callback) => {
 
 const checkIfUserLoggedIn = (token, callback) => {
   let q = `select * from usuario u where u.token = ${escapeHelper(token)};`;
- 
+  //console.log(q)
   doQuery(q, (response) => {
+    //console.log(JSON.stringify(response));
     if (!response || response.err) {
       return callback({ logged: 0 });
     }

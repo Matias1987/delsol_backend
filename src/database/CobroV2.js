@@ -352,8 +352,8 @@ const lista_cobros = (data, callback) => {
     (case when '' <> '${_anulado}' then '${_anulado}' = c.anulado else true end)  and 
     (case when '' <> '${_fecha}' then date('${_fecha=='' ? `1970-01-01` : _fecha}') = date(c.fecha) ELSE TRUE end) 
     order by c.idcobro desc
-    limit 500;`
-    //console.log(_q)
+    limit 1000;`
+    //console.log(_q);
     doQuery2(
         _q,
         (err,results)=>{

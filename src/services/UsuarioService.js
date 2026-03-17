@@ -21,6 +21,7 @@ const create_session = (data, callback) => {
 }
 
 const checkIfUserLoggedIn = (token, callback)=>{
+  
   UsuarioDB.checkIfUserLoggedIn(token,(res)=>{
     callback(res)
   })

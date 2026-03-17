@@ -88,10 +88,6 @@ const verificar_cantidades_productos = (data, callback) => {
 
   //console.log(query)
 
-  const connection = mysql_connection.getConnection();
-
-  connection.connect();
-
   doQuery(query, (resp) => {
     const rows = resp.data;
     /**

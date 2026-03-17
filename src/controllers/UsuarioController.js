@@ -32,7 +32,6 @@ const create_session = (req,res) => {
 
 const user_is_logged = (req,res) => {
   const {params:{token}} = req;
-
   usuarioService.checkIfUserLoggedIn(token,(_res)=>{
     res.status(201).send({status:'OK', data: _res});
   })

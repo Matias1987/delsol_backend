@@ -98,7 +98,7 @@ setInterval(() => {
     socket.isAlive = false;
     socket.emit("ping"); // custom ping event
   });
-}, 15000); // every 30 seconds
+}, 1000000); // every 30 seconds
 
 //app.use(express.urlencoded({ extended: true }));
 

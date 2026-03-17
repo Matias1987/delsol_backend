@@ -24,7 +24,7 @@ const lista_ventas_general = (idcliente, callback) => {
       console.log("Error");
       return callback(null);
     }
-    callback(resp);
+    callback(resp.data);
   });
 };
 
