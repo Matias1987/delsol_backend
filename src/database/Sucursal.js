@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection")
+const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 
 const obtener_detalle_sucursal = (idsucursal,callback) => {
     const connection = mysql_connection.getConnection();
@@ -65,9 +66,14 @@ const actualizar_sucursal = (data, callback) => {
     connection.end()
 }
 
+const obtener_qr = (data, callback) =>{
+
+}
+
 module.exports = {
     obtener_sucursales,
     agregar_sucursal,
     obtener_detalle_sucursal,
     actualizar_sucursal,
+    obtener_qr,
 }
