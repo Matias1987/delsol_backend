@@ -340,6 +340,9 @@ app.use("/api/v1/cuentas_bancarias", cuentaBancariaRoutes);
 const stockCristalesRouter = require("./v1/routes/StockCristalesRoutes");
 app.use("/api/v1/sc", stockCristalesRouter);
 
+const accessRequestRouter = require("./v1/routes/AccessRequestRoutes");
+app.use("/api/v1/aarr", accessRequestRouter);
+
 /*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)

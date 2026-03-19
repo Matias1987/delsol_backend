@@ -14,7 +14,7 @@ const caja_exists = (data, callback) => {
 
 const caja_abierta = (idsucursal, callback) => {
   const query = `SELECT c.idcaja AND if(date(c.fecha) = DATE(NOW()),1,0) AS 'actual' FROM caja c WHERE c.estado='ABIERTA' AND c.sucursal_idsucursal=${idsucursal};`;
-  console.log(query);
+  
   doQuery(query, (resp) => {
     const rows = resp.data;
     if (rows != null) {

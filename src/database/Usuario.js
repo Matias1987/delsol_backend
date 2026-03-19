@@ -110,6 +110,13 @@ const setToken = (data, callback) => {
     return callback(response.data);
   });
 };
+const setToken2 = ({token, id_usuario}, callback) => {
+ 
+  let q = `UPDATE usuario u SET u.logged = '1', u.token = ${escapeHelper(token)} WHERE u.idusuario=${id_usuario}`;
+  doQuery(q, (response) => {
+    return callback(response.data);
+  });
+};
 
 const logout = (token, callback) => {
   let q = `update usuario u set u.logged = '0' where u.token = ${escapeHelper(token)}`;
@@ -414,4 +421,5 @@ module.exports = {
   modificar_permisos,
   get_user_credentials,
   validar_usuario_login_b,
+  setToken2,
 };
