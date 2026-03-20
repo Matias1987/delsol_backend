@@ -26,18 +26,18 @@ const obtener_codigos_cristales = (callback) => {
 };
 
 const check_stock_cristales = (
-  { fksucursal, elementsArr, arrayQtties },
+  { fksucursal, elementsArr, arrayQtties, skipValidation },
   callback,
 ) => {
-  console.log("Checking stock for cristales with data:");
+  console.log("Validacion tipo 2: Checking stock for cristales with data:");
 
   console.log("elementsArr");
   console.log(elementsArr);
   console.log("arrayQtties");
   console.log(arrayQtties);
 
-  if(elementsArr.length<1 || arrayQtties.length<1){
-    console.log("No hay cristales para verificar. Saltando verificación de stock de cristales.");
+  if(elementsArr.length<1 || arrayQtties.length<1 || skipValidation){
+    console.log("No hay cristales para verificar. Saltando verificación de stock de cristales. " + (skipValidation ? " Validacion desactivada tipo 2": ""));
     return callback?.({ok:1, message: "No hay cristales para verificar"});
   }
 

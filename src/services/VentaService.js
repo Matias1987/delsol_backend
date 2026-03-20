@@ -184,6 +184,7 @@ const verificar_stock_venta = (data, callback) => {
           ...data,
           elementsArr: elementsArrCristales,
           arrayQtties: arrayQttiesCristales,
+          skipValidation: !validarCristalesModo2
         },
         (resp) => {
           if (resp.ok == 0) {

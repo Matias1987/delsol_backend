@@ -1,6 +1,38 @@
 const sucursalDB = require("../database/Sucursal");
 const requestDB = require("../database/AccessRequest")
-const userDB = require("../database/Usuario")
+const userDB = require("../database/Usuario");
+const { response } = require("express");
+const { getSubstring } = require("../lib/helpers");
+const ELENGTH = 6;
+function formatString(a, l) {
+  // Remove leading and trailing whitespace
+  let trimmed = a.toString().trim();
+
+  // Pad with zeros if shorter
+  let padded = trimmed.length < l ? trimmed.padStart(l, '0') : trimmed;
+
+  // Trim down if longer
+  return padded.length > l ? padded.slice(0, l) : padded;
+}
+
+const get_qr_code = (id_usuario, id_sucursal, ip) => formatString(id_sucursal, ELENGTH) + formatString(id_usuario, ELENGTH) + ip; 
+
+const get_values = (qr_code) =>{
+    //example 000000000006000000000010::1
+    console.log("--------------")
+    console.log(btoa(qr_code));
+    console.log(qr_code);
+    const id_sucursal = getSubstring(qr_code,0,ELENGTH);
+    const id_usuario = getSubstring(qr_code,ELENGTH,ELENGTH);
+    const ip = getSubstring(qr_code, ELENGTH*2, qr_code.length - ELENGTH*2);
+
+    const resp = {id_sucursal: parseInt(id_sucursal), id_usuario: parseInt(id_usuario), ip};
+    
+    console.log("Recovered data:" + JSON.stringify(resp));
+
+    return resp;
+
+}
 
 const validate_request = ({token, phone_number, id_sucursal, id_usuario}, callback) => {
     
@@ -40,9 +72,16 @@ const validate_request = ({token, phone_number, id_sucursal, id_usuario}, callba
 
 }
 
-const check_request_status = ({qr_data}, callback) => {
-    const token = (qr_data.split("_"))[2];
-    requestDB.get_request_status({token}, (response) => {
+const check_request_status = ({id_sucursal, id_usuario, ip}, callback) => {
+    const test = get_qr_code(id_usuario, id_sucursal, ip); 
+    console.log(test)
+
+    get_values(test);
+   // const ucode = atob(qr_data);
+   // const token = (ucode.split("_"))[2];
+    console.log(`Checking status for: ` + JSON.stringify({id_sucursal, id_usuario, ip}));
+
+    requestDB.get_request_by_unique_key({id_sucursal,id_usuario,ip}, (response) => {
         if(!response || response?.length<1)
         {
             return callback({error:"request not found"});
@@ -62,13 +101,32 @@ const check_request_status = ({qr_data}, callback) => {
     })
 }
 
-const generate_new_request = ({id_sucursal, id_usuario}, callback) => {
+const generate_new_request = ({id_sucursal, id_usuario, ip}, callback) => {
+    
     const token = "1234";
-    requestDB.add_new_request({id_sucursal, id_usuario, token}, (response)=>{
-        return callback({
-            qr_data: `${id_sucursal}_${id_usuario}_${token}`
-        })
+    //does request already exists? 
+    requestDB.get_request_by_unique_key({id_sucursal,id_usuario,ip}, (response0)=>{
+        if(response0 && response0?.length>0){//request already exists...
+            console.log(`The request from: id_sucursal:${id_sucursal} , id_usuario:${id_usuario}, ip:${ip} already exists.`)
+            if(response0[0].status=='pending')
+            {
+                console.log("The request exists and is pending...")
+                return callback({
+                    qr_data: btoa(`${get_qr_code(id_usuario, id_sucursal, ip)}`)
+                    })
+            }
+            console.log("The request exists and is approved...");
+            return callback({exists:1, status:"OK", token:response0[0].token })
+        }
+        else{
+            requestDB.add_new_request({id_sucursal, id_usuario, ip, token}, (response)=>{
+                return callback({
+                    qr_data: btoa(`${get_qr_code(id_usuario, id_sucursal, ip)}`)
+                })
+            })
+        }
     })
+    
 }
 
 module.exports = {validate_request, generate_new_request, check_request_status}

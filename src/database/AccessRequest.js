@@ -1,3 +1,4 @@
+const { getFormattedDateLocal } = require("../lib/helpers");
 const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 
 const get_pending_request = (token, callback) => {
@@ -9,14 +10,19 @@ const get_pending_request = (token, callback) => {
 
 const get_request_status = ({ token }, callback) => {
   const query = `select ar.status from access_request ar where ar.token = ${escapeHelper(token)}; `;
-  console.log(query);
+  //console.log(query);
   doQuery(query, (response) => {
     callback?.(response.data);
   });
 };
 
-const add_new_request = ({ id_sucursal, id_usuario, token }, callback) => {
-  const query = `INSERT INTO access_request (id_sucursal, id_usuario, token) VALUES (${id_sucursal}, ${id_usuario}, '${token}');`;
+const add_new_request = ({ id_sucursal, id_usuario, token, ip }, callback) => {
+  const today =  getFormattedDateLocal();
+
+  //console.log(JSON.stringify({id_sucursal, id_usuario, ip}))
+  const query = `INSERT ignore INTO access_request (id_sucursal, id_usuario, token, ip, date) 
+  VALUES (${id_sucursal}, ${id_usuario}, '${token}', ${escapeHelper(ip)}, '${today}');`;
+  //console.log(query)
   doQuery(query, (response) => {
     callback?.(response.data);
   });
@@ -31,9 +37,24 @@ const set_request_as_accepted = ({token}, callback) => {
 
 }
 
+const get_request_by_unique_key = ({id_sucursal, id_usuario, ip}, callback) => {
+  const today =  getFormattedDateLocal();
+  const query = `select * from access_request r where 
+  r.date='${today}' and
+  r.id_sucursal=${escapeHelper(id_sucursal)} and 
+  r.id_usuario=${escapeHelper(id_usuario)} and 
+  r.ip=${escapeHelper(ip)} `;
+  //console.log(query);
+  doQuery(query,(response)=>{
+    
+    callback?.(response.data)
+  })
+}
+
 module.exports = { 
     get_pending_request, 
     get_request_status, 
     add_new_request,
-    set_request_as_accepted
+    set_request_as_accepted,
+    get_request_by_unique_key,
 };

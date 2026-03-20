@@ -1,8 +1,8 @@
 const mysql_connection = require("../lib/mysql_connection");
 const { doQuery } = require("./helpers/queriesHelper");
 
-const verificar_cantidades_productos = (data, callback) => {
-  const { ignore_cristales } = data;
+const verificar_cantidades_productos = ({data, ignore_cristales }, callback) => {
+  console.log(JSON.stringify(data));
   const doPush = (idx, obj, _arr) =>
     !obj.hasOwnProperty(idx)
       ? _arr
@@ -16,6 +16,7 @@ const verificar_cantidades_productos = (data, callback) => {
   var arr = [];
   switch (+data.tipo) {
     case 1: //DIRECTA
+    console.log("venta directa... adding")
       productos.forEach((p) => {
         arr.push(p);
       });
@@ -71,22 +72,33 @@ const verificar_cantidades_productos = (data, callback) => {
       });
     }
   });
-
-  //console.log(JSON.stringify(arr))
-
+  console.log("###################VALIDAR CANTIDAD################")
+  console.log(JSON.stringify(productos))
+  console.log(JSON.stringify(arr))
+  console.log("###########################################")
   var ids = "";
 
   codigos.forEach((c) => {
     ids += (ids.length > 0 ? "," : "") + `${c.idcodigo}`;
   });
 
-  var query = `SELECT s.codigo_idcodigo AS 'idcodigo', s.cantidad, c.codigo FROM stock s, codigo c WHERE c.idcodigo = s.codigo_idcodigo and s.sucursal_idsucursal = ${data.idsucursal} AND s.codigo_idcodigo IN (${ids})`;
+  var query = `SELECT 
+  s.codigo_idcodigo AS 'idcodigo', 
+  s.cantidad, 
+  c.codigo 
+  FROM 
+  stock s, 
+  codigo c 
+  WHERE 
+  c.idcodigo = s.codigo_idcodigo and 
+  s.sucursal_idsucursal = ${data.fksucursal} AND 
+  s.codigo_idcodigo IN (${ids})`;
 
   if (ids.length < 1) {
     query = `select true; `;
   }
 
-  //console.log(query)
+  console.log(query);
 
   doQuery(query, (resp) => {
     const rows = resp.data;
@@ -97,7 +109,9 @@ const verificar_cantidades_productos = (data, callback) => {
 
     var c = null;
 
-    if (typeof rows !== "undefined") {
+    console.log(JSON.stringify(rows));
+
+    if (rows) {
       rows.forEach((r) => {
         for (let i = 0; i < codigos.length; i++) {
           if (codigos[i].idcodigo == r.idcodigo) {
@@ -106,7 +120,8 @@ const verificar_cantidades_productos = (data, callback) => {
           }
         }
       });
-
+      console.log("--->checking quantities.......");
+      console.log(JSON.stringify(codigos));
       for (let i = 0; i < codigos.length; i++) {
         if (codigos[i].cantidad > codigos[i].cantidad_serv) {
           c = codigos[i];
@@ -115,7 +130,7 @@ const verificar_cantidades_productos = (data, callback) => {
         }
       }
     }
-
+    console.log(JSON.stringify({ error: error, ref: c }))
     callback({ error: error, ref: c });
   });
 
