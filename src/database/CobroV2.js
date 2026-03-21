@@ -123,7 +123,7 @@ const do_agregar_cobro_v2 = (data , callback) => {
                     get_mp_obj({
                         monto:data.mp.mutual_monto,
                         tipo: 'mutual',
-                        fkmutual: null
+                        fkmutual: data.mp.fk_mutual
                     }),
                     "mutual_monto"
                     )

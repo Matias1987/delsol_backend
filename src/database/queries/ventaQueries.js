@@ -193,7 +193,7 @@ const get_mp = (data, idventa) => {
 				venta_idventa:idventa,
 				modo_pago_idmodo_pago:'5',
 				banco_idbanco:null,
-				mutual_idmutual:null,
+				mutual_idmutual:data.mp.fk_mutual,
 				monto:data.mp.mutual_monto,
 				monto_int:0,
 				cant_cuotas:0,
