@@ -61,9 +61,33 @@ const getUpdatedValues = (data, callback) => {
 };
 
 const obtenerConsumoSubgrupoMes = (
-  { idsucursal, idsubgrupo, mes, anio },
+  { idsucursal, idsubgrupo, mes, anio, desde, hasta },
   callback
 ) => {
+/* 
+`SELECT 
+c.subgrupo_idsubgrupo, 
+c.idcodigo, 
+c.codigo, 
+c.stock_ideal,
+c.stock_critico,
+if(con.fk_codigo IS NULL, 0 , con.qtty) AS 'cantidad',
+CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '') AS DECIMAL(10,2)) AS 'esf_dec' ,
+CAST(REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '') AS DECIMAL(10,2)) AS 'cil_dec' ,
+REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '')  AS 'esf',  
+REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil'
+FROM 
+codigo c LEFT JOIN 
+(
+  SELECT sa.fk_codigo, SUM(1) AS 'qtty' 
+  FROM sobre_adicionales sa 
+  WHERE 
+  MONTH(sa.fecha_alta)=${mes} AND YEAR(sa.fecha_alta)=${anio} 
+  GROUP BY sa.fk_codigo
+) con
+ON con.fk_codigo = c.idcodigo
+WHERE c.subgrupo_idsubgrupo = ${idsubgrupo};`
+*/
 const query = `SELECT 
 c.subgrupo_idsubgrupo, 
 c.idcodigo, 
@@ -77,11 +101,17 @@ REPLACE(  REGEXP_SUBSTR(c.codigo, 'ESF[\+\-\.0-9]+'), 'ESF', '')  AS 'esf',
 REPLACE(  REGEXP_SUBSTR(c.codigo, 'CIL[\+\-\.0-9]+'), 'CIL', '')  AS 'cil'
 FROM 
 codigo c LEFT JOIN 
-(SELECT sa.fk_codigo, SUM(1) AS 'qtty' 
-FROM sobre_adicionales sa 
-WHERE MONTH(sa.fecha_alta)=${mes} AND YEAR(sa.fecha_alta)=${anio} GROUP BY sa.fk_codigo) con
+(
+  SELECT sa.fk_codigo, SUM(1) AS 'qtty' 
+  FROM sobre_adicionales sa 
+  WHERE 
+  sa.fecha_alta >= date('${desde}-1') and sa.fecha_alta<= date_add( date_add( date('${hasta}-1'), interval 1 month ), interval -1 day)
+  GROUP BY sa.fk_codigo
+) con
 ON con.fk_codigo = c.idcodigo
 WHERE c.subgrupo_idsubgrupo = ${idsubgrupo};`;
+
+console.log(query);
 /*
   const query = `SELECT 
 c.subgrupo_idsubgrupo, 
@@ -102,7 +132,7 @@ WHERE DATE(sa.fecha_alta) > DATE( DATE_ADD(NOW(), INTERVAL -60 DAY) ) GROUP BY s
 ON con.fk_codigo = c.idcodigo
 WHERE c.subgrupo_idsubgrupo = ${idsubgrupo};`;
 
-console.log(query);*/
+*/
 
   doQuery(query, (resp) => {
     
