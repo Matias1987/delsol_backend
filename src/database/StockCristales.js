@@ -59,7 +59,7 @@ const obtener_grilla = ({ fkCodigo, fkSucursal }, callback) => {
 };
 
 const obtener_codigos_cristales = (callback) => {
-  const query = `SELECT * FROM codigo c WHERE c.subgrupo_idsubgrupo=67689;`;
+  const query = `SELECT * FROM codigo c WHERE c.subgrupo_idsubgrupo=677231;`;
   doQuery(query, (response) => {
     callback?.(response.data);
   });
