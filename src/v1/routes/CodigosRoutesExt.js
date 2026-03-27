@@ -15,4 +15,9 @@ router.post("/modificar/cant/critica/",(req, res)=>{
   codigoController.modificar_cant_critica(req,res)
 })
 
+router.post("/lp/",(req,res)=>{
+  codigoController.obtener_lp_codigos(req,res)
+})
+
+
 module.exports = router;

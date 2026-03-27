@@ -463,6 +463,29 @@ const agregar_codigos = (data, callback) => {
   });
 };
 
+const obtener_lp_codigos = ({idSubfamilia, idFamilia, idSubgrupo, idGrupo}, callback) => {
+  const query = `SELECT 
+                c.idcodigo,
+                UPPER( c.codigo ) AS 'codigo',  
+                if(LENGTH(TRIM(c.descripcion)) <1 || c.descripcion IS NULL , '*Sin Descripcion*',  UPPER( c.descripcion ) ) AS 'descripcion' ,
+                c.precio
+                FROM 
+                codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
+                c.subgrupo_idsubgrupo=sg.idsubgrupo AND 
+                sg.grupo_idgrupo = g.idgrupo AND 
+                g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+                (case when '${idSubgrupo}'<>'-1' then sg.idsubgrupo = '${idSubgrupo}' ELSE TRUE END) AND 
+                (case when '${idGrupo}'<>'-1' then g.idgrupo = '${idGrupo}' ELSE TRUE END ) AND 
+                (case when '${idSubfamilia}'<>'-1' then sf.idsubfamilia = '${idSubfamilia}' ELSE TRUE END) AND 
+                (case when '${idFamilia}'<>'-1' then sf.familia_idfamilia = '${idFamilia}' ELSE TRUE END )	
+                ORDER BY c.descripcion ASC; `;
+    console.log(query);
+
+    doQuery(query,(response)=>{
+      callback(response.data);
+    })
+  }
+
 module.exports = {
   agregar_codigos,
   editar_cantidad_ideal,
@@ -478,4 +501,5 @@ module.exports = {
   editar_lote_codigos,
   cambiar_estado_activo,
   ejemplo_codigo,
+  obtener_lp_codigos,
 };

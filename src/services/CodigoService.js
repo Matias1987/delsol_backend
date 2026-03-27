@@ -106,6 +106,12 @@ const modificar_cant_critica = (data, callback) =>{
   })
 }
 
+const obtener_lp_codigos = (data,callback) => {
+  CodigoDB.obtener_lp_codigos(data,response=>{
+    return callback(response);
+  })
+}
+
 module.exports = {
   agregar_codigos,
   editar_cantidad_ideal,
@@ -124,4 +130,5 @@ module.exports = {
   ejemplo_codigo,
   modificar_precios_indv_categoria,
   modificar_cant_critica,
+  obtener_lp_codigos,
 };

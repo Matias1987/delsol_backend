@@ -168,6 +168,13 @@ const modificar_cant_critica = (req, res) =>{
   })
 }
 
+const obtener_lp_codigos = (req, res) => {
+  const {body} = req;
+  codigoService.obtener_lp_codigos(body,(response)=>{
+    res.status(201).send({status:"OK", data: response});
+  })
+}
+
 module.exports = {
     editar_cantidad_ideal,
     editar_lote_codigos,
@@ -186,4 +193,5 @@ module.exports = {
     agregarCodigos,
     modificar_precios_indv_categoria,
     modificar_cant_critica,
+    obtener_lp_codigos,
   };
