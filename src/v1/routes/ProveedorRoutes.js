@@ -31,6 +31,10 @@ router.post("/pagos_atrasados_proveedores/", (req, res) => {
   proveedorController.pagos_atrasados_proveedores(req, res);
 });
 
+router.post("/monedas_existentes/",(req, res)=> {
+  proveedorController.monedas_existentes(req,res)
+})
+
 router.patch("/:proveedorId", (req, res) => {
   res.send("actualizar una proveedor");
 });

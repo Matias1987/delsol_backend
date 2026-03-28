@@ -42,6 +42,11 @@ const pagos_atrasados_proveedores = (data, callback) => {
     })
 }
 
+const monedas_existentes = (data, callback) => {
+    ProveedorDB.monedas_existentes(data,(resp)=>{
+        callback(resp)
+    })
+}
 
 module.exports = {
     pagos_atrasados_proveedores,
@@ -51,4 +56,5 @@ module.exports = {
     obtener_proveedores,
     agregar_proveedor,
     obtener_ficha_proveedor,
+    monedas_existentes,
 }

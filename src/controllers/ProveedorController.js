@@ -69,6 +69,12 @@ const pagos_atrasados_proveedores = (req, res) => {
     })
 }
 
+const monedas_existentes = (req,res) => {
+    proveedorService.monedas_existentes(null,(response)=>{
+        res.status(201).send({status:'OK',data:response})
+    })
+}
+
 module.exports = {
     agregar_cm_proveedor,
     agregar_pago_proveedor,
@@ -77,4 +83,5 @@ module.exports = {
     obtener_ficha_proveedor,
     detalle_proveedor,
     pagos_atrasados_proveedores,
+    monedas_existentes,
 }

@@ -46,6 +46,10 @@ function createEgresoV2(params, callback) {
       return callback(null);
     }
 
+    if(!modos || modos.length === 0) {
+      return callback(null,{ id: results.data.insertId, ...params });
+    }
+
     createEgresosModo(results.data.insertId, modos, (resp) => {
       if (!resp) {
         console.log("Failed to create egreso modos");

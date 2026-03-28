@@ -247,6 +247,16 @@ const pagos_atrasados_proveedores = (data, callback) => {
   });
 };
 
+
+const monedas_existentes =(data, callback) => {
+  const query = `select * from contabilidad_moneda;`
+
+  doQuery(query,(response)=>{
+    callback(response.data);
+  });
+
+}
+
 module.exports = {
   agregar_proveedor,
   obtener_proveedores,
@@ -255,4 +265,5 @@ module.exports = {
   agregar_pago_proveedor,
   agregar_cm_proveedor,
   pagos_atrasados_proveedores,
+  monedas_existentes,
 };
