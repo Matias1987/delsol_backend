@@ -3,6 +3,7 @@ const ventaDBExt = require("../database/VentaExt");
 const cobroService = require("./CobroService");
 const stockService = require("./StockService");
 const stockCristalesService = require("./StockCritalesService");
+const { validar_cristales_modo2 } = require("../lib/global");
 
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data, (rows) => {
@@ -107,7 +108,9 @@ const doAgregarVenta = (data, callback) => {
 };
 
 const verificar_stock_venta = (data, callback) => {
-  const { validarCristalesModo2 } = data;
+  //const { validarCristalesModo2 } = data;
+
+  const validarCristalesModo2 = validar_cristales_modo2;
 
   const addToArray = (parentObj, field, arr) =>
     parentObj[field] && parentObj[field]?.idcodigo>0 ? [...arr, parentObj[field]] : arr;
