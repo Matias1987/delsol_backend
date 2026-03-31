@@ -66,8 +66,7 @@ const obtener_factura_montos_adic = (req, res) => {
 
 const obtener_facturas_saldo = (req, res) => {
     const {body} = req;
-    const {idproveedor} = body;
-    facturaService.obtener_facturas_saldo(idproveedor, (resp) => {
+    facturaService.obtener_facturas_saldo(body, (resp) => {
         res.status(201).send({status:'OK', data:resp})
     })
 }

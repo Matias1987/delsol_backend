@@ -41,7 +41,7 @@ const obtener_proveedores = (callback) => {
   connection.end();
 };
 
-const obtener_ficha_proveedor = (data, callback) => {
+const obtener_ficha_proveedor = ({idproveedor, modo, moneda}, callback) => {
   const query = `SELECT 
                     op.*,
                     if(op.tipo='FACTURA' || op.tipo='CM', op.monto, 0) AS 'debe',
@@ -56,12 +56,13 @@ const obtener_ficha_proveedor = (data, callback) => {
                         f.fecha
                         FROM factura f 
                         WHERE 
-                            f.proveedor_idproveedor=${data.idproveedor} and 
+                            f.fk_moneda = '${moneda}' and
+                            f.proveedor_idproveedor=${idproveedor} and 
                             f.activo=1 and 
                             (case when '${
-                              data.modo
+                              modo
                             }'='-1' then true else f.es_remito=${
-    data.modo == 0 ? 1 : 0
+    modo == 0 ? 1 : 0
   } end)
                         UNION
                         (
@@ -73,12 +74,13 @@ const obtener_ficha_proveedor = (data, callback) => {
                             pp.fecha
                             FROM pago_proveedor pp 
                             WHERE 
-                                pp.fk_proveedor=${data.idproveedor} and 
+                                pp.moneda='${moneda}' and
+                                pp.fk_proveedor=${idproveedor} and 
                                 pp.activo=1 and 
                                 (case when '${
-                                  data.modo
+                                  modo
                                 }'='-1' then true else pp.modo_ficha=${
-    data.modo
+    modo
   } end)
                         )
                         UNION
@@ -92,12 +94,13 @@ const obtener_ficha_proveedor = (data, callback) => {
                             cm.fecha
                             FROM  carga_manual_proveedor cm 
                             WHERE 
-                                cm.fk_proveedor=${data.idproveedor} and 
+                                cm.moneda='${moneda}' and
+                                cm.fk_proveedor=${idproveedor} and 
                                 cm.activo=1 and 
                                 (case when '${
-                                  data.modo
+                                  modo
                                 }'='-1' then true else cm.modo_ficha=${
-    data.modo
+    modo
   } end)
                         )
                     ) op
@@ -131,11 +134,13 @@ const detalle_proveedor = (data, callback) => {
 const agregar_pago_proveedor = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
-  const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha, fecha) VALUES (${
-    data.monto
-  }, ${data.fk_proveedor}, ${data.modo}, '${parse_date_for_mysql(
-    data.fecha
-  )}')`;
+  const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha, fecha, moneda) VALUES (
+  ${data.monto}, 
+  ${data.fk_proveedor}, 
+  ${data.modo}, 
+  '${parse_date_for_mysql(data.fecha)}', 
+  '${data.moneda}'
+  )`;
   //console.log(query)
   connection.query(query, (err, resp) => {
     if (data.efectivo.checked) {
@@ -175,7 +180,16 @@ const agregar_pago_proveedor = (data, callback) => {
 const agregar_cm_proveedor = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
-  const query = `INSERT INTO carga_manual_proveedor  (fk_proveedor, monto, comentarios, modo_ficha, fecha) VALUES (${data.fk_proveedor}, ${data.monto}, '${data.comentarios}', ${data.modo}, date('${(data.fecha)}'))`;
+  const query = `INSERT INTO carga_manual_proveedor  
+  (fk_proveedor, monto, comentarios, modo_ficha, fecha, moneda) 
+  VALUES (
+  ${data.fk_proveedor}, 
+  ${data.monto}, 
+  '${data.comentarios}', 
+  ${data.modo}, 
+  date('${(data.fecha)}'), 
+  '${data.moneda}'
+  )`;
   //console.log(query)
   connection.query(query, (err, resp) => {
     callback(resp);
@@ -197,7 +211,24 @@ const pagos_atrasados_proveedores = (data, callback) => {
                     if(p1.fk_proveedor IS NULL, DATE('1970-01-01'), DATE(p1.fecha)) AS 'fecha',
                     p.nombre
                     FROM proveedor p LEFT JOIN (
-                      SELECT pp1.fk_proveedor, pp1.fecha FROM pago_proveedor pp1 WHERE pp1.fecha = (SELECT MAX(pp.fecha) FROM pago_proveedor pp WHERE pp.fk_proveedor = pp1.fk_proveedor)
+                      SELECT 
+                        pp1.fk_proveedor, 
+                        pp1.fecha 
+                        FROM 
+                        pago_proveedor pp1 
+                        WHERE 
+                        pp1.moneda = '${data.moneda}' AND
+                        pp1.activo=1 AND 
+                        pp1.fecha = 
+                          (
+                            SELECT MAX(pp.fecha) 
+                            FROM 
+                            pago_proveedor pp W
+                            HERE 
+                            pp.fk_proveedor = pp1.fk_proveedor AND 
+                            pp.moneda = '${data.moneda}' AND
+                            pp.activo=1
+                          )
                     ) p1 ON p1.fk_proveedor = p.idproveedor
                     ORDER BY diff DESC 
                   )q1 
@@ -208,9 +239,9 @@ const pagos_atrasados_proveedores = (data, callback) => {
                     FROM 
                     (
                         SELECT SUM(_q.monto) AS 'monto', _q.proveedor_idproveedor FROM (
-                          SELECT f.monto, f.proveedor_idproveedor FROM factura f WHERE DATE(f.fecha) < DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH )
+                          SELECT f.monto, f.proveedor_idproveedor FROM factura f WHERE DATE(f.fecha) < DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH ) and f.activo=1 and f.fk_moneda = '${data.moneda}'
                           union 
-                          SELECT cmp.monto, cmp.fk_proveedor AS 'proveedor_idproveedor' FROM carga_manual_proveedor cmp WHERE cmp.activo=1
+                          SELECT cmp.monto, cmp.fk_proveedor AS 'proveedor_idproveedor' FROM carga_manual_proveedor cmp WHERE cmp.activo=1 and cmp.moneda = '${data.moneda}'
                         ) _q GROUP BY _q.proveedor_idproveedor
                     ) AS ff,
                     (
@@ -230,7 +261,11 @@ const pagos_atrasados_proveedores = (data, callback) => {
                                 if(DATE(pp1.fecha) >= DATE_ADD(DATE(NOW()), INTERVAL -1 MONTH) , 1 , 0) AS 'intime',
                                 pp1.monto,
                                 pp1.fk_proveedor AS 'idproveedor' 
-                                FROM pago_proveedor pp1
+                                FROM 
+                                pago_proveedor pp1 
+                                wHERE 
+                                pp1.moneda = '${data.moneda}' AND
+                                pp1.activo=1 
                             )pp 
                         GROUP BY pp.idproveedor
                     ) pps

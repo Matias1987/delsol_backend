@@ -41,8 +41,8 @@ const obtener_factura_montos_adic = (idfactura, callback) => {
     })
 }
 
-const obtener_facturas_saldo = (idprov, callback) => {
-    FacturaDB.obtener_facturas_saldo(idprov, (resp) => {
+const obtener_facturas_saldo = (data, callback) => {
+    FacturaDB.obtener_facturas_saldo(data, (resp) => {
         return callback(resp)
     })}
 
