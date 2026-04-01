@@ -13,7 +13,7 @@ const agregar_proveedor = (data,callback) => {
 }
 
 const obtener_ficha_proveedor = (data,callback) => {
-    ProveedorDB.obtener_ficha_proveedor(data,(rows)=>{
+    ProveedorDB.obtener_ficha_proveedor({...data, agrupar: data.agrupar || '1' },(rows)=>{
         callback(rows)
     })
 }

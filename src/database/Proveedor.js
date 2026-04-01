@@ -7,7 +7,7 @@ const agregar_proveedor = (data, callback) => {
   connection.connect();
   connection.query(
     `SELECT p.idproveedor FROM proveedor p WHERE p.cuit = ${connection.escape(
-      data.cuit
+      data.cuit,
     )}`,
     (err, resp) => {
       if (resp.length > 0) {
@@ -21,11 +21,11 @@ const agregar_proveedor = (data, callback) => {
             ");",
           (err, result, fields) => {
             callback(result.insertId);
-          }
+          },
         );
       }
       connection.end();
-    }
+    },
   );
 };
 
@@ -36,78 +36,120 @@ const obtener_proveedores = (callback) => {
     "SELECT * FROM proveedor p order by p.nombre asc;",
     (err, rows, fields) => {
       callback(rows);
-    }
+    },
   );
   connection.end();
 };
 
-const obtener_ficha_proveedor = ({idproveedor, modo, moneda}, callback) => {
-  const query = `SELECT 
-                    op.*,
-                    if(op.tipo='FACTURA' || op.tipo='CM', op.monto, 0) AS 'debe',
-                    if(op.tipo='PAGO',op.monto,0) AS 'haber' 
-                    FROM (
-                        SELECT 
-                        'FACTURA' AS 'tipo', 
-                        concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
-                        f.idfactura AS 'id', 
-                        f.monto, 
-                        date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
-                        f.fecha
-                        FROM factura f 
-                        WHERE 
-                            f.fk_moneda = '${moneda}' and
-                            f.proveedor_idproveedor=${idproveedor} and 
-                            f.activo=1 and 
-                            (case when '${
-                              modo
-                            }'='-1' then true else f.es_remito=${
-    modo == 0 ? 1 : 0
-  } end)
-                        UNION
-                        (
-                            SELECT 'PAGO' AS 'tipo', 
-                            'Pago' as 'detalle',
-                            pp.id AS 'id',  
-                            pp.monto, 
-                            date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f',
-                            pp.fecha
-                            FROM pago_proveedor pp 
-                            WHERE 
-                                pp.moneda='${moneda}' and
-                                pp.fk_proveedor=${idproveedor} and 
-                                pp.activo=1 and 
-                                (case when '${
-                                  modo
-                                }'='-1' then true else pp.modo_ficha=${
-    modo
-  } end)
-                        )
-                        UNION
-                        (
-                            SELECT 
-                            'CM' AS 'tipo', 
-                            concat('Carga Manual: ', cm.comentarios)  as 'detalle',
-                            cm.id AS 'id',  
-                            cm.monto, 
-                            date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
-                            cm.fecha
-                            FROM  carga_manual_proveedor cm 
-                            WHERE 
-                                cm.moneda='${moneda}' and
-                                cm.fk_proveedor=${idproveedor} and 
-                                cm.activo=1 and 
-                                (case when '${
-                                  modo
-                                }'='-1' then true else cm.modo_ficha=${
-    modo
-  } end)
-                        )
-                    ) op
-                    ORDER BY op.fecha asc 
-                    ;`;
+const obtener_ficha_proveedor = (
+  { idproveedor, modo, moneda, agrupar },
+  callback,
+) => {
+  const query = `
+  SELECT 
+	  'PREV' AS 'tipo', if('${agrupar}'='1', concat('Saldo Previo al ', date_format(date_add(date(NOW()), INTERVAL -1 MONTH), '%d-%m-%Y')) , '-')  AS 'detalle','' AS 'id','' AS 'fecha_f','' AS 'fecha',
+     sum(if(op.tipo='f' || op.tipo='cm', op.monto, 0)) AS 'debe',
+     sum(if(op.tipo='p',op.monto,0)) AS 'haber'
+     FROM (
+         SELECT
+         'f' AS 'tipo',
+         f.monto
+         FROM factura f
+         WHERE
+             f.fk_moneda = '${moneda}' and
+             f.proveedor_idproveedor=${idproveedor} and
+             f.activo=1 and
+             (case when '${modo}'='-1' then true else f.es_remito=${modo == 0 ? 1 : 0} END) AND 
+             (case when '${agrupar}'='0' then FALSE else DATE(f.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END )
+         UNION
+         (
+             SELECT 'p' AS 'tipo',
+             pp.monto
+             FROM pago_proveedor pp
+             WHERE
+                 pp.moneda='${moneda}' and
+                 pp.fk_proveedor=${idproveedor} and
+                 pp.activo=1 and
+                 (case when '${modo}'='-1' then true else pp.modo_ficha=${modo} end) AND 
+             (case when '${agrupar}'='0' then FALSE else DATE(pp.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END )
+         )
+         UNION
+         (
+             SELECT
+             'cm' AS 'tipo',
+             cm.monto
+             FROM  carga_manual_proveedor cm
+             WHERE
+                 cm.moneda='${moneda}' and
+                 cm.fk_proveedor=${idproveedor} and
+                 cm.activo=1 and
+                 (case when '${modo}'='-1' then true else cm.modo_ficha=${modo} end) AND 
+             	  (case when '${agrupar}'='0' then FALSE else DATE(cm.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END )
+         )
+     ) op
+     
+     union
 
-  //console.log(query)
+  SELECT * FROM (
+    SELECT 
+      op.tipo, op.detalle, op.id, op.fecha_f, op.fecha,
+      if(op.tipo='FACTURA' || op.tipo='CM', op.monto, 0) AS 'debe',
+      if(op.tipo='PAGO',op.monto,0) AS 'haber' 
+      FROM (
+          SELECT 
+          'FACTURA' AS 'tipo', 
+          concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
+          f.idfactura AS 'id', 
+          f.monto, 
+          date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
+          f.fecha
+          FROM factura f 
+          WHERE 
+              f.fk_moneda = '${moneda}' and
+              f.proveedor_idproveedor=${idproveedor} and 
+              f.activo=1 and 
+              (case when '${modo}'='-1' then true else f.es_remito=${modo == 0 ? 1 : 0} end)
+          UNION
+          (
+              SELECT 'PAGO' AS 'tipo', 
+              'Pago' as 'detalle',
+              pp.id AS 'id',  
+              pp.monto, 
+              date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f',
+              pp.fecha
+              FROM pago_proveedor pp 
+              WHERE 
+                  pp.moneda='${moneda}' and
+                  pp.fk_proveedor=${idproveedor} and 
+                  pp.activo=1 and 
+                  (case when '${modo}'='-1' then true else pp.modo_ficha=${
+                    modo
+                  } end)
+          )
+          UNION
+          (
+              SELECT 
+              'CM' AS 'tipo', 
+              concat('Carga Manual: ', cm.comentarios)  as 'detalle',
+              cm.id AS 'id',  
+              cm.monto, 
+              date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
+              cm.fecha
+              FROM  carga_manual_proveedor cm 
+              WHERE 
+                  cm.moneda='${moneda}' and
+                  cm.fk_proveedor=${idproveedor} and 
+                  cm.activo=1 and 
+                  (case when '${modo}'='-1' then true else cm.modo_ficha=${
+                    modo
+                  } end)
+          )
+      ) op
+      ORDER BY op.fecha asc 
+) q WHERE (case when '${agrupar}'='0' then TRUE ELSE DATE(q.fecha) > DATE_ADD(NOW(), interval -1 MONTH) END )                                
+;`;
+
+  console.log(query);
 
   const connection = mysql_connection.getConnection();
 
@@ -157,22 +199,22 @@ const agregar_pago_proveedor = (data, callback) => {
       connection.query(_q);
     }
 
-    if(data.compras && data.compras.length>0){
-      let compras_values = '';
-      data.compras.forEach((compra)=>{
-        compras_values += (compras_values.length>0?',':'') + `(${resp.insertId}, ${compra.idfactura}, ${compra.monto_a_pagar})`
+    if (data.compras && data.compras.length > 0) {
+      let compras_values = "";
+      data.compras.forEach((compra) => {
+        compras_values +=
+          (compras_values.length > 0 ? "," : "") +
+          `(${resp.insertId}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
       });
       const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
       console.log(query);
-      doQuery(query,(_resp)=>{
+      doQuery(query, (_resp) => {
         callback(resp);
       });
-    }
-    else{
+    } else {
       callback(resp);
     }
 
-    
     connection.end();
   });
 };
@@ -187,7 +229,7 @@ const agregar_cm_proveedor = (data, callback) => {
   ${data.monto}, 
   '${data.comentarios}', 
   ${data.modo}, 
-  date('${(data.fecha)}'), 
+  date('${data.fecha}'), 
   '${data.moneda}'
   )`;
   //console.log(query)
@@ -282,15 +324,13 @@ const pagos_atrasados_proveedores = (data, callback) => {
   });
 };
 
+const monedas_existentes = (data, callback) => {
+  const query = `select * from contabilidad_moneda;`;
 
-const monedas_existentes =(data, callback) => {
-  const query = `select * from contabilidad_moneda;`
-
-  doQuery(query,(response)=>{
+  doQuery(query, (response) => {
     callback(response.data);
   });
-
-}
+};
 
 module.exports = {
   agregar_proveedor,
