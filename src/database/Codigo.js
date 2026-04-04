@@ -466,8 +466,10 @@ const agregar_codigos = (data, callback) => {
 const obtener_lp_codigos = ({idSubfamilia, idFamilia, idSubgrupo, idGrupo}, callback) => {
   const query = `SELECT 
                 c.idcodigo,
-                UPPER( c.codigo ) AS 'codigo',  
+                UPPER( TRIM(c.codigo) ) AS 'codigo',  
                 if(LENGTH(TRIM(c.descripcion)) <1 || c.descripcion IS NULL , '*Sin Descripcion*',  UPPER( c.descripcion ) ) AS 'descripcion' ,
+                LENGTH( TRIM(c.descripcion) ) AS 'long_desc',
+                LENGTH( TRIM(c.codigo) ) AS 'long_cod',
                 c.precio
                 FROM 
                 codigo c, subgrupo sg, grupo g, subfamilia sf WHERE
@@ -478,7 +480,7 @@ const obtener_lp_codigos = ({idSubfamilia, idFamilia, idSubgrupo, idGrupo}, call
                 (case when '${idGrupo}'<>'-1' then g.idgrupo = '${idGrupo}' ELSE TRUE END ) AND 
                 (case when '${idSubfamilia}'<>'-1' then sf.idsubfamilia = '${idSubfamilia}' ELSE TRUE END) AND 
                 (case when '${idFamilia}'<>'-1' then sf.familia_idfamilia = '${idFamilia}' ELSE TRUE END )	
-                ORDER BY c.descripcion ASC; `;
+                ORDER BY trim(c.codigo) ASC; `;
     console.log(query);
 
     doQuery(query,(response)=>{
