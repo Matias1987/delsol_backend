@@ -45,6 +45,7 @@ const obtener_ficha_proveedor = (
   { idproveedor, modo, moneda, agrupar },
   callback,
 ) => {
+  console.log({ idproveedor, modo, moneda, agrupar });
   const query = `
   SELECT 
 	  'PREV' AS 'tipo', if('${agrupar}'='1', concat('Saldo Previo al ', date_format(date_add(date(NOW()), INTERVAL -1 MONTH), '%d-%m-%Y')) , '-')  AS 'detalle','' AS 'id','' AS 'fecha_f','' AS 'fecha',

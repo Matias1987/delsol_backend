@@ -3,7 +3,7 @@ const ventaDBExt = require("../database/VentaExt");
 const cobroService = require("./CobroService");
 const stockService = require("./StockService");
 const stockCristalesService = require("./StockCritalesService");
-const { validar_cristales_modo2 } = require("../lib/global");
+const { validar_cristales_modo2, cobro_inmediato } = require("../lib/global");
 
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data, (rows) => {
@@ -69,7 +69,7 @@ const obtenerVentasSucursal = (data, callback) => {
 };
 
 const agregarCobrosVenta = (data, id, callback) => {
-  let doCobrar = data.cobrar && data.mp;
+  let doCobrar = cobro_inmediato && data.mp;
   doCobrar = doCobrar && (data.mp ? data.mp.total > 0 : false);
   const today = new Date();
   const formattedDate =
