@@ -231,7 +231,7 @@ const cambiar_estado_venta = (data, callback) => {
     if (!resp) {
       return callback(null);
     }
-    
+
     if (typeof data.removeMPRows !== "undefined") {
       if (+data.removeMPRows == 1) {
         doQuery(
@@ -244,7 +244,7 @@ const cambiar_estado_venta = (data, callback) => {
 };
 
 const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) => {
- 
+
   const estado_laboratorio = +en_laboratorio == 1 ? "PENDIENTE" : "";
 
   doQuery(
@@ -255,12 +255,56 @@ const cambiar_venta_sucursal_deposito = (en_laboratorio, idventa, callback) => {
   );
 };
 
-const do_insert_venta = (data, callback) => { 
+const do_insert_venta = (data, callback) => {
   const __now = new Date();
 
   if (data.fechaRetiro == null) {
     data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;
   }
+
+
+
+  if (data.edicion) {
+    doQuery(venta_queries.update_venta_query(data,data.idventa),(response)=>{
+      save_ventaitems_and_mp({insertId: data.idventa},data);
+    })
+  }
+  else {
+    doQuery(obtenerCajaAbierta(data.fksucursal), (resp1) => {
+      const _rows = resp1.data;
+      if (_rows.length < 1) {
+        console.log("No hay caja!!!!!");
+        doQuery(insertEvento("NULL CAJA (CLIENTE REF)", data.fkusuario, data.fksucursal, data.fkcliente, "VENTA"),_=>{});
+        return callback(null);
+      } else {
+        if (_rows[0].idcaja != data.fkcaja) {
+          console.log("<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ");
+          doQuery(insertEvento("CAJA ID MISMATCH (CLIENTE REF)", data.fkusuario, data.fksucursal, data.fkcliente, "VENTA"),_=>{});
+        }
+        const idcaja = _rows[0].idcaja;
+
+        doQuery(
+          venta_queries.venta_insert_query(
+            venta_queries.parse_venta_data(data),
+            idcaja,
+          ),
+          (resp2) => {
+            console.log("Venta insertada, id: " + resp2.data.insertId);
+            save_ventaitems_and_mp(resp2.data, data);
+          },
+        );
+      }
+    });
+
+  }
+
+};
+
+
+const save_ventaitems_and_mp = (resp, data) => {
+  //
+
+  var _arr_items = [];
 
   const do_push = (orden, arr, val, tipo, descontable) =>
     (val || 0) === 0
@@ -268,12 +312,9 @@ const do_insert_venta = (data, callback) => {
       : val.codigo == null || val.idcodigo < 0
         ? arr
         : [
-            ...arr,
-            { ...val, tipo: tipo, orden: orden, descontable: descontable },
-          ];
-
-  var venta_id = -1;
-  var _arr_items = [];
+          ...arr,
+          { ...val, tipo: tipo, orden: orden, descontable: descontable },
+        ];
 
   const get_query_str = (items) => {
     var _str = "";
@@ -469,95 +510,51 @@ const do_insert_venta = (data, callback) => {
       break;
   }
 
-  doQuery(obtenerCajaAbierta(data.fksucursal), (resp1) => {
-    const _rows = resp1.data;
-    if (_rows.length < 1) {
-      console.log("No hay caja!!!!!");
+  venta_id = parseInt(resp.insertId);
+  var mp = "";
+  venta_queries.get_mp(data, venta_id).forEach((p) => {
+    mp +=
+      (mp.length > 0 ? "," : "") +
+      `(
+          ${venta_id},
+          ${p.modo_pago_idmodo_pago},
+          ${p.banco_idbanco},
+          ${p.mutual_idmutual},
+          ${p.monto},
+          ${p.monto_int},
+          ${p.cant_cuotas},
+          ${p.monto_cuota},
+          ${p.fk_tarjeta},
+          '${p.modo_pago}',
+          '${p.tarjeta_nro}',
+          ${p.fk_banco_transferencia}
+          )`;
+  });
+
+  var _items_data = get_query_str(_arr_items);
+
+  if (mp.length > 0) {
+    doQuery(venta_queries.query_mp + mp, (_resp3) => {
       doQuery(
-        insertEvento(
-          "NULL CAJA (CLIENTE REF)",
-          data.fkusuario,
-          data.fksucursal,
-          data.fkcliente,
-          "VENTA",
-        ),
-      );
-      return callback(null);
-      
-    } else {
-      if (_rows[0].idcaja != data.fkcaja) {
-        console.log(
-          "<!> el nro de caja obtenida en el servidor no coincide con el recibido del cliente... ",
-        );
-        doQuery(
-          insertEvento(
-            "CAJA ID MISMATCH (CLIENTE REF)",
-            data.fkusuario,
-            data.fksucursal,
-            data.fkcliente,
-            "VENTA",
-          ),
-        );
-      }
-      const idcaja = _rows[0].idcaja;
-
-      doQuery(
-        venta_queries.venta_insert_query(
-          venta_queries.parse_venta_data(data),
-          idcaja,
-        ),
-        (resp2) => {
-          const resp = resp2.data;
-          console.log("Venta insertada, id: " + resp.insertId);
-          venta_id = parseInt(resp.insertId);
-          var mp = "";
-          venta_queries.get_mp(data, venta_id).forEach((p) => {
-            mp +=
-              (mp.length > 0 ? "," : "") +
-              `(
-                ${venta_id},
-                ${p.modo_pago_idmodo_pago},
-                ${p.banco_idbanco},
-                ${p.mutual_idmutual},
-                ${p.monto},
-                ${p.monto_int},
-                ${p.cant_cuotas},
-                ${p.monto_cuota},
-                ${p.fk_tarjeta},
-                '${p.modo_pago}',
-                '${p.tarjeta_nro}',
-                ${p.fk_banco_transferencia}
-                )`;
-          });
-
-          var _items_data = get_query_str(_arr_items);
-
-          if (mp.length > 0) {
-            doQuery(venta_queries.query_mp + mp, (_resp3) => {
-              doQuery(
-                venta_queries.query_items + _items_data,
-                (err, _resp4) => {
-                  callback(venta_id);
-                },
-              );
-            });
-          } else {
-            if (_arr_items.length > 0) {
-              doQuery(
-                venta_queries.query_items + _items_data,
-                (err, _resp5) => {
-                  callback(venta_id);
-                },
-              );
-            } else {
-              callback(venta_id);
-            }
-          }
+        venta_queries.query_items + _items_data,
+        (err, _resp4) => {
+          callback(venta_id);
         },
       );
+    });
+  } else {
+    if (_arr_items.length > 0) {
+      doQuery(
+        venta_queries.query_items + _items_data,
+        (err, _resp5) => {
+          callback(venta_id);
+        },
+      );
+    } else {
+      callback(venta_id);
     }
-  });
-};
+  }
+}
 
 const insert_venta = (data, callback) => {
   do_insert_venta(data, callback);
@@ -813,7 +810,23 @@ const anular_venta_cobros = ({ idventa }, callback) => {
   });
 };
 
+const eliminar_venta_stock = ({ idventa }, callback) => {
+  const query = ``;
+  doQuery(query, (response) => {
+    callback(response);
+  });
+}
+
+const eliminar_venta_mp = ({ idventa }, callback) => {
+  const query = ``;
+  doQuery(query, response => {
+    callback(response);
+  })
+}
+
 module.exports = {
+  eliminar_venta_stock,
+  eliminar_venta_mp,
   obtener_ventas_subgrupo,
   lista_ventas_admin,
   insert_venta,

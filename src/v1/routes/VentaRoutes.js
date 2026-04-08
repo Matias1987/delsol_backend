@@ -91,6 +91,10 @@ router.post("/obtener/ventas/subgrupo/", (req, res) => {
   ventaController.obtener_ventas_subgrupo(req,res)
 });
 
+router.post("/save/modif/v/",(req,res)=>{
+  ventaController.guardar_cambios_venta(req,res); 
+})
+
 router.patch("/:ventaId", (req, res) => {
   ventaController.editarVenta(req,any)
 });

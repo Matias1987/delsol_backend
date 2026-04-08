@@ -1,5 +1,5 @@
 const ventaService = require("../services/VentaService")
-
+const ventaServiceExt = require("../services/VentaServiceExt")
 const cambiar_destinatario = (req,res)=>{
   const {body} = req
   ventaService.cambiar_destinatario(body,(resp)=>{
@@ -174,6 +174,13 @@ const obtener_ventas_vendedor_mes = (req, res) => {
   })
 }
 
+const guardar_cambios_venta = (req, res) => {
+  const {body} = req;
+  ventaServiceExt.guardarCambiosVenta(body,(response)=>{
+    res.status(201).send({status:'OK', data:response})
+  })
+}
+
 module.exports = {
     obtener_ventas_subgrupo,
     cambiar_destinatario,
@@ -198,4 +205,5 @@ module.exports = {
    // lista_ventas_vendedor_mes,
     lista_ventas_sucursal_mes,
     obtener_ventas_vendedor_mes,
+    guardar_cambios_venta,
   };

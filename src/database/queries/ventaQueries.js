@@ -18,7 +18,31 @@ const parse_venta_data = (body)=> ( {
 	json_items: body?.json_items,
 	uid: body?.uid||'',
 	estado: (body?.cobrar) ? (body?.entrega ? 'ENTREGADO' : 'PENDIENTE') : 'INGRESADO',
-})
+});
+
+const update_venta_query = (r, idventa)  =>	`
+	update venta v set
+	v.cliente_idcliente='${r.cliente_idcliente}', 
+	v.sucursal_idsucursal='${r.sucursal_idsucursal}', 
+	v.caja_idcaja='${r.caja_idcaja}', 
+	v.usuario_idusuario='${r.usuario_idusuario}', 
+	v.medico_idmedico='${r.medico_idmedico}', 
+	v.monto_total='${r.monto_total}', 
+	v.descuento='${r.descuento}', 
+	v.subtotal='${r.subtotal}', 
+	v.comentarios='${r.comentarios}', 
+	v.fecha_retiro='${r.fecha_retiro}',
+	v.fk_destinatario='${r.fk_destinatario}',
+	v.fk_os='${r.fk_os}',
+	v.tipo='${r.tipo}',
+	v.debe='${r.monto_total}',
+	v.saldo='${r.monto_total}',
+	v.hora_retiro='${r.hora_retiro}',
+	v.json_items='${r.json_items}',
+	v.uid='${r.uid}',
+	v.estado='${r.estado}',
+	where v.idventa=${idventa};`
+	;
 
 const venta_insert_query = (data, idcaja=0) => ` 
 INSERT INTO venta 
@@ -419,6 +443,7 @@ const queryListaVentaModoPago = (ventaId) => {
 }
 
 module.exports = {
+	update_venta_query,
     queryDetalleVenta,
     queryListaVentaStock,
     queryListaVentaModoPago,
