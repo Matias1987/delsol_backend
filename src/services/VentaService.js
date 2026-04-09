@@ -109,7 +109,8 @@ const doAgregarVenta = (data, callback) => {
 
 const verificar_stock_venta = (data, callback) => {
   //const { validarCristalesModo2 } = data;
-
+  console.log("### Verificando stock para venta ###");
+  console.log(JSON.stringify(data));
   const validarCristalesModo2 = validar_cristales_modo2;
 
   const addToArray = (parentObj, field, arr) =>
@@ -233,6 +234,7 @@ const verificar_stock_venta = (data, callback) => {
 };
 
 const agregarVenta = (data, callback) => {
+  console.log("###-Received data for agregarVenta:-###");
   console.log(JSON.stringify(data));
   verificar_stock_venta(data, (verifStockResponse) => {
     if (verifStockResponse.error) {

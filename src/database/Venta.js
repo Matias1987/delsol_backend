@@ -265,8 +265,10 @@ const do_insert_venta = (data, callback) => {
 
 
   if (data.edicion) {
+    console.log("##-GUARDANDO EDICION VENTA-##")
+    console.log(venta_queries.update_venta_query(data,data.idventa));
     doQuery(venta_queries.update_venta_query(data,data.idventa),(response)=>{
-      save_ventaitems_and_mp({insertId: data.idventa},data);
+      save_ventaitems_and_mp({insertId: data.idventa},data, callback);
     })
   }
   else {
@@ -290,7 +292,7 @@ const do_insert_venta = (data, callback) => {
           ),
           (resp2) => {
             console.log("Venta insertada, id: " + resp2.data.insertId);
-            save_ventaitems_and_mp(resp2.data, data);
+            save_ventaitems_and_mp(resp2.data, data, callback);
           },
         );
       }
@@ -301,7 +303,7 @@ const do_insert_venta = (data, callback) => {
 };
 
 
-const save_ventaitems_and_mp = (resp, data) => {
+const save_ventaitems_and_mp = (resp, data,  callback) => {
   //
 
   var _arr_items = [];
@@ -811,14 +813,18 @@ const anular_venta_cobros = ({ idventa }, callback) => {
 };
 
 const eliminar_venta_stock = ({ idventa }, callback) => {
-  const query = ``;
+  const query = `DELETE FROM venta_has_stock vhs WHERE vhs.venta_idventa=${idventa};`;
+  console.log("### Eliminando items de venta id: " + idventa);
+  console.log(query);
   doQuery(query, (response) => {
     callback(response);
   });
 }
 
 const eliminar_venta_mp = ({ idventa }, callback) => {
-  const query = ``;
+  const query = `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${idventa};`;
+  console.log("### Eliminando modos de pago de venta id: " + idventa);
+  console.log(query);
   doQuery(query, response => {
     callback(response);
   })
