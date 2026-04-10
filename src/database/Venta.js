@@ -266,8 +266,8 @@ const do_insert_venta = (data, callback) => {
 
   if (data.edicion) {
     console.log("##-GUARDANDO EDICION VENTA-##")
-    console.log(venta_queries.update_venta_query(data,data.idventa));
-    doQuery(venta_queries.update_venta_query(data,data.idventa),(response)=>{
+    console.log(venta_queries.update_venta_query(venta_queries.parse_venta_data(data),data.idventa));
+    doQuery(venta_queries.update_venta_query(venta_queries.parse_venta_data(data),data.idventa),(response)=>{
       save_ventaitems_and_mp({insertId: data.idventa},data, callback);
     })
   }

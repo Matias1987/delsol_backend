@@ -1,6 +1,7 @@
 const parse_date_for_mysql = (some_date) => {
+    console.log("############[PARSING DATE]################");
     console.log("param: "+some_date)
-
+    console.log("############################");
     const parts = some_date.split('-')
     console.log(parts[2])
     console.log(parts[1])
