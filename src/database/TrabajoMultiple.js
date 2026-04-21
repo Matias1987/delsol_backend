@@ -10,19 +10,12 @@ const agregarVenta = (data, callback) => {
         if (!id) {
             return callback({ error });
         }
-
-        agregarTrabajos(data, idventa, (response1) => {
-            if (response1.error) {
-                return callback({ error });
-            }
-            return callback({ idventa });
-        })
-
+        return callback({ idventa });
     })
 
 }
 
-const agregarTrabajos = (data, idventa, response) => {
+const agregarTrabajoMultiple = (data, idventa, response) => {
     const query = ``;
     doQuery(query, (response) => {
         if (!response) {
@@ -44,7 +37,7 @@ const checkQuantities = (data, idsucursal, callback) => {
     });
 }
 
-const descontarStock = ({ idventa }, callback) => {
+const descontarStock = (idventa, idsucursal, callback) => {
     const query = ``;
     doQuery(query, (response) => {
         if (!response) {
@@ -59,4 +52,5 @@ module.exports = {
     agregarVenta,
     checkQuantities,
     descontarStock,
+    agregarTrabajoMultiple,
 }
