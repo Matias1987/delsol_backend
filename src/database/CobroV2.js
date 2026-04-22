@@ -1,4 +1,4 @@
-const mysql_connection = require("../lib/mysql_connection");
+//const mysql_connection = require("../lib/mysql_connection");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const cobro_queries = require("./queries/cobroQueries");
 const { doQuery, escapeHelper } = require("./helpers/queriesHelper");

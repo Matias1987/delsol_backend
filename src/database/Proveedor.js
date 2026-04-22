@@ -45,10 +45,11 @@ const obtener_ficha_proveedor = (
   { idproveedor, modo, moneda, agrupar },
   callback,
 ) => {
-  console.log({ idproveedor, modo, moneda, agrupar });
+  //console.log({ idproveedor, modo, moneda, agrupar });
   const query = `
+  SELECT * FROM (
   SELECT 
-	  'PREV' AS 'tipo', if('${agrupar}'='1', concat('Saldo Previo al ', date_format(date_add(date(NOW()), INTERVAL -1 MONTH), '%d-%m-%Y')) , '-')  AS 'detalle','' AS 'id','' AS 'fecha_f','' AS 'fecha',
+	  'PREV' AS 'tipo', if('${agrupar}'='1', concat('Saldo Previo al ', date_format(date_add(date(NOW()), INTERVAL -1 MONTH), '%d-%m-%Y')) , '-')  AS 'detalle','' AS 'id','' AS 'fecha_f','01-01-1970' AS 'fecha',
      sum(if(op.tipo='f' || op.tipo='cm', op.monto, 0)) AS 'debe',
      sum(if(op.tipo='p',op.monto,0)) AS 'haber'
      FROM (
@@ -147,10 +148,11 @@ const obtener_ficha_proveedor = (
           )
       ) op
       ORDER BY op.fecha asc 
-) q WHERE (case when '${agrupar}'='0' then TRUE ELSE DATE(q.fecha) > DATE_ADD(NOW(), interval -1 MONTH) END )                                
+) q WHERE (case when '${agrupar}'='0' then TRUE ELSE DATE(q.fecha) > DATE_ADD(NOW(), interval -1 MONTH) END )      
+ ) gl ORDER BY gl.fecha asc                             
 ;`;
 
-  console.log(query);
+  //console.log(query);
 
   const connection = mysql_connection.getConnection();
 
@@ -208,7 +210,7 @@ const agregar_pago_proveedor = (data, callback) => {
           `(${resp.insertId}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
       });
       const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
-      console.log(query);
+      //console.log(query);
       doQuery(query, (_resp) => {
         callback(resp);
       });

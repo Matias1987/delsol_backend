@@ -69,9 +69,11 @@ const cuotas_pendientes = (data, callback) => {
   const query = `SELECT 
                   c1.*,
                   date_format(c1.fecha,'%d/%m/%Y') AS 'fecha_f', 
-                  t.nombre AS 'tarjeta' 
+                  t.nombre AS 'tarjeta' ,
+                  sl.nombre as 'sucursal'
                 FROM 
                   tarjeta t,
+                  sucursal sl,
                   (
                     SELECT 
                       c.idcobro, 
@@ -84,8 +86,8 @@ const cuotas_pendientes = (data, callback) => {
                       
                       cmp.cant_cuotas, 
                       c.fecha, 
-                      cmp.fk_tarjeta 
-                      
+                      cmp.fk_tarjeta ,
+                      c.sucursal_idsucursal
                     FROM 
                       cobro c 
                       INNER JOIN cobro_has_modo_pago cmp ON cmp.cobro_idcobro = c.idcobro 
@@ -95,6 +97,7 @@ const cuotas_pendientes = (data, callback) => {
                       WHERE DATE(c.fecha) < DATE('${data.fecha}')
                   ) c1 
                 WHERE 
+                  c1.sucursal_idsucursal = sl.idsucursal AND 
                   t.idtarjeta = c1.fk_tarjeta AND 
                   c1.diff>0 AND 
                   DATE_ADD(
