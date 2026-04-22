@@ -303,7 +303,7 @@ const agregar_venta_mp_ctacte = (data,callback) =>
 
     if(typeof data.removeMPRows !== 'undefined'){
         if(+data.removeMPRows == 1){
-            connection.query(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
+            doQuery2(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`,()=>{})
         }
     }
 
