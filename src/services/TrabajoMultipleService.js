@@ -22,23 +22,38 @@ const procesarTrabajoMultiple = (data, callback) => {
         if (response.error) {
             return callback({ error: 1, msg: "error validating quantities" });
         }
-        agregarTrabajoMultiple(data, (response1) => {
-            if (response1.error) {
-                return callback({ error: 1, msg: "error inserting operations" });
-            }
-            descontarStock(products_quantities, idsucursal, (response2) => {
+        agregarVenta(data, (response0) => {
+            if (response0.error) {
+                    return callback({ error: 1, msg: "error inserting venta" });
+                }
+            const idVenta = response0.data.insertId;
+            agregarTrabajoMultiple(data, idVenta,  (response1) => {
                 if (response1.error) {
                     return callback({ error: 1, msg: "error inserting operations" });
                 }
-                return callback({ok:1});
-            })
-        })
+                descontarStock(idVenta, idsucursal, (response2) => {
+                    if (response2.error) {
+                        return callback({ error: 1, msg: "error when trying to discount stock quantities" });
+                    }
+                    return callback({ ok: 1 });
+                })
+            });
+        });
+
     })
 
 }
 
-const agregarTrabajoMultiple = (data, callback) => {
+const agregarVenta = (data, callback) => {
+    db.agregarVenta(data,response=>{
+        callback?.(response)
+    })
+}
 
+const agregarTrabajoMultiple = (data, idsucursal, callback) => {
+    db.agregarTrabajoMultiple(data, idsucursal, response=>{
+        callback?.(response)
+    })
 }
 
 const descontarStock = (data, idsucursal, callback) => {
@@ -54,4 +69,4 @@ const controlarStock = (data, idsucursal, callback) => {
 }
 
 
-module.exports = {procesarTrabajoMultiple}
+module.exports = { procesarTrabajoMultiple }
