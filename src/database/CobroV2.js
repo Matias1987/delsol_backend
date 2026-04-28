@@ -4,13 +4,39 @@ const cobro_queries = require("./queries/cobroQueries");
 const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 
 const doQuery2 = (query, callback=null) => {
+    if(query.length<1){
+        callback?.({error:true}, null)
+        return;
+    }
     doQuery(query, (response)=>{
         callback?.(!response ? {error:true} : null, response.data);
     })
 }
 
 const do_agregar_cobro_v2 = (data , callback) => {
+    console.log("############# agregar pago")
+    console.log(data)
 
+
+    if(data.monto == data.mp.ctacte_monto && data.mp.ctacte_monto>0){
+        /*** en este caso, insertar venta modo de pago y retornar -1 al cliente     */
+        agregar_venta_mp_ctacte(data,callback)
+        return;//nothing else to do
+    }
+
+    const q_removeMPRows = data.removeMPRows && +data?.removeMPRows == 1 ?  `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};` : "";
+    const q_removeCtaCteRow = data.removeCtaCteRow && +data?.removeCtaCteRow == 1 ? `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};` : "";
+   
+    doQuery2(q_removeMPRows, (err,resp)=>{
+        doQuery2(q_removeCtaCteRow, (err1,resp1)=>{
+            agregar_cobro_cont(data, callback)
+        })
+    });
+
+    
+}
+
+const agregar_cobro_cont = (data, callback)=>{
     const add = (arr,val,idx) => parseFloat(val.monto) == 0 ? arr : [...arr,val]
     
     const get_mp_obj = vars => ({
@@ -23,26 +49,6 @@ const do_agregar_cobro_v2 = (data , callback) => {
         monto_cuota: typeof vars.monto_cuota === 'undefined' ? 0 : vars.monto_cuota,
         fk_tarjeta: typeof vars.fk_tarjeta === 'undefined' ? null : vars.fk_tarjeta,
     })
-
-    if(data.monto == data.mp.ctacte_monto && data.mp.ctacte_monto>0){
-        /*** en este caso, insertar venta modo de pago y retornar -1 al cliente     */
-        agregar_venta_mp_ctacte(data,callback)
-        return;//nothing else to do
-    }
-
-   
-    if(typeof data.removeMPRows !== 'undefined'){ /* REMOVE OLD MP ROWS! (ONLY IF NECESSARY) */
-        if(+data.removeMPRows == 1){
-            doQuery2(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
-        }
-    }
-    
-    if(typeof data.removeCtaCteRow !== 'undefined'){
-        if(+data.removeCtaCteRow == 1){
-            doQuery2(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`)
-        }
-    }
-
     doQuery2(
         obtenerCajaAbierta(data.sucursal_idsucursal),((err,rows)=>{
             if(err)
@@ -299,24 +305,37 @@ const agregar_venta_mp_ctacte = (data,callback) =>
                 ${parseFloat(data.mp.ctacte_cuotas) * parseFloat(data.mp.ctacte_monto_cuotas)}, 
                 ${data.mp.ctacte_cuotas},
                 ${data.mp.ctacte_monto_cuotas})` ;
+
+
+    const queries = []
+    const process = ( onFinish ) => {
+        if(queries.length<1)
+        {
+            
+            return onFinish?.();
+        }
+        const q = queries.shift();
+        console.log("Executing query: ", q );
+        doQuery2(q,(err,resp)=>{
+            process(onFinish);
+        })
+    }
+
     
 
-    if(typeof data.removeMPRows !== 'undefined'){
-        if(+data.removeMPRows == 1){
-            doQuery2(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`,()=>{})
-        }
+    if(data.removeMPRows && +data?.removeMPRows == 1){
+        queries.push(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`)
     }
 
-    if(typeof data.removeCtaCteRow !== 'undefined'){
-        if(+data.removeCtaCteRow == 1){
-            doQuery2(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`,()=>{});
-        }
+     if(data.removeCtaCteRow && +data?.removeCtaCteRow == 1){
+        queries.push(`DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.modo_pago = 'ctacte' and vhmp.venta_idventa=${data.idventa};`)
     }
-    doQuery2(__query_venta_mp,(err,resp)=>{
-        callback(0);
-    })
 
-    doQuery2(`UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`);
+    queries.push(__query_venta_mp);
+
+    queries.push(`UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`);
+
+    process(_=>{callback(-1)});
     
 }
 
