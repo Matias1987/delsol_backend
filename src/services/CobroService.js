@@ -1,5 +1,5 @@
 const CobroDB = require("../database/CobroV2")
-
+const ClienteOpinionService = require("./ClienteOpinionService")
 const obtenerCobros = (data,callback) => {
   CobroDB.lista_cobros(data, (rows)=>{
     return callback(rows)
@@ -7,9 +7,25 @@ const obtenerCobros = (data,callback) => {
 }
 
 const agregarCobro = (data,callback) => {
+  
   CobroDB.agregar_cobro(data,(id)=>{
     return callback(id);
-  })
+  });
+
+  if(data.comentario_cliente)
+  {
+    ClienteOpinionService.agregarOpinion({
+      idcliente: data.idcliente,
+      idventa: data.idventa||null,
+      idsucursal: data.sucursal_idsucursal||null,
+      idvendedor: data.usuario_idusuario||null,
+      puntaje: data.puntaje_cliente||'0',
+      comentario: data.comentario_cliente,
+      tipo_operacion: 'acercamiento'
+    }, (resp)=>{
+      console.log(resp);
+    });
+  }
 }
 
 const obtenerCobro = (idcobro, callback) => {
