@@ -1,5 +1,80 @@
 const db = require('../database/TrabajoMultiple');
 
+/*
+{
+    "idcliente":0,
+    "idsucursal": 0,
+    "idusuario": 0,
+    "fecha":"",
+    "fechaRetiro":"",
+    "estado": "",
+    "estadoLaboratorio":"",
+    "enLaboratorio":"",
+    "anulado":0,
+    "monto": 0,
+    "descuento":0,
+    "montoTotal": 0,
+    "trabajos": [
+        {
+            "tipo":"cristales_laboratorio",
+            "nro":"1",
+            "items":[
+                {
+                    "idcodigo": 0,
+                    "idtrabajo": 0,
+                    "iddescuento": 0,
+                    "tipo": "od",
+                    "cantidad": "1",
+                    "precio":"0",
+                    "esf":"0",
+                    "cil":"0",
+                    "eje":"0"
+                },
+                {
+                    "idcodigo": 0,
+                    "idtrabajo": 0,
+                    "iddescuento": 0,
+                    "tipo": "od",
+                    "cantidad": "1",
+                    "precio":"0",
+                    "esf":"0",
+                    "cil":"0",
+                    "eje":"0"
+                }
+            ]
+        },
+		{
+            "tipo":"cristales_laboratorio",
+            "nro":"2",
+            "items":[
+                {
+                    "idcodigo": 0,
+                    "idtrabajo": 0,
+                    "iddescuento": 0,
+                    "tipo": "od",
+                    "cantidad": "1",
+                    "precio":"0",
+                    "esf":"0",
+                    "cil":"0",
+                    "eje":"0"
+                },
+                {
+                    "idcodigo": 0,
+                    "idtrabajo": 0,
+                    "iddescuento": 0,
+                    "tipo": "od",
+                    "cantidad": "1",
+                    "precio":"0",
+                    "esf":"0",
+                    "cil":"0",
+                    "eje":"0"
+                }
+            ]
+        },
+    ]
+}
+*/
+
 const procesarTrabajoMultiple = (data, callback) => {
     const products_quantities = [];
     data.trabajos.forEach(trabajo => {
@@ -50,18 +125,27 @@ const agregarVenta = (data, callback) => {
     })
 }
 
-const agregarTrabajoMultiple = (data, idsucursal, callback) => {
-    db.agregarTrabajoMultiple(data, idsucursal, response=>{
-        callback?.(response)
+const agregarTrabajoMultiple = (trabajos, idsucursal, idventa, callback) => {
+    if(trabajos.length == 0) {
+        return callback({ msg: "no more trabajos to process" });
+    }
+    const trabajo = trabajos.shift();
+    db.agregarTrabajo(trabajo, idsucursal, response=>{
+        db.agregarTabajoItems(trabajo, response.data.idtrabajo, idventa, response=>{
+            if (response.error) {
+                return callback({ error: 1, msg: "error inserting trabajo items" });
+            }
+            agregarTrabajoMultiple(trabajos, idsucursal, idventa, callback);
+        })
     })
 }
 
 const descontarStock = (data, idsucursal, callback) => {
-
+    return callback({ ok: 1 });
 }
 
 const controlarStock = (data, idsucursal, callback) => {
-
+    return callback({ ok: 1 });//for now, we will not control stock quantities, but in the future we will implement this function to check if there is stock available for the products in the venta
     //check using db quantities
     db.checkQuantities(products_quantities, response => {
         callback(response);

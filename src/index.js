@@ -343,6 +343,9 @@ app.use("/api/v1/sc", stockCristalesRouter);
 const accessRequestRouter = require("./v1/routes/AccessRequestRoutes");
 app.use("/api/v1/aarr", accessRequestRouter);
 
+const clienteOpinionRouter = require("./v1/routes/ClienteOpinionRoutes");
+app.use("/api/v1/opinion", clienteOpinionRouter);
+
 /*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)

@@ -6,6 +6,13 @@ const agregarOpinion = (data, callback) => {
   });
 };
 
+const obtenerOpiniones = (callback) => {
+  db.obtenerOpiniones((resp) => {
+    return callback(resp);
+  });
+};
+
 module.exports = {
   agregarOpinion,
+  obtenerOpiniones,
 };
