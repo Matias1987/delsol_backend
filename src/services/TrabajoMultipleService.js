@@ -12,6 +12,7 @@ const db = require('../database/TrabajoMultiple');
     "enLaboratorio":"",
     "anulado":0,
     "monto": 0,
+    "comentarios": "",
     "descuento":0,
     "montoTotal": 0,
     "trabajos": [
@@ -76,8 +77,12 @@ const db = require('../database/TrabajoMultiple');
 */
 
 const procesarTrabajoMultiple = (data, callback) => {
+    console.log("data recibida en servicio de trabajo multiple: ", data);
+    //return callback({ ok: 1 });
+    //for testing
     const products_quantities = [];
-    data.trabajos.forEach(trabajo => {
+
+    /*data.trabajos.forEach(trabajo => {
         trabajo.items.forEach(item => {
             if (item.mustCheckStock) {
                 if (p = products_quantities.find(p => p.idcodigo == item.idcodigo)) {
@@ -88,12 +93,12 @@ const procesarTrabajoMultiple = (data, callback) => {
                 }
             }
         })
-    })
-        ;
+    });*/
+
     /**
      * check stock
      */
-    controlarStock(products_quantities, idsucursal, (response) => {
+    controlarStock(products_quantities, data.idsucursal, (response) => {
         if (response.error) {
             return callback({ error: 1, msg: "error validating quantities" });
         }
@@ -101,12 +106,19 @@ const procesarTrabajoMultiple = (data, callback) => {
             if (response0.error) {
                     return callback({ error: 1, msg: "error inserting venta" });
                 }
-            const idVenta = response0.data.insertId;
-            agregarTrabajoMultiple(data, idVenta,  (response1) => {
+            const idVenta = response0.idventa;
+
+            const _trabajos = data.trabajos.map(trabajo => {
+                return { ...trabajo, idventa: idVenta }
+            });
+
+            console.log("trabajos a insertar: ", _trabajos);
+
+            agregarTrabajoMultiple(_trabajos, data.idsucursal, idVenta, (response1) => {
                 if (response1.error) {
                     return callback({ error: 1, msg: "error inserting operations" });
                 }
-                descontarStock(idVenta, idsucursal, (response2) => {
+                descontarStock(idVenta, data.idsucursal, (response2) => {
                     if (response2.error) {
                         return callback({ error: 1, msg: "error when trying to discount stock quantities" });
                     }
@@ -126,12 +138,13 @@ const agregarVenta = (data, callback) => {
 }
 
 const agregarTrabajoMultiple = (trabajos, idsucursal, idventa, callback) => {
-    if(trabajos.length == 0) {
+    if(!trabajos || trabajos.length == 0) {
         return callback({ msg: "no more trabajos to process" });
     }
     const trabajo = trabajos.shift();
-    db.agregarTrabajo(trabajo, idsucursal, response=>{
-        db.agregarTabajoItems(trabajo, response.data.idtrabajo, idventa, response=>{
+    console.log("trabajo a insertar: ", trabajo);
+    db.agregarTrabajo(trabajo, idventa, response=>{
+        db.agregarTabajoItems(trabajo, response.idtrabajo, idventa, idsucursal , response=>{
             if (response.error) {
                 return callback({ error: 1, msg: "error inserting trabajo items" });
             }
@@ -145,6 +158,7 @@ const descontarStock = (data, idsucursal, callback) => {
 }
 
 const controlarStock = (data, idsucursal, callback) => {
+    console.log("controlando stock para los siguientes productos: ", data); 
     return callback({ ok: 1 });//for now, we will not control stock quantities, but in the future we will implement this function to check if there is stock available for the products in the venta
     //check using db quantities
     db.checkQuantities(products_quantities, response => {
