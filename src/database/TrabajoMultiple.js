@@ -64,7 +64,7 @@ const agregarTrabajo = (data, idventa, callback) => {
   nro_trabajo, 
   tipo_trabajo) 
   VALUES (${idventa}, '${data.nro}', '${data.tipo}');`;
-  console.log("query agregar trabajo: ", query);
+  //console.log("query agregar trabajo: ", query);
   //return callback({ idtrabajo: 1 }); //for testing
   doQuery(query, (response) => {
     if (!response) {
@@ -98,9 +98,9 @@ const descontarStock = (idventa, idsucursal, callback) => {
 };
 
 const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
-  console.log("agregando trabajo items para trabajo:", idTrabajo);
+  //console.log("agregando trabajo items para trabajo:", idTrabajo);
 
-  console.log(data.items);
+  //console.log(data.items);
 
   let query = `
   INSERT INTO venta_has_stock (
@@ -135,8 +135,7 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
   });
 
   query += rows;
-  console.log("query agregar trabajo items: ", query);
-
+ // console.log("query agregar trabajo items: ", query);
   //return callback({ ok: 1 }); //for testing
 
   doQuery(query, (response) => {
@@ -148,7 +147,7 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
 };
 
 const obtenerTrabajoMultiple = ({ idventa }, callback) => {
-  console.log("obteniendo trabajo multiple para idventa: ", idventa);
+  //console.log("obteniendo trabajo multiple para idventa: ", idventa);
   const query_venta = `SELECT * FROM venta v WHERE v.idventa=${idventa};`;
   const query_trabajos = `SELECT 
                         t.idtrabajo,
@@ -171,7 +170,7 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
                         WHERE 
                         t.idventa=${idventa};`;
 
-                        console.log(query_trabajos);
+                        //console.log(query_trabajos);
 
   doQuery(query_venta, (responseVenta) => {
     if (!responseVenta) {
@@ -182,12 +181,41 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
         
         return callback({ error: 1, msg: "error fetching trabajos" });
       }
-      console.log(responseTrabajos)
+      //console.log(responseTrabajos)
 
-      return callback({ ok: 1, venta: responseVenta.data, trabajos: responseTrabajos.data });
+      return callback({ ok: 1, venta: responseVenta.data[0], trabajos: responseTrabajos.data });
     });
   });
 };
+
+const obtenerListadoVentasTM = (callback) => {
+  const query = `SELECT 
+                date_format(v.fecha, '%d/%m/%Y') AS 'fecha_f',
+                v.idventa,
+                v.cliente_idcliente,
+                v.sucursal_idsucursal,
+                v.usuario_idusuario,
+                v.caja_idcaja,
+                CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
+                s.nombre AS 'sucursal',
+                u.nombre AS 'usuario',
+                v.monto_total,
+                v.descuento,
+                v.subtotal
+                FROM venta v, cliente c, sucursal s, usuario u WHERE
+                v.cliente_idcliente = c.idcliente AND 
+                v.sucursal_idsucursal = s.idsucursal AND 
+                v.usuario_idusuario = u.idusuario AND 
+                v.tipo = 'MULTIPLE'
+                ORDER BY v.idventa DESC `;
+
+  doQuery(query, (response) => {
+    if (!response) {
+      return callback({ error: 1, msg: "error fetching ventas" });
+    }
+    return callback({ ok: 1, data: response.data });
+  });
+}
 
 module.exports = {
   agregarVenta,
@@ -195,5 +223,6 @@ module.exports = {
   descontarStock,
   agregarTrabajo,
   agregarTabajoItems,
-  obtenerTrabajoMultiple
+  obtenerTrabajoMultiple,
+  obtenerListadoVentasTM,
 };

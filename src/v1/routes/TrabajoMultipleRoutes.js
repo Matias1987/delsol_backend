@@ -6,4 +6,8 @@ router.post("/", (req, res) => {
     controller.procesarTrabajoMultiple(req, res);
 });
 
+router.get("/",(req,res) => {
+    controller.obtenerListadoVentasTM(req,res);
+})
+
 module.exports = router;

@@ -125,7 +125,8 @@ const procesarTrabajoMultiple = (data, callback) => {
                         if (response3.error) {
                             return callback({ error: 1, msg: "error fetching venta with trabajos" });
                         }
-                        callback({ ok: 1, venta: response3.venta, trabajos: response3.trabajos });
+                        
+                        callback({ ok: 1, data: response3 });
                     });
 
 
@@ -208,9 +209,19 @@ const obtenerTrabajoMultiple = (data, callback) => {
                 })
             }
         });
+        //console.log("venta con trabajos: ", venta1);
         callback?.(venta1);
 
     });
 }
 
-module.exports = { procesarTrabajoMultiple }
+const obtenerListadoVentasTM = (callback) => {
+    db.obtenerListadoVentasTM(response => {
+        if (response.error) {
+                return callback({ error: 1, msg: "error fetching ventas" });    
+        }
+        callback(response);
+    });
+}
+
+module.exports = { procesarTrabajoMultiple, obtenerListadoVentasTM , obtenerTrabajoMultiple}
