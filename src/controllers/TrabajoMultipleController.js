@@ -15,7 +15,7 @@ const obtenerListadoVentasTM = (req, res) => {
 const obtenerTrabajoMultiple = (req, res) => {
     const { idventa } = req.params;
     service.obtenerTrabajoMultiple({ idventa }, (result) => {
-        return res.json(result);
+        return res.json({data:result});
     });
 }
 
