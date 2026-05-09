@@ -224,4 +224,14 @@ const obtenerListadoVentasTM = (callback) => {
     });
 }
 
-module.exports = { procesarTrabajoMultiple, obtenerListadoVentasTM , obtenerTrabajoMultiple}
+
+const obtenerItemsTrabajo = (data, callback) => {
+    db.obtenerItemsTrabajo(data, response => {
+        if (response.error) {
+                return callback({ error: 1, msg: "error fetching items for trabajo" });    
+        }
+        callback(response);
+    });
+}
+
+module.exports = { procesarTrabajoMultiple, obtenerListadoVentasTM , obtenerTrabajoMultiple, obtenerItemsTrabajo}

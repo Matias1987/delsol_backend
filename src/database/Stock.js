@@ -753,7 +753,7 @@ const obtener_stock_ventas = (filters, callback) => {
   });
   connection.end();
 };
-const obtener_stock_detalles_venta = (data, callback) => {
+const obtener_stock_detalles_venta = ({ idcodigo, idsucursal, idcliente }, callback) => {
   const _query = `SELECT 
         c.idcodigo,
         s.cantidad, 
@@ -761,20 +761,21 @@ const obtener_stock_detalles_venta = (data, callback) => {
         if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
         c.descripcion,
         c.costo,
-        sg.multiplicador
+        sg.multiplicador,
+        c.subgrupo_idsubgrupo
         FROM stock s , codigo c, subgrupo sg
         WHERE 
         s.codigo_idcodigo = c.idcodigo AND 
         c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
-        c.idcodigo = ${data.idcodigo} AND
-        s.sucursal_idsucursal = ${data.idsucursal};`;
+        c.idcodigo = ${idcodigo} AND
+        s.sucursal_idsucursal = ${idsucursal};`;
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(_query, (err, rows) => {
-    callback(rows);
+        console.log(_query);
+
+
+  doQuery(_query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const obtener_subgrupo_full = (callback) => {

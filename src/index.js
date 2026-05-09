@@ -349,6 +349,9 @@ app.use("/api/v1/opinion", clienteOpinionRouter);
 const trabajoMultipleRouter = require("./v1/routes/TrabajoMultipleRoutes");
 app.use("/api/v1/tm", trabajoMultipleRouter);
 
+const descuentoClienteRouter = require("./v1/routes/DescuentoClienteRoutes");
+app.use("/api/v1/dc", descuentoClienteRouter);
+
 /*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)

@@ -14,4 +14,8 @@ router.get("/:idventa",(req,res) => {
     controller.obtenerTrabajoMultiple(req,res);
 });
 
+router.get("/items/:idtrabajo",(req,res) => {
+    controller.obtenerItemsTrabajo(req,res);
+});
+
 module.exports = router;

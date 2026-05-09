@@ -44,18 +44,33 @@ const agregar_item_adicional = (data, callback) => {
     
 }
 
-const obtener_adicionales_venta = (data, callback) => {
+const obtener_adicionales_venta = ({idventa, idtrabajo}, callback) => {
+    const _idtrabajo = idtrabajo || '';
     let query = `SELECT items.id, items.tipo, items.idcodigo, items.original , c.codigo
     FROM 
     codigo c,
     (
-    SELECT vs.idventaitem as 'id', vs.stock_codigo_idcodigo AS 'idcodigo', 1 AS 'original', vs.tipo AS 'tipo'  FROM venta_has_stock vs WHERE vs.venta_idventa=${data}
+        SELECT 
+        vs.idventaitem as 'id', 
+        vs.stock_codigo_idcodigo AS 'idcodigo', 
+        1 AS 'original', 
+        vs.tipo AS 'tipo'  
+        FROM venta_has_stock vs 
+        WHERE 
+        vs.venta_idventa=${idventa} AND (case when '${idtrabajo}'='' then true else vs.id_trabajo=${idtrabajo} end)
     union
-    SELECT sa.id as 'id', sa.fk_codigo AS 'idcodigo', 0 AS 'original', sa.tipo AS 'tipo' FROM sobre_adicionales sa WHERE sa.fk_venta=${data}
+    SELECT 
+        sa.id as 'id', 
+        sa.fk_codigo AS 'idcodigo', 
+        0 AS 'original', 
+        sa.tipo AS 'tipo' 
+        FROM sobre_adicionales sa 
+        WHERE 
+        sa.fk_venta=${idventa} and (case when '${idtrabajo}'='' then true else sa.fk_trabajo=${idtrabajo} end)
     ) AS items
     WHERE c.idcodigo = items.idcodigo
     ORDER BY items.tipo, items.original desc`
-    //console.log(query)
+    console.log(query)
     const connection = mysql_connection.getConnection()
     connection.connect()
     connection.query(query,(err,resp)=>{

@@ -19,8 +19,16 @@ const obtenerTrabajoMultiple = (req, res) => {
     });
 }
 
+const obtenerItemsTrabajo = (req, res) => {
+    const { idtrabajo } = req.params;
+    service.obtenerItemsTrabajo({ idtrabajo }, (result) => {
+        return res.json({data:result});
+    });
+}
+
 module.exports = { 
     procesarTrabajoMultiple,
     obtenerListadoVentasTM,
-    obtenerTrabajoMultiple
+    obtenerTrabajoMultiple,
+    obtenerItemsTrabajo
 }

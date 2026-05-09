@@ -1,5 +1,6 @@
 const StockDB = require("../database/Stock")
 const StockExtDB = require("../database/StockExt")
+const descuentosService = require("./DescuentoClienteService")  
 
 const verificar_cantidades_productos = (data,callback) => {
   StockDB.verificar_cantidades_productos(data,(resp)=>{
@@ -105,7 +106,19 @@ const obtener_stock_ventas = (filters, callback) =>{
 
 const obtener_stock_detalles_venta = (data, callback) => {
   StockDB.obtener_stock_detalles_venta(data,(rows)=>{
-    return callback(rows);
+    if(!rows || rows?.length<1)
+    {
+      return callback([]);
+    }
+    //get idsubgrupo and idcodigo
+    const row = rows[0];
+    const {idcodigo, subgrupo_idsubgrupo} = row;
+
+    descuentosService.obtenerDescuentoClienteSubgrupo({idsubgrupo: subgrupo_idsubgrupo, idcliente: 0}, (descuento)=>{
+      row.descuento = descuento?.[0]?.porcentaje || 0;
+      console.log("descuento", [row])
+      return callback([row]);
+    })
   })
 }
 

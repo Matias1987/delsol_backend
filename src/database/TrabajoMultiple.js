@@ -217,6 +217,27 @@ const obtenerListadoVentasTM = (callback) => {
   });
 }
 
+const obtenerItemsTrabajo = (idtrabajo, callback) => {
+  const query = `SELECT 
+                  vhs.stock_codigo_idcodigo,
+                  vhs.tipo,
+                  vhs.esf,
+                  vhs.cil,
+                  vhs.eje,
+                  vhs.cantidad,
+                  vhs.precio,
+                  vhs.total
+                  FROM venta_has_stock vhs
+                  WHERE vhs.id_trabajo = ${idtrabajo}`;
+
+  doQuery(query, (response) => {
+    if (!response) {
+      return callback({ error: 1, msg: "error fetching items" });
+    }
+    return callback({ ok: 1, data: response.data });
+  });
+};
+
 module.exports = {
   agregarVenta,
   checkQuantities,
@@ -225,4 +246,5 @@ module.exports = {
   agregarTabajoItems,
   obtenerTrabajoMultiple,
   obtenerListadoVentasTM,
+  obtenerItemsTrabajo,
 };
