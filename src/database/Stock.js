@@ -290,6 +290,7 @@ const obtener_detalle_stock_sucursal = (idsucursal, idcodigo, callback) => {
                 s.cantidad,
                 c.costo,
                 if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
+                sg.precio_defecto_mayorista
             FROM 
             familia f, subfamilia sf, grupo g, subgrupo sg,
             codigo c, stock s WHERE
@@ -318,7 +319,8 @@ const obtener_detalle_stock_sucursal_v2 = (idsucursal, idcodigo, callback) => {
                 if(c.modo_precio=0, (ROUND((c.costo * sg.multiplicador)/100)*100),if(c.modo_precio = 1,sg.precio_defecto,c.precio)) AS 'precio',
                 sg.multiplicador,
                 c.modo_precio,
-                sg.idsubgrupo
+                sg.idsubgrupo,
+                sg.precio_defecto_mayorista
                 FROM 
                 stock s, codigo c,
                 grupo g, subgrupo sg, familia f, subfamilia sf 
@@ -762,7 +764,8 @@ const obtener_stock_detalles_venta = ({ idcodigo, idsucursal, idcliente }, callb
         c.descripcion,
         c.costo,
         sg.multiplicador,
-        c.subgrupo_idsubgrupo
+        c.subgrupo_idsubgrupo,
+        sg.precio_defecto_mayorista
         FROM stock s , codigo c, subgrupo sg
         WHERE 
         s.codigo_idcodigo = c.idcodigo AND 

@@ -10,4 +10,8 @@ router.post("/", (req, res) => {
     controller.agregarDescuentoClienteSubgrupo(req, res);
 });
 
+router.get("/",(req,res)=>{
+    controller.obtenerListado(req,res);
+});
+
 module.exports = router;

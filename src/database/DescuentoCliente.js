@@ -30,7 +30,25 @@ const agregarDescuentoClienteSubgrupo = (data, callback) => {
   });
 };
 
+const obtenerListado = (callback) => {
+  const query = `SELECT 
+                  dc.*,
+                  if(c.idcliente IS NULL , '' , CONCAT(c.apellido,' ',c.nombre)) AS 'cliente',
+                  sg.nombre_corto AS 'subgrupo'
+                  FROM 
+                  descuento_cliente dc LEFT JOIN cliente c ON dc.fk_cliente = c.idcliente , 
+                  subgrupo sg
+                  WHERE
+                  sg.idsubgrupo = dc.fk_subgrupo AND 
+                  dc.activo=1
+                  `;
+  doQuery(query,(response)=>{
+    callback?.(response.data);
+  })
+}
+
 module.exports = {
   obtenerDescuentoClienteSubgrupo,
   agregarDescuentoClienteSubgrupo,
+  obtenerListado,
 };

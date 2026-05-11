@@ -12,7 +12,14 @@ const agregarDescuentoClienteSubgrupo = (data, callback) => {
     });
 }
 
+const obtenerListado = (callback) =>{
+    db.obtenerListado(response=>{
+        callback?.(response);
+    })
+}
+
 module.exports = {
     obtenerDescuentoClienteSubgrupo,
-    agregarDescuentoClienteSubgrupo
+    agregarDescuentoClienteSubgrupo,
+    obtenerListado,
 }

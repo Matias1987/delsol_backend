@@ -14,8 +14,15 @@ const agregarDescuentoClienteSubgrupo = (req, res) => {
     });
 };
 
+const obtenerListado = (req,res) => {
+    service.obtenerListado(response=>{
+        res.json(response);
+    })
+}
 
 module.exports = {
     obtenerDescuentoClienteSubgrupo,
-    agregarDescuentoClienteSubgrupo
+    agregarDescuentoClienteSubgrupo,
+    obtenerListado,
+    
 }
