@@ -47,8 +47,16 @@ const obtenerListado = (callback) => {
   })
 }
 
+const cambiarEstadoDescuento = (data, callback) =>{
+  const query = `UPDATE descuento_cliente dc SET dc.activo = ${data.activo} WHERE dc.id_descuento=${data.id_descuento};`  ;
+  doQuery(query,response=>{
+    callback({ok:"1"});
+  })
+}
+
 module.exports = {
   obtenerDescuentoClienteSubgrupo,
   agregarDescuentoClienteSubgrupo,
   obtenerListado,
+  cambiarEstadoDescuento,
 };

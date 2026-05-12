@@ -42,7 +42,7 @@ const agregarVenta = (data, callback) => {
     '',
     '',
     '',
-    ''
+    'PENDIENTE'
   );`;
 
   console.log("query agregar venta: ", queryVenta);

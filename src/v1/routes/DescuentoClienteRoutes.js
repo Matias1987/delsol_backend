@@ -9,6 +9,9 @@ router.post("/obtener/", (req, res) => {
 router.post("/", (req, res) => {
     controller.agregarDescuentoClienteSubgrupo(req, res);
 });
+router.post("/cambiar/estado/", (req, res) => {
+    controller.cambiarEstadoDescuento(req, res);
+});
 
 router.get("/",(req,res)=>{
     controller.obtenerListado(req,res);

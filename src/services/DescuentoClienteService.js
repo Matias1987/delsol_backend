@@ -18,8 +18,15 @@ const obtenerListado = (callback) =>{
     })
 }
 
+const cambiarEstadoDescuento = (data, callback) =>{
+    db.cambiarEstadoDescuento(data, response=>{
+        callback?.(response);
+    })
+}
+
 module.exports = {
     obtenerDescuentoClienteSubgrupo,
     agregarDescuentoClienteSubgrupo,
     obtenerListado,
+    cambiarEstadoDescuento,
 }

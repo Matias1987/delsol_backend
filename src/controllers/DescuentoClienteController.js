@@ -20,9 +20,17 @@ const obtenerListado = (req,res) => {
     })
 }
 
+const cambiarEstadoDescuento = (req, res) => {
+    const data = req.body;
+    service.cambiarEstadoDescuento(data, response=>{
+        res.json(response);
+    })
+}
+
 module.exports = {
     obtenerDescuentoClienteSubgrupo,
     agregarDescuentoClienteSubgrupo,
     obtenerListado,
+    cambiarEstadoDescuento,
     
 }
