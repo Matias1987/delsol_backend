@@ -719,7 +719,8 @@ const obtener_datos_pagare = (data, callback) => {
           monto_cuota: r.monto_cuota,
           monto_entrega: monto_entrega,
           vta_monto: r.vta_monto,
-          vta_monto_int: parseFloat(r.vta_monto) - r.monto + r.monto_int,
+          //vta_monto_int: parseFloat(r.vta_monto) - parseFloat(r.monto) + parseFloat(r.monto_int),
+           vta_monto_int: parseFloat(r.vta_monto) - parseFloat(r.monto) + parseFloat(r.monto_int),
         });
       });
     }
