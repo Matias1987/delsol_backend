@@ -1,3 +1,4 @@
+const { cobro_inmediato } = require("../../lib/global");
 const { parse_date_for_mysql } = require("../../lib/helpers");
 
 const parse_venta_data = (body)=> ( {
@@ -17,7 +18,7 @@ const parse_venta_data = (body)=> ( {
 	horaRetiro: body?.horaRetiro,
 	json_items: body?.json_items,
 	uid: body?.uid||'',
-	estado: (body?.cobrar) ? (body?.entrega ? 'ENTREGADO' : 'PENDIENTE') : 'INGRESADO',
+	estado: (cobro_inmediato) ? (body?.entrega ? 'ENTREGADO' : 'PENDIENTE') : 'INGRESADO',
 });
 
 const update_venta_query = (r, idventa)  =>	`

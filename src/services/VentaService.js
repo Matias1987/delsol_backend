@@ -3,7 +3,7 @@ const ventaDBExt = require("../database/VentaExt");
 const cobroService = require("./CobroService");
 const stockService = require("./StockService");
 const stockCristalesService = require("./StockCritalesService");
-const { validar_cristales_modo2, cobro_inmediato } = require("../lib/global");
+const { validar_cristales_modo2, cobro_inmediato, ignorar_control_stock } = require("../lib/global");
 
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data, (rows) => {
@@ -237,13 +237,18 @@ const agregarVenta = (data, callback) => {
   console.log("###-Received data for agregarVenta:-###");
   console.log(JSON.stringify(data));
   verificar_stock_venta(data, (verifStockResponse) => {
-    if (verifStockResponse.error) {
+    if (verifStockResponse.error && !ignorar_control_stock) {
       console.log("Error al verificar stock antes de agregar venta:");
       console.log(data);
       return callback({
         error: "Error al verificar stock antes de agregar venta",
         details: data.details,
       });
+    }
+
+    if(ignorar_control_stock)
+    {
+      console.log("Ignorar control stock true, ignorando cantidades...");
     }
 
     doAgregarVenta(data, (agregarVentaResponse) => {
