@@ -1,6 +1,9 @@
 const { doQuery } = require("./helpers/queriesHelper");
 
 const agregarVenta = (data, callback) => {
+  //parse data...
+
+  console.log(data)
   const queryVenta = `INSERT INTO venta 
   (
     cliente_idcliente, 
@@ -36,7 +39,7 @@ const agregarVenta = (data, callback) => {
     date('${data.fechaRetiro}'),
     NULL,
     NULL,
-    'MULTIPLE',
+    '7',
     ${data.montoTotal},
     ${data.montoTotal},
     '',
@@ -64,14 +67,14 @@ const agregarTrabajo = (data, idventa, callback) => {
   nro_trabajo, 
   tipo_trabajo) 
   VALUES (${idventa}, '${data.nro}', '${data.tipo}');`;
-  //console.log("query agregar trabajo: ", query);
+  console.log("query agregar trabajo: ", query);
   //return callback({ idtrabajo: 1 }); //for testing
   doQuery(query, (response) => {
     if (!response) {
       return callback({ error });
     }
 
-    return callback({idtrabajo: response.data.insertId});
+    return callback({ idtrabajo: response.data.insertId });
   });
 };
 
@@ -114,7 +117,8 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
   eje,
   precio,
   total, 
-  id_trabajo
+  id_trabajo,
+  id_descuento
   )VALUES`;
   let rows = "";
 
@@ -130,12 +134,13 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
     '${item.eje}', 
     '${item.precio}', 
     '${item.precio * item.cantidad}', 
-    ${idTrabajo})
+    ${idTrabajo},
+    ${item.iddescuento})
     ${index < data.items.length - 1 ? "," : ""}`;
   });
 
   query += rows;
- // console.log("query agregar trabajo items: ", query);
+  console.log("query agregar trabajo items: ", query);
   //return callback({ ok: 1 }); //for testing
 
   doQuery(query, (response) => {
@@ -161,7 +166,8 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
                         vhs.eje,
                         vhs.cantidad,
                         vhs.precio,
-                        vhs.total 
+                        vhs.total,
+                        vhs.id_descuento
                         FROM 
                         trabajo t 
                         INNER JOIN 
@@ -170,7 +176,7 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
                         WHERE 
                         t.idventa=${idventa};`;
 
-                        //console.log(query_trabajos);
+  //console.log(query_trabajos);
 
   doQuery(query_venta, (responseVenta) => {
     if (!responseVenta) {
@@ -178,12 +184,15 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
     }
     doQuery(query_trabajos, (responseTrabajos) => {
       if (!responseTrabajos) {
-        
         return callback({ error: 1, msg: "error fetching trabajos" });
       }
       //console.log(responseTrabajos)
 
-      return callback({ ok: 1, venta: responseVenta.data[0], trabajos: responseTrabajos.data });
+      return callback({
+        ok: 1,
+        venta: responseVenta.data[0],
+        trabajos: responseTrabajos.data,
+      });
     });
   });
 };
@@ -215,7 +224,7 @@ const obtenerListadoVentasTM = (callback) => {
     }
     return callback({ ok: 1, data: response.data });
   });
-}
+};
 
 const obtenerItemsTrabajo = (idtrabajo, callback) => {
   const query = `SELECT 

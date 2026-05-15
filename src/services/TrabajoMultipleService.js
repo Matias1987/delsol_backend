@@ -76,7 +76,24 @@ const db = require('../database/TrabajoMultiple');
 }
 */
 
-const procesarTrabajoMultiple = (data, callback) => {
+const procesarTrabajoMultiple = (_data, callback) => {
+    const data = {
+        idcaja: _data.fkcaja,
+        idcliente: _data.fkcliente,
+        idsucursal: _data.fksucursal,
+        comentarios: _data.comentarios,
+        idusuario: _data.fkusuario,
+        fechaRetiro: "2026-05-14",
+        estado: "PENDIENTE",
+        estadoLaboratorio: "",
+        enLaboratorio: 1,
+        anulado: 0,
+        monto: _data.subtotal,
+        descuento: _data.descuento,
+        montoTotal: _data.total,
+        trabajos: _data.trabajos,
+        descuento: _data.descuento,
+    };
     console.log("data recibida en servicio de trabajo multiple: ", data);
     //return callback({ ok: 1 });
     //for testing
@@ -203,9 +220,11 @@ const obtenerTrabajoMultiple = (data, callback) => {
                     esf: t.esf,
                     cil: t.cil,
                     eje: t.eje,
+                    tipo: t.tipo,
                     cantidad: t.cantidad,
                     precio: t.precio,
                     total: t.total,
+                    iddescuento: t.id_descuento,
                 })
             }
         });

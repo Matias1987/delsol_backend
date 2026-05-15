@@ -18,7 +18,7 @@ const guardar_stock_cristales = (data, callback) => {
 
   rows_str += ` ON DUPLICATE KEY UPDATE cantidad= VALUES(cantidad);`;
 
-  console.log(base_query + rows_str);
+  //console.log(base_query + rows_str);
   //return callback?.({ok:1});
 
   doQuery(base_query + rows_str, (response) => {
@@ -53,13 +53,14 @@ const obtener_stock = (data, callback) => {
 
 const obtener_grilla = ({ fkCodigo, fkSucursal }, callback) => {
   const query = `select * from stock_cristales s where s.fk_codigo=${fkCodigo} and s.fk_sucursal= ${fkSucursal};`;
+  console.log(query)
   doQuery(query, (response) => {
     callback?.(response.data);
   });
 };
 
 const obtener_codigos_cristales = (callback) => {
-  const query = `SELECT * FROM codigo c WHERE c.subgrupo_idsubgrupo=677231;`;
+  const query = `SELECT * FROM codigo c WHERE c.subgrupo_idsubgrupo=67689;`;
   doQuery(query, (response) => {
     callback?.(response.data);
   });
@@ -69,7 +70,7 @@ const acutalizar_stock_cristales = (data, callback) => {
   console.log(
     "###################Updating stock for cristales with data:################################",
   );
-  console.log(data);
+  //console.log(data);
   const query = `UPDATE stock_cristales sc SET 
       sc.cantidad=sc.cantidad-${data.cantidad} 
       WHERE 
@@ -79,7 +80,7 @@ const acutalizar_stock_cristales = (data, callback) => {
       sc.cil='${data.cil}' AND 
       sc.side='${data.side||"-"}';`;
 
-  console.log(query);
+  //console.log(query);
 
   doQuery(query, (updateResponse) => {
     if (!updateResponse) {
