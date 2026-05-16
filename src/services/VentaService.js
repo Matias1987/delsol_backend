@@ -332,9 +332,50 @@ const obtenerVentaMPCtaCte = (idventa, callback) => {
 
 const lista_venta_sucursal_estado = (data, callback) => {
   ventaDB.lista_venta_sucursal_estado(data, (rows) => {
-    return callback(rows);
+    const result = procesar_ventas(rows)
+    //console.log(JSON.stringify(result))
+    return callback(result);
   });
 };
+
+
+const procesar_ventas = (rows) =>{
+  console.log("pROCESAR VENTAS")
+  if(!rows)
+  {
+    return rows
+  }
+  const result = [];
+  let lastId = -1;
+  let parent = null;
+  let key=0;
+  rows.forEach(row=>{
+    if(+lastId!=+row.idventa )
+    {
+      parent=null;
+      if(+row.tipo==7)
+        {
+          parent = {...row, isParent:1, key:key, children:[]};
+          result.push(parent);
+          key++;
+        }
+    }
+    const childNode = {...row, isParent:0, key:key,}
+
+    if(parent)
+    {
+      parent.children.push(childNode);
+    }
+    else{
+      result.push(childNode);
+    }
+
+    lastId=row.idventa;
+    key++;
+  });
+  return result;
+
+}
 
 const editarVenta = (req, res) => {};
 

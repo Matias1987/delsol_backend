@@ -129,4 +129,39 @@ const obtener_uso_items_adic_subgrupo_periodo = (data, callback) => {
     connection.end()
 }
 
+const obtener_listado_ventas = (data, callback) =>{
+    const query = `SELECT 
+	v.idventa, 
+	CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
+	u.nombre AS 'vendedor',
+	v.estado,
+	v.tipo,
+	v.monto_total as 'monto',
+	date_format(v.fecha, '%d-%m-%y') AS 'fecha',
+	DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
+	v.sucursal_idsucursal,
+	v.cliente_idcliente,
+	v.en_laboratorio,
+	s.nombre as 'sucursal',
+	if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller',
+    if(tt.idventa is NULL,-1 , tt.idtrabajo) as 'idtrabajo',
+    if(tt.idventa is NULL, '' , tt.tipo_trabajo) as 'tipo_trabajo'
+	FROM 
+	venta v LEFT JOIN trabajo tt ON tt.idventa = v.idventa, 
+	cliente c, 
+	usuario u, 
+	sucursal s,
+    caja ca 
+	WHERE 
+	v.caja_idcaja = ca.idcaja AND 
+	s.idsucursal = v.sucursal_idsucursal AND 
+	v.cliente_idcliente = c.idcliente AND
+	v.usuario_idusuario = u.idusuario AND
+    v.estado='PENDIENTE' AND 
+    v.en_laboratorio=1 AND 
+    v.tipo='7'
+    ORDER by v.idventa desc;
+    `
+}
+
 module.exports = {agregar_item_adicional, obtener_adicionales_venta, obtener_uso_items_adic_subgrupo_periodo}

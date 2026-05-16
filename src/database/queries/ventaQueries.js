@@ -382,9 +382,11 @@ const queryListaVentasSucursalEstado = (
 	v.cliente_idcliente,
 	v.en_laboratorio,
 	s.nombre as 'sucursal',
-	if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller'
+	if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller',
+	if(tt.idventa is NULL,-1 , tt.idtrabajo) as 'idtrabajo',
+    if(tt.idventa is NULL, '' , tt.tipo_trabajo) as 'tipo_trabajo'
 	FROM 
-	venta v, 
+	venta v LEFT JOIN trabajo tt ON tt.idventa = v.idventa, 
 	cliente c, 
 	usuario u, 
 	sucursal s,

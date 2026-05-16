@@ -624,6 +624,8 @@ const lista_venta_sucursal_estado = (data, callback) => {
     limit,
   );
 
+  console.log(q)
+
   doQuery(q, (resp) => {
     callback(resp.data);
   });
