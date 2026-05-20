@@ -75,6 +75,13 @@ const monedas_existentes = (req,res) => {
     })
 }
 
+const obtener_pagos_no_saldados = (req, res) => {
+    const {body} = req
+    proveedorService.obtener_pagos_no_saldados(body, response=>{
+        res.status(201).send({status:"OK", data:response});
+    })
+}
+
 module.exports = {
     agregar_cm_proveedor,
     agregar_pago_proveedor,
@@ -84,4 +91,5 @@ module.exports = {
     detalle_proveedor,
     pagos_atrasados_proveedores,
     monedas_existentes,
+    obtener_pagos_no_saldados,
 }

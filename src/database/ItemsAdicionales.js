@@ -1,51 +1,41 @@
-const mysql_connection = require("../lib/mysql_connection")
+const { doQuery } = require("./helpers/queriesHelper");
 
 const agregar_item_adicional = (data, callback) => {
+    console.log(data);
+    const idtrabajo = +data.fktrabajo > 0? data.fktrabajo : 'NULL';
 
     const list = []
 
     let items = '';
     
     data.items.forEach(i=>{
-        items+=(items.length>0?',':'') + `(${data.fksucursal}, ${i.idcodigo}, ${data.fkventa}, 1, '${i.tipo}')`;
+        
+
+        items+=(items.length>0?',':'') + `(${data.fksucursal}, ${i.idcodigo}, ${data.fkventa}, 1, '${i.tipo}', ${idtrabajo})`;
         
         list.push(`UPDATE stock s SET s.cantidad = s.cantidad -1 WHERE s.codigo_idcodigo=${i.idcodigo} AND s.sucursal_idsucursal=${data.fksucursal};`);
     })
-    let query = `INSERT INTO sobre_adicionales (fk_sucursal, fk_codigo, fk_venta, cantidad, tipo) VALUES ${items};`
+    let query = `INSERT INTO sobre_adicionales (fk_sucursal, fk_codigo, fk_venta, cantidad, tipo, fk_trabajo) VALUES ${items};`
 
-    const do_queries = () => {
+    const do_queries = (_callback) => {
         if(list.length<1)
-        {
-            try{
-                connection.end()
-            }
-            catch(_e){}
-            
+        {        
+            _callback();    
             return
         }
         let _q = list.pop()
         console.log(_q)
-        connection.query(_q,(err,resp)=>{do_queries()})
+        doQuery(_q,(resp)=>{do_queries(_callback)})
     }
-
-    /**
-     * 
-     */
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query,(err,resp)=>{
-        
-        console.log(query)
-        do_queries();
-
-        callback(resp)
-
-    })
+    console.log(query)
+    doQuery(query,(resp)=>{
+        do_queries(_=>{callback(resp.data)});
+    });
     
 }
 
 const obtener_adicionales_venta = ({idventa, idtrabajo}, callback) => {
-    const _idtrabajo = idtrabajo || '';
+    
     let query = `SELECT items.id, items.tipo, items.idcodigo, items.original , c.codigo
     FROM 
     codigo c,
@@ -54,33 +44,32 @@ const obtener_adicionales_venta = ({idventa, idtrabajo}, callback) => {
         vs.idventaitem as 'id', 
         vs.stock_codigo_idcodigo AS 'idcodigo', 
         1 AS 'original', 
-        vs.tipo AS 'tipo'  
+        vs.tipo AS 'tipo' ,
+        vs.id_trabajo as 'idtrabajo'
         FROM venta_has_stock vs 
         WHERE 
-        vs.venta_idventa=${idventa} AND (case when '${idtrabajo}'='' then true else vs.id_trabajo=${idtrabajo} end)
+        vs.venta_idventa=${idventa} AND (case when '${idtrabajo}'='-1' then true else vs.id_trabajo=${idtrabajo} end)
     union
     SELECT 
         sa.id as 'id', 
         sa.fk_codigo AS 'idcodigo', 
         0 AS 'original', 
-        sa.tipo AS 'tipo' 
+        sa.tipo AS 'tipo',
+        sa.fk_trabajo  as 'idtrabajo'
         FROM sobre_adicionales sa 
         WHERE 
-        sa.fk_venta=${idventa} and (case when '${idtrabajo}'='' then true else sa.fk_trabajo=${idtrabajo} end)
+        sa.fk_venta=${idventa} and (case when '${idtrabajo}'='-1' then true else sa.fk_trabajo=${idtrabajo} end)
     ) AS items
     WHERE c.idcodigo = items.idcodigo
     ORDER BY items.tipo, items.original desc`
     console.log(query)
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query,(err,resp)=>{
-        callback(resp)
+
+    doQuery(query,(resp)=>{
+        callback(resp.data);
     })
-    connection.end()
 }
 
 const obtener_uso_items_adic_subgrupo_periodo = (data, callback) => {
-    const connection = mysql_connection.getConnection()
     const query = `
     SELECT * FROM 
     (
@@ -121,47 +110,12 @@ const obtener_uso_items_adic_subgrupo_periodo = (data, callback) => {
     __c.esf, __c.cil, __c.eje
     ;
     `;
-    //console.log(query)
-    connection.connect()
-    connection.query(query,(err,rows)=>{
-        callback(rows)
-    })
-    connection.end()
+
+    doQuery(query,(resp)=>{
+        callback(resp.data)
+    });
+
 }
 
-const obtener_listado_ventas = (data, callback) =>{
-    const query = `SELECT 
-	v.idventa, 
-	CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
-	u.nombre AS 'vendedor',
-	v.estado,
-	v.tipo,
-	v.monto_total as 'monto',
-	date_format(v.fecha, '%d-%m-%y') AS 'fecha',
-	DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
-	v.sucursal_idsucursal,
-	v.cliente_idcliente,
-	v.en_laboratorio,
-	s.nombre as 'sucursal',
-	if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller',
-    if(tt.idventa is NULL,-1 , tt.idtrabajo) as 'idtrabajo',
-    if(tt.idventa is NULL, '' , tt.tipo_trabajo) as 'tipo_trabajo'
-	FROM 
-	venta v LEFT JOIN trabajo tt ON tt.idventa = v.idventa, 
-	cliente c, 
-	usuario u, 
-	sucursal s,
-    caja ca 
-	WHERE 
-	v.caja_idcaja = ca.idcaja AND 
-	s.idsucursal = v.sucursal_idsucursal AND 
-	v.cliente_idcliente = c.idcliente AND
-	v.usuario_idusuario = u.idusuario AND
-    v.estado='PENDIENTE' AND 
-    v.en_laboratorio=1 AND 
-    v.tipo='7'
-    ORDER by v.idventa desc;
-    `
-}
 
 module.exports = {agregar_item_adicional, obtener_adicionales_venta, obtener_uso_items_adic_subgrupo_periodo}

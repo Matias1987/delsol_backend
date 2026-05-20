@@ -592,6 +592,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
   let idcliente = data.idcliente || "";
   let fecha = data.fecha || "";
   let idsucursal = data.idsucursal || "";
+  let estado_trabajo = data.estado_trabajo || "";
   let evitar_ingresados =
     typeof data.incIngresadas === "undefined" ? 0 : data.incIngresadas ? 0 : 1;
   let evitar_anulados =
@@ -621,6 +622,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
     typeof data.estado_taller === "undefined" ? "" : data.estado_taller,
     evitar_ingresados,
     evitar_anulados,
+    estado_trabajo,
     limit,
   );
 

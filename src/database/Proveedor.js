@@ -335,6 +335,19 @@ const monedas_existentes = (data, callback) => {
   });
 };
 
+const obtener_pagos_no_saldados = ({idproveedor, moneda, modo}, callback) =>{
+    const query = `SELECT * FROM pago_proveedor pp WHERE 
+    pp.saldado=0 AND 
+    pp.moneda='${moneda}' AND 
+    pp.modo_ficha='${modo}' AND 
+    pp.fk_proveedor=${idproveedor};`;
+    
+    doQuery(query, response=>{
+        callback(response.data)
+    })
+}
+
+
 module.exports = {
   agregar_proveedor,
   obtener_proveedores,
@@ -344,4 +357,5 @@ module.exports = {
   agregar_cm_proveedor,
   pagos_atrasados_proveedores,
   monedas_existentes,
+  obtener_pagos_no_saldados,
 };

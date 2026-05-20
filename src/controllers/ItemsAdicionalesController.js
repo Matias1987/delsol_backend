@@ -15,8 +15,8 @@ const obtener_uso_items_adic_subgrupo_periodo = (req, res) => {
 }
 
 const obtener_adicionales_venta = (req, res) => {
-    const {params:{idventa}} = req
-    ItemsAdicionalesService.obtener_adicionales_venta(idventa,(rows)=>{
+    const {params:{idventa, idtrabajo}} = req
+    ItemsAdicionalesService.obtener_adicionales_venta({idventa, idtrabajo: idtrabajo||''},(rows)=>{
         res.status(201).send({status:'OK', data:rows});
     })
 }

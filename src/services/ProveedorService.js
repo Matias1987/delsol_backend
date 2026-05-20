@@ -48,7 +48,14 @@ const monedas_existentes = (data, callback) => {
     })
 }
 
+const obtener_pagos_no_saldados = (data, callback) => {
+    ProveedorDB.obtener_pagos_no_saldados(data,(response)=>{
+        callback(response);
+    })
+}
+
 module.exports = {
+    obtener_pagos_no_saldados,
     pagos_atrasados_proveedores,
     agregar_cm_proveedor,
     agregar_pago_proveedor,

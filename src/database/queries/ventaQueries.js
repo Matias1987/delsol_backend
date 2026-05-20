@@ -367,6 +367,7 @@ const queryListaVentasSucursalEstado = (
 	estado_taller="",
 	evitar_ingresados=0,
 	evitar_anulados=0,
+	estado_trabajo='',
 	limit=-1
 	) => (
 	`SELECT 
@@ -384,9 +385,10 @@ const queryListaVentasSucursalEstado = (
 	s.nombre as 'sucursal',
 	if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller',
 	if(tt.idventa is NULL,-1 , tt.idtrabajo) as 'idtrabajo',
-    if(tt.idventa is NULL, '' , tt.tipo_trabajo) as 'tipo_trabajo'
+    if(tt.idventa is NULL, '' , tt.tipo_trabajo) as 'tipo_trabajo',
+    if(tt.idventa is NULL, '' , if(tt.estado='LAB', 'LABORATORIO', tt.estado)) as 'estado_trabajo'
 	FROM 
-	venta v LEFT JOIN trabajo tt ON tt.idventa = v.idventa, 
+	venta v LEFT JOIN trabajo tt ON tt.idventa = v.idventa and (case when '${estado_trabajo}'='' then true else tt.estado='${estado_trabajo}' end), 
 	cliente c, 
 	usuario u, 
 	sucursal s,
@@ -407,7 +409,7 @@ const queryListaVentasSucursalEstado = (
 	(case when '${en_laboratorio}'<>'' then v.en_laboratorio='${en_laboratorio}'  ELSE TRUE END) AND
 	(case when '${fecha}' <> '' then date(ca.fecha) =  date('${fecha=='' ? '1970-1-1' : fecha}') else true end) AND
 	(case when '${idusuario}'<> '' then v.usuario_idusuario = '${idusuario}' else true end) AND 
-	(case when '${estado_taller}'<>'' then v.estado_taller = '${estado_taller}' else true end) 
+	(case when '${estado_taller}'<>'' && v.tipo<>7 then v.estado_taller = '${estado_taller}' else true end) 
 	ORDER by v.idventa desc ${limit!=-1 ? 'limit 300' : ''};
 	`
 )

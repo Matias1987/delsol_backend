@@ -1,4 +1,5 @@
-const mysql_connection = require("../lib/mysql_connection")
+const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 
 const agregar_pago_proveedor = (data,callback) => {
 
@@ -40,6 +41,18 @@ const anular_pago_proveedor = (data,callback) => {
 
 const detalle_pago_proveedor = (data, callback) => {
 
+}
+
+const obtener_pagos_no_saldados = ({idproveedor, moneda, modo}, callback) =>{
+    const query = `SELECT * FROM pago_proveedor pp WHERE 
+    pp.saldado=0 AND 
+    pp.moneda='${moneda}' AND 
+    pp.modo_ficha='${modo}' AND 
+    pp.fk_proveedor=${idproveedor};`;
+    
+    doQuery(query, response=>{
+        callback(response.data)
+    })
 }
 
 module.exports = {

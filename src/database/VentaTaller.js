@@ -1,4 +1,3 @@
-const mysql_connection = require("../lib/mysql_connection");
 const { doQuery } = require("./helpers/queriesHelper");
 
 const agregar_pedido = (data, callback) => {
@@ -13,51 +12,61 @@ const agregar_pedido = (data, callback) => {
     return;
   }
 
-  const query = `INSERT INTO venta_stock_pedido (fkSucursalPedido, fkcodigo, fkventa, tipo  ) VALUES `;
+  const _fktrabajo = +data.fktrabajo > 0 ? data.fktrabajo : 'NULL'
+
+  const query = `INSERT INTO venta_stock_pedido (fkSucursalPedido, fkcodigo, fkventa, tipo, fktrabajo  ) VALUES `;
 
   //CALLBACK
   let values = ``;
   data.items.forEach((i) => {
     values +=
       (values.length > 1 ? "," : "") +
-      `(${data.fksucursalpedido},${i.fkcodigo},${data.fkventa},'${i.tipo}')`;
+      `(${data.fksucursalpedido},${i.fkcodigo},${data.fkventa},'${i.tipo}', ${_fktrabajo})`;
   });
 
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query + values, (err, resp) => {
-    connection.query(
-      `update venta v set v.estado_taller='PEDIDO' where v.idventa = ${data.fkventa}`,
-      (err, resp) => {
-        callback(resp);
-      }
-    );
 
-    connection.end();
+  doQuery(query + values, (resp) => {
+    if(_fktrabajo!='NULL')
+    {
+        doQuery(
+        `update trabajo t set t.estado='PEDIDO' where t.idtrabajo = ${_fktrabajo}`,
+        (resp1) => {
+          callback(resp1.data);
+        }
+      );
+    }
+    else{
+      doQuery(
+        `update venta v set v.estado_taller='PEDIDO' where v.idventa = ${data.fkventa}`,
+        (resp1) => {
+          callback(resp1.data);
+        }
+      );
+    }
+
   });
 };
 
 const marcar_como_calibrando = (data, callback) => {
-  const query = `update venta v set v.estado_taller='CALIBRADO' where v.idventa = ${data.idventa}`;
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  const idtrabajo = +data.idtrabajo > 0 ? data.idtrabajo : null;
+  const query = idtrabajo?  `update trabajo t set t.estado = 'CALIBRADO' where t.idtrabajo=${idtrabajo};` :
+  `update venta v set v.estado_taller='CALIBRADO' where v.idventa = ${data.idventa}`;
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const marcar_como_terminado = (data, callback) => {
-  const query = `update venta v set v.estado_taller='TERMINADO', v.en_laboratorio='0' where v.idventa = ${data.idventa}`;
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  const idtrabajo = +data.idtrabajo > 0 ? data.idtrabajo : null;
+  const query = idtrabajo?  `update trabajo t set t.estado = 'TERMINADO' where t.idtrabajo=${idtrabajo};` : 
+  `update venta v set v.estado_taller='TERMINADO', v.en_laboratorio='0' where v.idventa = ${data.idventa}`;
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
-const obtener_items_operacion = (data, callback) => {
+const obtener_items_operacion = ({idventa, idtrabajo}, callback) => {
+  const _idtrabajo = +idtrabajo>0 ? idtrabajo : '';
   const query = `SELECT 
 	c.idcodigo,
 	c.codigo,
@@ -69,17 +78,13 @@ const obtener_items_operacion = (data, callback) => {
 venta_stock_pedido vsp INNER JOIN 
 codigo c ON c.idcodigo = vsp.fkcodigo
 WHERE 
-vsp.fkventa = ${data.idventa};
+vsp.fkventa = ${idventa} and (case when '${_idtrabajo}'<>'' then vsp.fktrabajo='${_idtrabajo}' else true end);
 
 
     ;`;
-  // console.log(query)
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const obtener_lista_operaciones = (data, callback) => {
@@ -92,23 +97,18 @@ const obtener_lista_operaciones = (data, callback) => {
     WHERE 
     v.estado='PENDIENTE' AND 
     v.estado_taller='${data.estado_taller}';`;
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const marcar_como_laboratorio = (data, callback) => {
-  const query = `update venta v set v.estado_taller='LAB' where v.idventa = ${data.idventa}`;
+   const idtrabajo = +data.idtrabajo > 0 ? data.idtrabajo : null;
+  const query = idtrabajo?  `update trabajo t set t.estado = 'LAB' where t.idtrabajo=${idtrabajo};` : `update venta v set v.estado_taller='LAB' where v.idventa = ${data.idventa}`;
   console.log(query);
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const informe_consumo_periodo = (data, callback) => {

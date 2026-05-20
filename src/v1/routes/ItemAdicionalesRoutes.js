@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ItemsAdicionalesController = require("../../controllers/ItemsAdicionalesController")
 
-router.get("/:idventa", (req, res) => {
+router.get("/:idventa/:idtrabajo?", (req, res) => {
     ItemsAdicionalesController.obtener_adicionales_venta(req,res)
   });
 

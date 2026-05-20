@@ -353,6 +353,11 @@ const procesar_ventas = (rows) =>{
     if(+lastId!=+row.idventa )
     {
       parent=null;
+      if(+row.tipo==7 && +row.idtrabajo<0)
+      {
+        return;
+      }
+      
       if(+row.tipo==7)
         {
           parent = {...row, isParent:1, key:key, children:[]};

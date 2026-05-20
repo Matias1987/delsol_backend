@@ -193,7 +193,7 @@ const agregar_factura_v3 = (data, callback) => {
   const _fecha = data.fecha == "" ? "now()" : data.fecha;
   let idfactura = -1;
 
-  let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha, descuento, c_n_gravados, imp_int, neto_gravado) VALUES (
+  let query_factura = `INSERT INTO factura (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha, descuento, c_n_gravados, imp_int, neto_gravado, fk_moneda) VALUES (
     ${connection.escape(data.nro)}, 
     ${connection.escape(data.fkproveedor)},
     ${connection.escape(data.total)},
@@ -205,7 +205,8 @@ const agregar_factura_v3 = (data, callback) => {
     ${connection.escape(data.descuento)},
     ${connection.escape(parseFloat(data.netoNoGravado || "0"))},
     ${connection.escape(parseFloat(data.impuestosInternos || "0"))},
-    ${connection.escape(parseFloat(data.netoGravado || "0"))}
+    ${connection.escape(parseFloat(data.netoGravado || "0"))},
+    ${connection.escape(data.moneda)}
     );`; //toDo
 
   let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `;
@@ -231,6 +232,8 @@ const agregar_factura_v3 = (data, callback) => {
       _process(_queries);
     });
   };
+
+  console.log(query_factura);
 
   //first insert factura
   doQuery(query_factura, (result) => {
@@ -363,7 +366,8 @@ const obtener_factura_montos_adic = (idfactura, callback) => {
   });
 };
 
-const obtener_facturas_saldo = ({idprov, moneda}, callback) => {
+const obtener_facturas_saldo = (data, callback) => {
+  const {idproveedor, moneda} = data;
   const query = `SELECT * FROM (
                   SELECT 
                   f.idfactura,
@@ -375,12 +379,12 @@ const obtener_facturas_saldo = ({idprov, moneda}, callback) => {
                   (SELECT ppc.fk_compra, SUM(ppc.monto) AS 'monto' FROM pago_proveedor_compra ppc GROUP BY ppc.fk_compra) pp
                   ON f.idfactura = pp.fk_compra
                   WHERE
-                  f.moneda = '${moneda}' AND
+                  f.fk_moneda = '${moneda}' AND
                   f.activo=1 AND
-                  f.proveedor_idproveedor=${idprov}
+                  f.proveedor_idproveedor=${idproveedor}
                   ) d WHERE d.saldo>0 
                   ;`;
-  //console.log(query)
+  console.log(query);
   doQuery(query, (resp) => {
     callback(resp.data);
   });
