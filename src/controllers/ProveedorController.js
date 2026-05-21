@@ -82,6 +82,13 @@ const obtener_pagos_no_saldados = (req, res) => {
     })
 }
 
+const agregar_pago_compra = (req,res) =>{
+    const {body} = req;
+    proveedorService.agregar_pago_compra(body,response=>{
+        res.status(201).send({status:"OK", data:response});
+    })
+}
+
 module.exports = {
     agregar_cm_proveedor,
     agregar_pago_proveedor,
@@ -92,4 +99,5 @@ module.exports = {
     pagos_atrasados_proveedores,
     monedas_existentes,
     obtener_pagos_no_saldados,
+    agregar_pago_compra,
 }

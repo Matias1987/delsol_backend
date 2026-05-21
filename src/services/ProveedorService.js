@@ -54,6 +54,12 @@ const obtener_pagos_no_saldados = (data, callback) => {
     })
 }
 
+const agregar_pago_compra = (data, callback) => {
+    ProveedorDB.agregar_pago_compra(data, response=>{
+        callback(response);
+    })
+}
+
 module.exports = {
     obtener_pagos_no_saldados,
     pagos_atrasados_proveedores,
@@ -64,4 +70,5 @@ module.exports = {
     agregar_proveedor,
     obtener_ficha_proveedor,
     monedas_existentes,
+    agregar_pago_compra,
 }

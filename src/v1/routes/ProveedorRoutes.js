@@ -38,6 +38,9 @@ router.post("/monedas_existentes/",(req, res)=> {
 router.post("/pagos_no_saldados/",(req, res)=>{
   proveedorController.obtener_pagos_no_saldados(req,res)
 })
+router.post("/agregar_pago_compra/",(req, res)=>{
+  proveedorController.agregar_pago_compra(req,res)
+})
 
 router.patch("/:proveedorId", (req, res) => {
   res.send("actualizar una proveedor");

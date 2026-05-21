@@ -347,6 +347,41 @@ const obtener_pagos_no_saldados = ({idproveedor, moneda, modo}, callback) =>{
     })
 }
 
+const agregar_pago_compra = (data, callback) => {
+  /* 
+  {
+  "idpago":61,
+  "compras":[{
+  "idfactura":236,
+  "numero":"0002-00148144",
+  "monto":"5308631.859999999",
+  "monto_pagado":"0",
+  "saldo":5308631.859999999,
+  "checked":true,
+  "monto_a_pagar":9000,
+  "nuevo_saldo":0}]}
+  */
+
+  console.log(data);
+
+  let compras_values = "";
+  data.compras.forEach((compra) => {
+    compras_values +=
+      (compras_values.length > 0 ? "," : "") +
+      `(${data.idpago}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
+  });
+  const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
+
+  doQuery(query, (response)=>{
+    const q1 = `update pago_proveedor pp set pp.saldado=1 where pp.id=${data.idpago}`;
+    doQuery(q1,(response1)=>{
+      callback(response1);
+    })
+    
+  });
+    
+}
+
 
 module.exports = {
   agregar_proveedor,
@@ -358,4 +393,5 @@ module.exports = {
   pagos_atrasados_proveedores,
   monedas_existentes,
   obtener_pagos_no_saldados,
+  agregar_pago_compra,
 };
