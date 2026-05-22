@@ -42,6 +42,10 @@ router.post("/agregar_pago_compra/",(req, res)=>{
   proveedorController.agregar_pago_compra(req,res)
 })
 
+router.post("/obtener_cm_saldo/",(req, res)=>{
+  proveedorController.obtener_cm_saldo(req,res);
+})
+
 router.patch("/:proveedorId", (req, res) => {
   res.send("actualizar una proveedor");
 });

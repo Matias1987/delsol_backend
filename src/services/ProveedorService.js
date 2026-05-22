@@ -60,7 +60,14 @@ const agregar_pago_compra = (data, callback) => {
     })
 }
 
+const obtener_cm_saldo= (data, callback) => {
+    ProveedorDB.obtener_cm_saldo(data,(response)=>{
+        callback(response);
+    })
+}
+
 module.exports = {
+    obtener_cm_saldo,
     obtener_pagos_no_saldados,
     pagos_atrasados_proveedores,
     agregar_cm_proveedor,

@@ -88,8 +88,15 @@ const agregar_pago_compra = (req,res) =>{
         res.status(201).send({status:"OK", data:response});
     })
 }
+const obtener_cm_saldo = (req,res) =>{
+    const {body} = req;
+    proveedorService.obtener_cm_saldo(body,response=>{
+        res.status(201).send({status:"OK", data:response});
+    })
+}
 
 module.exports = {
+    obtener_cm_saldo,
     agregar_cm_proveedor,
     agregar_pago_proveedor,
     agregar_proveedor,

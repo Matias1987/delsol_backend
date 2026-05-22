@@ -42,7 +42,7 @@ const obtener_proveedores = (callback) => {
 };
 
 const obtener_ficha_proveedor = (
-  { idproveedor, modo, moneda, agrupar },
+  { idproveedor, modo, moneda, agrupar, estado },
   callback,
 ) => {
   //console.log({ idproveedor, modo, moneda, agrupar });
@@ -62,7 +62,9 @@ const obtener_ficha_proveedor = (
              f.proveedor_idproveedor=${idproveedor} and
              f.activo=1 and
              (case when '${modo}'='-1' then true else f.es_remito=${modo == 0 ? 1 : 0} END) AND 
-             (case when '${agrupar}'='0' then FALSE else DATE(f.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END )
+             (case when '${agrupar}'='0' then FALSE else DATE(f.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END ) AND
+             (case when '${estado}'='1' then f.saldado=1 else true end) and
+             (case when '${estado}'='0' then f.saldado=0 else true end) 
          UNION
          (
              SELECT 'p' AS 'tipo',
@@ -73,7 +75,9 @@ const obtener_ficha_proveedor = (
                  pp.fk_proveedor=${idproveedor} and
                  pp.activo=1 and
                  (case when '${modo}'='-1' then true else pp.modo_ficha=${modo} end) AND 
-             (case when '${agrupar}'='0' then FALSE else DATE(pp.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END )
+                 (case when '${agrupar}'='0' then FALSE else DATE(pp.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END ) and 
+                 (case when '${estado}'='1' then pp.saldado=1 else true end) and
+                 (case when '${estado}'='0' then pp.saldado=0 else true end) 
          )
          UNION
          (
@@ -86,7 +90,9 @@ const obtener_ficha_proveedor = (
                  cm.fk_proveedor=${idproveedor} and
                  cm.activo=1 and
                  (case when '${modo}'='-1' then true else cm.modo_ficha=${modo} end) AND 
-             	  (case when '${agrupar}'='0' then FALSE else DATE(cm.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END )
+             	   (case when '${agrupar}'='0' then FALSE else DATE(cm.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END ) AND
+                 (case when '${estado}'='1' then cm.saldado=1 else true end) and
+                 (case when '${estado}'='0' then cm.saldado=0 else true end) 
          )
      ) op
      
@@ -110,7 +116,9 @@ const obtener_ficha_proveedor = (
               f.fk_moneda = '${moneda}' and
               f.proveedor_idproveedor=${idproveedor} and 
               f.activo=1 and 
-              (case when '${modo}'='-1' then true else f.es_remito=${modo == 0 ? 1 : 0} end)
+              (case when '${modo}'='-1' then true else f.es_remito=${modo == 0 ? 1 : 0} end) and 
+              (case when '${estado}'='1' then f.saldado=1 else true end) and
+              (case when '${estado}'='0' then f.saldado=0 else true end) 
           UNION
           (
               SELECT 'PAGO' AS 'tipo', 
@@ -126,7 +134,9 @@ const obtener_ficha_proveedor = (
                   pp.activo=1 and 
                   (case when '${modo}'='-1' then true else pp.modo_ficha=${
                     modo
-                  } end)
+                  } end) and 
+                  (case when '${estado}'='1' then pp.saldado=1 else true end) and
+                  (case when '${estado}'='0' then pp.saldado=0 else true end) 
           )
           UNION
           (
@@ -144,7 +154,9 @@ const obtener_ficha_proveedor = (
                   cm.activo=1 and 
                   (case when '${modo}'='-1' then true else cm.modo_ficha=${
                     modo
-                  } end)
+                  } end) AND
+                  (case when '${estado}'='1' then cm.saldado=1 else true end) and
+                  (case when '${estado}'='0' then cm.saldado=0 else true end) 
           )
       ) op
       ORDER BY op.fecha asc 
@@ -362,6 +374,31 @@ const agregar_pago_compra = (data, callback) => {
   "nuevo_saldo":0}]}
   */
 
+  const queries = [];
+
+
+
+ const saldados_compras = [];
+
+ data.compras.forEach(c=>{
+  if(c.saldado)
+  {
+    saldados_compras.push(c.idfactura);
+    
+  }
+  queries.push(`update factura f set f.haber=f.haber+${c.monto_a_pagar} where f.idfactura=${c.idfactura};`);
+ })
+ const saldados_cm = [];
+
+ data.cm.forEach(c=>{
+  if(c.saldado)
+  {
+    saldados_cm.push(c.id);
+    
+  }
+  queries.push(`update carga_manual_proveedor cm set cm.haber=cm.haber+${c.monto_a_pagar} where cm.id=${c.id};`);
+ })
+
   console.log(data);
 
   let compras_values = "";
@@ -370,18 +407,88 @@ const agregar_pago_compra = (data, callback) => {
       (compras_values.length > 0 ? "," : "") +
       `(${data.idpago}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
   });
-  const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
 
+  let cm_values = "";
+  data.cm.forEach((cm)=>{
+    cm_values +=
+      (cm_values.length > 0 ? "," : "") +
+      `(${data.idpago}, ${cm.id}, ${cm.monto_a_pagar})`;
+  })
+
+
+
+
+  queries.push(`update pago_proveedor pp set pp.saldado=1  where pp.id=${data.idpago}`); 
+
+  if(compras_values.length>0){
+    queries.push(`INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`);
+  }
+  if(cm_values.length>0){
+    queries.push(`INSERT INTO pago_proveedor_cm (fk_pago, fk_cm, monto) VALUES ${cm_values};`);
+  }
+  if(saldados_compras.length>0){
+    queries.push(`update factura f set f.saldado=1 where f.idfactura in (${saldados_compras.map(f=>f)})`);
+  }
+  if(saldados_cm.length>0){
+    queries.push(`update carga_manual_proveedor cm set cm.saldado=1 where cm.id in (${saldados_cm.map(cm=>cm)})`);
+  }
+
+  const process = (_callback) => {
+    if(queries.length>0)
+    {
+      const q = queries.pop();
+      console.log("processing query:: ");
+      console.log(q);
+      doQuery(q,(_resp)=>{
+        process(_callback)
+      })
+    }
+    else{
+      return _callback();
+    }
+  }
+
+  process(_=>{
+    callback({"ok":"1"});
+  })
+  /*
   doQuery(query, (response)=>{
     const q1 = `update pago_proveedor pp set pp.saldado=1 where pp.id=${data.idpago}`;
+    console.log(q1);
     doQuery(q1,(response1)=>{
-      callback(response1);
+      if(saldados_compras.length>0)
+      {
+        const q2 = `update factura f set f.saldado=1 where f.idfactura in (${saldados_compras.map(f=>f)})`;
+        console.log(q2);
+        doQuery(q2,r2=>{callback({"ok":"1"})});
+      }
+      else{
+        callback(response1);
+      }
+      
     })
     
-  });
+  });*/
     
 }
 
+const obtener_cm_saldo = ({idproveedor, moneda, modo}, callback) =>{
+  const query = `SELECT 
+  cmp.id, 
+  cmp.monto, 
+  if(pp.fk_pago IS NULL, 0, pp.monto) AS 'pagado', 
+  (cmp.monto - if(pp.fk_pago IS NULL, 0, pp.monto)) as 'saldo'
+  FROM carga_manual_proveedor cmp LEFT JOIN 
+                (SELECT ppcm.fk_pago, SUM(ppcm.monto) AS 'monto' FROM pago_proveedor_cm ppcm GROUP BY ppcm.fk_pago) pp
+                ON pp.fk_pago = cmp.id 
+                WHERE cmp.saldado=0 AND cmp.monto>0 AND cmp.fk_proveedor=${idproveedor} AND cmp.moneda='${moneda}' AND cmp.modo_ficha=${modo}`;
+
+
+
+  doQuery(query, response=>{
+    return callback(response.data);
+  });
+}
 
 module.exports = {
   agregar_proveedor,
@@ -394,4 +501,5 @@ module.exports = {
   monedas_existentes,
   obtener_pagos_no_saldados,
   agregar_pago_compra,
+  obtener_cm_saldo,
 };
