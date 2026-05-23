@@ -55,7 +55,7 @@ const obtener_ficha_proveedor = (
      FROM (
          SELECT
          'f' AS 'tipo',
-         f.monto
+         if('${estado}'='0', f.monto - f.haber, f.monto ) as 'monto'
          FROM factura f
          WHERE
              f.fk_moneda = '${moneda}' and
@@ -83,7 +83,7 @@ const obtener_ficha_proveedor = (
          (
              SELECT
              'cm' AS 'tipo',
-             cm.monto
+             if('${estado}'='0', cm.monto - cm.haber, cm.monto ) as 'monto'
              FROM  carga_manual_proveedor cm
              WHERE
                  cm.moneda='${moneda}' and
@@ -108,7 +108,7 @@ const obtener_ficha_proveedor = (
           'FACTURA' AS 'tipo', 
           concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
           f.idfactura AS 'id', 
-          f.monto, 
+          if('${estado}'='0', f.monto - f.haber, f.monto ) as 'monto',
           date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
           f.fecha
           FROM factura f 
@@ -144,7 +144,7 @@ const obtener_ficha_proveedor = (
               'CM' AS 'tipo', 
               concat('Carga Manual: ', cm.comentarios)  as 'detalle',
               cm.id AS 'id',  
-              cm.monto, 
+              if('${estado}'='0', cm.monto - cm.haber, cm.monto ) as 'monto',
               date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
               cm.fecha
               FROM  carga_manual_proveedor cm 
@@ -476,14 +476,14 @@ const obtener_cm_saldo = ({idproveedor, moneda, modo}, callback) =>{
   const query = `SELECT 
   cmp.id, 
   cmp.monto, 
-  if(pp.fk_pago IS NULL, 0, pp.monto) AS 'pagado', 
-  (cmp.monto - if(pp.fk_pago IS NULL, 0, pp.monto)) as 'saldo'
+  if(pp.fk_cm IS NULL, 0, pp.monto) AS 'pagado', 
+  (cmp.monto - if(pp.fk_cm IS NULL, 0, pp.monto)) as 'saldo'
   FROM carga_manual_proveedor cmp LEFT JOIN 
-                (SELECT ppcm.fk_pago, SUM(ppcm.monto) AS 'monto' FROM pago_proveedor_cm ppcm GROUP BY ppcm.fk_pago) pp
-                ON pp.fk_pago = cmp.id 
+                (SELECT ppcm.fk_cm, SUM(ppcm.monto) AS 'monto' FROM pago_proveedor_cm ppcm GROUP BY ppcm.fk_cm) pp
+                ON pp.fk_cm = cmp.id 
                 WHERE cmp.saldado=0 AND cmp.monto>0 AND cmp.fk_proveedor=${idproveedor} AND cmp.moneda='${moneda}' AND cmp.modo_ficha=${modo}`;
 
-
+  console.log(query)
 
   doQuery(query, response=>{
     return callback(response.data);
