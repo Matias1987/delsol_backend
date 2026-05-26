@@ -27,7 +27,7 @@ const corsOptions = {
 };
 
 app.use(
-  cors(corsOptions)
+  cors()
 ); //RELEASE
 //app.use(bodyParser.json());
 //FROM https://stackoverflow.com/questions/24543847/req-body-empty-on-posts

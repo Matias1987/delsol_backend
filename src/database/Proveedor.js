@@ -106,7 +106,7 @@ const obtener_ficha_proveedor = (
       FROM (
           SELECT 
           'FACTURA' AS 'tipo', 
-          concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
+          concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero, if('${estado}'='0', concat(' ($ ', format(f.monto,2), ')'), '')) as 'detalle',
           f.idfactura AS 'id', 
           if('${estado}'='0', f.monto - f.haber, f.monto ) as 'monto',
           date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
@@ -142,7 +142,7 @@ const obtener_ficha_proveedor = (
           (
               SELECT 
               'CM' AS 'tipo', 
-              concat('Carga Manual: ', cm.comentarios)  as 'detalle',
+              concat('Carga Manual:', cm.comentarios , if('${estado}'='0', concat(' ($ ', format(cm.monto,2), ')'), '')) as 'detalle',
               cm.id AS 'id',  
               if('${estado}'='0', cm.monto - cm.haber, cm.monto ) as 'monto',
               date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
@@ -164,7 +164,7 @@ const obtener_ficha_proveedor = (
  ) gl ORDER BY gl.fecha asc                             
 ;`;
 
-  //console.log(query);
+  console.log(query);
 
   const connection = mysql_connection.getConnection();
 
