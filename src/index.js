@@ -21,8 +21,13 @@ const isValidToken = (token, callback) => {
   });
 };
 
+const corsOptions = {
+  origin: ['https://coexp.nosis.site'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+};
+
 app.use(
-  cors(/*{origin: ['http://54.174.39.15:3000','http://77.37.68.128:3000/','http://localhost:3000']}*/)
+  cors(corsOptions)
 ); //RELEASE
 //app.use(bodyParser.json());
 //FROM https://stackoverflow.com/questions/24543847/req-body-empty-on-posts
