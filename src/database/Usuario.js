@@ -291,7 +291,7 @@ const agregar_usuario = (data, callback) => {
             '${data.laboratorio}'
         )`;
 
-  console.log(sql);
+  //console.log(sql);
   connection.query(sql, (err, result) => {
     if (err) {
       return callback({ err: 1 });
@@ -370,7 +370,7 @@ const modificar_permisos = (data, callback) => {
         where u.idusuario=${data.fk_usuario}
         ;`;
 
-  console.log(query);
+  //console.log(query);
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(data.fk_sucursal < 0 ? q2 : query, (err, resp) => {

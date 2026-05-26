@@ -28,8 +28,16 @@ const lista_ventas_general = (idcliente, callback) => {
   });
 };
 
-const do_agregar_cliente = (data, callback) => {
+function getCurrentDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // months are 0-based
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
+const do_agregar_cliente = (data, callback) => {
+  //console.log(data);
   const query =`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${escapeHelper(data.dni)});`;
 
   doQuery(
@@ -38,12 +46,11 @@ const do_agregar_cliente = (data, callback) => {
       if (!resp) {
         callback(-1);
         console.log("Error");
-        connection.end();
         return;
       }
       const rows = resp.data;
       if (rows.length < 1) {
-        
+        const _fecha = data.fechaNac ? getCurrentDate() : data.fechaNac
         doQuery(
           queries.queryAgregarCliente(
             {
@@ -55,7 +62,7 @@ const do_agregar_cliente = (data, callback) => {
               telefono1: data.telefono1,
               telefono2: data.telefono2,
               destinatario: data.destinatario,
-              fechaNac: data.fechaNac,
+              fechaNac: _fecha,
             }
           ),
           (resp) => {

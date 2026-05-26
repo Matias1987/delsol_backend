@@ -265,7 +265,7 @@ const agregarVenta = (data, callback) => {
       desc_cantidades_stock_venta(
         { idventa: agregarVentaResponse.idventa, idsucursal: data.fksucursal },
         (responseDescStock) => {
-          if (responseDescStock.error) {
+          if (responseDescStock?.error) {
             console.log("Error al actualizar stock de productos:");
             console.log(responseDescStock);
             return callback({
@@ -289,7 +289,7 @@ const agregarVenta = (data, callback) => {
                 data,
                 agregarVentaResponse.idventa,
                 (cobrosResponse) => {
-                  if (cobrosResponse.error) {
+                  if (cobrosResponse?.error) {
                     console.log("Error al agregar cobros para la venta:");
                     console.log(cobrosResponse);
                     return callback({

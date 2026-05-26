@@ -1,3 +1,4 @@
+const { usar_stock_sucursal_central, id_sucursal_cristales } = require("../lib/global");
 const { doQuery } = require("./helpers/queriesHelper");
 
 const guardar_stock_cristales = (data, callback) => {
@@ -67,6 +68,7 @@ const obtener_codigos_cristales = (callback) => {
 };
 
 const acutalizar_stock_cristales = (data, callback) => {
+  const idsucursal = usar_stock_sucursal_central ? id_sucursal_cristales : data.fk_sucursal;
   console.log(
     "###################Updating stock for cristales with data:################################",
   );
@@ -74,7 +76,7 @@ const acutalizar_stock_cristales = (data, callback) => {
   const query = `UPDATE stock_cristales sc SET 
       sc.cantidad=sc.cantidad-${data.cantidad} 
       WHERE 
-      sc.fk_sucursal=${data.fk_sucursal} AND 
+      sc.fk_sucursal=${idsucursal} AND 
       sc.fk_codigo=${data.idcodigo} AND 
       sc.esf='${data.esf}' AND 
       sc.cil='${data.cil}' AND 
