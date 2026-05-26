@@ -50,7 +50,8 @@ const do_agregar_cliente = (data, callback) => {
       }
       const rows = resp.data;
       if (rows.length < 1) {
-        const _fecha = data.fechaNac ? getCurrentDate() : data.fechaNac
+        const _fecha = data?.fechaNac ?  data.fechaNac : getCurrentDate() ;
+        //console.log("fecha_nac: "+ _fecha);
         doQuery(
           queries.queryAgregarCliente(
             {
