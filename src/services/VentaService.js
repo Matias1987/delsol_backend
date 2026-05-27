@@ -340,7 +340,6 @@ const lista_venta_sucursal_estado = (data, callback) => {
 
 
 const procesar_ventas = (rows) =>{
-  console.log("pROCESAR VENTAS")
   if(!rows)
   {
     return rows

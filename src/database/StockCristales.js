@@ -1,4 +1,4 @@
-const { usar_stock_sucursal_central, id_sucursal_cristales } = require("../lib/global");
+const { usar_stock_sucursal_central } = require("../lib/global");
 const { doQuery } = require("./helpers/queriesHelper");
 
 const guardar_stock_cristales = (data, callback) => {

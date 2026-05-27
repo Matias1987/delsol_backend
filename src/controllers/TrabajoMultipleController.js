@@ -7,7 +7,9 @@ const procesarTrabajoMultiple = (req, res) => {
 }
 
 const obtenerListadoVentasTM = (req, res) => {
-    service.obtenerListadoVentasTM((result) => {
+    //const { idsucursal } = req.params;
+    const {params:{idsucursal}} = req;
+    service.obtenerListadoVentasTM( idsucursal , (result) => {
         return res.json(result);
     });
 }

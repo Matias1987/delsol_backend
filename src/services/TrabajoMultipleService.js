@@ -234,8 +234,8 @@ const obtenerTrabajoMultiple = (data, callback) => {
     });
 }
 
-const obtenerListadoVentasTM = (callback) => {
-    db.obtenerListadoVentasTM(response => {
+const obtenerListadoVentasTM = ( idsucursal , callback) => {
+    db.obtenerListadoVentasTM( idsucursal , response => {
         if (response.error) {
                 return callback({ error: 1, msg: "error fetching ventas" });    
         }

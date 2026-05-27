@@ -197,32 +197,85 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
   });
 };
 
-const obtenerListadoVentasTM = (callback) => {
+const procesar_ventas = (rows) =>{
+  if(!rows)
+  {
+    return rows
+  }
+  const result = [];
+  let lastId = -1;
+  let parent = null;
+  let key=0;
+  rows.forEach(row=>{
+    if(+lastId!=+row.idventa )
+    {
+      parent=null;
+      if(+row.tipo==7 && +row.idtrabajo<0)
+      {
+        return;
+      }
+      
+      if(+row.tipo==7)
+        {
+          parent = {...row, isParent:1, key:key, children:[]};
+          result.push(parent);
+          key++;
+        }
+    }
+    const childNode = {...row, isParent:0, key:key,}
+
+    if(parent)
+    {
+      parent.children.push(childNode);
+    }
+    else{
+      result.push(childNode);
+    }
+
+    lastId=row.idventa;
+    key++;
+  });
+  return result;
+
+}
+
+const obtenerListadoVentasTM = (idsucursal, callback) => {
   const query = `SELECT 
-                date_format(v.fecha, '%d/%m/%Y') AS 'fecha_f',
-                v.idventa,
-                v.cliente_idcliente,
-                v.sucursal_idsucursal,
-                v.usuario_idusuario,
-                v.caja_idcaja,
-                CONCAT(c.apellido,' ', c.nombre) AS 'cliente',
-                s.nombre AS 'sucursal',
-                u.nombre AS 'usuario',
-                v.monto_total,
-                v.descuento,
-                v.subtotal
-                FROM venta v, cliente c, sucursal s, usuario u WHERE
-                v.cliente_idcliente = c.idcliente AND 
-                v.sucursal_idsucursal = s.idsucursal AND 
-                v.usuario_idusuario = u.idusuario AND 
-                v.tipo = 'MULTIPLE'
-                ORDER BY v.idventa DESC `;
+                  v.idventa, 
+                  CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
+                  u.nombre AS 'vendedor',
+                  v.estado,
+                  v.tipo,
+                  v.monto_total as 'monto',
+                  date_format(v.fecha, '%d-%m-%y') AS 'fecha',
+                  DATE_FORMAT(v.fecha_retiro, '%d-m%-%y') AS 'fecha_retiro',
+                  v.sucursal_idsucursal,
+                  v.cliente_idcliente,
+                  v.en_laboratorio,
+                  s.nombre as 'sucursal',
+                  if(v.en_laboratorio=1, if(v.estado_taller='LAB', 'LABORATORIO', v.estado_taller) , 'SUCURSAL') as 'estado_taller',
+                  if(tt.idventa is NULL,-1 , tt.idtrabajo) as 'idtrabajo',
+                    if(tt.idventa is NULL, '' , tt.tipo_trabajo) as 'tipo_trabajo',
+                    if(tt.idventa is NULL, '' , if(tt.estado='LAB', 'LABORATORIO', tt.estado)) as 'estado_trabajo'
+                  FROM 
+                  venta v LEFT JOIN trabajo tt ON tt.idventa = v.idventa, 
+                  cliente c, 
+                  usuario u, 
+                  sucursal s,
+                    caja ca 
+                  WHERE 
+                  v.caja_idcaja = ca.idcaja AND 
+                  s.idsucursal = v.sucursal_idsucursal AND 
+                  v.cliente_idcliente = c.idcliente AND
+                  v.usuario_idusuario = u.idusuario AND
+                  v.tipo=7 AND 
+                  (case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end); `;
 
   doQuery(query, (response) => {
     if (!response) {
       return callback({ error: 1, msg: "error fetching ventas" });
     }
-    return callback({ ok: 1, data: response.data });
+    return callback({ ok: 1, data: procesar_ventas(response.data) });
   });
 };
 
