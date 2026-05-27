@@ -1,6 +1,6 @@
 const { doQuery } = require("../database/helpers/queriesHelper");
 const db = require("../database/StockCristales");
-
+const sucursalService = require("./SucursalService")
 const guardar_stock_cristales = (data, callback) => {
   db.guardar_stock_cristales(data, (response) => {
     callback(response);
@@ -105,10 +105,10 @@ const acutalizar_stock_cristales = ({ fksucursal, arrayQtties }, callback) => {
   }
   const clonedArr = [...arrayQtties];
 
-  const doUpdate = ()=>{
+  const doUpdate = (id_sucursal_cristales_desc)=>{
     if(clonedArr.length>0){
       const codigo = clonedArr.pop();
-      db.acutalizar_stock_cristales({...codigo, fk_sucursal: fksucursal}, (_) => {
+      db.acutalizar_stock_cristales({...codigo, fk_sucursal: id_sucursal_cristales_desc}, (_) => {
       doUpdate();
     });
     }
@@ -116,7 +116,18 @@ const acutalizar_stock_cristales = ({ fksucursal, arrayQtties }, callback) => {
       return callback?.({status: "ok", message: "Stock de cristales actualizado correctamente"});
     }
   }
-  doUpdate();
+
+  sucursalService.obtenerDetalleSucursal(fksucursal,(_s)=>{
+    if(_s.length<1)
+    {
+      console.log("error");
+      return;
+    }
+    const id_s_critales = _s[0].fk_sucursal_cristales;
+    doUpdate(id_s_critales);
+  })
+
+  
 };
 
 module.exports = {

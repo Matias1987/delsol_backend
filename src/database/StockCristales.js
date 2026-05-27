@@ -68,7 +68,7 @@ const obtener_codigos_cristales = (callback) => {
 };
 
 const acutalizar_stock_cristales = (data, callback) => {
-  const idsucursal = usar_stock_sucursal_central ? id_sucursal_cristales : data.fk_sucursal;
+  const idsucursal =  data.fk_sucursal;
   console.log(
     "###################Updating stock for cristales with data:################################",
   );
