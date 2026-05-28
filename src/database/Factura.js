@@ -367,7 +367,7 @@ const obtener_factura_montos_adic = (idfactura, callback) => {
 };
 
 const obtener_facturas_saldo = (data, callback) => {
-  const {idproveedor, moneda} = data;
+  const {idproveedor, moneda, modo} = data;
   const query = `SELECT * FROM (
                   SELECT 
                   f.idfactura,
@@ -379,6 +379,7 @@ const obtener_facturas_saldo = (data, callback) => {
                   (SELECT ppc.fk_compra, SUM(ppc.monto) AS 'monto' FROM pago_proveedor_compra ppc GROUP BY ppc.fk_compra) pp
                   ON f.idfactura = pp.fk_compra
                   WHERE
+                  f.es_remito=${modo} AND 
                   f.fk_moneda = '${moneda}' AND
                   f.activo=1 AND
                   f.proveedor_idproveedor=${idproveedor}
