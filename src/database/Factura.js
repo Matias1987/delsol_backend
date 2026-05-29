@@ -379,7 +379,7 @@ const obtener_facturas_saldo = (data, callback) => {
                   (SELECT ppc.fk_compra, SUM(ppc.monto) AS 'monto' FROM pago_proveedor_compra ppc GROUP BY ppc.fk_compra) pp
                   ON f.idfactura = pp.fk_compra
                   WHERE
-                  f.es_remito=${modo} AND 
+                  f.es_remito=${+modo==1?0:1} AND 
                   f.fk_moneda = '${moneda}' AND
                   f.activo=1 AND
                   f.proveedor_idproveedor=${idproveedor}

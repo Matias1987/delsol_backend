@@ -1,44 +1,38 @@
 const { parse_date_for_mysql } = require("../lib/helpers");
-const mysql_connection = require("../lib/mysql_connection");
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 
 const agregar_proveedor = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(
-    `SELECT p.idproveedor FROM proveedor p WHERE p.cuit = ${connection.escape(
+  doQuery(
+    `SELECT p.idproveedor FROM proveedor p WHERE p.cuit = ${escapeHelper(
       data.cuit,
     )}`,
-    (err, resp) => {
-      if (resp.length > 0) {
+    (resp) => {
+      if (resp.data.length > 0) {
         callback(-1);
       } else {
-        connection.query(
+        doQuery(
           "INSERT INTO `proveedor` (`cuit`, `nombre`) VALUES (" +
-            connection.escape(data.cuit) +
+            escapeHelper(data.cuit) +
             ", " +
-            connection.escape(data.nombre) +
+            escapeHelper(data.nombre) +
             ");",
-          (err, result, fields) => {
-            callback(result.insertId);
+          (resp) => {
+            callback(resp.data.insertId);
           },
         );
       }
-      connection.end();
     },
   );
 };
 
 const obtener_proveedores = (callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(
+
+  doQuery(
     "SELECT * FROM proveedor p order by p.nombre asc;",
-    (err, rows, fields) => {
-      callback(rows);
+    (resp) => {
+      callback(resp.data);
     },
   );
-  connection.end();
 };
 
 const obtener_ficha_proveedor = (
@@ -166,77 +160,57 @@ const obtener_ficha_proveedor = (
 
   //console.log(query);
 
-  const connection = mysql_connection.getConnection();
-
-  connection.connect();
-
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-
-  connection.end();
 };
 
 const detalle_proveedor = (data, callback) => {
   const query = `select * from proveedor p where p.idproveedor= ${data} `;
   //console.log(query)
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  connection.query(query, (err, rows) => {
-    callback(rows);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const agregar_pago_proveedor = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
-  const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha, fecha, moneda) VALUES (
+  const saldado = data.compras && data.compras.length > 0 ? 1 : 0;
+
+  const query = `INSERT INTO pago_proveedor (monto, fk_proveedor, modo_ficha, fecha, moneda, saldado) VALUES (
   ${data.monto}, 
   ${data.fk_proveedor}, 
   ${data.modo}, 
   '${parse_date_for_mysql(data.fecha)}', 
-  '${data.moneda}'
+  '${data.moneda}',
+  ${saldado}
   )`;
-  //console.log(query)
-  connection.query(query, (err, resp) => {
+  doQuery(query, (resp) => {
+    const insertId = resp.data.insertId;
     if (data.efectivo.checked) {
-      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ('efectivo', ${resp.insertId}, ${data.efectivo.monto});`;
-      connection.query(_q);
+      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ('efectivo', ${insertId}, ${data.efectivo.monto});`;
+      doQuery(_q, (resp) => {});
     }
     if (data.cheque.checked) {
-      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ('cheque', ${resp.insertId}, ${data.cheque.monto}, ${data.cheque.fkcta_bancaria});`;
-      connection.query(_q);
+      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ('cheque', ${insertId}, ${data.cheque.monto}, ${data.cheque.fkcta_bancaria});`;
+      doQuery(_q, (resp) => {});
     }
     if (data.transferencia.checked) {
-      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ('transferencia', ${resp.insertId}, ${data.transferencia.monto}, ${data.transferencia.fkcta_bancaria});`;
-      //console.log(_q)
-      connection.query(_q);
+      const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto, fk_cuenta_bancaria) VALUES ('transferencia', ${insertId}, ${data.transferencia.monto}, ${data.transferencia.fkcta_bancaria});`;
+      doQuery(_q, (resp) => {}  );
     }
 
     if (data.compras && data.compras.length > 0) {
-      let compras_values = "";
-      data.compras.forEach((compra) => {
-        compras_values +=
-          (compras_values.length > 0 ? "," : "") +
-          `(${resp.insertId}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
-      });
-      const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
-      //console.log(query);
-      doQuery(query, (_resp) => {
-        callback(resp);
+
+      agregar_pago_compra({ ...data, idpago: insertId }, (_) => {
+        callback(resp.data);
       });
     } else {
-      callback(resp);
+      callback(resp.data);
     }
-
-    connection.end();
   });
 };
 
 const agregar_cm_proveedor = (data, callback) => {
-  const connection = mysql_connection.getConnection();
-  connection.connect();
   const query = `INSERT INTO carga_manual_proveedor  
   (fk_proveedor, monto, comentarios, modo_ficha, fecha, moneda) 
   VALUES (
@@ -248,10 +222,9 @@ const agregar_cm_proveedor = (data, callback) => {
   '${data.moneda}'
   )`;
   //console.log(query)
-  connection.query(query, (err, resp) => {
-    callback(resp);
+  doQuery(query, (resp) => {
+    callback(resp.data);
   });
-  connection.end();
 };
 
 const pagos_atrasados_proveedores = (data, callback) => {
@@ -334,7 +307,6 @@ const pagos_atrasados_proveedores = (data, callback) => {
                     `;
 
   doQuery(query, (response) => {
-    //console.log(JSON.stringify(response.data))
     callback(response.data);
   });
 };
@@ -347,23 +319,21 @@ const monedas_existentes = (data, callback) => {
   });
 };
 
-const obtener_pagos_no_saldados = ({idproveedor, moneda, modo}, callback) =>{
-    //la logica es contraria =_=
-    const _modo = modo == 1 ? 0 : 1;
+const obtener_pagos_no_saldados = ({ idproveedor, moneda, modo }, callback) => {
+  //la logica es contraria =_=
+  const _modo = modo == 1 ? 0 : 1;
 
-    const query = `SELECT * FROM pago_proveedor pp WHERE 
+  const query = `SELECT * FROM pago_proveedor pp WHERE 
     pp.saldado=0 AND 
     pp.moneda='${moneda}' AND 
     pp.modo_ficha='${_modo}' AND 
     pp.fk_proveedor=${idproveedor} AND
     pp.activo=1;`;
 
-    //console.log(query)
-    
-    doQuery(query, response=>{
-        callback(response.data)
-    })
-}
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
 
 const agregar_pago_compra = (data, callback) => {
   /* 
@@ -382,28 +352,28 @@ const agregar_pago_compra = (data, callback) => {
 
   const queries = [];
 
+  const saldados_compras = [];
 
+  data.compras.forEach((c) => {
+    const _haber = parseFloat(c.monto_pagado) + parseFloat(c.monto_a_pagar);
+    const _saldado = _haber >= parseFloat(c.monto) ? 1 : 0;
+    if (c.saldado || _saldado) {
+      saldados_compras.push(c.idfactura);
+    }
+    queries.push(
+      `update factura f set f.haber=f.haber+${c.monto_a_pagar} where f.idfactura=${c.idfactura};`,
+    );
+  });
+  const saldados_cm = [];
 
- const saldados_compras = [];
-
- data.compras.forEach(c=>{
-  if(c.saldado)
-  {
-    saldados_compras.push(c.idfactura);
-    
-  }
-  queries.push(`update factura f set f.haber=f.haber+${c.monto_a_pagar} where f.idfactura=${c.idfactura};`);
- })
- const saldados_cm = [];
-
- data.cm.forEach(c=>{
-  if(c.saldado)
-  {
-    saldados_cm.push(c.id);
-    
-  }
-  queries.push(`update carga_manual_proveedor cm set cm.haber=cm.haber+${c.monto_a_pagar} where cm.id=${c.id};`);
- })
+  data.cm.forEach((c) => {
+    if (c.saldado) {
+      saldados_cm.push(c.id);
+    }
+    queries.push(
+      `update carga_manual_proveedor cm set cm.haber=cm.haber+${c.monto_a_pagar} where cm.id=${c.id};`,
+    );
+  });
 
   console.log(data);
 
@@ -415,70 +385,58 @@ const agregar_pago_compra = (data, callback) => {
   });
 
   let cm_values = "";
-  data.cm.forEach((cm)=>{
+  data.cm.forEach((cm) => {
     cm_values +=
       (cm_values.length > 0 ? "," : "") +
       `(${data.idpago}, ${cm.id}, ${cm.monto_a_pagar})`;
-  })
+  });
 
+  queries.push(
+    `update pago_proveedor pp set pp.saldado=1  where pp.id=${data.idpago}`,
+  );
 
-
-
-  queries.push(`update pago_proveedor pp set pp.saldado=1  where pp.id=${data.idpago}`); 
-
-  if(compras_values.length>0){
-    queries.push(`INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`);
+  if (compras_values.length > 0) {
+    queries.push(
+      `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`,
+    );
   }
-  if(cm_values.length>0){
-    queries.push(`INSERT INTO pago_proveedor_cm (fk_pago, fk_cm, monto) VALUES ${cm_values};`);
+  if (cm_values.length > 0) {
+    queries.push(
+      `INSERT INTO pago_proveedor_cm (fk_pago, fk_cm, monto) VALUES ${cm_values};`,
+    );
   }
-  if(saldados_compras.length>0){
-    queries.push(`update factura f set f.saldado=1 where f.idfactura in (${saldados_compras.map(f=>f)})`);
+  if (saldados_compras.length > 0) {
+    queries.push(
+      `update factura f set f.saldado=1 where f.idfactura in (${saldados_compras.map((f) => f)})`,
+    );
   }
-  if(saldados_cm.length>0){
-    queries.push(`update carga_manual_proveedor cm set cm.saldado=1 where cm.id in (${saldados_cm.map(cm=>cm)})`);
+  if (saldados_cm.length > 0) {
+    queries.push(
+      `update carga_manual_proveedor cm set cm.saldado=1 where cm.id in (${saldados_cm.map((cm) => cm)})`,
+    );
   }
 
   const process = (_callback) => {
-    if(queries.length>0)
-    {
+    if (queries.length > 0) {
       const q = queries.pop();
-      console.log("processing query:: ");
+
       console.log(q);
-      doQuery(q,(_resp)=>{
-        process(_callback)
-      })
-    }
-    else{
+      doQuery(q, (_resp) => {
+        process(_callback);
+      });
+    } else {
       return _callback();
     }
-  }
+  };
+  console.log("::processing queries:: ");
+  process((_) => {
+    callback({ ok: "1" });
+  });
+  console.log("::the end:: ");
 
-  process(_=>{
-    callback({"ok":"1"});
-  })
-  /*
-  doQuery(query, (response)=>{
-    const q1 = `update pago_proveedor pp set pp.saldado=1 where pp.id=${data.idpago}`;
-    console.log(q1);
-    doQuery(q1,(response1)=>{
-      if(saldados_compras.length>0)
-      {
-        const q2 = `update factura f set f.saldado=1 where f.idfactura in (${saldados_compras.map(f=>f)})`;
-        console.log(q2);
-        doQuery(q2,r2=>{callback({"ok":"1"})});
-      }
-      else{
-        callback(response1);
-      }
-      
-    })
-    
-  });*/
-    
-}
+};
 
-const obtener_cm_saldo = ({idproveedor, moneda, modo}, callback) =>{
+const obtener_cm_saldo = ({ idproveedor, moneda, modo }, callback) => {
   const _modo = modo == 1 ? 0 : 1;
   const query = `SELECT 
   cmp.id, 
@@ -490,14 +448,12 @@ const obtener_cm_saldo = ({idproveedor, moneda, modo}, callback) =>{
                 ON pp.fk_cm = cmp.id 
                 WHERE cmp.saldado=0 AND cmp.monto>0 AND cmp.fk_proveedor=${idproveedor} AND cmp.moneda='${moneda}' AND cmp.modo_ficha=${_modo}`;
 
-  //console.log(query)
-
-  doQuery(query, response=>{
+  doQuery(query, (response) => {
     return callback(response.data);
   });
-}
+};
 
-const obtener_pagos_facturas = ({idproveedor, moneda, modo}, callback) =>{
+const obtener_pagos_facturas = ({ idproveedor, moneda, modo }, callback) => {
   const query = `SELECT 
                   pp.fecha,
                   pp.monto,
@@ -525,11 +481,10 @@ const obtener_pagos_facturas = ({idproveedor, moneda, modo}, callback) =>{
                   pp.moneda = '${moneda}'`;
 
   console.log(query);
-  doQuery(query, (response)=>{
+  doQuery(query, (response) => {
     callback(response.data);
-  })
-
-}
+  });
+};
 
 module.exports = {
   agregar_proveedor,
@@ -544,3 +499,14 @@ module.exports = {
   agregar_pago_compra,
   obtener_cm_saldo,
 };
+   /*let compras_values = "";
+      data.compras.forEach((compra) => {
+        compras_values +=
+          (compras_values.length > 0 ? "," : "") +
+          `(${insertId}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
+      });
+      const query = `INSERT INTO pago_proveedor_compra (fk_pago, fk_compra, monto) VALUES ${compras_values};`;
+      //console.log(query);
+      doQuery(query, (_resp) => {
+        callback(resp.data);
+      });*/
