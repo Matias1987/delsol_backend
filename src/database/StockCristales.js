@@ -21,7 +21,7 @@ const guardar_stock_cristales = (data, callback) => {
   rows_str += ` ON DUPLICATE KEY UPDATE cantidad= VALUES(cantidad);`;
 
   console.log(base_query + rows_str);
-  return callback?.({ok:1});
+  //return callback?.({ok:1});
 
   doQuery(base_query + rows_str, (response) => {
     callback?.(response.data);
