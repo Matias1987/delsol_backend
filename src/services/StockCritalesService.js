@@ -95,8 +95,8 @@ const check_stock_cristales = (
   );
 };
 
-const acutalizar_stock_cristales = ({ fksucursal, arrayQtties }, callback) => {
-  if (arrayQtties.length < 1) {
+const acutalizar_stock_cristales = ({ fksucursal, arrayQtties, debeDescontarCristales }, callback) => {
+  if (arrayQtties.length < 1 || !debeDescontarCristales) {
     console.log("No hay cristales para actualizar. Saltando actualización de stock de cristales.");
     return callback?.({
       ok: 1,
@@ -109,7 +109,7 @@ const acutalizar_stock_cristales = ({ fksucursal, arrayQtties }, callback) => {
     if(clonedArr.length>0){
       const codigo = clonedArr.pop();
       db.acutalizar_stock_cristales({...codigo, fk_sucursal: id_sucursal_cristales_desc}, (_) => {
-      doUpdate();
+      doUpdate(id_sucursal_cristales_desc);
     });
     }
     else{

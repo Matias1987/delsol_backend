@@ -276,10 +276,14 @@ const agregarVenta = (data, callback) => {
 
           console.log("Stock de productos actualizado:");
           console.log(responseDescStock);
+
+          const debeDescontarCristales = +data.tipo==2;
+
           stockCristalesService.acutalizar_stock_cristales(
             {
               fksucursal: data.fksucursal,
               arrayQtties: verifStockResponse.arrayQttiesCristales,
+              debeDescontarCristales
             },
             (responseDescStockCristales) => {
               console.log("Stock de cristales actualizado:");

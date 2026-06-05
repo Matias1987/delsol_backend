@@ -79,11 +79,11 @@ const acutalizar_stock_cristales = (data, callback) => {
       WHERE 
       sc.fk_sucursal=${idsucursal} AND 
       sc.fk_codigo=${data.idcodigo} AND 
-      sc.esf='${data.esf}' AND 
-      sc.cil='${data.cil}' AND 
+      sc.esf='${ parseFloat(data.esf) == 0 ? '0.00' : data.esf}' AND 
+      sc.cil='${ parseFloat(data.cil) == 0 ? '-0.00' : data.cil}' AND 
       sc.side='${data.side||"-"}';`;
 
-  //console.log(query);
+  console.log(query);
 
   doQuery(query, (updateResponse) => {
     if (!updateResponse) {
