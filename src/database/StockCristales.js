@@ -11,16 +11,16 @@ const guardar_stock_cristales = (data, callback) => {
       (rows_str.length > 0 ? "," : "") +
       `(${data.fk_codigo},${data.fk_sucursal},'${c.esf}','-${c.cil}', ${c.cantidad})`;
   });
-  /*
+  
   data.cells_pos.forEach((c) => {
     rows_str +=
       (rows_str.length > 0 ? "," : "") +
       `(${data.fk_codigo},${data.fk_sucursal},'${c.esf}','-${c.cil}', ${c.cantidad})`;
-  });*/
+  });
 
   rows_str += ` ON DUPLICATE KEY UPDATE cantidad= VALUES(cantidad);`;
 
-  console.log(base_query + rows_str);
+  //console.log(base_query + rows_str);
   //return callback?.({ok:1});
 
   doQuery(base_query + rows_str, (response) => {

@@ -1,116 +1,135 @@
-const ClienteDB = require("../database/ClienteV2")
+const ClienteDB = require("../database/ClienteV2");
 
-const update_cliente = (data,callback) => {
-  ClienteDB.update_cliente(data,(resp)=>{
-    return callback(resp)
-  })
-}
+const update_cliente = (data, callback) => {
+  //get cliente by dni, if dni is different from current dni, check if new dni is not already in use by another cliente, if not, update cliente, else return error
+  ClienteDB.detalle_cliente_dni(data.dni, (resp) => {
+    const theRow = resp && resp.length > 0 ? resp[0] : null;
+    console.log(JSON.stringify(data));
+    console.log(theRow);
+    if (theRow && theRow.idcliente && +theRow.idcliente != +data.idcliente) {
+      console.log("El DNI ya se encuentra registrado en otro cliente.");
+      return callback({
+        ok: 0,
+        message: "El DNI ya se encuentra registrado en otro cliente.",
+      });
+    } else {
+      //return callback({});//testing only, skip update
+      ClienteDB.update_cliente(data, (resp) => {
+        return callback(resp);
+      });
+    }
+  });
+};
 
 const obtenerClientes = (callback) => {
   ClienteDB.obtener_lista_clientes((rows) => {
     return callback(rows);
-  })
-}
+  });
+};
 
 const agregarCliente = (data, callback) => {
   ClienteDB.agregar_cliente(data, (id) => {
     return callback(id);
-  })
-}
+  });
+};
 
 const obtenerClienteDNI = (data, callback) => {
   ClienteDB.detalle_cliente_dni(data, (row) => {
     return callback(row);
-  })
-}
+  });
+};
 const obtenerClienteID = (data, callback) => {
   ClienteDB.detalle_cliente(data, (row) => {
     return callback(row);
-  })
-}
+  });
+};
 
 const buscarCliente = (data, callback) => {
   ClienteDB.buscar_cliente(data, (rows) => {
     return callback(rows);
-  })
-}
+  });
+};
 
-const obtenerFichaCliente = (req, res) => {}
+const obtenerFichaCliente = (req, res) => {};
 
-const editarCliente = (req, res) => {}
+const editarCliente = (req, res) => {};
 
 const operaciones_cliente = (data, callback) => {
   ClienteDB.operaciones_cliente(data, (rows) => {
     return callback(rows);
-  })
-}
+  });
+};
 const obtener_saldo_ctacte = (data, callback) => {
   ClienteDB.obtener_saldo_ctacte(data, (rows) => {
     return callback(rows);
-  })
-}
+  });
+};
 
 const actualizar_saldo_cliente = (idcliente, callback) => {
-  ClienteDB.actualizar_saldo_cliente(idcliente,(resp)=>{
-    return callback(resp)
-  })
-}
+  ClienteDB.actualizar_saldo_cliente(idcliente, (resp) => {
+    return callback(resp);
+  });
+};
 
 const actualizar_saldo_en_cobro = (idcobro, callback) => {
-  ClienteDB.actualizar_saldo_en_cobro(idcobro,(resp)=>{
-    return callback(resp)
-  })
-}
+  ClienteDB.actualizar_saldo_en_cobro(idcobro, (resp) => {
+    return callback(resp);
+  });
+};
 
 const bloquear_cuenta = (data, callback) => {
-  ClienteDB.bloquear_cuenta(data,(resp)=>{
-    return callback(resp)
-  })
-}
+  ClienteDB.bloquear_cuenta(data, (resp) => {
+    return callback(resp);
+  });
+};
 
 const desbloquear_cuenta = (idcuenta, callback) => {
-  ClienteDB.desbloquear_cuenta(idcuenta,(resp)=>{
-    return callback(resp)
-  })
-}
+  ClienteDB.desbloquear_cuenta(idcuenta, (resp) => {
+    return callback(resp);
+  });
+};
 
 const lista_ventas_general = (idcliente, callback) => {
-  ClienteDB.lista_ventas_general(idcliente,(rows)=>{
-    return callback(rows)
-  })
-}
+  ClienteDB.lista_ventas_general(idcliente, (rows) => {
+    return callback(rows);
+  });
+};
 
-const obtener_clientes_morosos = (data, callback) =>{
-  ClienteDB.obtener_clientes_morosos(data,(rows)=>{
-    return callback(rows)
-  })
-}
+const obtener_clientes_morosos = (data, callback) => {
+  ClienteDB.obtener_clientes_morosos(data, (rows) => {
+    return callback(rows);
+  });
+};
 
-const add_flag = (data,callback) =>{
-  ClienteDB.add_flag(data,(resp)=>{callback(resp)})
-}
+const add_flag = (data, callback) => {
+  ClienteDB.add_flag(data, (resp) => {
+    callback(resp);
+  });
+};
 
-const obtener_ultimas_graduaciones = (data,callback) =>{
-  ClienteDB.obtener_ultimas_graduaciones(data,(resp)=>{callback(resp)})
-}
+const obtener_ultimas_graduaciones = (data, callback) => {
+  ClienteDB.obtener_ultimas_graduaciones(data, (resp) => {
+    callback(resp);
+  });
+};
 
 module.exports = {
-    add_flag,
-    obtener_clientes_morosos,
-    update_cliente,
-    lista_ventas_general,
-    bloquear_cuenta,
-    desbloquear_cuenta,
-    obtenerClientes,
-    agregarCliente,
-    obtenerClienteDNI,
-    obtenerClienteID,
-    obtenerFichaCliente,
-    editarCliente,
-    buscarCliente,
-    operaciones_cliente,
-    obtener_saldo_ctacte,
-    actualizar_saldo_cliente,
-    actualizar_saldo_en_cobro,
-    obtener_ultimas_graduaciones,
-  };
+  add_flag,
+  obtener_clientes_morosos,
+  update_cliente,
+  lista_ventas_general,
+  bloquear_cuenta,
+  desbloquear_cuenta,
+  obtenerClientes,
+  agregarCliente,
+  obtenerClienteDNI,
+  obtenerClienteID,
+  obtenerFichaCliente,
+  editarCliente,
+  buscarCliente,
+  operaciones_cliente,
+  obtener_saldo_ctacte,
+  actualizar_saldo_cliente,
+  actualizar_saldo_en_cobro,
+  obtener_ultimas_graduaciones,
+};

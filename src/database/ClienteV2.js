@@ -3,7 +3,7 @@ const UsuarioDB = require("./Usuario");
 const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 
 const update_cliente = (data, callback) => {
-  const _q = `UPDATE cliente c SET c.direccion='${data.direccion}', c.nombre='${data.nombre}', c.apellido='${data.apellido}', c.telefono1='${data.telefono}' WHERE c.idcliente=${data.idcliente};`;
+  const _q = `UPDATE cliente c SET c.direccion='${data.direccion}', c.nombre='${data.nombre}', c.apellido='${data.apellido}', c.telefono1='${data.telefono}', c.dni='${data.dni}' WHERE c.idcliente=${data.idcliente};`;
 
   doQuery(_q, (resp) => {
     if (!resp) {
