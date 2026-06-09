@@ -3,7 +3,7 @@ const { doQuery } = require("./helpers/queriesHelper");
 const agregarVenta = (data, callback) => {
   //parse data...
 
-  console.log(data)
+  //console.log(data)
   const queryVenta = `INSERT INTO venta 
   (
     cliente_idcliente, 
@@ -24,7 +24,8 @@ const agregarVenta = (data, callback) => {
     hora_retiro,
     json_items,
     uid,
-    estado
+    estado,
+    en_laboratorio
   ) 
   VALUES (
     '${data.idcliente}', 
@@ -45,7 +46,8 @@ const agregarVenta = (data, callback) => {
     '',
     '',
     '',
-    'PENDIENTE'
+    'PENDIENTE',
+    1
   );`;
 
   console.log("query agregar venta: ", queryVenta);
@@ -118,7 +120,8 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
   precio,
   total, 
   id_trabajo,
-  id_descuento
+  id_descuento,
+  id_trabajo_realizado
   )VALUES`;
   let rows = "";
 
@@ -135,12 +138,13 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
     '${item.precio}', 
     '${item.precio * item.cantidad}', 
     ${idTrabajo},
-    ${item.iddescuento})
+    ${item.iddescuento},
+    ${item.iddisenio ? item.iddisenio : "NULL"})
     ${index < data.items.length - 1 ? "," : ""}`;
   });
 
   query += rows;
-  console.log("query agregar trabajo items: ", query);
+  console.log("***** -> query agregar trabajo items: ", query);
   //return callback({ ok: 1 }); //for testing
 
   doQuery(query, (response) => {
@@ -176,7 +180,7 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
                         WHERE 
                         t.idventa=${idventa};`;
 
-  //console.log(query_trabajos);
+  console.log(query_trabajos);
 
   doQuery(query_venta, (responseVenta) => {
     if (!responseVenta) {
@@ -291,6 +295,8 @@ const obtenerItemsTrabajo = (idtrabajo, callback) => {
                   vhs.total
                   FROM venta_has_stock vhs
                   WHERE vhs.id_trabajo = ${idtrabajo}`;
+
+  console.log("query obtener items trabajo: ", query);
 
   doQuery(query, (response) => {
     if (!response) {

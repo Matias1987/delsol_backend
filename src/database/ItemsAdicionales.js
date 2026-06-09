@@ -36,7 +36,15 @@ const agregar_item_adicional = (data, callback) => {
 
 const obtener_adicionales_venta = ({idventa, idtrabajo}, callback) => {
     
-    let query = `SELECT items.id, items.tipo, items.idcodigo, items.original , c.codigo
+    let query = `
+    SELECT 
+    items.id, 
+    items.tipo, 
+    items.idcodigo, 
+    items.original , 
+    if(sg.idsubgrupo is null, c.codigo, concat('Diseño: ' ,sg.nombre_corto, '  |  Base: ', c.codigo)) as 'codigo', 
+    if(sg.idsubgrupo is null, '', sg.nombre_corto) as trabajo_realizado, 
+    sg.idsubgrupo 
     FROM 
     codigo c,
     (
@@ -45,7 +53,8 @@ const obtener_adicionales_venta = ({idventa, idtrabajo}, callback) => {
         vs.stock_codigo_idcodigo AS 'idcodigo', 
         1 AS 'original', 
         vs.tipo AS 'tipo' ,
-        vs.id_trabajo as 'idtrabajo'
+        vs.id_trabajo as 'idtrabajo',
+        vs.id_trabajo_realizado
         FROM venta_has_stock vs 
         WHERE 
         vs.venta_idventa=${idventa} AND (case when '${idtrabajo}'='-1' then true else vs.id_trabajo=${idtrabajo} end)
@@ -55,11 +64,12 @@ const obtener_adicionales_venta = ({idventa, idtrabajo}, callback) => {
         sa.fk_codigo AS 'idcodigo', 
         0 AS 'original', 
         sa.tipo AS 'tipo',
-        sa.fk_trabajo  as 'idtrabajo'
+        sa.fk_trabajo  as 'idtrabajo',
+        -1 as 'id_trabajo_realizado'
         FROM sobre_adicionales sa 
         WHERE 
         sa.fk_venta=${idventa} and (case when '${idtrabajo}'='-1' then true else sa.fk_trabajo=${idtrabajo} end)
-    ) AS items
+    ) AS items LEFT JOIN subgrupo sg on sg.idsubgrupo = items.id_trabajo_realizado
     WHERE c.idcodigo = items.idcodigo
     ORDER BY items.tipo, items.original desc`
     console.log(query)

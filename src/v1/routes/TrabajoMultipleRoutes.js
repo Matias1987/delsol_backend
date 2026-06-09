@@ -6,7 +6,7 @@ router.post("/", (req, res) => {
     controller.procesarTrabajoMultiple(req, res);
 });
 
-router.get("/:idsucursal",(req,res) => {
+router.get("/ls/s/:idsucursal",(req,res) => {
     controller.obtenerListadoVentasTM(req,res);
 })
 
