@@ -13,8 +13,32 @@ const marcar_como_calibrando = (data, callback) => {
 };
 
 const marcar_como_terminado = (data, callback) => {
+  
+  const idtrabajo = +data.idtrabajo > 0 ? data.idtrabajo : null;
+
   ventaTallerDB.marcar_como_terminado(data, (resp) => {
-    callback(resp);
+
+    if(null===idtrabajo)
+    {
+      return  callback(resp);
+    }
+    else
+    {
+      ventaTallerDB.hay_trabajos_no_terminados_en_taller({idventa: data.idventa},resp1=>{
+        console.log(resp1)
+        if(false===resp1){ 
+          //no hay mas trabajos pendientes o todos los trabajos estan terminados
+          ventaTallerDB.marcar_venta_como_terminado({idventa:data.idventa},resp2=>{
+            callback(resp);
+          });
+        }
+        else{
+          callback(resp);
+        }
+      });
+    }
+
+    
   });
 };
 
@@ -53,6 +77,12 @@ const contadores_estado_taller = (data, callback) => {
     callback(resp);
   });
 };
+
+const marcar_venta_entregado = (data, callback) => {
+  ventaTallerDB.marcar_venta_entregado(data,(response)=>{
+    callback(response);
+  })
+}
 
 module.exports = {
   marcar_como_calibrando,

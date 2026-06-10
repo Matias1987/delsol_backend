@@ -5,6 +5,7 @@ var cors = require("cors");
 const usuarios_db = require("./database/Usuario");
 const http = require("http");
 const { Server } = require("socket.io");
+const rateLimit = require('express-rate-limit');
 
 //const session = require("express-session");
 //const cookieParser = require("cookie-parser");
@@ -21,6 +22,12 @@ const isValidToken = (token, callback) => {
   });
 };
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 3000, // Limit each IP to 2500 requests per window
+  message: 'Too many requests from this IP, please try again later.'
+});
+
 const corsOptions = {
   origin: ['https://coexp.nosis.site'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -36,6 +43,9 @@ app.use(
     extended: true,
   })
 );
+
+app.use(limiter);
+
 
 app.use("/static", express.static("uploads"));
 
@@ -84,6 +94,7 @@ io.use((socket, next) => {
 });
 
 // Periodically ping clients
+/*
 setInterval(() => {
   console.log("Pinging clients...");
   io.sockets.sockets.forEach((socket) => {
@@ -103,7 +114,8 @@ setInterval(() => {
     socket.isAlive = false;
     socket.emit("ping"); // custom ping event
   });
-}, 1000000); // every 30 seconds
+}, 2000); // every 30 seconds:1000000
+*/
 
 //app.use(express.urlencoded({ extended: true }));
 
@@ -126,11 +138,11 @@ ALSO FROM: https://stackoverflow.com/questions/31875621/how-to-properly-return-a
 */
 
 const requestLogger = function (req, res, next) {
-  //const timestamp = new Date().toISOString();
-  //console.log(`${timestamp} - ${req.method} request to ${req.url}`);
+  const timestamp = new Date().toISOString();
+  console.log(`${timestamp} - ${req.method} request to ${req.url}`);
   next(); // Pass control to the next middleware function or route handler
 };
-/*
+
 app.use(async (req, res, next) => {
   //console.log("Authenticating incoming request...");
   //console.log(`Incoming ${req.method} request to ${req.url}`);
@@ -163,7 +175,7 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-*/
+
 app.get("/", (req, res) => {
   res.send("Socket.IO server with keep-alive running");
 });
@@ -357,12 +369,12 @@ app.use("/api/v1/tm", trabajoMultipleRouter);
 const descuentoClienteRouter = require("./v1/routes/DescuentoClienteRoutes");
 app.use("/api/v1/dc", descuentoClienteRouter);
 
-/*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
 
-
-*/ server.listen(port, () => {
+/*
+ server.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
+*/

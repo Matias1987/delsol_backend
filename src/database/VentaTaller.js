@@ -60,10 +60,44 @@ const marcar_como_terminado = (data, callback) => {
   const idtrabajo = +data.idtrabajo > 0 ? data.idtrabajo : null;
   const query = idtrabajo?  `update trabajo t set t.estado = 'TERMINADO' where t.idtrabajo=${idtrabajo};` : 
   `update venta v set v.estado_taller='TERMINADO', v.en_laboratorio='0' where v.idventa = ${data.idventa}`;
+
+  console.log("marcar como terminado" + JSON.stringify(data));
+  console.log(query);
+
   doQuery(query, (resp) => {
     callback(resp.data);
   });
 };
+
+const marcar_venta_como_terminado = ({idventa}, callback) =>{
+  const query = `update venta  v set v.estado='TERMINADO', v.en_laboratorio=0 where v.idventa=${idventa};`;
+  doQuery(query,resp=>{
+    callback({ok:1});
+  })
+}
+
+const hay_trabajos_no_terminados_en_taller = ({idventa},callback)=>{
+  const query =`SELECT COUNT(t.idtrabajo)  AS 'qtty' FROM trabajo t WHERE t.idventa =${idventa} AND t.estado <> 'TERMINADO';`;
+
+  console.log(query);
+
+  doQuery(query, resp=>{
+    console.log(JSON.stringify(resp))
+    const result = resp?.data?.[0]?.qtty ?? "-1";
+    console.log(result)
+    return callback(+result > 0);
+  })
+}
+
+const marcar_venta_entregado = ({idventa}, callback ) => {
+  const query = `update venta v set v.estado='ENTREGADO' where v.idventa=${idventa};`;
+
+  console.log(query);
+
+  doQuery(query, response=>{
+    callback(idventa);
+  })
+}
 
 const obtener_items_operacion = ({idventa, idtrabajo}, callback) => {
   const _idtrabajo = +idtrabajo>0 ? idtrabajo : '';
@@ -177,5 +211,8 @@ module.exports = {
   marcar_como_laboratorio,
   informe_consumo_periodo,
   detalle_consumo_codigo,
-  contadores_estado_taller
+  contadores_estado_taller,
+  marcar_venta_como_terminado,
+  hay_trabajos_no_terminados_en_taller,
+  marcar_venta_entregado,
 };

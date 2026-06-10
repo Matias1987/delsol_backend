@@ -52,8 +52,8 @@ const user_is_logged = (req,res) => {
 
 const login = (req,res)=>{
   //FROM https://stackoverflow.com/questions/47523265/jquery-ajax-no-access-control-allow-origin-header-is-present-on-the-requested
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  //res.header("Access-Control-Allow-Origin", "*");
+  //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
   const {body} = req;
 
@@ -71,6 +71,28 @@ const login = (req,res)=>{
       req.session.logedIn = true;
 
       res.status(201).send({status:'OK', data: {loged:1}});*/
+
+      const udata = resp.udata || null;
+
+      if(!udata){
+        res.status(201).send({status:'OK', data: {success: false, message: 'Authentication failed!'}});
+        return;
+      }
+
+
+        const permisos = {
+          ventas: +udata.ventas==1,
+          caja1: +udata.caja1==1,
+          deposito_min: +udata.deposito_min==1,
+          deposito: +udata.deposito==1,
+          caja2: +udata.caja2==1,
+          admin1: +udata.admin1==1,  
+          admin2: +udata.admin2==1,
+          admin_prov: +udata.admin_prov==1,
+          laboratorio: +udata.laboratorio==1,
+          distribuidora: +udata.distribuidora==1,
+        }
+
       let multipleInstances = +(resp.udata.multInstances||"0")==1;
       let token = multipleInstances ? 'sometoken' : jwt.sign( {username: user_data.name}, config.secret, { expiresIn: '1h' // expires in 24 hours
         }
@@ -85,6 +107,7 @@ const login = (req,res)=>{
             uid: resp.uid,
             message: 'Authentication successful!',
             token: token,
+            permisos: permisos,
             udata: resp.udata
             
           }
