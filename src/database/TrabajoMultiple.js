@@ -273,7 +273,8 @@ const obtenerListadoVentasTM = (idsucursal, callback) => {
                   v.cliente_idcliente = c.idcliente AND
                   v.usuario_idusuario = u.idusuario AND
                   v.tipo=7 AND 
-                  (case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end); `;
+                  (case when '${idsucursal}'<>'' then v.sucursal_idsucursal = '${idsucursal}' else true end)
+                  order by v.idventa desc; `;
 
   doQuery(query, (response) => {
     if (!response) {
