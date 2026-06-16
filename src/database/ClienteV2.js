@@ -67,7 +67,10 @@ const do_agregar_cliente = (data, callback) => {
             }
           ),
           (resp) => {
-            return callback(resp.data.insertId);
+            doQuery(`INSERT INTO evento  (detalle, fk_usuario, fk_sucursal, tipo, ref_id) VALUE ('','${data.id_usuario}','${data.id_sucursal}','NUSR','${resp.data.insertId}');`,_=>{
+                return callback(resp.data.insertId);
+            })
+            
           },
         );
       }

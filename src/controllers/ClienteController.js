@@ -17,6 +17,8 @@ const agregarCliente = (req, res) => {
   const {body} = req;
   
   const nuevo_cliente = {
+    'id_usuario': body.id_usuario,
+    'id_sucursal': body.id_sucursal,
     'localidad_idlocalidad' :  body.idlocalidad,
     'nombre' : body.nombres,
     'apellido' : body.apellidos,
