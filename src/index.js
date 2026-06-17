@@ -44,7 +44,7 @@ app.use(
   })
 );
 
-app.use(limiter);
+//app.use(limiter);
 
 
 app.use("/static", express.static("uploads"));
@@ -142,7 +142,7 @@ const requestLogger = function (req, res, next) {
   console.log(`${timestamp} - ${req.method} request to ${req.url}`);
   next(); // Pass control to the next middleware function or route handler
 };
-
+/*
 app.use(async (req, res, next) => {
   //console.log("Authenticating incoming request...");
   //console.log(`Incoming ${req.method} request to ${req.url}`);
@@ -175,7 +175,7 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-
+*/
 app.get("/", (req, res) => {
   res.send("Socket.IO server with keep-alive running");
 });
@@ -368,13 +368,12 @@ app.use("/api/v1/tm", trabajoMultipleRouter);
 
 const descuentoClienteRouter = require("./v1/routes/DescuentoClienteRoutes");
 app.use("/api/v1/dc", descuentoClienteRouter);
-
+/*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
  })
 
-/*
+*/
  server.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
-*/

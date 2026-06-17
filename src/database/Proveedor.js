@@ -184,7 +184,11 @@ const agregar_pago_proveedor = (data, callback) => {
   '${data.moneda}',
   ${saldado}
   )`;
+  //console.log(query);
   doQuery(query, (resp) => {
+    //console.log("---");
+    //console.log(JSON.stringify(resp));
+    //console.log(JSON.stringify(data));
     const insertId = resp.data.insertId;
     if (data.efectivo.checked) {
       const _q = `INSERT INTO pago_proveedor_modo (modo_pago, fk_pago_proveedor, monto) VALUES ('efectivo', ${insertId}, ${data.efectivo.monto});`;
@@ -202,10 +206,10 @@ const agregar_pago_proveedor = (data, callback) => {
     if (data.compras && data.compras.length > 0) {
 
       agregar_pago_compra({ ...data, idpago: insertId }, (_) => {
-        callback(resp.data);
+        return callback(resp.data);
       });
     } else {
-      callback(resp.data);
+      return callback(resp.data);
     }
   });
 };
@@ -330,6 +334,8 @@ const obtener_pagos_no_saldados = ({ idproveedor, moneda, modo }, callback) => {
     pp.fk_proveedor=${idproveedor} AND
     pp.activo=1;`;
 
+    //console.log(query)
+
   doQuery(query, (response) => {
     callback(response.data);
   });
@@ -447,13 +453,17 @@ const obtener_cm_saldo = ({ idproveedor, moneda, modo }, callback) => {
                 (SELECT ppcm.fk_cm, SUM(ppcm.monto) AS 'monto' FROM pago_proveedor_cm ppcm GROUP BY ppcm.fk_cm) pp
                 ON pp.fk_cm = cmp.id 
                 WHERE cmp.saldado=0 AND cmp.monto>0 AND cmp.fk_proveedor=${idproveedor} AND cmp.moneda='${moneda}' AND cmp.modo_ficha=${_modo}`;
-
+  //console.log(query);
   doQuery(query, (response) => {
     return callback(response.data);
   });
 };
 
 const obtener_pagos_facturas = ({ idproveedor, moneda, modo }, callback) => {
+  //fix porque esta mal
+  //console.log("!ffddf")
+  //console.log(modo)
+  //const _modo = +modo ==1 ? 0 : 1;
   const query = `SELECT 
                   pp.fecha,
                   pp.monto,
@@ -472,7 +482,7 @@ const obtener_pagos_facturas = ({ idproveedor, moneda, modo }, callback) => {
                     f.idfactura = ppcm.fk_pago 
                     WHERE  
                     f.proveedor_idproveedor=${idproveedor} 
-                    f.es_remito={modo}
+                    f.es_remito=${modo}
                   ) pf ON pp.id = pf.fk_pago
                   WHERE 
                   pp.modo_ficha=${modo}
@@ -480,7 +490,7 @@ const obtener_pagos_facturas = ({ idproveedor, moneda, modo }, callback) => {
                   pp.fk_proveedor = ${idproveedor} AND 
                   pp.moneda = '${moneda}'`;
 
-  console.log(query);
+  //console.log(query);
   doQuery(query, (response) => {
     callback(response.data);
   });
