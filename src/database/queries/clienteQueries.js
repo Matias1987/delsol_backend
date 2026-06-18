@@ -29,6 +29,7 @@ const queryAgregarCliente = (
         telefono2,
         destinatario,
         fechaNac,
+        cliente_mayorista
     }
 ) => {
     return `INSERT INTO cliente (
@@ -40,7 +41,8 @@ const queryAgregarCliente = (
         telefono1, 
         telefono2,
         destinatario,
-        fecha_nacimiento
+        fecha_nacimiento,
+        cliente_mayorista
         ) values (
         '${localidad_idlocalidad}',
         '${nombre}',
@@ -50,7 +52,8 @@ const queryAgregarCliente = (
         '${telefono1}',
         '${telefono2}',
         '${destinatario}',
-        '${fechaNac}' 
+        '${fechaNac}' ,
+        '${cliente_mayorista}' 
         )`;
 }
 

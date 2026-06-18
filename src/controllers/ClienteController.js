@@ -8,7 +8,8 @@ const update_cliente = (req, res) => {
 }
 
 const obtenerClientes = (req, res) => {
-  clienteService.obtenerClientes((rows)=>{
+  const {params:{mayorista}} = req;
+  clienteService.obtenerClientes({mayorista},(rows)=>{
     res.status(201).send({status:'OK', data: rows});
   })
 }
@@ -29,6 +30,7 @@ const agregarCliente = (req, res) => {
     'destinatario': typeof body.destinatario === 'undefined' ? 0 : body.destinatario,
     'fechaNac': body.fechaNac,
     'tk':body.tk,
+    'cliente_mayorista': body?.cliente_mayorista||"0",
   }
 
   clienteService.agregarCliente(nuevo_cliente,

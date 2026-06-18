@@ -64,6 +64,7 @@ const do_agregar_cliente = (data, callback) => {
               telefono2: data.telefono2,
               destinatario: data.destinatario,
               fechaNac: _fecha,
+              cliente_mayorista: data?.cliente_mayorista||"0",
             }
           ),
           (resp) => {
@@ -89,10 +90,10 @@ const agregar_cliente = (data, callback) => {
   );*/
 };
 
-const obtener_lista_clientes = (callback) => {
+const obtener_lista_clientes = ({mayorista},callback) => {
   const query = `SELECT c.*, 
     CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
-     FROM cliente c where c.destinatario=0 limit 50;`;
+     FROM cliente c where c.destinatario=0 AND (case when '${mayorista}'<>'1' then true else c.cliente_mayorista=1 end);`;
 
   doQuery(query, (resp) => {
     if (!resp) {

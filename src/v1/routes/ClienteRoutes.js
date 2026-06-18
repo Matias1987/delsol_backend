@@ -3,7 +3,7 @@ const router = express.Router();
 
 const clienteController = require("../../controllers/ClienteController")
 
-router.get("/", (req, res) => {
+router.get("/:mayorista?", (req, res) => {
   clienteController.obtenerClientes(req,res);
 });
 

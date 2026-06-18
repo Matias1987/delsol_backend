@@ -21,8 +21,8 @@ const update_cliente = (data, callback) => {
   });
 };
 
-const obtenerClientes = (callback) => {
-  ClienteDB.obtener_lista_clientes((rows) => {
+const obtenerClientes = (data, callback) => {
+  ClienteDB.obtener_lista_clientes(data, (rows) => {
     return callback(rows);
   });
 };
