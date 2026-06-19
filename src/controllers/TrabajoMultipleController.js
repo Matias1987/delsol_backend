@@ -28,9 +28,18 @@ const obtenerItemsTrabajo = (req, res) => {
     });
 }
 
+const marcarComoEntregado = (req, res) => {
+    const {body} = req;
+    service.marcar_como_entregado(body, (response)=>{
+        console.log("To return")
+        return res.json({data:response});
+    })
+}
+
 module.exports = { 
     procesarTrabajoMultiple,
     obtenerListadoVentasTM,
     obtenerTrabajoMultiple,
-    obtenerItemsTrabajo
+    obtenerItemsTrabajo,
+    marcarComoEntregado
 }

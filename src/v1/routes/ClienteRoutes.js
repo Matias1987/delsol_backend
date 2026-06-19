@@ -21,7 +21,7 @@ router.get("/bloquear/:clienteId", (req, res) => {
   clienteController.bloquear_cuenta(req,res);
 });*/
 router.post("/bloquear/", (req, res) => {
-  console.log("bloquear")
+  //console.log("bloquear")
   clienteController.bloquear_cuenta(req,res);
 });
 

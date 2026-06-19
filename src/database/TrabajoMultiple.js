@@ -1,4 +1,4 @@
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, doTransaction } = require("./helpers/queriesHelper");
 
 const agregarVenta = (data, callback) => {
   //parse data...
@@ -201,47 +201,40 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
   });
 };
 
-const procesar_ventas = (rows) =>{
-  if(!rows)
-  {
-    return rows
+const procesar_ventas = (rows) => {
+  if (!rows) {
+    return rows;
   }
   const result = [];
   let lastId = -1;
   let parent = null;
-  let key=0;
-  rows.forEach(row=>{
-    if(+lastId!=+row.idventa )
-    {
-      parent=null;
-      if(+row.tipo==7 && +row.idtrabajo<0)
-      {
+  let key = 0;
+  rows.forEach((row) => {
+    if (+lastId != +row.idventa) {
+      parent = null;
+      if (+row.tipo == 7 && +row.idtrabajo < 0) {
         return;
       }
-      
-      if(+row.tipo==7)
-        {
-          parent = {...row, isParent:1, key:key, children:[]};
-          result.push(parent);
-          key++;
-        }
-    }
-    const childNode = {...row, isParent:0, key:key,}
 
-    if(parent)
-    {
-      parent.children.push(childNode);
+      if (+row.tipo == 7) {
+        parent = { ...row, isParent: 1, key: key, children: [] };
+        result.push(parent);
+        key++;
+      }
     }
-    else{
+    const childNode = { ...row, isParent: 0, key: key };
+
+    if (parent) {
+      parent.children.push(childNode);
+    } else {
       result.push(childNode);
     }
 
-    lastId=row.idventa;
+    lastId = row.idventa;
     key++;
   });
   return result;
-
-}
+};
 
 const obtenerListadoVentasTM = (idsucursal, callback) => {
   const query = `SELECT 
@@ -307,6 +300,49 @@ const obtenerItemsTrabajo = (idtrabajo, callback) => {
   });
 };
 
+const marcar_entregado = ({ idventa }, callback) => {
+  const __logic = async (connection) => {
+    const get_venta_query = `select * from venta v where v.idventa=${idventa};`;
+
+    //console.log(JSON.stringify(get_venta_query));
+
+    const response_venta = await connection.query(get_venta_query);
+
+    //console.log(JSON.stringify(response_venta));
+
+    const data = response_venta[0][0];
+    //console.log(JSON.stringify(response_venta))
+    const monto_venta = parseFloat(data.monto_total);
+    const monto_cuota = parseFloat(data.monto_total);
+    const cant_cuotas = 1;
+    const monto_int = parseFloat(data.monto_total);
+
+    const insert_query = `insert into venta_has_modo_pago (venta_idventa, monto, monto_int, cant_cuotas, monto_cuota, modo_pago) values (${idventa}, '${monto_venta}','${monto_int}','${cant_cuotas}','${monto_cuota}','ctacte');`;
+
+    const response_insert = await connection.query(insert_query);
+
+    //console.log(JSON.stringify(response_insert));
+
+    const query_update = `update venta v set v.estado='ENTREGADO' where v.idventa=${idventa}`;
+
+    const response_update = await connection.query(query_update);
+
+    //console.log(JSON.stringify(response_update));
+
+    return { ok: 1 };
+  };
+
+
+  doTransaction(__logic, ({ data, err }) => {
+    if (err) {
+      console.error("Error en la transacción. Rollback aplicado:", err);
+      return { error: 1 };
+    }
+    console.log("OK...")
+    return callback({ ok: 1 });
+  });
+};
+
 module.exports = {
   agregarVenta,
   checkQuantities,
@@ -316,4 +352,5 @@ module.exports = {
   obtenerTrabajoMultiple,
   obtenerListadoVentasTM,
   obtenerItemsTrabajo,
+  marcar_entregado,
 };

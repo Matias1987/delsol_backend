@@ -5,6 +5,9 @@ const controller = require("../../controllers/TrabajoMultipleController");
 router.post("/", (req, res) => {
     controller.procesarTrabajoMultiple(req, res);
 });
+router.post("/marcar_entregado/", (req, res) => {
+    controller.marcarComoEntregado(req, res);
+});
 
 router.get("/ls/s/:idsucursal",(req,res) => {
     controller.obtenerListadoVentasTM(req,res);

@@ -447,6 +447,8 @@ const queryListaVentaModoPago = (ventaId) => {
     vhmp.venta_idventa=${ventaId};`;
 }
 
+const queryCobro = (data) => `to do`;
+
 module.exports = {
 	update_venta_query,
     queryDetalleVenta,
@@ -461,5 +463,6 @@ module.exports = {
 	queryListaVentasSucursalEstado,
 	query_items,
 	query_mp,
+	queryCobro,
 
 }
