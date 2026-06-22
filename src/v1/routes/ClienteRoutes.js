@@ -3,8 +3,15 @@ const router = express.Router();
 
 const clienteController = require("../../controllers/ClienteController")
 
-router.get("/:mayorista?", (req, res) => {
+router.get("/:clienteId", (req, res) => {
+ clienteController.obtenerClientePorID(req,res)
+});
+
+router.get("/", (req, res) => {
   clienteController.obtenerClientes(req,res);
+});
+router.get("/lista/mayorista/", (req, res) => {
+  clienteController.obtenerClientesMayoristas(req,res);
 });
 
 router.get("/buscar/:values", (req, res) => {
@@ -30,9 +37,7 @@ router.get("/desbloquear/:clienteId", (req, res) => {
   clienteController.desbloquear_cuenta(req,res);
 });
 
-router.get("/:clienteId", (req, res) => {
- clienteController.obtenerClientePorID(req,res)
-});
+
 
 router.post("/operaciones/", (req, res) => {
  clienteController.operaciones_cliente(req,res)

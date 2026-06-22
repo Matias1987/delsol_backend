@@ -1,4 +1,4 @@
-const { doQuery, doTransaction } = require("./helpers/queriesHelper");
+const { doQuery, doTransaction, escapeHelper } = require("./helpers/queriesHelper");
 
 const agregarVenta = (data, callback) => {
   //parse data...
@@ -67,8 +67,10 @@ const agregarTrabajo = (data, idventa, callback) => {
   const query = `INSERT INTO trabajo (
   idventa, 
   nro_trabajo, 
-  tipo_trabajo) 
-  VALUES (${idventa}, '${data.nro}', '${data.tipo}');`;
+  tipo_trabajo,
+  comentarios
+  ) 
+  VALUES (${idventa}, '${data.nro}', '${data.tipo}', ${escapeHelper(data.comentarios)});`;
   console.log("query agregar trabajo: ", query);
   //return callback({ idtrabajo: 1 }); //for testing
   doQuery(query, (response) => {
@@ -311,23 +313,29 @@ const marcar_entregado = ({ idventa }, callback) => {
     //console.log(JSON.stringify(response_venta));
 
     const data = response_venta[0][0];
-    //console.log(JSON.stringify(response_venta))
+
+    //console.log(JSON.stringify(response_venta[0]))
+
     const monto_venta = parseFloat(data.monto_total);
     const monto_cuota = parseFloat(data.monto_total);
     const cant_cuotas = 1;
     const monto_int = parseFloat(data.monto_total);
 
-    const insert_query = `insert into venta_has_modo_pago (venta_idventa, monto, monto_int, cant_cuotas, monto_cuota, modo_pago) values (${idventa}, '${monto_venta}','${monto_int}','${cant_cuotas}','${monto_cuota}','ctacte');`;
-
-    const response_insert = await connection.query(insert_query);
-
-    //console.log(JSON.stringify(response_insert));
-
     const query_update = `update venta v set v.estado='ENTREGADO' where v.idventa=${idventa}`;
 
     const response_update = await connection.query(query_update);
 
-    //console.log(JSON.stringify(response_update));
+    //console.log(`monto_int: ${monto_int}`);
+
+    if(parseFloat(monto_int)<1)
+    {
+       
+       return { ok: 1 };
+    }
+
+    const insert_query = `insert into venta_has_modo_pago (venta_idventa, monto, monto_int, cant_cuotas, monto_cuota, modo_pago) values (${idventa}, '${monto_venta}','${monto_int}','${cant_cuotas}','${monto_cuota}','ctacte');`;
+
+    const response_insert = await connection.query(insert_query);
 
     return { ok: 1 };
   };

@@ -8,8 +8,13 @@ const update_cliente = (req, res) => {
 }
 
 const obtenerClientes = (req, res) => {
-  const {params:{mayorista}} = req;
-  clienteService.obtenerClientes({mayorista},(rows)=>{
+  clienteService.obtenerClientes({mayorista:0},(rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
+const obtenerClientesMayoristas = (req, res) => {
+  
+  clienteService.obtenerClientes({mayorista:1},(rows)=>{
     res.status(201).send({status:'OK', data: rows});
   })
 }
@@ -182,4 +187,5 @@ module.exports = {
     actualizar_saldo_cliente,
     actualizar_saldo_en_cobro,
     obtener_ultimas_graduaciones,
+    obtenerClientesMayoristas,
   };

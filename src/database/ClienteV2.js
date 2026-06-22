@@ -158,6 +158,7 @@ const operaciones_cliente = (data, callback) => {
             date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
             'ENTREGA' as 'tipo',
             concat('ENTREGA @', s.nombre) as 'detalle',
+            'ENTREGA' as 'detalle_m',
             0 as 'debe',
             c.monto as 'haber',
             s.idsucursal
@@ -183,6 +184,7 @@ const operaciones_cliente = (data, callback) => {
             date_format(c.fecha  , '%d-%m-%y') as 'fecha_f',
             'PAGO CUOTA' as 'tipo',
             concat('PAGO CUOTA  @',s.nombre) as 'detalle',
+            'PAGO' as 'detalle_m',
             0 as 'debe',
             c.monto as 'haber',
             s.idsucursal
@@ -202,6 +204,7 @@ const operaciones_cliente = (data, callback) => {
             date_format(v.fecha  , '%d-%m-%y') as 'fecha_f',
             'VENTA'  as 'tipo',
             concat('VENTA Cuotas:', vhmp.cant_cuotas, ' Monto: ', format(vhmp.monto_cuota,2) , '  @', s.nombre)   as 'detalle',
+            concat('VENTA Monto: ', format(vhmp.monto_cuota,2) )   as 'detalle_m',
             ((v.subtotal - vhmp.monto-v.descuento) + vhmp.cant_cuotas * vhmp.monto_cuota) as 'debe',
             0 as 'haber',
             s.idsucursal
@@ -222,6 +225,7 @@ const operaciones_cliente = (data, callback) => {
             date_format(cm.fecha , '%d-%m-%y')  as 'fecha_f',
             'CARGA MANUAL' as 'tipo',
             concat('CARGA MANUAL "', cm.concepto , '"  @', s.nombre) as 'detalle',
+            concat('CARGA MANUAL "', cm.concepto , '"  ') as 'detalle_m',
             cm.monto as 'debe',
             0 as 'haber',
             s.idsucursal
