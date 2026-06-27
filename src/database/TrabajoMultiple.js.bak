@@ -1,16 +1,54 @@
-const { Jobs } = require("openai/resources/fine-tuning.js");
-const {
-  doQuery,
-  doTransaction,
-  escapeHelper,
-} = require("./helpers/queriesHelper");
-const { queriesTM } = require("./queries/TrabajoMultipleQueries");
+const { doQuery, doTransaction, escapeHelper } = require("./helpers/queriesHelper");
 
 const agregarVenta = (data, callback) => {
   //parse data...
 
   //console.log(data)
-  const query = queriesTM.queryVenta(data);
+  const queryVenta = `INSERT INTO venta 
+  (
+    cliente_idcliente, 
+    sucursal_idsucursal, 
+    caja_idcaja, 
+    usuario_idusuario, 
+    medico_idmedico, 
+    monto_total, 
+    descuento, 
+    subtotal, 
+    comentarios, 
+    fecha_retiro,
+    fk_destinatario,
+    fk_os,
+    tipo,
+    debe,
+    saldo,
+    hora_retiro,
+    json_items,
+    uid,
+    estado,
+    en_laboratorio
+  ) 
+  VALUES (
+    '${data.idcliente}', 
+    '${data.idsucursal}', 
+    ${data.idcaja}, 
+    ${data.idusuario}, 
+    NULL, 
+    '${data.montoTotal}', 
+    '${data.descuento}', 
+    '${data.monto}', 
+    '${data.comentarios}', 
+    date('${data.fechaRetiro}'),
+    NULL,
+    NULL,
+    '7',
+    ${data.montoTotal},
+    ${data.montoTotal},
+    '',
+    '',
+    '',
+    'PENDIENTE',
+    1
+  );`;
 
   console.log("query agregar venta: ", queryVenta);
   //return callback({ insertId: 1 }); //for testing
@@ -26,7 +64,13 @@ const agregarVenta = (data, callback) => {
 };
 
 const agregarTrabajo = (data, idventa, callback) => {
-  const query = queriesTM.queryInsertTrabajo(data, idventa);
+  const query = `INSERT INTO trabajo (
+  idventa, 
+  nro_trabajo, 
+  tipo_trabajo,
+  comentarios
+  ) 
+  VALUES (${idventa}, '${data.nro}', '${data.tipo}', ${escapeHelper(data.comentarios)});`;
   console.log("query agregar trabajo: ", query);
   //return callback({ idtrabajo: 1 }); //for testing
   doQuery(query, (response) => {
@@ -61,8 +105,47 @@ const descontarStock = (idventa, idsucursal, callback) => {
 };
 
 const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
-  const query = queriesTM.queryVentaStock(data, idVenta, idsucursal, idTrabajo);
+  //console.log("agregando trabajo items para trabajo:", idTrabajo);
 
+  //console.log(data.items);
+
+  let query = `
+  INSERT INTO venta_has_stock (
+  venta_idventa, 
+  stock_sucursal_idsucursal, 
+  stock_codigo_idcodigo, 
+  cantidad, 
+  tipo, 
+  esf, 
+  cil, 
+  eje,
+  precio,
+  total, 
+  id_trabajo,
+  id_descuento,
+  id_trabajo_realizado
+  )VALUES`;
+  let rows = "";
+
+  data.items.forEach((item, index) => {
+    rows += `(
+    ${idVenta}, 
+    ${idsucursal}, 
+    ${item.idcodigo}, 
+    ${item.cantidad}, 
+    '${item.tipo}', 
+    '${item.esf}', 
+    '${item.cil}', 
+    '${item.eje}', 
+    '${item.precio}', 
+    '${item.precio * item.cantidad}', 
+    ${idTrabajo},
+    ${item.iddescuento},
+    ${item.iddisenio ? item.iddisenio : "NULL"})
+    ${index < data.items.length - 1 ? "," : ""}`;
+  });
+
+  query += rows;
   console.log("***** -> query agregar trabajo items: ", query);
   //return callback({ ok: 1 }); //for testing
 
@@ -76,16 +159,13 @@ const agregarTabajoItems = (data, idTrabajo, idVenta, idsucursal, callback) => {
 
 const obtenerTrabajoMultiple = ({ idventa }, callback) => {
   //console.log("obteniendo trabajo multiple para idventa: ", idventa);
-  const query_venta = `SELECT v.*, c.nombre as 'cliente', date_format(v.fecha, '%d-%m-%Y') as 'fecha_f' FROM venta v inner join cliente c on v.cliente_idcliente = c.idcliente WHERE v.idventa=${idventa};`;
+  const query_venta = `SELECT * FROM venta v WHERE v.idventa=${idventa};`;
   const query_trabajos = `SELECT 
                         t.idtrabajo,
                         t.nro_trabajo,
                         t.tipo_trabajo,
                         t.idventa,
-                        t.comentarios,
                         vhs.stock_codigo_idcodigo,
-                        vhs.codigo,
-                        vhs.descripcion,
                         vhs.tipo,
                         vhs.esf,
                         vhs.cil,
@@ -93,27 +173,14 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
                         vhs.cantidad,
                         vhs.precio,
                         vhs.total,
-                        vhs.id_descuento,
-                        vhs.id_trabajo_realizado,
-                        vhs.detalle_trabajo
+                        vhs.id_descuento
                         FROM 
                         trabajo t 
                         INNER JOIN 
-                        (
-								SELECT 
-								_vhs.*, 
-								c.codigo, 
-								c.descripcion ,
-								if(_vhs.id_trabajo_realizado IS NULL, '', sg.nombre_corto) AS 'detalle_trabajo'
-								FROM venta_has_stock _vhs 
-								INNER JOIN codigo c ON _vhs.stock_codigo_idcodigo = c.idcodigo
-								LEFT JOIN subgrupo sg ON _vhs.id_trabajo_realizado = sg.idsubgrupo
-								 WHERE  _vhs.venta_idventa=${idventa}
-								) vhs
+                        venta_has_stock vhs
                         ON vhs.id_trabajo= t.idtrabajo
                         WHERE 
-                        t.idventa=${idventa};
-                        `;
+                        t.idventa=${idventa};`;
 
   console.log(query_trabajos);
 
@@ -260,8 +327,10 @@ const marcar_entregado = ({ idventa }, callback) => {
 
     //console.log(`monto_int: ${monto_int}`);
 
-    if (parseFloat(monto_int) < 1) {
-      return { ok: 1 };
+    if(parseFloat(monto_int)<1)
+    {
+       
+       return { ok: 1 };
     }
 
     const insert_query = `insert into venta_has_modo_pago (venta_idventa, monto, monto_int, cant_cuotas, monto_cuota, modo_pago) values (${idventa}, '${monto_venta}','${monto_int}','${cant_cuotas}','${monto_cuota}','ctacte');`;
@@ -271,53 +340,13 @@ const marcar_entregado = ({ idventa }, callback) => {
     return { ok: 1 };
   };
 
+
   doTransaction(__logic, ({ data, err }) => {
     if (err) {
       console.error("Error en la transacción. Rollback aplicado:", err);
       return { error: 1 };
     }
-    console.log("OK...");
-    return callback({ ok: 1 });
-  });
-};
-
-const transaccionAgregarTM = async (data, callback) => {
-  const _logic = async (connection) => {
-    console.log("Begin Transaction...");
-    const venta_insert_response = await connection.query(
-      queriesTM.queryVenta(data),
-    );
-
-    console.log(
-      "venta insert response: " + JSON.stringify(venta_insert_response[0]),
-    );
-
-    const idventa = venta_insert_response[0].insertId;
-
-    for (let i = 0; i < data.trabajos.length; i++) {
-      const trabajo = data.trabajos[i];
-      const trabajo_insert_response = await connection.query(
-        queriesTM.queryInsertTrabajo(trabajo, idventa),
-      );
-
-      console.log(
-        "->trabajo insert response: " +
-          JSON.stringify(venta_insert_response[0]),
-      );
-
-      const idtrabajo = trabajo_insert_response[0].insertId;
-      const item_insert_response = await connection.query(
-        queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo),
-      );
-    }
-  };
-
-  doTransaction(_logic, ({ data, err }) => {
-    if (err) {
-      console.error("Error en la transacción. Rollback aplicado:", err);
-      return { error: 1 };
-    }
-    console.log("OK...");
+    console.log("OK...")
     return callback({ ok: 1 });
   });
 };
@@ -332,5 +361,4 @@ module.exports = {
   obtenerListadoVentasTM,
   obtenerItemsTrabajo,
   marcar_entregado,
-  transaccionAgregarTM,
 };
