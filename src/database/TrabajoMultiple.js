@@ -306,6 +306,7 @@ const transaccionAgregarTM = async (data, callback) => {
       );
 
       const idtrabajo = trabajo_insert_response[0].insertId;
+      
       const item_insert_response = await connection.query(
         queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo),
       );
