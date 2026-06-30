@@ -90,6 +90,7 @@ const obtenerTrabajoMultiple = ({ idventa }, callback) => {
                         vhs.esf,
                         vhs.cil,
                         vhs.eje,
+                        vhs.ad,
                         vhs.cantidad,
                         vhs.precio,
                         vhs.total,
@@ -219,6 +220,7 @@ const obtenerItemsTrabajo = (idtrabajo, callback) => {
                   vhs.esf,
                   vhs.cil,
                   vhs.eje,
+                  vhs.ad,
                   vhs.cantidad,
                   vhs.precio,
                   vhs.total
@@ -306,7 +308,7 @@ const transaccionAgregarTM = async (data, callback) => {
       );
 
       const idtrabajo = trabajo_insert_response[0].insertId;
-      
+      //console.log(queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo));
       const item_insert_response = await connection.query(
         queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo),
       );

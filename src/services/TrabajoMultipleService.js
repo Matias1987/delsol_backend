@@ -226,6 +226,7 @@ const obtenerTrabajoMultiple = (data, callback) => {
           esf: t.esf,
           cil: t.cil,
           eje: t.eje,
+          add: t.ad,
           tipo: t.tipo,
           cantidad: t.cantidad,
           precio: t.precio,
