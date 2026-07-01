@@ -1,4 +1,3 @@
-const { Jobs } = require("openai/resources/fine-tuning.js");
 const {
   doQuery,
   doTransaction,
