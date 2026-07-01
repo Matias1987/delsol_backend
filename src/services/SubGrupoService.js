@@ -65,8 +65,14 @@ const mover = (data, callback) =>
   })
 }
 
+const agregarSGAGrupo = (data, callback) => {
+  SubGrupoDB.agregarSGAGrupo(data,(response)=>{
+    callback(response);
+  })
+}
 
 module.exports = {
+    agregarSGAGrupo,
     mover,
     obtenerSubgrupos,
     obtenerSubgrupo,

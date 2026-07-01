@@ -1,3 +1,4 @@
+const { response } = require("express");
 const subgrupoService = require("../services/SubGrupoService")
 
 const obtener_subgrupos_grupo = (req, res)=>{
@@ -143,7 +144,12 @@ const mover = (req, res) => {
   })
 }
 
-
+const agregarSGAGrupo = (req, res) => {
+  const {body} = req;
+  subgrupoService.agregarSGAGrupo(body, (response)=>{
+    res.status(201).send({status:'OK', data:'ok'});
+  })
+}
 
 module.exports = {
   mover,
@@ -157,4 +163,5 @@ module.exports = {
   modificar_precios_defecto,
   obtener_descripcion_cat_subgrupo,
   obtener_subgrupos_grupo,
+  agregarSGAGrupo,
   };

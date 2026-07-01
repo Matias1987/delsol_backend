@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
+const { doQuery } = require("./helpers/queriesHelper");
 
 const obtener_subgrupos_grupo = (idsubfamilia, callback) => {
   const q = `SELECT g.nombre_corto AS 'grupo', 
@@ -327,6 +328,18 @@ const mover = (data, callback) => {
   connection.end();
 };
 
+const agregarSGAGrupo = ({idsubgrupo, idgrupo}, callback) => {
+
+  const query = `INSERT INTO grupo_has_subgrupo (id_grupo, id_subgrupo) VALUES (${idgrupo}, ${idsubgrupo});`;
+  console.log(query);
+  doQuery(query,(response)=>{
+    callback({ok:1});
+  })
+
+}
+
+
+
 module.exports = {
   mover,
   editarSubgrupo,
@@ -338,4 +351,5 @@ module.exports = {
   modificar_precios_defecto,
   obtener_descripcion_cat_subgrupo,
   obtener_subgrupos_grupo,
+  agregarSGAGrupo,
 };

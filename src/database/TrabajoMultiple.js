@@ -197,6 +197,7 @@ const obtenerListadoVentasTM = (idsucursal, callback) => {
                   sucursal s,
                     caja ca 
                   WHERE 
+                  v.estado <> 'ANULADO' AND 
                   v.caja_idcaja = ca.idcaja AND 
                   s.idsucursal = v.sucursal_idsucursal AND 
                   v.cliente_idcliente = c.idcliente AND

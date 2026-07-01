@@ -46,6 +46,11 @@ router.post("/m/modif_sg",(req,res)=>{
   subGrupoController.editarSubgrupo(req,res)
  
 })
+router.post("/add/to/grupo",(req,res)=>{
+ 
+  subGrupoController.agregarSGAGrupo(req,res)
+ 
+})
 
 router.patch("/:subgrupoId", (req, res) => {
   res.send("Update an existing workout");
