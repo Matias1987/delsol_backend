@@ -24,7 +24,7 @@ const ventas_mes_vendedor = ({mes, anio, idvendedor, idsucursal}, callback) => {
   });
 };
 
-const do_insert_venta_V2 = (data, callback) => {
+const transaction_insert_venta = (data, callback) => {
   const __now = new Date();
 
   if (data.fechaRetiro == null) {
