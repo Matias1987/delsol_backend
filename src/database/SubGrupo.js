@@ -43,9 +43,9 @@ const modificar_precios_defecto = (data, callback) => {
   let set_part = !modif_precio_mayorista
     ? `SET sg.precio_defecto = truncate((sg.precio_defecto + sg.precio_defecto * ${parseFloat(data.multiplicador)} ) / ${data.roundFactor},0) * ${data.roundFactor}`
     : `SET sg.precio_defecto_mayorista = truncate((sg.precio_defecto_mayorista * ${parseFloat(
-        data.multiplicador
+        data.multiplicador,
       )} ) / ${data.roundFactor},0) * ${data.roundFactor} + ${parseFloat(
-        data.valor
+        data.valor,
       )}`;
 
   const query = `update
@@ -64,8 +64,8 @@ const modificar_precios_defecto = (data, callback) => {
     (case when '-1' <> '${data.idsubgrupo}' then sg.idsubgrupo = ${data.idsubgrupo} ELSE TRUE END)
     ;`;
 
-  console.log(query)
-    //  return callback({message: "Modificando precios..."});
+  console.log(query);
+  //  return callback({message: "Modificando precios..."});
 
   connection.connect();
   connection.query(query, (err, resp) => {
@@ -80,7 +80,7 @@ const modificar_multiplicador_grupos = (
   id,
   value,
   incrementar,
-  callback
+  callback,
 ) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
@@ -96,23 +96,23 @@ const modificar_multiplicador_grupos = (
                 (case when '${
                   categoria == "subgrupo" ? id : ""
                 }' <> '' then sg.idsubgrupo = '${
-          categoria == "subgrupo" ? id : ""
-        }'  ELSE TRUE END) AND
+                  categoria == "subgrupo" ? id : ""
+                }'  ELSE TRUE END) AND
                 (case when '${
                   categoria == "grupo" ? id : ""
                 }' <> '' then g.idgrupo = '${
-          categoria == "grupo" ? id : ""
-        }' ELSE TRUE END) AND
+                  categoria == "grupo" ? id : ""
+                }' ELSE TRUE END) AND
                 (case when '${
                   categoria == "subfamilia" ? id : ""
                 }' <> '' then sf.idsubfamilia = '${
-          categoria == "subfamilia" ? id : ""
-        }' ELSE TRUE END) AND 
+                  categoria == "subfamilia" ? id : ""
+                }' ELSE TRUE END) AND 
                 (case when '${
                   categoria == "familia" ? id : ""
                 }' <> '' then sf.familia_idfamilia = '${
-          categoria == "familia" ? id : ""
-        }' ELSE TRUE END);`
+                  categoria == "familia" ? id : ""
+                }' ELSE TRUE END);`
       : `
                 UPDATE subgrupo sg, grupo g, subfamilia sf 
                 SET sg.multiplicador = ${value}
@@ -122,23 +122,23 @@ const modificar_multiplicador_grupos = (
                 (case when '${
                   categoria == "subgrupo" ? id : ""
                 }' <> '' then sg.idsubgrupo = '${
-          categoria == "subgrupo" ? id : ""
-        }'  ELSE TRUE END) AND
+                  categoria == "subgrupo" ? id : ""
+                }'  ELSE TRUE END) AND
                 (case when '${
                   categoria == "grupo" ? id : ""
                 }' <> '' then g.idgrupo = '${
-          categoria == "grupo" ? id : ""
-        }' ELSE TRUE END) AND
+                  categoria == "grupo" ? id : ""
+                }' ELSE TRUE END) AND
                 (case when '${
                   categoria == "subfamilia" ? id : ""
                 }' <> '' then sf.idsubfamilia = '${
-          categoria == "subfamilia" ? id : ""
-        }' ELSE TRUE END) AND 
+                  categoria == "subfamilia" ? id : ""
+                }' ELSE TRUE END) AND 
                 (case when '${
                   categoria == "familia" ? id : ""
                 }' <> '' then sf.familia_idfamilia = '${
-          categoria == "familia" ? id : ""
-        }' ELSE TRUE END);`;
+                  categoria == "familia" ? id : ""
+                }' ELSE TRUE END);`;
 
   //console.log(_q);
   connection.query(_q, (err, data) => {
@@ -166,14 +166,11 @@ const obtener_subgrupos_bygrupo_opt = (params, callback) => {
                         g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
                         sg.grupo_idgrupo=${params.grupoId} AND 
                         (case when '${params.ignorarOcultos}'<>'0' then sg.visible_lp=1 else true end)
-                        ;`
+                        ;`;
   //console.log(query);
-  connection.query(
-    query,
-    (err, rows, fields) => {
-      return callback(rows);
-    }
-  );
+  connection.query(query, (err, rows, fields) => {
+    return callback(rows);
+  });
   connection.end();
 };
 
@@ -202,7 +199,7 @@ const obtener_subgrupos = (idg, callback, idsf = -1, idf = -1, idsg = -1) => {
     ;`,
     (err, rows, fields) => {
       return callback(rows);
-    }
+    },
   );
   connection.end();
 };
@@ -218,7 +215,7 @@ const agregar_subgrupo = (data, callback) => {
 
   connection.query(
     `select sg.idsubgrupo from subgrupo sg where sg.nombre_corto = ${connection.escape(
-      data.nombre_corto
+      data.nombre_corto,
     )} and sg.grupo_idgrupo=${connection.escape(data.grupo_idgrupo)}`,
     (err, rows) => {
       if (rows.length > 0) {
@@ -226,10 +223,10 @@ const agregar_subgrupo = (data, callback) => {
       } else {
         var sql = `insert into subgrupo (nombre_corto, nombre_largo,grupo_idgrupo,  precio_defecto, no_stock) values (
                 ${connection.escape(data.nombre_corto)},${connection.escape(
-          data.nombre_largo
-        )},${connection.escape(data.grupo_idgrupo)},${connection.escape(
-          data.precio_defecto
-        )},${+data.control_stock == 0 ? 1 : 0}
+                  data.nombre_largo,
+                )},${connection.escape(data.grupo_idgrupo)},${connection.escape(
+                  data.precio_defecto,
+                )},${+data.control_stock == 0 ? 1 : 0}
             )`;
 
         try {
@@ -242,7 +239,7 @@ const agregar_subgrupo = (data, callback) => {
       }
 
       connection.end();
-    }
+    },
   );
 };
 
@@ -290,28 +287,24 @@ const editarSubgrupo = (data, callback) => {
   const q = `update subgrupo sg set 
     sg.visible_lp = ${connection.escape(data.visible_lp)},
     sg.nombre_largo=${connection.escape(
-      data.nombre_largo
+      data.nombre_largo,
     )}, sg.precio_defecto=${connection.escape(
-      data.precio_defecto
+      data.precio_defecto,
     )}, sg.comentarios=${connection.escape(
-      data.comentarios
+      data.comentarios,
     )}, sg.precio_defecto_mayorista=${connection.escape(
-      data.precio_defecto_mayorista
-    )} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`
+      data.precio_defecto_mayorista,
+    )} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`;
 
-    //console.log(q)
+  //console.log(q)
 
-
-  connection.query(
-    q,
-    (err, resp) => {
-        if(err){
-            console.log(err);
-            return callback(-1);
-        }
-      callback(resp);
+  connection.query(q, (err, resp) => {
+    if (err) {
+      console.log(err);
+      return callback(-1);
     }
-  );
+    callback(resp);
+  });
   connection.end();
 };
 
@@ -328,19 +321,23 @@ const mover = (data, callback) => {
   connection.end();
 };
 
-const agregarSGAGrupo = ({idsubgrupo, idgrupo}, callback) => {
-
-  const query = `INSERT INTO grupo_has_subgrupo (id_grupo, id_subgrupo) VALUES (${idgrupo}, ${idsubgrupo});`;
+const agregarSGAGrupo = ({ idsubgrupo, idgrupo }, callback) => {
+  const query = `INSERT ignore INTO grupo_has_subgrupo (id_grupo, id_subgrupo) VALUES (${idgrupo}, ${idsubgrupo});`;
   console.log(query);
-  doQuery(query,(response)=>{
-    callback({ok:1});
-  })
+  doQuery(query, (response) => {
+    callback({ ok: 1 });
+  });
+};
 
-}
-
-
+const obtenerSubgruposGrupoV2 = (idgrupo, callback) => {
+  const query = `SELECT sg.* , ghs.id_grupo FROM subgrupo sg INNER JOIN  grupo_has_subgrupo ghs ON ghs.id_subgrupo = sg.idsubgrupo AND ghs.id_grupo=${idgrupo}`;
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
 
 module.exports = {
+  obtenerSubgruposGrupoV2,
   mover,
   editarSubgrupo,
   obtener_subgrupos,

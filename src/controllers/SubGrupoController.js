@@ -151,6 +151,13 @@ const agregarSGAGrupo = (req, res) => {
   })
 }
 
+const obtenerSubgruposGrupoV2 = (req, res) => {
+  const {params:{subgrupoId}} = req;
+  subgrupoService.obtenerSubgruposGrupoV2(subgrupoId,(response)=>{
+    res.status(201).send({status:'OK', data:response});
+  })
+}
+
 module.exports = {
   mover,
   obtenerSubgrupos,
@@ -164,4 +171,5 @@ module.exports = {
   obtener_descripcion_cat_subgrupo,
   obtener_subgrupos_grupo,
   agregarSGAGrupo,
+  obtenerSubgruposGrupoV2,
   };

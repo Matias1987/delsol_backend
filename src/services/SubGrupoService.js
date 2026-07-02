@@ -71,6 +71,12 @@ const agregarSGAGrupo = (data, callback) => {
   })
 }
 
+const obtenerSubgruposGrupoV2 = (idgrupo, callback) => {
+  SubGrupoDB.obtenerSubgruposGrupoV2(idgrupo, (rows)=>{
+    callback(rows);
+  });
+}
+
 module.exports = {
     agregarSGAGrupo,
     mover,
@@ -84,4 +90,5 @@ module.exports = {
     modificar_precios_defecto,
     obtener_descripcion_cat_subgrupo,
     obtener_subgrupos_grupo,
+    obtenerSubgruposGrupoV2,
   };

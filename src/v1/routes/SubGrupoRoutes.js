@@ -14,6 +14,10 @@ router.get("/:subgrupoId", (req, res) => {
   subGrupoController.obtener_detalle_subgrupo(req,res)
 });
 
+router.get("/subgrupo_por_grupo_v2/:subgrupoId", (req, res) => {
+  subGrupoController.obtenerSubgruposGrupoV2(req,res)
+});
+
 router.get("/optionsforgrupo/:grupoId/:ignorarOcultos?", (req, res) => {
   subGrupoController.obtener_subgrupos_bygrupo_opt(req,res);
 });
