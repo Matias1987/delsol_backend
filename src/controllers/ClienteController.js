@@ -12,6 +12,11 @@ const obtenerClientes = (req, res) => {
     res.status(201).send({status:'OK', data: rows});
   })
 }
+const obtenerClientesMuestra = (req, res) => {
+  clienteService.obtenerClientes({mayorista:0, limit:10},(rows)=>{
+    res.status(201).send({status:'OK', data: rows});
+  })
+}
 const obtenerClientesMayoristas = (req, res) => {
   
   clienteService.obtenerClientes({mayorista:1},(rows)=>{
@@ -188,4 +193,5 @@ module.exports = {
     actualizar_saldo_en_cobro,
     obtener_ultimas_graduaciones,
     obtenerClientesMayoristas,
+    obtenerClientesMuestra,
   };

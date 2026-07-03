@@ -241,8 +241,8 @@ const obtenerTrabajoMultiple = (data, callback) => {
   });
 };
 
-const obtenerListadoVentasTM = (idsucursal, callback) => {
-  db.obtenerListadoVentasTM(idsucursal, (response) => {
+const obtenerListadoVentasTM = (filter, callback) => {
+  db.obtenerListadoVentasTM(filter, (response) => {
     if (response.error) {
       return callback({ error: 1, msg: "error fetching ventas" });
     }
@@ -266,10 +266,17 @@ const marcar_como_entregado = (data, callback) => {
   });
 };
 
+const anularTrabajoMultiple = (data, callback) => {
+  db.anularTrabajoMultiple(data, (response) => {
+    callback(response);
+  });
+};
+
 module.exports = {
   procesarTrabajoMultiple,
   obtenerListadoVentasTM,
   obtenerTrabajoMultiple,
   obtenerItemsTrabajo,
   marcar_como_entregado,
+  anularTrabajoMultiple,
 };

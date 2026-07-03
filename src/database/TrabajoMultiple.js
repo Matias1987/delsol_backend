@@ -171,7 +171,13 @@ const procesar_ventas = (rows) => {
   return result;
 };
 
-const obtenerListadoVentasTM = (idsucursal, callback) => {
+const obtenerListadoVentasTM = ({idsucursal, tipo_lista}, callback) => {
+  /*
+  0 = todos
+  1 = pendientes
+  2 = entregados
+  3 = anulados
+  */
   const query = `SELECT 
                   v.idventa, 
                   CONCAT(c.apellido,', ',c.nombre) AS 'cliente',
@@ -196,7 +202,9 @@ const obtenerListadoVentasTM = (idsucursal, callback) => {
                   sucursal s,
                     caja ca 
                   WHERE 
-                  v.estado <> 'ANULADO' AND 
+                  (case when '${tipo_lista}'='1' then v.estado='PENDIENTE' else true end) AND
+                  (case when '${tipo_lista}'='2' then v.estado='ENTREGADO' else true end) AND
+                  (case when '${tipo_lista}'='3' then v.estado='ANULADO' else true end) AND
                   v.caja_idcaja = ca.idcaja AND 
                   s.idsucursal = v.sucursal_idsucursal AND 
                   v.cliente_idcliente = c.idcliente AND
@@ -325,6 +333,22 @@ const transaccionAgregarTM = async (data, callback) => {
   });
 };
 
+const anularTrabajoMultiple = ({idventa}, callback) => {
+  const _logic = async (connection) => {
+    const query_anular_venta = `update venta v set v.estado='ANULADO' where v.idventa=${idventa};`;
+    const response_anular_venta = await connection.query(query_anular_venta);
+  };
+
+  doTransaction(_logic, ({ data, err }) => {
+    if (err) {
+      console.error("Error en la transacción. Rollback aplicado:", err);
+      return { error: 1 };
+    }
+    console.log("OK...");
+    return callback({ ok: 1 });
+  });
+};
+
 module.exports = {
   agregarVenta,
   checkQuantities,
@@ -336,4 +360,5 @@ module.exports = {
   obtenerItemsTrabajo,
   marcar_entregado,
   transaccionAgregarTM,
+  anularTrabajoMultiple,
 };

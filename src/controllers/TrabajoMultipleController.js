@@ -8,8 +8,8 @@ const procesarTrabajoMultiple = (req, res) => {
 
 const obtenerListadoVentasTM = (req, res) => {
     //const { idsucursal } = req.params;
-    const {params:{idsucursal}} = req;
-    service.obtenerListadoVentasTM( idsucursal , (result) => {
+    const {params:{idsucursal, tipo_lista}} = req;
+    service.obtenerListadoVentasTM( {idsucursal, tipo_lista} , (result) => {
         return res.json(result);
     });
 }
@@ -36,10 +36,18 @@ const marcarComoEntregado = (req, res) => {
     })
 }
 
+const anularTrabajoMultiple = (req, res) => {
+    const {body} = req;
+    service.anularTrabajoMultiple(body, (response)=>{
+        return res.json({data:response});
+    })
+}
+
 module.exports = { 
     procesarTrabajoMultiple,
     obtenerListadoVentasTM,
     obtenerTrabajoMultiple,
     obtenerItemsTrabajo,
-    marcarComoEntregado
+    marcarComoEntregado,
+    anularTrabajoMultiple
 }

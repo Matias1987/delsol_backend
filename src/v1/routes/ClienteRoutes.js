@@ -10,6 +10,9 @@ router.get("/:clienteId", (req, res) => {
 router.get("/", (req, res) => {
   clienteController.obtenerClientes(req,res);
 });
+router.get("/lista/muestra/", (req, res) => {
+  clienteController.obtenerClientesMuestra(req,res);
+});
 router.get("/lista/mayorista/", (req, res) => {
   clienteController.obtenerClientesMayoristas(req,res);
 });

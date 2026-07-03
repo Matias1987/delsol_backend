@@ -90,10 +90,14 @@ const agregar_cliente = (data, callback) => {
   );*/
 };
 
-const obtener_lista_clientes = ({mayorista},callback) => {
-  const query = `SELECT c.*, 
+const obtener_lista_clientes = ({mayorista, limit},callback) => {
+  let query = `SELECT c.*, 
     CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
-     FROM cliente c where c.destinatario=0 AND (case when '${mayorista}'<>'1' then true else c.cliente_mayorista=1 end);`;
+     FROM cliente c where c.destinatario=0 AND (case when '${mayorista}'<>'1' then true else c.cliente_mayorista=1 end)`;
+
+  if (limit !== undefined) {
+    query += ` LIMIT ${limit}`;
+  }
 
   doQuery(query, (resp) => {
     if (!resp) {
