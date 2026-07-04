@@ -3,7 +3,7 @@ const ventaDBExt = require("../database/VentaExt");
 const cobroService = require("./CobroService");
 const stockService = require("./StockService");
 const stockCristalesService = require("./StockCritalesService");
-const { validar_cristales_modo2, cobro_inmediato, ignorar_control_stock } = require("../lib/global");
+const { validar_cristales_modo2, cobro_inmediato, ignorar_control_stock, descontar_stock_recstock, descontar_stock_multilab, descontar_stock_monoflab } = require("../lib/global");
 
 const lista_ventas_sucursal_mes = (data, callback) => {
   ventaDB.lista_ventas_sucursal_mes(data, (rows) => {
@@ -276,8 +276,14 @@ const agregarVenta = (data, callback) => {
 
           console.log("Stock de productos actualizado:");
           console.log(responseDescStock);
-
-          const debeDescontarCristales = +data.tipo==2;
+          /*
+            MULTILAB: "5",
+            RECSTOCK: "2",
+            MONOFLAB: "4",
+          */
+          const debeDescontarCristales = (+data.tipo==2 && descontar_stock_recstock) || 
+          (+data.tipo == 5 && descontar_stock_multilab) || 
+          (+data.tipo == 4 && descontar_stock_monoflab);
 
           stockCristalesService.acutalizar_stock_cristales(
             {
