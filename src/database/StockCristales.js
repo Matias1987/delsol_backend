@@ -11,7 +11,7 @@ const guardar_stock_cristales = (data, callback) => {
       (rows_str.length > 0 ? "," : "") +
       `(${data.fk_codigo},${data.fk_sucursal},'${c.esf}','-${c.cil}', ${c.cantidad})`;
   });
-  
+
   data.cells_pos.forEach((c) => {
     rows_str +=
       (rows_str.length > 0 ? "," : "") +
@@ -55,7 +55,7 @@ const obtener_stock = (data, callback) => {
 
 const obtener_grilla = ({ fkCodigo, fkSucursal }, callback) => {
   const query = `select * from stock_cristales s where s.fk_codigo=${fkCodigo} and s.fk_sucursal= ${fkSucursal};`;
-  console.log(query)
+  console.log(query);
   doQuery(query, (response) => {
     callback?.(response.data);
   });
@@ -69,7 +69,7 @@ const obtener_codigos_cristales = (callback) => {
 };
 
 const acutalizar_stock_cristales = (data, callback) => {
-  const idsucursal =  data.fk_sucursal;
+  const idsucursal = data.fk_sucursal;
   console.log(
     "###################Updating stock for cristales with data:################################",
   );
@@ -79,9 +79,9 @@ const acutalizar_stock_cristales = (data, callback) => {
       WHERE 
       sc.fk_sucursal=${idsucursal} AND 
       sc.fk_codigo=${data.idcodigo} AND 
-      sc.esf='${ parseFloat(data.esf) == 0 ? '0.00' : data.esf}' AND 
-      sc.cil='${ parseFloat(data.cil) == 0 ? '-0.00' : data.cil}' AND 
-      sc.side='${data.side||"-"}';`;
+      sc.esf='${parseFloat(data.esf) == 0 ? "0.00" : data.esf}' AND 
+      sc.cil='${parseFloat(data.cil) == 0 ? "-0.00" : data.cil}' AND 
+      sc.side='${data.side || "-"}';`;
 
   console.log(query);
 
@@ -125,6 +125,50 @@ const acutalizar_stock_cristales = (data, callback) => {
       }
     },
   );*/
+};
+
+/****
+ *
+ */
+
+const obtener_stock_v2 = async (data, connection) => {
+  if (!data.codigos || data.codigos.length == 0) {
+    console.log(
+      "No se proporcionaron codigos para obtener stock de cristales.",
+    );
+    return callback?.({
+      ok: 0,
+      message: "No se proporcionaron codigos para obtener stock de cristales",
+    });
+  }
+
+  const query = `select * from stock_cristales s where s.fk_sucursal = ${data.fk_sucursal} and `;
+  let codigos = "";
+
+  data.codigos.forEach((c) => {
+    codigos +=
+      (codigos.length > 0 ? " or " : "") +
+      `(s.fk_codigo=${c.idcodigo} and s.esf='${c.esf}' and s.cil='${c.cil}')`;
+  });
+  console.log("Query to obtain stock for cristales:");
+  console.log(query + codigos);
+
+  const [rows] = await connection.query(query + codigos);
+  return rows;
+};
+
+const acutalizar_stock_cristales_v2 = async (data, connection) => {
+  const idsucursal = data.fk_sucursal;
+
+  const q = `UPDATE stock_cristales sc SET 
+      sc.cantidad=sc.cantidad-${data.cantidad} 
+      WHERE 
+      sc.fk_sucursal=${idsucursal} AND 
+      sc.fk_codigo=${data.idcodigo} AND 
+      sc.esf='${parseFloat(data.esf) == 0 ? "0.00" : data.esf}' AND 
+      sc.cil='${parseFloat(data.cil) == 0 ? "-0.00" : data.cil}' AND 
+      sc.side='${data.side || "-"}';`;
+  return await connection.query(q);
 };
 
 module.exports = {
