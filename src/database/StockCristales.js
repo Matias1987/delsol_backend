@@ -131,15 +131,15 @@ const acutalizar_stock_cristales = (data, callback) => {
  *
  */
 
-const obtener_stock_v2 = async (data, connection) => {
+const obtener_stock_cristales_v2 = async (data, connection) => {
   if (!data.codigos || data.codigos.length == 0) {
     console.log(
       "No se proporcionaron codigos para obtener stock de cristales.",
     );
-    return callback?.({
-      ok: 0,
+    return {
+      error: true,
       message: "No se proporcionaron codigos para obtener stock de cristales",
-    });
+    };
   }
 
   const query = `select * from stock_cristales s where s.fk_sucursal = ${data.fk_sucursal} and `;
@@ -153,8 +153,8 @@ const obtener_stock_v2 = async (data, connection) => {
   console.log("Query to obtain stock for cristales:");
   console.log(query + codigos);
 
-  const [rows] = await connection.query(query + codigos);
-  return rows;
+  const resp = await connection.query(query + codigos);
+  return {error: false, data: resp[0]};
 };
 
 const acutalizar_stock_cristales_v2 = async (data, connection) => {
@@ -168,6 +168,8 @@ const acutalizar_stock_cristales_v2 = async (data, connection) => {
       sc.esf='${parseFloat(data.esf) == 0 ? "0.00" : data.esf}' AND 
       sc.cil='${parseFloat(data.cil) == 0 ? "-0.00" : data.cil}' AND 
       sc.side='${data.side || "-"}';`;
+  console.log("Query to update stock for cristales:");
+  console.log(q);
   return await connection.query(q);
 };
 
@@ -177,4 +179,6 @@ module.exports = {
   obtener_stock,
   obtener_codigos_cristales,
   acutalizar_stock_cristales,
+  obtener_stock_cristales_v2,
+  acutalizar_stock_cristales_v2,
 };

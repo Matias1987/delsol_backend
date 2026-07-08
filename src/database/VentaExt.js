@@ -1,7 +1,22 @@
-const { doQuery } = require("./helpers/queriesHelper");
-const { venta_insert_query, parse_venta_data, get_mp, query_items, query_mp } = require("./queries/ventaQueries");
+const { doQuery, doTransaction } = require("./helpers/queriesHelper");
+const {
+  acutalizar_stock_cristales_v2,
+  obtener_stock_v2,
+  obtener_stock_cristales_v2,
+} = require("./StockCristales");
+const {
+  venta_insert_query,
+  parse_venta_data,
+  get_mp,
+  query_items,
+  query_mp,
+} = require("./queries/ventaQueries");
+const { verificar_cantidades_productos_v2 } = require("./StockExt");
 
-const ventas_mes_vendedor = ({mes, anio, idvendedor, idsucursal}, callback) => {
+const ventas_mes_vendedor = (
+  { mes, anio, idvendedor, idsucursal },
+  callback,
+) => {
   const query = `SELECT v.*, CONCAT(c.apellido,' ', c.nombre) AS 'cliente', c.dni, date_format(v.fecha_retiro, '%d-%m-%Y') AS 'fecha_retiro' FROM 
     venta v INNER JOIN 
     cliente c ON v.cliente_idcliente = c.idcliente
@@ -12,7 +27,7 @@ const ventas_mes_vendedor = ({mes, anio, idvendedor, idsucursal}, callback) => {
     v.estado='ENTREGADO' AND 
     (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END)
     ;`;
-    console.log("query ventas_mes_vendedor: ", query);
+  console.log("query ventas_mes_vendedor: ", query);
   doQuery(query, (res) => {
     if (!res || res.err) {
       console.log("error: ", err);
@@ -24,52 +39,120 @@ const ventas_mes_vendedor = ({mes, anio, idvendedor, idsucursal}, callback) => {
   });
 };
 
+const onSAveVenta = () => {
+  //TO DO
+  //doQuery(venta_queries.update_venta_query(venta_queries.parse_venta_data(data),data.idventa),(response)=>{
+  //save_ventaitems_and_mp({insertId: data.idventa},data, callback);
+  //})
+};
+
 const transaction_insert_venta = (data, callback) => {
+  console.log(
+    "###################[Inserting venta]################################",
+  );
+  //console.log(data);
+
   const __now = new Date();
 
   if (data.fechaRetiro == null) {
     data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;
   }
 
+  const { arrayQttiesCristales, elementsArrCristales } =
+    get_quantities_arrays(data); //prepare quantities
+
+  console.log("arrayQttiesCristales: ", JSON.stringify(arrayQttiesCristales));
+  console.log("elementsArrCristales: ", JSON.stringify(elementsArrCristales));
+
   if (data.edicion) {
-    //TO DO
-    //doQuery(venta_queries.update_venta_query(venta_queries.parse_venta_data(data),data.idventa),(response)=>{
-      //save_ventaitems_and_mp({insertId: data.idventa},data, callback);
-    //})
-  }
-  else {
+    onSAveVenta(); //to do
+  } else {
     const __logic = async (connection) => {
-      const venta_insert_response = await connection.query(venta_insert_query(
-            parse_venta_data(data),
-            idcaja,
-          ));
-      const insert_data_id = venta_insert_response[0][0].insertId;
+      const resp_data_stock_cristales = await obtener_stock_cristales_v2(
+        {codigos: arrayQttiesCristales, fk_sucursal: data.fksucursal},
+        connection,
+      );
 
-      const extra_queries = prepare_ventaitems_and_mp(insert_data_id,data);
+      console.log(resp_data_stock_cristales);
 
-      for(const q of extra_queries){
+
+
+      if (!resp_data_stock_cristales?.error) {
+        const stock_check = compare_requested_with_db_response(
+          resp_data_stock_cristales.data,
+          arrayQttiesCristales,
+        );
+        /*
+      if (stock_check && stock_check.responseWithQtty) {
+        if (stock_check.responseWithQtty.some((r) => !r.stockSuficiente)) {
+          console.log("Stock verification failed for cristales:");
+          return {
+            error:
+              "No hay suficiente stock de cristales para completar la venta",
+            details: stock_check.responseWithQtty.filter(
+              (r) => !r.stockSuficiente,
+            ),
+            arrayQttiesCristales,
+            elementsArrCristales,
+          };
+        }
+      }
+    */
+        console.log("Checking stock request and db response: ");
+
+        console.log(JSON.stringify(stock_check));
+      }
+
+      const resp_data_stock = await verificar_cantidades_productos_v2(
+        { data, ignore_cristales: false },
+        connection,
+      );
+
+      console.log(resp_data_stock);
+
+      console.log("Stock verification passed. Adding venta...");
+
+      const venta_insert_response = await connection.query(
+        venta_insert_query(parse_venta_data(data), 5035),
+      );
+      console.log(
+        "Venta insert response: " + JSON.stringify(venta_insert_response),
+      );
+
+      const insert_data_id = venta_insert_response[0].insertId;
+
+      console.log("insert_data_id: " + insert_data_id);
+
+      const extra_queries = prepare_ventaitems_and_mp(insert_data_id, data);
+
+      for (const q of extra_queries) {
+        console.log("executing query: ", q);
         await connection.query(q);
       }
       //descontar stock
+      //const stock_update_cristales_response =
+      //  await acutalizar_stock_cristales_v2(data, connection);
 
-      //guardar pago
+      const stock_desc_response = await desc_cantidades_stock_venta_v2(
+        { idventa: insert_data_id, idsucursal: data.fksucursal },
+        connection,
+      );
+      console.log(
+        "###################[Inserting venta - The End...]#####################",
+      );
+      return { insert_data_id };
+    };
 
-      
-      return {insert_data_id};
-    }
-
-    doTransaction(__logic,({data,error})=>{
-      if(error){
-        return callback({error:1, msg:error});
+    doTransaction(__logic, ({ data, error }) => {
+      if (error) {
+        return callback({ error: 1, msg: error });
       }
-      return callback(data.insert_data_id)
-    })
+      return callback(0);
+    });
   }
 };
 
-
 const prepare_ventaitems_and_mp = (venta_id, data) => {
-
   var _arr_items = [];
 
   const do_push = (orden, arr, val, tipo, descontable) =>
@@ -78,9 +161,9 @@ const prepare_ventaitems_and_mp = (venta_id, data) => {
       : val.codigo == null || val.idcodigo < 0
         ? arr
         : [
-          ...arr,
-          { ...val, tipo: tipo, orden: orden, descontable: descontable },
-        ];
+            ...arr,
+            { ...val, tipo: tipo, orden: orden, descontable: descontable },
+          ];
 
   const get_query_str = (items) => {
     var _str = "";
@@ -300,18 +383,134 @@ const prepare_ventaitems_and_mp = (venta_id, data) => {
   var _items_data = get_query_str(_arr_items);
 
   const _queries = [];
-  if(mp.length>0)
-  {
+  if (mp.length > 0) {
     _queries.push(query_mp + mp);
   }
-  if(_arr_items.length>0)
-  {
+  if (_arr_items.length > 0) {
     _queries.push(query_items + _items_data);
   }
 
   return _queries;
+};
 
-}
+const get_quantities_arrays = (data) => {
+  const addToArray = (parentObj, field, arr) =>
+    parentObj[field] && parentObj[field]?.idcodigo > 0
+      ? [...arr, parentObj[field]]
+      : arr;
+
+  const updateCodeQttyArray = (obj, _array) =>
+    _array.find(
+      (record) =>
+        record.idcodigo == obj.idcodigo &&
+        record.esf == obj.esf &&
+        record.cil == obj.cil,
+    )
+      ? _array.map((_record) =>
+          _record.idcodigo == obj.idcodigo &&
+          _record.esf == obj.esf &&
+          _record.cil == obj.cil
+            ? { ..._record, cantidad: +_record.cantidad + +obj.cantidad }
+            : _record,
+        )
+      : [
+          ..._array,
+          {
+            idcodigo: obj.idcodigo,
+            esf: obj.esf,
+            cil: obj.cil,
+            cantidad: obj.cantidad,
+          },
+        ];
+
+  let arrayQttiesCristales = [];
+  let elementsArrCristales = [];
+  elementsArrCristales = addToArray(
+    data.productos,
+    "lejos_od",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "lejos_oi",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "cerca_oi",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "cerca_od",
+    elementsArrCristales,
+  );
+
+  elementsArrCristales.forEach((element) => {
+    arrayQttiesCristales = updateCodeQttyArray(element, arrayQttiesCristales);
+  });
+
+  return { arrayQttiesCristales, elementsArrCristales };
+};
+
+//compare requested quantities with stock quantities
+const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {
+  console.log("Comparing requested quantities with database response...");
+  console.log("Database response: ", JSON.stringify(dbResponseArr));
+  console.log("Requested quantities: ", JSON.stringify(reqQtties));
+  const responseWithQtty = dbResponseArr.map((stockRecord) => {
+    const requestedQtty = reqQtties.find(
+      (requested) =>
+        requested.idcodigo === stockRecord.fk_codigo &&
+        requested.esf === stockRecord.esf &&
+        requested.cil === stockRecord.cil,
+    );
+
+    const response = {
+      ...stockRecord,
+      requestedCantidad: requestedQtty ? requestedQtty.cantidad : 0,
+      stockSuficiente: requestedQtty
+        ? stockRecord.cantidad >= requestedQtty.cantidad
+        : true,
+    };
+
+    console.log(
+      `Stock record for codigo ${stockRecord.fk_codigo}, esf ${stockRecord.esf}, cil ${stockRecord.cil}:`,
+    );
+    console.log(`- Stock cantidad: ${stockRecord.cantidad}`);
+    console.log(`- Requested cantidad: ${response.requestedCantidad}`);
+    console.log(
+      `- Stock suficiente: ${response.stockSuficiente ? "Sí" : "No"}`,
+    );
+
+    return response;
+  });
+  return responseWithQtty;
+};
+
+const desc_cantidades_stock_venta_v2 = async (data, connection) => {
+  console.log("Descontando stock de venta id: " + data.idventa);
+
+  const query = `update stock s,
+    (
+            SELECT 
+                vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                sum(vhs.cantidad) AS 'cantidad' 
+            FROM venta_has_stock vhs 
+                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  AND vhs.descontable=1
+                  GROUP BY vhs.stock_codigo_idcodigo
+    ) AS vs
+    SET s.cantidad = s.cantidad - vs.cantidad
+    where
+    vs.idcodigo = s.codigo_idcodigo AND 
+    s.sucursal_idsucursal=${data.idsucursal}
+    ;`;
+
+  return await connection.query(query);
+};
+
 module.exports = {
   ventas_mes_vendedor,
+  transaction_insert_venta,
 };
