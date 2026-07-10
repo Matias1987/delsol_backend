@@ -233,13 +233,30 @@ const verificar_stock_venta = (data, callback) => {
   );
 };
 
-const agregarVenta = (data, callback) => {
+const _agregarVenta = (data, callback) => {
   ventaDBExt.transaction_insert_venta(data,(response)=>{
-    callback(response)
+    if(cobro_inmediato && data.mp && data.mp.total>0)
+    {
+      agregarCobrosVenta(data, response.idventa, (cobrosResponse) => {
+        if (cobrosResponse?.error) {
+          return callback({
+            error: "Error al agregar cobros para la venta",
+            details: cobrosResponse.error,
+          });
+        }
+
+        return callback(cobrosResponse);
+      });
+    }
+    else
+    {
+      return callback({ idVenta: response.idventa });
+    }
+    
   })
 }
 
-const _agregarVenta = (data, callback) => {
+const agregarVenta = (data, callback) => {
   console.log("###-Received data for agregarVenta:-###");
   console.log(JSON.stringify(data));
   verificar_stock_venta(data, (verifStockResponse) => {

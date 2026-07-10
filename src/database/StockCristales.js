@@ -1,4 +1,7 @@
-const { usar_stock_sucursal_central } = require("../lib/global");
+const {
+  usar_stock_sucursal_central,
+  id_subgrupo_cristales,
+} = require("../lib/global");
 const { doQuery } = require("./helpers/queriesHelper");
 
 const guardar_stock_cristales = (data, callback) => {
@@ -62,7 +65,7 @@ const obtener_grilla = ({ fkCodigo, fkSucursal }, callback) => {
 };
 
 const obtener_codigos_cristales = (callback) => {
-  const query = `SELECT * FROM codigo c WHERE c.subgrupo_idsubgrupo=67689;`;
+  const query = `SELECT * FROM codigo c WHERE c.subgrupo_idsubgrupo=${id_subgrupo_cristales};`;
   doQuery(query, (response) => {
     callback?.(response.data);
   });
@@ -150,26 +153,24 @@ const obtener_stock_cristales_v2 = async (data, connection) => {
       (codigos.length > 0 ? " or " : "") +
       `(s.fk_codigo=${c.idcodigo} and s.esf='${c.esf}' and s.cil='${c.cil}')`;
   });
-  console.log("Query to obtain stock for cristales:");
-  console.log(query + codigos);
+  //console.log("Query to obtain stock for cristales:");
+  //console.log(query + codigos);
 
   const resp = await connection.query(query + codigos);
-  return {error: false, data: resp[0]};
+  return { error: false, data: resp[0] };
 };
 
 const acutalizar_stock_cristales_v2 = async (data, connection) => {
-  const idsucursal = data.fk_sucursal;
-
   const q = `UPDATE stock_cristales sc SET 
       sc.cantidad=sc.cantidad-${data.cantidad} 
       WHERE 
-      sc.fk_sucursal=${idsucursal} AND 
+      sc.fk_sucursal=${data.fksucursal} AND 
       sc.fk_codigo=${data.idcodigo} AND 
       sc.esf='${parseFloat(data.esf) == 0 ? "0.00" : data.esf}' AND 
       sc.cil='${parseFloat(data.cil) == 0 ? "-0.00" : data.cil}' AND 
       sc.side='${data.side || "-"}';`;
-  console.log("Query to update stock for cristales:");
-  console.log(q);
+  //console.log("Executing query to update stock for cristales:");
+  //console.log(q);
   return await connection.query(q);
 };
 
