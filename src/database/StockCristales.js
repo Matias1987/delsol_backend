@@ -3,6 +3,7 @@ const {
   id_subgrupo_cristales,
 } = require("../lib/global");
 const { doQuery } = require("./helpers/queriesHelper");
+const { queriesStockCristales } = require("./queries/stockCristalesQueries");
 
 const guardar_stock_cristales = (data, callback) => {
   const base_query = `INSERT INTO stock_cristales  (fk_codigo, fk_sucursal, esf, cil, cantidad) VALUES `;
@@ -169,9 +170,19 @@ const acutalizar_stock_cristales_v2 = async (data, connection) => {
       sc.esf='${parseFloat(data.esf) == 0 ? "0.00" : data.esf}' AND 
       sc.cil='${parseFloat(data.cil) == 0 ? "-0.00" : data.cil}' AND 
       sc.side='${data.side || "-"}';`;
-  //console.log("Executing query to update stock for cristales:");
-  //console.log(q);
+  console.log("Executing query to update stock for cristales:");
+  console.log(q);
   return await connection.query(q);
+};
+
+const obtener_ventas_cristales = async (data, connection) => {
+  const query = queriesStockCristales.obtener_ventas_cristales(data);
+  return await connection.query(query);
+};
+
+const restaurar_cantidades_venta = async (data, connection) => {
+  const query = queriesStockCristales.restaurar_cantidades_venta(data) ;
+  return await connection.query(query);
 };
 
 module.exports = {
@@ -182,4 +193,6 @@ module.exports = {
   acutalizar_stock_cristales,
   obtener_stock_cristales_v2,
   acutalizar_stock_cristales_v2,
+  obtener_ventas_cristales,
+  restaurar_cantidades_venta,
 };

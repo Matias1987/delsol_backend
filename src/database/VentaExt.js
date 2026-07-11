@@ -3,6 +3,7 @@ const {
   acutalizar_stock_cristales_v2,
   obtener_stock_v2,
   obtener_stock_cristales_v2,
+  restaurar_cantidades_venta,
 } = require("./StockCristales");
 const {
   venta_insert_query,
@@ -19,6 +20,7 @@ const {
   descontar_stock_multilab,
   descontar_stock_monoflab,
 } = require("../lib/global");
+const { queriesStockCristales } = require("./queries/stockCristalesQueries");
 
 const ventas_mes_vendedor = (
   { mes, anio, idvendedor, idsucursal },
@@ -46,12 +48,12 @@ const ventas_mes_vendedor = (
   });
 };
 
-
 const transaction_insert_venta = (data, callback) => {
-  console.log("###################[Inserting venta]###################");
   console.log(
     "        _     __      _     \r\n       (_)___/ /   __(_)___ \r\n      / / __  / | / / / __ \\ \r\n     / / /_/ /| |/ / / /_/ /\r\n    /_/\\__,_/ |___/_/\\____/ \r\n                            ",
   );
+  console.log("###################[Inserting venta]###################");
+
   //console.log("                    0                        \r\n                     000      0              \r\n            000      00000    000            \r\n          0000000000 000000   0000           \r\n              00000000000000000000           \r\n              000000000000000000000   0      \r\n       000000000000000000000000000   0000    \r\n     00000000000000000000000000000000000     \r\n         000000000000000000000000000000      \r\n          00000000000000000000000000000      \r\n       0000000000000000000000000000000    0  \r\n     00000000000000000000000000000000000000  \r\n    00000000000000000000000000000000000000   \r\n   00   000000000000000000000000000000000    \r\n         00000000000000000000000000000       \r\n       0000000000000000000000000000000       \r\n       000000000000000000000000000000000000  \r\n       0000000000000000000000000000000000    \r\n       000  00000000000000000000000000       \r\n       0    000000000000000000000            \r\n             000000000000  00000000          \r\n             0000   00000   00000000         \r\n              000    0000                    \r\n                        00                   ");
 
   const __now = new Date();
@@ -70,6 +72,18 @@ const transaction_insert_venta = (data, callback) => {
       );
       //to do: cristales stock restoration for edited venta...
       await inc_cantidades_stock_venta_v2(data, connection);
+
+      const sucursal_detalle = await connection.query(
+        queriesStockCristales.sucursal_cristales(data),
+      );
+
+      const _id_sucursal_cristales =
+        sucursal_detalle[0][0].fk_sucursal_cristales;
+
+      await restaurar_cantidades_venta({
+        id_sucursal_cristales: _id_sucursal_cristales,
+        idventa: data.idventa,
+      });
 
       await connection.query(
         `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`,
@@ -143,10 +157,10 @@ const transaction_insert_venta = (data, callback) => {
       (+data.tipo == 4 && descontar_stock_monoflab);
 
     console.log("Debe descontar cristales: ", debeDescontarCristales);
-
+    
     if (debeDescontarCristales) {
       const sucursal_detalle = await connection.query(
-        `select s.fk_sucursal_cristales from sucursal s where s.idsucursal = ${data.fksucursal};`,
+        queriesStockCristales.sucursal_cristales(data),
       );
 
       const _id_sucursal_cristales =
@@ -167,9 +181,7 @@ const transaction_insert_venta = (data, callback) => {
       { idventa: insert_data_id, idsucursal: data.fksucursal },
       connection,
     );
-    console.log(
-      "###################[Inserting venta - The End...]###################",
-    );
+    console.log("#############[Inserting venta - The End...]#############");
     return { insert_data_id };
   };
 
@@ -178,9 +190,11 @@ const transaction_insert_venta = (data, callback) => {
       return callback({ error: 1, msg: error });
     }
     return callback({
-      ok: 1,
+      stockResponse: null,
+      stockCristalesResponse: null,
+      idVenta: data.insert_data_id,
+      error: 0,
       msg: "Venta agregada correctamente",
-      idventa: data.insert_data_id,
     });
   });
 };
