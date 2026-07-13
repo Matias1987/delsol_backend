@@ -49,6 +49,7 @@ const lista_ventas_sucursal_mes = (data, callback) => {
             
     ) AS t
     WHERE 
+    s.fk_tipo = 1 AND 
     t.sucursal_idsucursal = s.idsucursal;`;
 
   const query_fa = `SELECT s.nombre AS 'sucursal', t.* FROM 
@@ -76,11 +77,12 @@ const lista_ventas_sucursal_mes = (data, callback) => {
             
     ) AS t
     WHERE 
+    s.fk_tipo = 1 AND 
     t.sucursal_idsucursal = s.idsucursal;`;
 
   const query = idf_optica == 3 ? query_fa : query_fr;
 
-  console.log(query);
+  //console.log(query);
 
   doQuery(query, (resp) => {
     callback(resp.data);

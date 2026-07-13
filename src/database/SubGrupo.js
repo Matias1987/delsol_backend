@@ -330,7 +330,12 @@ const agregarSGAGrupo = ({ idsubgrupo, idgrupo }, callback) => {
 };
 
 const obtenerSubgruposGrupoV2 = (idgrupo, callback) => {
-  const query = `SELECT sg.* , ghs.id_grupo FROM subgrupo sg INNER JOIN  grupo_has_subgrupo ghs ON ghs.id_subgrupo = sg.idsubgrupo AND ghs.id_grupo=${idgrupo}`;
+  //const query = `SELECT sg.* , ghs.id_grupo FROM subgrupo sg INNER JOIN  grupo_has_subgrupo ghs ON ghs.id_subgrupo = sg.idsubgrupo AND ghs.id_grupo=${idgrupo}`;
+  const query = `SELECT g.nombre_corto AS 'grupo', q1.*  FROM 
+                (SELECT sg.* , ghs.id_grupo FROM subgrupo sg INNER JOIN  grupo_has_subgrupo ghs ON ghs.id_subgrupo = sg.idsubgrupo AND ghs.id_grupo=${idgrupo}) q1,
+                grupo g 
+                WHERE g.idgrupo = q1.grupo_idgrupo`;
+                console.log(query)
   doQuery(query, (response) => {
     callback(response.data);
   });
