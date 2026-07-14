@@ -203,7 +203,7 @@ const inc_cantidades_stock_venta = (data, callback) => {
         vs.idcodigo = s.codigo_idcodigo AND 
         s.sucursal_idsucursal=${id_sucursal}`;
 
-      console.log(query);
+      //console.log(query);
 
       doQuery(query, (resp1) => {
         if (!resp1) {
@@ -628,7 +628,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
     limit,
   );
 
-  console.log(q)
+  //console.log(q)
 
   doQuery(q, (resp) => {
     callback(resp.data);
@@ -822,7 +822,7 @@ const anular_venta_cobros = ({ idventa }, callback) => {
 const eliminar_venta_stock = ({ idventa }, callback) => {
   const query = `DELETE FROM venta_has_stock vhs WHERE vhs.venta_idventa=${idventa};`;
   console.log("### Eliminando items de venta id: " + idventa);
-  console.log(query);
+  //console.log(query);
   doQuery(query, (response) => {
     callback(response);
   });
@@ -831,7 +831,7 @@ const eliminar_venta_stock = ({ idventa }, callback) => {
 const eliminar_venta_mp = ({ idventa }, callback) => {
   const query = `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${idventa};`;
   console.log("### Eliminando modos de pago de venta id: " + idventa);
-  console.log(query);
+  //console.log(query);
   doQuery(query, response => {
     callback(response);
   })

@@ -449,6 +449,48 @@ const queryListaVentaModoPago = (ventaId) => {
 
 const queryCobro = (data) => `to do`;
 
+const queryVentasMesVendedor = ({mes, anio, idvendedor, idsucursal}) => `SELECT v.*, CONCAT(c.apellido,' ', c.nombre) AS 'cliente', c.dni, date_format(v.fecha_retiro, '%d-%m-%Y') AS 'fecha_retiro' FROM 
+    venta v INNER JOIN 
+    cliente c ON v.cliente_idcliente = c.idcliente
+    WHERE 
+    month(v.fecha_retiro) = ${mes} AND 
+    YEAR(v.fecha_retiro) = ${anio} AND 
+    v.usuario_idusuario = ${idvendedor} AND 
+    v.estado='ENTREGADO' AND 
+    (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END)`
+
+
+const queryDescontarStockVenta = (data) => `update stock s,
+    (
+            SELECT 
+                vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                sum(vhs.cantidad) AS 'cantidad' 
+            FROM venta_has_stock vhs 
+                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  AND vhs.descontable=1
+                  GROUP BY vhs.stock_codigo_idcodigo
+    ) AS vs
+    SET s.cantidad = s.cantidad - vs.cantidad
+    where
+    vs.idcodigo = s.codigo_idcodigo AND 
+    s.sucursal_idsucursal=${data.idsucursal}
+    ;`;
+
+const queryRestaurarStockVenta = (data, id_sucursal) => `update stock s,
+        (
+                SELECT 
+                    vhs.stock_codigo_idcodigo AS 'idcodigo', 
+                    sum(vhs.cantidad) AS 'cantidad' 
+                FROM venta_has_stock vhs 
+                      WHERE vhs.venta_idventa= ${data.idventa} 
+                      AND vhs.descontable=1
+                      GROUP BY vhs.stock_codigo_idcodigo
+        ) AS vs
+        SET s.cantidad = s.cantidad + vs.cantidad
+        where
+        vs.idcodigo = s.codigo_idcodigo AND 
+        s.sucursal_idsucursal=${id_sucursal}`;
+
 module.exports = {
 	update_venta_query,
     queryDetalleVenta,
@@ -464,5 +506,8 @@ module.exports = {
 	query_items,
 	query_mp,
 	queryCobro,
+	queryVentasMesVendedor,
+	queryDescontarStockVenta,
+	queryRestaurarStockVenta,
 
 }

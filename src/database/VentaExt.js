@@ -12,6 +12,9 @@ const {
   query_items,
   query_mp,
   update_venta_query,
+  queryVentasMesVendedor,
+  queryDescontarStockVenta,
+  queryRestaurarStockVenta,
 } = require("./queries/ventaQueries");
 
 const { verificar_cantidades_productos_v2 } = require("./StockExt");
@@ -26,24 +29,12 @@ const ventas_mes_vendedor = (
   { mes, anio, idvendedor, idsucursal },
   callback,
 ) => {
-  const query = `SELECT v.*, CONCAT(c.apellido,' ', c.nombre) AS 'cliente', c.dni, date_format(v.fecha_retiro, '%d-%m-%Y') AS 'fecha_retiro' FROM 
-    venta v INNER JOIN 
-    cliente c ON v.cliente_idcliente = c.idcliente
-    WHERE 
-    month(v.fecha_retiro) = ${mes} AND 
-    YEAR(v.fecha_retiro) = ${anio} AND 
-    v.usuario_idusuario = ${idvendedor} AND 
-    v.estado='ENTREGADO' AND 
-    (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END)
-    ;`;
-  console.log("query ventas_mes_vendedor: ", query);
-  doQuery(query, (res) => {
+  doQuery(queryVentasMesVendedor({ mes, anio, idvendedor, idsucursal }), (res) => {
     if (!res || res.err) {
       console.log("error: ", err);
       callback(null);
       return;
     }
-    //console.log(JSON.stringify(res));
     callback(res.data);
   });
 };
@@ -70,7 +61,7 @@ const transaction_insert_venta = (data, callback) => {
       console.log(
         "Edicion de venta. Eliminando items y mp de venta id: " + data.idventa,
       );
-      //to do: cristales stock restoration for edited venta...
+
       await inc_cantidades_stock_venta_v2(data, connection);
 
       const sucursal_detalle = await connection.query(
@@ -157,7 +148,7 @@ const transaction_insert_venta = (data, callback) => {
       (+data.tipo == 4 && descontar_stock_monoflab);
 
     console.log("Debe descontar cristales: ", debeDescontarCristales);
-    
+
     if (debeDescontarCristales) {
       const sucursal_detalle = await connection.query(
         queriesStockCristales.sucursal_cristales(data),
@@ -194,7 +185,8 @@ const transaction_insert_venta = (data, callback) => {
       stockCristalesResponse: null,
       idVenta: data.insert_data_id,
       error: 0,
-      msg: "Venta agregada correctamente",
+      msg:  data.insert_data_id ? "Venta agregada correctamente" : "Error",
+      data: data
     });
   });
 };
@@ -500,8 +492,7 @@ const get_quantities_arrays = (data) => {
   return { arrayQttiesCristales, elementsArrCristales };
 };
 
-//compare requested quantities with stock quantities
-const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {
+const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {//compare requested quantities with stock quantities
   console.log("Comparing requested quantities with database response...");
   console.log("Database response: ", JSON.stringify(dbResponseArr));
   console.log("Requested quantities: ", JSON.stringify(reqQtties));
@@ -538,52 +529,17 @@ const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {
 const desc_cantidades_stock_venta_v2 = async (data, connection) => {
   console.log("Descontando stock de venta id: " + data.idventa);
 
-  const query = `update stock s,
-    (
-            SELECT 
-                vhs.stock_codigo_idcodigo AS 'idcodigo', 
-                sum(vhs.cantidad) AS 'cantidad' 
-            FROM venta_has_stock vhs 
-                  WHERE vhs.venta_idventa= ${data.idventa} 
-                  AND vhs.descontable=1
-                  GROUP BY vhs.stock_codigo_idcodigo
-    ) AS vs
-    SET s.cantidad = s.cantidad - vs.cantidad
-    where
-    vs.idcodigo = s.codigo_idcodigo AND 
-    s.sucursal_idsucursal=${data.idsucursal}
-    ;`;
-
-  return await connection.query(query);
+  return await connection.query(queryDescontarStockVenta(data));
 };
 
 const inc_cantidades_stock_venta_v2 = async (data, connection) => {
   const response = await connection.query(
-    `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`,
+    `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`
   );
 
-  const rep = response[0];
+  const id_sucursal = response[0][0].sucursal_idsucursal;
 
-  const id_sucursal = rep[0].sucursal_idsucursal;
-
-  const query = `update stock s,
-        (
-                SELECT 
-                    vhs.stock_codigo_idcodigo AS 'idcodigo', 
-                    sum(vhs.cantidad) AS 'cantidad' 
-                FROM venta_has_stock vhs 
-                      WHERE vhs.venta_idventa= ${data.idventa} 
-                      AND vhs.descontable=1
-                      GROUP BY vhs.stock_codigo_idcodigo
-        ) AS vs
-        SET s.cantidad = s.cantidad + vs.cantidad
-        where
-        vs.idcodigo = s.codigo_idcodigo AND 
-        s.sucursal_idsucursal=${id_sucursal}`;
-
-  console.log(query);
-
-  return await connection.query(query);
+  return await connection.query(queryRestaurarStockVenta(data, id_sucursal));
 };
 
 module.exports = {
