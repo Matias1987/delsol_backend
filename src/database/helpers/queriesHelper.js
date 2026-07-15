@@ -24,6 +24,16 @@ module.exports = {
     }
   },
 
+  doQueryV2: async (query, variables) =>
+  {
+    try{
+      return await pool.query(query,variables);
+    }
+    catch(error){
+      return {err:error}
+    }
+  },
+
   // NUEVO MÉTODO DINÁMICO: Permite lógica intermedia entre consultas
   doTransaction: async (transactionLogicFn, callback) => {
     // 1. Obtener la conexión exclusiva del pool

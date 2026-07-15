@@ -1,3 +1,4 @@
+require('dotenv').config();
 const config = require("./lib/global");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -5,8 +6,8 @@ var cors = require("cors");
 const usuarios_db = require("./database/Usuario");
 const http = require("http");
 const { Server } = require("socket.io");
-const rateLimit = require('express-rate-limit');
-
+const idempotency = require('./middleware/idempotency');
+const tokenCheck = require('./middleware/tokenValidation');
 //const session = require("express-session");
 //const cookieParser = require("cookie-parser");
 ///const session = require('express-session');
@@ -21,13 +22,13 @@ const isValidToken = (token, callback) => {
     callback(+res.logged === 1);
   });
 };
-
+/*
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 3000, // Limit each IP to 2500 requests per window
   message: 'Too many requests from this IP, please try again later.'
 });
-
+*/
 const corsOptions = {
   origin: ['https://coexp.nosis.site'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -36,6 +37,7 @@ const corsOptions = {
 app.use(
   cors()
 ); //RELEASE
+app.use(idempotency); 
 //app.use(bodyParser.json());
 //FROM https://stackoverflow.com/questions/24543847/req-body-empty-on-posts
 app.use(
@@ -93,6 +95,8 @@ io.use((socket, next) => {
   });
 });
 
+app.use(tokenCheck);
+
 // Periodically ping clients
 /*
 setInterval(() => {
@@ -131,51 +135,10 @@ app.use(express.json());
 //app.use(cookieParser());
 /*
 routes 
-*/
 
-/*
 ALSO FROM: https://stackoverflow.com/questions/31875621/how-to-properly-return-a-result-from-mysql-with-node
 */
 
-const requestLogger = function (req, res, next) {
-  const timestamp = new Date().toISOString();
-  console.log(`${timestamp} - ${req.method} request to ${req.url}`);
-  next(); // Pass control to the next middleware function or route handler
-};
-/*
-app.use(async (req, res, next) => {
-  //console.log("Authenticating incoming request...");
-  //console.log(`Incoming ${req.method} request to ${req.url}`);
-  if (req.method === "POST") {
-    if (
-      req.url !== "/api/v1/usuarios/login/" &&
-      req.url !== "/api/v1/usuarios/refresh_token/"
-    ) {
-      const token = req.headers.authorization?.split(" ")[1];
-      //console.log("Authenticating request with token:", token);
-      if (token) {
-        isValidToken(token, (isValid) => {
-          if (isValid) {
-            console.log("Request authenticated");
-            return next();
-          } else {
-            console.log("Request authentication failed");
-            return res.status(401).json({ error: "Unauthorized" });
-          }
-        });
-      }else {
-      console.log("No token provided");
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    } else{
-      next();
-    }
-    
-  } else {
-    next();
-  }
-});
-*/
 app.get("/", (req, res) => {
   res.send("Socket.IO server with keep-alive running");
 });
@@ -377,3 +340,45 @@ app.listen(port, () => {
  server.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
+
+
+/*
+const requestLogger = function (req, res, next) {
+  const timestamp = new Date().toISOString();
+  console.log(`${timestamp} - ${req.method} request to ${req.url}`);
+  next(); // Pass control to the next middleware function or route handler
+};
+
+app.use(async (req, res, next) => {
+  //console.log("Authenticating incoming request...");
+  //console.log(`Incoming ${req.method} request to ${req.url}`);
+  if (req.method === "POST") {
+    if (
+      req.url !== "/api/v1/usuarios/login/" &&
+      req.url !== "/api/v1/usuarios/refresh_token/"
+    ) {
+      const token = req.headers.authorization?.split(" ")[1];
+      //console.log("Authenticating request with token:", token);
+      if (token) {
+        isValidToken(token, (isValid) => {
+          if (isValid) {
+            console.log("Request authenticated");
+            return next();
+          } else {
+            console.log("Request authentication failed");
+            return res.status(401).json({ error: "Unauthorized" });
+          }
+        });
+      }else {
+      console.log("No token provided");
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    } else{
+      next();
+    }
+    
+  } else {
+    next();
+  }
+});
+*/
