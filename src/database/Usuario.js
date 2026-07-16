@@ -1,5 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
-const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper, doQueryV2 } = require("./helpers/queriesHelper");
 /**
  * sessions
  */
@@ -101,6 +101,28 @@ const checkIfUserLoggedIn = (token, callback) => {
     }
     return callback({ logged: _logged });
   });
+};
+const checkIfUserLoggedInV2 = async (token) => {
+  
+  const response = await doQueryV2(`select * from usuario u where u.token = ${escapeHelper(token)};`,[]);
+  
+  if (response?.error) {
+      return false;
+    }
+    const rows = response[0];
+    if (rows == null) {
+      return false;
+    }
+
+    let _logged = 0;
+    if (rows.length > 0) {
+      if (rows[0].logged == "1" || +(rows[0].multInstances || "0") == 1) {
+        _logged = 1;
+      }
+    }
+
+    return 1===_logged;
+  
 };
 
 const setToken = (data, callback) => {
@@ -422,4 +444,5 @@ module.exports = {
   get_user_credentials,
   validar_usuario_login_b,
   setToken2,
+  checkIfUserLoggedInV2,
 };

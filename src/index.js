@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const config = require("./lib/global");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -6,8 +6,8 @@ var cors = require("cors");
 const usuarios_db = require("./database/Usuario");
 const http = require("http");
 const { Server } = require("socket.io");
-const idempotency = require('./middleware/idempotency');
-const tokenCheck = require('./middleware/tokenValidation');
+const idempotency = require("./middleware/idempotency");
+const tokenCheck = require("./middleware/tokenValidation");
 //const session = require("express-session");
 //const cookieParser = require("cookie-parser");
 ///const session = require('express-session');
@@ -16,12 +16,6 @@ const app = express();
 const port = process.env.port || config.server_port; //release
 //const port = process.env.port || 3002;//for testing
 
-const isValidToken = (token, callback) => {
-  console.log("checking token");
-  usuarios_db.checkIfUserLoggedIn(token, (res) => {
-    callback(+res.logged === 1);
-  });
-};
 /*
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -30,24 +24,21 @@ const limiter = rateLimit({
 });
 */
 const corsOptions = {
-  origin: ['https://coexp.nosis.site'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: ["https://coexp.nosis.site"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
-app.use(
-  cors()
-); //RELEASE
-app.use(idempotency); 
+app.use(cors()); //RELEASE
+app.use(idempotency);
 //app.use(bodyParser.json());
 //FROM https://stackoverflow.com/questions/24543847/req-body-empty-on-posts
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 //app.use(limiter);
-
 
 app.use("/static", express.static("uploads"));
 
@@ -77,13 +68,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`############################ Client disconnected: ${socket.id}`);
+    console.log(
+      `############################ Client disconnected: ${socket.id}`,
+    );
   });
 });
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token; // or socket.handshake.query.token
   console.log("Authenticating socket with token:", token);
+  /*
   isValidToken(token, (isValid) => {
     if (isValid) {
       console.log("Socket authenticated:", socket.id);
@@ -93,6 +87,15 @@ io.use((socket, next) => {
     socket.disconnect();
     return next(new Error("Authentication error"));
   });
+  */
+  if (usuarios_db.checkIfUserLoggedInV2(token)) {
+    console.log("Socket authenticated:", socket.id);
+    return next();
+  } else {
+    console.log("Socket authentication failed:", socket.id);
+    socket.disconnect();
+    return next(new Error("Authentication error"));
+  }
 });
 
 app.use(tokenCheck);
@@ -337,10 +340,9 @@ app.listen(port, () => {
  })
 
 */
- server.listen(port, () => {
+server.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
-
 
 /*
 const requestLogger = function (req, res, next) {
@@ -381,4 +383,12 @@ app.use(async (req, res, next) => {
     next();
   }
 });
+*/
+/*
+const isValidToken = (token, callback) => {
+  console.log("checking token");
+  usuarios_db.checkIfUserLoggedIn(token, (res) => {
+    callback(+res.logged === 1);
+  });
+};
 */

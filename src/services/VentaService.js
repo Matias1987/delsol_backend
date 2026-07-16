@@ -233,7 +233,7 @@ const verificar_stock_venta = (data, callback) => {
   );
 };
 
-const _agregarVenta = (data, callback) => {
+const agregarVenta = (data, callback) => {
   ventaDBExt.transaction_insert_venta(data,(response)=>{
     if(cobro_inmediato && data.mp && data.mp.total>0)
     {
@@ -255,7 +255,7 @@ const _agregarVenta = (data, callback) => {
   })
 }
 
-const agregarVenta = (data, callback) => {
+const _agregarVenta = (data, callback) => {
   console.log("###-Received data for agregarVenta:-###");
   console.log(JSON.stringify(data));
   verificar_stock_venta(data, (verifStockResponse) => {
