@@ -78,6 +78,7 @@ const acutalizar_stock_cristales = (data, callback) => {
     "###################Updating stock for cristales with data:################################",
   );
   //console.log(data);
+  /*
   const query = `UPDATE stock_cristales sc SET 
       sc.cantidad=sc.cantidad-${data.cantidad} 
       WHERE 
@@ -85,7 +86,15 @@ const acutalizar_stock_cristales = (data, callback) => {
       sc.fk_codigo=${data.idcodigo} AND 
       sc.esf='${parseFloat(data.esf) == 0 ? "0.00" : data.esf}' AND 
       sc.cil='${parseFloat(data.cil) == 0 ? "-0.00" : data.cil}' AND 
-      sc.side='${data.side || "-"}';`;
+      sc.side='${data.side || "-"}';`;*/
+  
+  const query = `UPDATE stock_cristales sc SET 
+      sc.cantidad=sc.cantidad-${data.cantidad} 
+      WHERE 
+      sc.fk_sucursal=${idsucursal} AND 
+      sc.fk_codigo=${data.idcodigo} AND 
+      sc.esf='${ parseFloat(data.esf) == 0 ? '0.00' : parseFloat(data.esf).toFixed(2)}' AND 
+      sc.cil='${ parseFloat(data.cil) == 0 ? '-0.00' : data.cil}' ;`;
 
   console.log(query);
 

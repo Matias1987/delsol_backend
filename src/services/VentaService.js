@@ -162,6 +162,16 @@ const verificar_stock_venta = (data, callback) => {
     "cerca_od",
     elementsArrCristales,
   );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "oi",
+    elementsArrCristales,
+  );
+  elementsArrCristales = addToArray(
+    data.productos,
+    "od",
+    elementsArrCristales,
+  );
 
   elementsArrCristales.forEach((element) => {
     arrayQttiesCristales = updateCodeQttyArray(element, arrayQttiesCristales);
