@@ -1,5 +1,6 @@
 /src/lib/global.js
 /uploads/*
+/uploads
 /node_modules
 global.env
 .env
