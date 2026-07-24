@@ -5,6 +5,11 @@ const obtenerDescuentoClienteSubgrupo = (data, callback) => {
         callback(response);
     })
 }
+const obtenerDescuentosCliente = (data, callback) => {
+    db.obtenerDescuentosCliente(data, (response)=>{
+        callback(response);
+    })
+}
 
 const agregarDescuentoClienteSubgrupo = (data, callback) => {
     db.agregarDescuentoClienteSubgrupo(data, (response)=>{
@@ -26,6 +31,7 @@ const cambiarEstadoDescuento = (data, callback) =>{
 
 module.exports = {
     obtenerDescuentoClienteSubgrupo,
+    obtenerDescuentosCliente,
     agregarDescuentoClienteSubgrupo,
     obtenerListado,
     cambiarEstadoDescuento,

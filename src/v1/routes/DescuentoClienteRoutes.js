@@ -5,6 +5,9 @@ const controller = require("../../controllers/DescuentoClienteController");
 router.post("/obtener/", (req, res) => {
     controller.obtenerDescuentoClienteSubgrupo(req, res);
 });
+router.post("/obtener/dto/cliente/", (req, res) => {
+    controller.obtenerDescuentosCliente(req, res);
+});
 
 router.post("/", (req, res) => {
     controller.agregarDescuentoClienteSubgrupo(req, res);

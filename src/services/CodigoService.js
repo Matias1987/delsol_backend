@@ -112,7 +112,20 @@ const obtener_lp_codigos = (data,callback) => {
   })
 }
 
+const obtenerStockItems = (data, callback) => {
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100217}, response=>{
+    callback(response);
+  })
+};
+const obtenerBasesItems = (data, callback) => {
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100216}, response=>{
+    callback(response);
+  })
+};
+
 module.exports = {
+  obtenerStockItems,
+  obtenerBasesItems,
   agregar_codigos,
   editar_cantidad_ideal,
   editar_lote_codigos,

@@ -29,6 +29,13 @@ router.get("/optforsubgrupo/:subgrupoId", (req, res) => {
   codigoController.obtener_codigos_bysubgrupo_opt(req,res);
 });
 
+router.get("venta_mayorista_bases",(req, res)=>{
+  codigoController.obtenerBasesItems(req, res);
+});
+router.get("venta_mayorista_stock",(req, res)=>{
+  codigoController.obtenerStockItems(req,res);
+});
+
 router.post("/cambiar/estado/codigo/",(req,res)=>{
   codigoController.cambiar_estado_activo(req,res)
 })

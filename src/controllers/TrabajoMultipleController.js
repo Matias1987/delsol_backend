@@ -43,6 +43,7 @@ const anularTrabajoMultiple = (req, res) => {
     })
 }
 
+
 module.exports = { 
     procesarTrabajoMultiple,
     obtenerListadoVentasTM,
