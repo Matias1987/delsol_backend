@@ -57,6 +57,7 @@ const obtener_subgrupo_codigo_has_subgrupo_f = ({ idgrupo }, callback) => {
     WHERE 
     c.subgrupo_idsubgrupo =  sg.idsubgrupo
     `;
+  console.log(query);
   doQuery(query, (response) => {
     callback(response.data);
   });

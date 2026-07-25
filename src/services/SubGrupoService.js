@@ -77,7 +77,15 @@ const obtenerSubgruposGrupoV2 = (idgrupo, callback) => {
   });
 }
 
+
+const rm_grupo_has_subgrupo = (data, callback) => {
+  SubGrupoDB.rm_grupo_has_subgrupo(data,(response)=>{
+    callback(response);
+  })
+}
+
 module.exports = {
+    rm_grupo_has_subgrupo,
     agregarSGAGrupo,
     mover,
     obtenerSubgrupos,

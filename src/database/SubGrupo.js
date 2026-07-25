@@ -1,5 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
 
 const obtener_subgrupos_grupo = (idsubfamilia, callback) => {
   const q = `SELECT g.nombre_corto AS 'grupo', 
@@ -341,7 +341,16 @@ const obtenerSubgruposGrupoV2 = (idgrupo, callback) => {
   });
 };
 
+const rm_grupo_has_subgrupo = (data,callback) => {
+  const query = `delete from grupo_has_subgrupo ghs where id_grupo=${ escapeHelper(data.idgrupo)} and  id_subgrupo=${escapeHelper(data.idsubgrupo)} limit 1;`;
+  console.log(query);
+  doQuery(query,(response)=>{
+    callback(response.data);
+  })
+}
+
 module.exports = {
+  rm_grupo_has_subgrupo,
   obtenerSubgruposGrupoV2,
   mover,
   editarSubgrupo,

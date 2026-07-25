@@ -29,10 +29,11 @@ router.get("/optforsubgrupo/:subgrupoId", (req, res) => {
   codigoController.obtener_codigos_bysubgrupo_opt(req,res);
 });
 
-router.get("venta_mayorista_bases",(req, res)=>{
+router.get("/l/venta_mayorista_bases/",(req, res)=>{
   codigoController.obtenerBasesItems(req, res);
 });
-router.get("venta_mayorista_stock",(req, res)=>{
+router.get("/l/venta_mayorista_stock/",(req, res)=>{
+  console.log("lallalal")
   codigoController.obtenerStockItems(req,res);
 });
 

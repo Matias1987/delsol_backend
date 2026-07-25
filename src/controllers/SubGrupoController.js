@@ -158,7 +158,15 @@ const obtenerSubgruposGrupoV2 = (req, res) => {
   })
 }
 
+const rm_grupo_has_subgrupo = (req,res) => {
+  const {body} = req;
+  subgrupoService.rm_grupo_has_subgrupo(body,(response)=>{
+    res.status(201).send({status:'OK', data:response});
+  })
+}
+
 module.exports = {
+  rm_grupo_has_subgrupo,
   mover,
   obtenerSubgrupos,
   obtenerSubgrupo,
