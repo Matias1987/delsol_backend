@@ -31,7 +31,7 @@ router.get("/checks/:uid/:sucursalid",(req,res)=>{
 
 
 router.post("/login/",(req,res)=>{
-  //console.log("login.......")
+  console.log("login.......")
   usuarioController.login(req,res)
 })
 

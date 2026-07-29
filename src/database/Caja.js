@@ -75,16 +75,7 @@ const do_agregarCaja = (data, callback) => {
 };
 
 const agregarCaja = (data, callback) => {
-  UsuarioDB.validar_usuario_be(
-    {
-      tk: data.tk,
-      permisos: "venta",
-    },
-    () => {
-      do_agregarCaja(data, callback);
-    },
-    () => {},
-  );
+  do_agregarCaja(data, callback);
 };
 
 const obtener_caja = (idsucursal, callback) => {

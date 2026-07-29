@@ -99,6 +99,7 @@ const login = (req,res)=>{
       );
 
       usuarioService.addToken({nombre: body.nombre, password: body.password, sucursal: body.sucursal, token: token},(_resp)=>{
+        console.log("Authenticated");
         res.status(201).send({
           status:'OK', 
           data: {

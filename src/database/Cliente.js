@@ -80,9 +80,7 @@ const do_agregar_cliente = (data, callback) => {
 }
 
 const agregar_cliente = (data, callback) => {
-    
-   UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_cliente(data,callback)},()=>{})
-
+    do_agregar_cliente(data,callback);
 }
 
 const obtener_lista_clientes = (callback) => {

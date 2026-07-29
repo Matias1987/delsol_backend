@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token; // or socket.handshake.query.token
-  console.log("Authenticating socket with token:", token);
+ // console.log("Authenticating socket with token:", token);
   /*
   isValidToken(token, (isValid) => {
     if (isValid) {

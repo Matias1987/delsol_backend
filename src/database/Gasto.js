@@ -95,14 +95,7 @@ const do_agregar_gasto = (data, callback) => {
 };
 
 const agregar_gasto = (data, callback) => {
-
-  UsuarioDB.validar_usuario_be(
-    { tk: data.tk },
-    () => {
-      do_agregar_gasto(data, callback);
-    },
-    () => {}
-  );
+do_agregar_gasto(data, callback);
 };
 
 const anular_gasto = ({idgasto}, callback) => {

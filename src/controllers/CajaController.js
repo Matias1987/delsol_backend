@@ -35,13 +35,15 @@ const agregarCaja = (req, res) => {
 
   validar_usuario_caja(body, (isValid) => {
     if (!isValid) {
+      console.error("User is not authorized to open a caja");
       return res.status(403).send({
         status: "Error",
         data: { message: "User is not authorized to open a caja" },
       });
     }
-
+    console.log("Agregar Caja")
     cajaService.agregarCaja(body, (id) => {
+      console.log("Done. id: " + id);
       res.status(201).send({ status: "OK", data: id });
     });
   });

@@ -2,7 +2,7 @@ const usuarios_db = require("../database/Usuario");
 
 async function tokenCheck(req, res, next) {
   //console.log("Authenticating incoming request...");
-  console.log(`Authenticating incoming request... Incoming ${req.method} request to ${req.url}`);
+  //console.log(`Authenticating incoming request... Incoming ${req.method} request to ${req.url}`);
   if (req.method === "POST") {
     if (
       req.url !== "/api/v1/usuarios/login/" &&
@@ -28,6 +28,7 @@ async function tokenCheck(req, res, next) {
       next();
     }
   } else {
+    //console.log("login request or token...");
     next();
   }
 }

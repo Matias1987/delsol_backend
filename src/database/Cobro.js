@@ -630,8 +630,6 @@ const do_agregar_cobro = (data, callback) => {
 }
 
 const agregar_cobro  = (data,callback) => {
-
-    //UsuarioDB.validar_usuario_be({tk:data.tk},()=>{do_agregar_cobro(data,callback)},()=>{callback({msg:"error VALIDANDO USUARIO"})})
     do_agregar_cobro_v2(data,callback)
 }
 
