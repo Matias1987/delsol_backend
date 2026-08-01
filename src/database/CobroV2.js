@@ -215,7 +215,7 @@ const obtener_mp_cobro_queries = (idcobro, _mp) => {
       total += parseFloat(mp.monto);
     }
   });
-  return cobro_queries.queryInsertMP + _cobro_mp_item;
+  return _mp.length > 0 ? cobro_queries.queryInsertMP + _cobro_mp_item : "";
 };
 
 const obtener_mp_venta_query = (data, _mp) => {
@@ -239,7 +239,9 @@ const obtener_mp_venta_query = (data, _mp) => {
     });
   } else return "";
 
-  return cobro_queries.queryInsertVentaMP + _venta_mp_item;
+  return _venta_mp_item.length > 0
+    ? cobro_queries.queryInsertVentaMP + _venta_mp_item
+    : "";
 };
 
 const insert_cobro_transaction = (data, callback) => {
@@ -254,18 +256,29 @@ const insert_cobro_transaction = (data, callback) => {
       console.log(cobro_queries.queryRemoveCtaCteRows(data));
       await connection.query(cobro_queries.queryRemoveCtaCteRows(data));
     }
+
+    /** solo cta cte */
     if (data.monto == data.mp.ctacte_monto && data.mp.ctacte_monto > 0) {
+      console.log("inserting cta cte mp only");
       const __query_venta_mp = cobro_queries.queryInsertarMPCtaCte(data);
       console.log("inserting cta cte mp");
       console.log(__query_venta_mp);
       await connection.query(__query_venta_mp);
       await connection.query(
-        `UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`,
-      );
-      return;
+          `UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`,
+        );
+      return -1;
     }
 
     const mps = obtener_lista_mp(data);
+    /** sin pagos, posiblemente descuento */
+    if (mps.length < 1) {
+      console.log(" <!> sin pagos, posiblemente descuento ");
+      await connection.query(
+        `UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`,
+      );
+      return -1;
+    }
     var total = 0;
 
     mps.forEach((mp) => {
@@ -289,14 +302,23 @@ const insert_cobro_transaction = (data, callback) => {
     const query_cobro_mp = obtener_mp_cobro_queries(idcobro, mps);
     const query_venta_mp = obtener_mp_venta_query(data, mps);
 
+    console.log("query_cobro_mp", query_cobro_mp);
+    console.log("query_venta_mp", query_venta_mp);
+
+    console.log(
+      "Update venta montos query: ",
+      cobro_queries.queryUpdateVentaMontos(data, total),
+    );
     const update_venta_montos_query = cobro_queries.queryUpdateVentaMontos(
       data,
       total,
     );
 
     if (query_venta_mp.length < 1) {
+      console.log("no venta mp, only cobro mp");
       await connection.query(update_venta_montos_query);
       if (mps.length > 0) {
+        console.log("inserting cobro mp");
         await connection.query(query_cobro_mp);
       }
       return idcobro;
@@ -309,7 +331,7 @@ const insert_cobro_transaction = (data, callback) => {
 
   doTransaction(__logic, ({ data, err }) => {
     if (err) {
-      console.log("error");
+      console.log("error:", err);
       return callback({ error: 1 });
     }
     console.log("success, return id: ", data);

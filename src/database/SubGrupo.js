@@ -283,20 +283,22 @@ const editarSubgrupo = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
   //console.log("updating subgrupo " + data.visible_lp)
-
+  const visible_lp = data.visible_lp == 1 ? 1 : 0;
+  const modificar_precio_defecto = data.precio_defecto
+    ? `sg.precio_defecto=${connection.escape(data.precio_defecto)},`
+    : "";
+  const modificar_precio_defecto_mayorista = data.precio_defecto_mayorista
+    ? `sg.precio_defecto_mayorista=${connection.escape(data.precio_defecto_mayorista)},`
+    : "";
   const q = `update subgrupo sg set 
-    sg.visible_lp = ${connection.escape(data.visible_lp)},
-    sg.nombre_largo=${connection.escape(
-      data.nombre_largo,
-    )}, sg.precio_defecto=${connection.escape(
-      data.precio_defecto,
-    )}, sg.comentarios=${connection.escape(
-      data.comentarios,
-    )}, sg.precio_defecto_mayorista=${connection.escape(
-      data.precio_defecto_mayorista,
-    )} where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`;
+    sg.visible_lp = ${visible_lp},
+    sg.nombre_largo=${connection.escape(data.nombre_largo)}, 
+   ${modificar_precio_defecto} 
+   ${modificar_precio_defecto_mayorista} 
+   sg.comentarios=${connection.escape(data.comentarios)}
+   where sg.idsubgrupo = ${connection.escape(data.idsubgrupo)}`;
 
-  //console.log(q)
+  console.log(q);
 
   connection.query(q, (err, resp) => {
     if (err) {
@@ -335,19 +337,19 @@ const obtenerSubgruposGrupoV2 = (idgrupo, callback) => {
                 (SELECT sg.* , ghs.id_grupo FROM subgrupo sg INNER JOIN  grupo_has_subgrupo ghs ON ghs.id_subgrupo = sg.idsubgrupo AND ghs.id_grupo=${idgrupo}) q1,
                 grupo g 
                 WHERE g.idgrupo = q1.grupo_idgrupo`;
-                console.log(query)
+  console.log(query);
   doQuery(query, (response) => {
     callback(response.data);
   });
 };
 
-const rm_grupo_has_subgrupo = (data,callback) => {
-  const query = `delete from grupo_has_subgrupo ghs where id_grupo=${ escapeHelper(data.idgrupo)} and  id_subgrupo=${escapeHelper(data.idsubgrupo)} limit 1;`;
+const rm_grupo_has_subgrupo = (data, callback) => {
+  const query = `delete from grupo_has_subgrupo ghs where id_grupo=${escapeHelper(data.idgrupo)} and  id_subgrupo=${escapeHelper(data.idsubgrupo)} limit 1;`;
   console.log(query);
-  doQuery(query,(response)=>{
+  doQuery(query, (response) => {
     callback(response.data);
-  })
-}
+  });
+};
 
 module.exports = {
   rm_grupo_has_subgrupo,
