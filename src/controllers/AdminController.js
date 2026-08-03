@@ -96,7 +96,15 @@ const total_ventas_periodo_sucursal = (req, res) => {
     })
 }
 
+const total_ventas_categorias_periodo = (req, res) => {
+    const {body} = req;
+    adminService.total_ventas_categorias_periodo(body,(response)=>{
+        res.send({status:"OK",data:response});
+    })
+}
+
 module.exports = {
+    total_ventas_categorias_periodo,
     total_ventas_periodo_sucursal,
     lista_ventas_sucursal_periodo,
     totales_stock_ventas_periodo,
