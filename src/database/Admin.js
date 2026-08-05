@@ -474,6 +474,76 @@ const total_ventas_categorias_periodo = (
   { idsucursal, cantMeses, modo = "cantidad" },
   callback,
 ) => {
+  const query = `SELECT 
+      qq.idfamilia, 
+      qq.idsubfamilia,
+      qq.idgrupo,
+      qq.idsubgrupo,
+      qq.familia_idfamilia,
+      qq.subfamilia_idsubfamilia,
+      qq.grupo_idgrupo,
+      qq.subgrupo_idsubgrupo,
+      qq.nf,
+      qq.nsf,
+      qq.ng,
+      qq.nsg,
+      SUM(qq.qtty) AS 'qtty'
+
+ FROM (
+	SELECT  
+      q1.idfamilia, 
+      q1.idsubfamilia,
+      q1.idgrupo,
+      q1.idsubgrupo,
+      q1.familia_idfamilia,
+      q1.subfamilia_idsubfamilia,
+      q1.grupo_idgrupo,
+      q1.subgrupo_idsubgrupo,
+      q2.qtty,
+      q1.nf,
+      q1.nsf,
+      q1.ng,
+      q1.nsg
+      FROM 
+      
+      (
+        SELECT 
+        f.nombre_corto AS nf,
+        sf.nombre_corto AS nsf,
+        g.nombre_corto AS ng,
+        sg.nombre_corto AS nsg,
+        c.codigo AS cod,
+        f.idfamilia,
+        sf.idsubfamilia,
+        g.idgrupo,
+        sg.idsubgrupo,
+        c.idcodigo,
+        sf.familia_idfamilia,
+        g.subfamilia_idsubfamilia,
+        sg.grupo_idgrupo,
+        c.subgrupo_idsubgrupo
+        FROM familia f, subfamilia sf, grupo g, subgrupo sg, codigo c WHERE 
+          c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
+          sg.grupo_idgrupo = g.idgrupo AND 
+          g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+          sf.familia_idfamilia = f.idfamilia
+      ) q1 INNER JOIN 
+      (
+        SELECT vhs.stock_codigo_idcodigo, sum(vhs.cantidad) AS qtty 
+        FROM venta_has_stock vhs WHERE vhs.venta_idventa IN 
+        (SELECT v.idventa FROM venta v WHERE date(v.fecha) > DATE_ADD(DATE(NOW()), INTERVAL -${cantMeses} MONTH )) 
+        GROUP BY vhs.stock_codigo_idcodigo
+      ) q2 ON q1.idcodigo = q2.stock_codigo_idcodigo
+      ) qq GROUP BY qq.subgrupo_idsubgrupo`;
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
+/*
+const total_ventas_categorias_periodo = (
+  { idsucursal, cantMeses, modo = "cantidad" },
+  callback,
+) => {
   const query = `SELECT  
                   q1.idfamilia, 
                   q1.idsubfamilia,
@@ -516,7 +586,7 @@ const total_ventas_categorias_periodo = (
                   (
                     SELECT vhs.stock_codigo_idcodigo, sum(vhs.cantidad) AS qtty 
                     FROM venta_has_stock vhs WHERE vhs.venta_idventa IN 
-                    (SELECT v.idventa FROM venta v WHERE date(v.fecha) > DATE_ADD(DATE(NOW()), INTERVAL -2 MONTH )) 
+                    (SELECT v.idventa FROM venta v WHERE date(v.fecha) > DATE_ADD(DATE(NOW()), INTERVAL -${cantMeses} MONTH )) 
                     GROUP BY vhs.stock_codigo_idcodigo
                   ) q2 ON q1.idcodigo = q2.stock_codigo_idcodigo
                   ;`;
@@ -524,7 +594,7 @@ const total_ventas_categorias_periodo = (
     callback(response.data);
   });
 };
-
+*/
 module.exports = {
   lista_ventas_sucursal_periodo,
   ventas_dia_totales,
@@ -541,3 +611,4 @@ module.exports = {
   total_ventas_periodo_sucursal,
   total_ventas_categorias_periodo,
 };
+ 
