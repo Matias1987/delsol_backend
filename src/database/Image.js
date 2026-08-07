@@ -1,4 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection")
+const { doQuery } = require("./helpers/queriesHelper")
 
 const agregar_imagen = (data, callback) => {
     
@@ -24,7 +25,11 @@ const agregar_imagen = (data, callback) => {
 }
 
 const remover_imagen = (data, callback) => {
-
+    const query = `delete from imagen where idimagen=${data.id}`;
+    console.log(query)
+    doQuery(query, (response)=>{
+        callback(response);
+    })
 }
 
 const obtener_imagenes = (data, callback) => {

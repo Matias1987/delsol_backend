@@ -24,6 +24,10 @@ router.post("/upload/", upload.single("file") ,(req,res)=>{
    // imgController.register_image(req, res)
 })
 
+router.post("/remove_image/",(req, res)=>{
+  imgController.remover_imagen(req, res);
+})
+
 router.post("/register/",(req,res)=>{
     imgController.register_image(req,res)
 })

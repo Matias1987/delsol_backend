@@ -27,4 +27,11 @@ const get_default_image = (req, res) => {
    })
 
 }
-module.exports = {register_image, get_images_ref, get_default_image}
+
+const remover_imagen = (req, res) => {
+   const {body} = req;
+   service.remover_imagen(body,(resp)=>{
+       res.status(201).send({status:'OK', data:resp})
+   })
+}
+module.exports = {register_image, get_images_ref, get_default_image, remover_imagen}
