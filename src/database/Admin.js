@@ -469,7 +469,7 @@ const total_ventas_periodo_sucursal = (
     callback(response.data);
   });
 };
-
+/*
 const total_ventas_categorias_periodo = (
   { idsucursal, cantMeses, modo = "cantidad" },
   callback,
@@ -539,7 +539,8 @@ const total_ventas_categorias_periodo = (
     callback(response.data);
   });
 };
-/*
+*/
+
 const total_ventas_categorias_periodo = (
   { idsucursal, cantMeses, modo = "cantidad" },
   callback,
@@ -594,7 +595,7 @@ const total_ventas_categorias_periodo = (
     callback(response.data);
   });
 };
-*/
+
 module.exports = {
   lista_ventas_sucursal_periodo,
   ventas_dia_totales,
