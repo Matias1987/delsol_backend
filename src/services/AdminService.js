@@ -83,6 +83,11 @@ const total_ventas_categorias_periodo = (data, callback) => {
     callback(response);
   });
 };
+const obtener_ventas_por_tipo_producto = (data, callback) => {
+  AdminDB.obtener_ventas_por_tipo_producto(data, (response) => {
+    callback(response);
+  });
+};
 
 module.exports = {
   total_tarjetas_periodo,
@@ -100,4 +105,5 @@ module.exports = {
   total_cobros_tipo_periodo,
   total_ventas_periodo_sucursal,
   total_ventas_categorias_periodo,
+  obtener_ventas_por_tipo_producto,
 };

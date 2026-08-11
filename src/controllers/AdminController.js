@@ -102,6 +102,12 @@ const total_ventas_categorias_periodo = (req, res) => {
         res.send({status:"OK",data:response});
     })
 }
+const obtener_ventas_por_tipo_producto = (req, res) => {
+    const {body} = req;
+    adminService.obtener_ventas_por_tipo_producto(body,(response)=>{
+        res.send({status:"OK",data:response});
+    })
+}
 
 module.exports = {
     total_ventas_categorias_periodo,
@@ -119,4 +125,5 @@ module.exports = {
     obtener_ventas_dia_vendedor,
     total_tarjetas_periodo,
     total_cobros_tipo_periodo,
+    obtener_ventas_por_tipo_producto,
 }

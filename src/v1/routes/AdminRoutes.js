@@ -59,5 +59,8 @@ router.post("/obtener/totales/tarjetas/periodo/", (req, res) => {
 router.post("/total/ventas/categorias/periodo/", (req, res) => {
   adminController.total_ventas_categorias_periodo(req, res);
 });
+router.post("/obtener_ventas_por_tipo_producto/", (req, res) => {
+  adminController.obtener_ventas_por_tipo_producto(req, res);
+});
 
 module.exports = router;

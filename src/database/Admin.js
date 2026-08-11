@@ -464,7 +464,6 @@ const total_ventas_periodo_sucursal = (
                     ) oo GROUP by oo.mes, oo.idsucursal 
                   ) o WHERE s.idsucursal = o.idsucursal AND s.idsucursal=${idsucursal} ORDER BY  DATE(CONCAT(o.mes, '-', '01')) ASC, o.idsucursal ASC ;`;
 
-  //console.log(query);
   doQuery(query, (response) => {
     callback(response.data);
   });
@@ -591,9 +590,27 @@ const total_ventas_categorias_periodo = (
                     GROUP BY vhs.stock_codigo_idcodigo
                   ) q2 ON q1.idcodigo = q2.stock_codigo_idcodigo
                   ;`;
+  //console.log(query);
   doQuery(query, (response) => {
     callback(response.data);
   });
+};
+
+const obtener_ventas_por_tipo_producto = (
+  { cantMeses, idcodigo },
+  callback,
+) => {
+  const query = `SELECT v.idventa, CONCAT(c.apellido,' ', c.nombre) AS nombre_cliente, vhs1.cantidad, v.tipo FROM venta v, cliente c, 
+  (SELECT vhs.stock_codigo_idcodigo, vhs.cantidad, vhs.venta_idventa 
+  FROM venta_has_stock vhs WHERE vhs.venta_idventa IN 
+  (SELECT v.idventa FROM venta v WHERE date(v.fecha) > DATE_ADD(DATE(NOW()), INTERVAL -${cantMeses} MONTH ))
+  AND vhs.stock_codigo_idcodigo=${idcodigo} 
+  ) vhs1 
+  WHERE vhs1.venta_idventa = v.idventa AND v.cliente_idcliente=c.idcliente`;
+ console.log(query);
+  doQuery(query,(response)=>{
+    callback(response.data);
+  })
 };
 
 module.exports = {
@@ -611,5 +628,5 @@ module.exports = {
   total_cobros_tipo_periodo,
   total_ventas_periodo_sucursal,
   total_ventas_categorias_periodo,
+  obtener_ventas_por_tipo_producto,
 };
- 
