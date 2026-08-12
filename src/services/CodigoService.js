@@ -113,12 +113,14 @@ const obtener_lp_codigos = (data,callback) => {
 }
 
 const obtenerStockItems = (data, callback) => {
-  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100217}, response=>{
+  //100217
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100297}, response=>{
     callback(response);
   })
 };
 const obtenerBasesItems = (data, callback) => {
-  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100216}, response=>{
+  //100216
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100298}, response=>{
     callback(response);
   })
 };
