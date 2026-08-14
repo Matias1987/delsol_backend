@@ -1,6 +1,7 @@
 const CodigoDB = require("../database/Codigo");
 const CodigoExtDB = require("../database/CodigoExt");
 const StockDB = require("../database/Stock");
+const { id_g_stock, id_g_bases } = require("../lib/global");
 const search_codigos = (data, callback) => {
   CodigoDB.search_codigos(data, (rows) => {
     return callback(rows);
@@ -113,14 +114,14 @@ const obtener_lp_codigos = (data,callback) => {
 }
 
 const obtenerStockItems = (data, callback) => {
-  //100217
-  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100297}, response=>{
+  //100217   100297
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:id_g_stock}, response=>{
     callback(response);
   })
 };
 const obtenerBasesItems = (data, callback) => {
-  //100216
-  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:100298}, response=>{
+  //100216 100298
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:id_g_bases}, response=>{
     callback(response);
   })
 };
