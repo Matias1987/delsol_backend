@@ -442,6 +442,10 @@ const resumen_caja = (data, callback) => {
 
     const _rows = resp.data;
 
+    if(!_rows){
+      return {error:1};
+    }
+
     const idcaja = _rows[0]?.idcaja;
 
     const query_coexp_version = `SELECT SUM(cmp.monto) AS 'monto', 'ingreso' AS 'tipo', 'Ventas + Cuotas' as 'detalle' FROM 
