@@ -272,11 +272,23 @@ const anularTrabajoMultiple = (data, callback) => {
   });
 };
 
+const obtenerTrabajosVenta = (data , callback) => {
+  db.obtenerTrabajosVenta(data,(response)=>{
+    callback(response);
+  })
+}
+const obtenerTrabajo = (data , callback) => {
+  db.obtenerTrabajo(data,(response)=>{
+    callback(response);
+  })
+}
 module.exports = {
+  obtenerTrabajo,
   procesarTrabajoMultiple,
   obtenerListadoVentasTM,
   obtenerTrabajoMultiple,
   obtenerItemsTrabajo,
   marcar_como_entregado,
   anularTrabajoMultiple,
+  obtenerTrabajosVenta,
 };

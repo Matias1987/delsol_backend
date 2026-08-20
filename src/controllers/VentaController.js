@@ -110,8 +110,8 @@ const lista_venta_sucursal_estado = (req, res) => {
 }
 
 const lista_venta_item = (req,res) => {
-  const {params:{ventaId}} = req
-  ventaService.lista_venta_item(ventaId,(rows)=>{
+  const {params:{ventaId, trabajoId}} = req
+  ventaService.lista_venta_item({idventa:ventaId, idtrabajo:trabajoId},(rows)=>{
     res.status(201).send({status:'OK', data:rows})
   })
 }

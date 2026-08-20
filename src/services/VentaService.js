@@ -394,12 +394,12 @@ const procesar_ventas = (rows) =>{
     if(+lastId!=+row.idventa )
     {
       parent=null;
-      if(+row.tipo==7 && +row.idtrabajo<0)
+      if((+row.tipo==7 || +row.tipo==8) && +row.idtrabajo<0)
       {
         return;
       }
       
-      if(+row.tipo==7)
+      if(+row.tipo==7 || +row.tipo==8)
         {
           parent = {...row, isParent:1, key:key, children:[]};
           result.push(parent);
@@ -425,8 +425,8 @@ const procesar_ventas = (rows) =>{
 
 const editarVenta = (req, res) => {};
 
-const lista_venta_item = (idventa, callback) => {
-  ventaDB.lista_venta_item(idventa, (rows) => {
+const lista_venta_item = (data, callback) => {
+  ventaDB.lista_venta_item(data, (rows) => {
     return callback(rows);
   });
 };

@@ -43,12 +43,26 @@ const anularTrabajoMultiple = (req, res) => {
     })
 }
 
+const obtenerTrabajosVenta = (req,res) => {
+    const {params:{idventa}} = req;
+    service.obtenerTrabajosVenta({idventa},(response)=>{
+        return res.json({data:response});
+    })
+}
+const obtenerTrabajo = (req,res) => {
+    const {params:{idtrabajo}} = req;
+    service.obtenerTrabajo({idtrabajo},(response)=>{
+        return res.json({data:response});
+    })
+}
 
 module.exports = { 
+    obtenerTrabajo,
     procesarTrabajoMultiple,
     obtenerListadoVentasTM,
     obtenerTrabajoMultiple,
     obtenerItemsTrabajo,
     marcarComoEntregado,
-    anularTrabajoMultiple
+    anularTrabajoMultiple,
+    obtenerTrabajosVenta,
 }

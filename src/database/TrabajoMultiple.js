@@ -349,7 +349,21 @@ const anularTrabajoMultiple = ({idventa}, callback) => {
   });
 };
 
+const obtenerTrabajosVenta = ({idventa}, callback) => {
+  const query =`select t.* from trabajo t where t.idventa=${idventa}`;
+  doQuery(query,(response)=>{
+    callback(response.data)
+  })
+}
+const obtenerTrabajo = ({idtrabajo}, callback) => {
+  const query =`select t.* from trabajo t where t.idtrabajo=${idtrabajo}`;
+  doQuery(query,(response)=>{
+    callback(response.data)
+  })
+}
+
 module.exports = {
+  obtenerTrabajo,
   agregarVenta,
   checkQuantities,
   descontarStock,
@@ -361,4 +375,5 @@ module.exports = {
   marcar_entregado,
   transaccionAgregarTM,
   anularTrabajoMultiple,
+  obtenerTrabajosVenta,
 };

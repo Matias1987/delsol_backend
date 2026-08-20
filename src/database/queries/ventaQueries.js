@@ -414,7 +414,7 @@ const queryListaVentasSucursalEstado = (
 	`
 )
 
-const queryListaVentaStock = (ventaId) =>{
+const queryListaVentaStock = (ventaId, trabajoId) =>{
     return `SELECT 
 	vhs.tipo, 
 	vhs.esf, 
@@ -431,6 +431,7 @@ const queryListaVentaStock = (ventaId) =>{
 	vhs.idventaitem
 	FROM venta_has_stock vhs, codigo c WHERE 
 	c.idcodigo = vhs.stock_codigo_idcodigo AND 
+	(case when '-1'<>'${trabajoId}' then vhs.id_trabajo=${trabajoId} else true end) AND
 	vhs.venta_idventa=${ventaId} order by vhs.orden;
     ;`;
 }

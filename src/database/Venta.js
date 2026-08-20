@@ -664,8 +664,9 @@ const lista_venta_mp_cta_cte = (idventa, callback) => {
   );
 };
 
-const lista_venta_item = (idventa, callback) => {
-  doQuery(venta_queries.queryListaVentaStock(idventa), (resp) => {
+const lista_venta_item = ({idventa, idtrabajo}, callback) => {
+  console.log(venta_queries.queryListaVentaStock(idventa, idtrabajo??"-1"))
+  doQuery(venta_queries.queryListaVentaStock(idventa, idtrabajo??"-1"), (resp) => {
     callback(resp.data);
   });
 };
