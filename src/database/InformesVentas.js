@@ -129,10 +129,34 @@ const cantidades_ventas_taller = (callback) => {
     callback(response.data);
   });
 };
+const cant_vtas_vendedor_cat = ({ idvendedor }, callback) => {
+  const query = `SELECT 
+  f.nombre_corto AS f_name,
+  f.idfamilia,
+  sum(v.qtty) AS qtty_f
+  FROM familia f, subfamilia sf, grupo g, subgrupo sg, codigo c, (
+    SELECT vhs.stock_codigo_idcodigo AS idcod, sum(vhs.cantidad) AS qtty FROM 
+    venta_has_stock vhs WHERE vhs.venta_idventa IN (
+    SELECT v.idventa FROM venta v WHERE v.usuario_idusuario = ${idvendedor} AND MONTH(v.fecha) = MONTH(NOW()) AND YEAR(v.fecha) = YEAR(NOW())
+    ) GROUP BY vhs.stock_codigo_idcodigo
+  ) v
+  WHERE 
+  v.idcod = c.idcodigo AND 
+  c.subgrupo_idsubgrupo = sg.idsubgrupo AND 
+  sg.grupo_idgrupo = g.idgrupo AND 
+  g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+  sf.familia_idfamilia = f.idfamilia
+  GROUP BY f.idfamilia;`;
+  console.log(query);
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
 
 module.exports = {
   informe_venta_montos_mes,
   informe_ventas_medicos,
   informe_ventas_filtros,
   cantidades_ventas_taller,
+  cant_vtas_vendedor_cat,
 };

@@ -17,6 +17,10 @@ router.get("/inf/vtas/taller/cantidades",(req, res)=>{
     controller.cantidades_ventas_taller(req,res)
 });
 
+router.post("/cant/vtas/vendedor/cat",(req, res)=>{
+    controller.cant_vtas_vendedor_cat(req,res)
+});
+
 
 
 module.exports = router;
