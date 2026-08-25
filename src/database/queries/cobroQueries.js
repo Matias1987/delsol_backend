@@ -64,7 +64,7 @@ const queryAgregarCobroV2 = (idcaja, data) => `insert into cobro (
                 ${escapeHelper(data.usuario_idusuario)}, 
                 ${typeof data.idcliente === 'undefined' ? 'null' : escapeHelper(data.idcliente)}, 
                 ${typeof data.idventa === 'undefined' ? 'null' : escapeHelper(data.idventa)}, 
-                ${data.monto - data.mp.ctacte_monto /* subtract ctacte monto */}, 
+                ${data.monto - parseFloat((data.mp?.ctacte_monto)??"0") /* subtract ctacte monto */}, 
                 ${escapeHelper(data.tipo)},
                 ${escapeHelper(data.sucursal_idsucursal)},
                 date('${data.fecha}')

@@ -4,6 +4,7 @@ const {
   doQuery,
   escapeHelper,
   doTransaction,
+  doQueryV2,
 } = require("./helpers/queriesHelper");
 
 const doQuery2 = (query, callback = null) => {
@@ -18,7 +19,37 @@ const doQuery2 = (query, callback = null) => {
 
 const agregar_cobro = (data, callback) => {
   //do_agregar_cobro(data,callback)
-  insert_cobro_transaction(data, callback);
+
+  //get venta, y verificar si cobro.monto>0 && venta.saldo==0 || venta.estado=='ENTREGADO' error...
+  console.log(`SELECT v.estado, v.saldo FROM venta v WHERE v.idventa=${data.idventa ?? "0"};`)
+  let se_puede_cobrar = true;
+  if (data.idventa) {
+    //console.log(`SELECT v.estado, v.saldo FROM venta v WHERE v.idventa=${data.idventa ?? "0"};`)
+    doQuery2(`SELECT v.estado, v.saldo FROM venta v WHERE v.idventa=${data.idventa ?? "0"};`, (err, cb) => {
+      console.log(JSON.stringify(cb));
+      if (cb && cb?.length > 0) {
+        const _saldo = parseInt(cb[0].saldo);
+        const _estado = (cb[0].estado);
+        if ("ENTREGADO" == _estado || (_saldo < 1 && parseInt(data.total)>0)) {
+          se_puede_cobrar = false;
+          console.log("no se puede cobrar...")
+        }
+
+      }
+      if (!se_puede_cobrar) {
+        return callback({ err: 1, msg: "Error al cobrar." });
+      }
+      else {
+        return insert_cobro_transaction(data, callback);
+      }
+    });
+
+  }
+  else {
+    insert_cobro_transaction(data, callback);
+  }
+
+
 };
 
 const lista_cobros = (data, callback) => {
@@ -265,8 +296,8 @@ const insert_cobro_transaction = (data, callback) => {
       console.log(__query_venta_mp);
       await connection.query(__query_venta_mp);
       await connection.query(
-          `UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`,
-        );
+        `UPDATE venta  v SET v.descuento=${data.descuento}, debe=v.subtotal-${data.descuento},  monto_total=v.subtotal-${data.descuento}  WHERE v.idventa=${data.idventa};`,
+      );
       return -1;
     }
 
