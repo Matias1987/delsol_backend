@@ -26,7 +26,7 @@ const agregar_cobro = (data, callback) => {
   if (data.idventa) {
     //console.log(`SELECT v.estado, v.saldo FROM venta v WHERE v.idventa=${data.idventa ?? "0"};`)
     doQuery2(`SELECT v.estado, v.saldo FROM venta v WHERE v.idventa=${data.idventa ?? "0"};`, (err, cb) => {
-      console.log(JSON.stringify(cb));
+      //console.log(JSON.stringify(cb));
       if (cb && cb?.length > 0) {
         const _saldo = parseInt(cb[0].saldo);
         const _estado = (cb[0].estado);
