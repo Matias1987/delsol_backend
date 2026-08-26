@@ -174,7 +174,7 @@ const operaciones_cliente = (data, callback) => {
             c.tipo<>'cuota' AND
             c.cliente_idcliente=${data.idcliente} AND
             c.anulado = 0
-        UNION
+        UNION ALL
             select 
             3 as 'orden',
             c.idcobro as 'id',
@@ -194,7 +194,7 @@ const operaciones_cliente = (data, callback) => {
             c.cliente_idcliente=${data.idcliente} 
             AND c.tipo = 'cuota'
             AND c.anulado = 0
-        union
+        union ALL
             select 
             1 as 'orden',
             v.idventa as 'id',
@@ -215,7 +215,7 @@ const operaciones_cliente = (data, callback) => {
                 vhmp.modo_pago='ctacte'
             )
             where v.sucursal_idsucursal = s.idsucursal 
-        union
+        union ALL
             select 
             0 as 'orden',
             cm.idcarga_manual as 'id',
@@ -236,6 +236,8 @@ const operaciones_cliente = (data, callback) => {
      where 
      (case when '${data.idsucursal}'='-1' then true else ${data.idsucursal} = ops.idsucursal end)     
      order by ops.fecha asc, ops.orden asc;`;
+
+  console.log(query);
 
   doQuery(query, (resp) => {
     if (!resp) {

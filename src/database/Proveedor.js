@@ -60,7 +60,7 @@ const obtener_ficha_proveedor = (
              (case when '${agrupar}'='0' then FALSE else DATE(f.fecha) < DATE_ADD(NOW(), INTERVAL -1 MONTH) END ) AND
              (case when '${estado}'='1' then f.saldado=1 else true end) and
              (case when '${estado}'='0' then f.saldado=0 else true end) 
-         UNION
+         UNION ALL
          (
              SELECT 'p' AS 'tipo',
              pp.monto
@@ -74,7 +74,7 @@ const obtener_ficha_proveedor = (
                  (case when '${estado}'='1' then pp.saldado=1 else true end) and
                  (case when '${estado}'='0' then pp.saldado=0 else true end) 
          )
-         UNION
+         UNION ALL
          (
              SELECT
              'cm' AS 'tipo',
@@ -91,7 +91,7 @@ const obtener_ficha_proveedor = (
          )
      ) op
      
-     union
+     union ALL
 
   SELECT * FROM (
     SELECT 
@@ -114,7 +114,7 @@ const obtener_ficha_proveedor = (
               (case when '${modo}'='-1' then true else f.es_remito=${modo == 0 ? 1 : 0} end) and 
               (case when '${estado}'='1' then f.saldado=1 else true end) and
               (case when '${estado}'='0' then f.saldado=0 else true end) 
-          UNION
+          UNION ALL
           (
               SELECT 'PAGO' AS 'tipo', 
               'Pago' as 'detalle',
@@ -133,7 +133,7 @@ const obtener_ficha_proveedor = (
                   (case when '${estado}'='1' then pp.saldado=1 else true end) and
                   (case when '${estado}'='0' then pp.saldado=0 else true end) 
           )
-          UNION
+          UNION ALL
           (
               SELECT 
               'CM' AS 'tipo', 
