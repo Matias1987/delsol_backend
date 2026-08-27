@@ -33,7 +33,7 @@ const montoEgresoCategoria = ({ idsucursal, periodoMes }, callback) => {
     callback(response.data);
   });
 };
-
+/*
 const operacionesEgresoIngresoSucursal = ({ idsucursal }, callback) => {
   const query = `
     -- 1. THE PRIOR BALANCE ROW (Everything older than 30 days)
@@ -71,6 +71,27 @@ const operacionesEgresoIngresoSucursal = ({ idsucursal }, callback) => {
 `;
 
   //console.log(query);
+
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};*/
+const operacionesEgresoIngresoSucursal = ({ idcaja }, callback) => {
+  const query = `
+    SELECT 
+        oo.tipo,
+        oo.monto,
+        oo.id,
+        DATE_FORMAT(oo.fecha, '%d-%m-%y') AS f_fecha,
+        oo.fecha
+    FROM (
+        SELECT 'i' AS tipo, cast(c.monto as float) as monto, c.fecha, c.idcobro AS id FROM cobro c WHERE c.anulado = 0 AND c.caja_idcaja = ${idcaja}
+        UNION ALL
+        SELECT 'e' AS tipo, cast(g.monto as float) as monto, g.fecha_alta as fecha, g.idgasto AS id FROM gasto g WHERE g.anulado = 0 AND g.caja_idcaja = ${idcaja}
+    ) as oo order by oo.fecha asc
+`;
+
+  console.log(query);
 
   doQuery(query, (response) => {
     callback(response.data);
