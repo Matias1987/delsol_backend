@@ -19,7 +19,7 @@ const montoIngresoCategoria = ({ idsucursal }, callback) => {
   });
 };
 const montoEgresoCategoria = ({ idsucursal, periodoMes }, callback) => {
-  const query = `SELECT g.concepto_gasto_idconcepto_gasto as tipo, cg.nombre, sum(g.idgasto) AS amnt 
+  const query = `SELECT g.concepto_gasto_idconcepto_gasto as tipo, cg.nombre, sum(g.monto) AS amnt 
             FROM gasto g INNER JOIN concepto_gasto cg ON g.concepto_gasto_idconcepto_gasto = cg.idconcepto_gasto
             WHERE 
             g.anulado=0 AND 
