@@ -4,6 +4,7 @@ const {
   escapeHelper,
 } = require("./helpers/queriesHelper");
 const { queriesTM } = require("./queries/TrabajoMultipleQueries");
+const { get_mp, query_mp } = require("./queries/ventaQueries");
 
 const agregarVenta = (data, callback) => {
   //parse data...
@@ -171,7 +172,7 @@ const procesar_ventas = (rows) => {
   return result;
 };
 
-const obtenerListadoVentasTM = ({idsucursal, tipo_lista}, callback) => {
+const obtenerListadoVentasTM = ({ idsucursal, tipo_lista }, callback) => {
   /*
   0 = todos
   1 = pendientes
@@ -317,9 +318,13 @@ const transaccionAgregarTM = async (data, callback) => {
 
       const idtrabajo = trabajo_insert_response[0].insertId;
       //console.log(queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo));
-      const item_insert_response = await connection.query(
+      await connection.query(
         queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo),
       );
+
+      await do_mp_insert_query_if_any(data, idventa, connection);
+
+      return idventa;
     }
   };
 
@@ -333,7 +338,7 @@ const transaccionAgregarTM = async (data, callback) => {
   });
 };
 
-const anularTrabajoMultiple = ({idventa}, callback) => {
+const anularTrabajoMultiple = ({ idventa }, callback) => {
   const _logic = async (connection) => {
     const query_anular_venta = `update venta v set v.estado='ANULADO' where v.idventa=${idventa};`;
     const response_anular_venta = await connection.query(query_anular_venta);
@@ -349,19 +354,43 @@ const anularTrabajoMultiple = ({idventa}, callback) => {
   });
 };
 
-const obtenerTrabajosVenta = ({idventa}, callback) => {
-  const query =`select t.* from trabajo t where t.idventa=${idventa}`;
-  doQuery(query,(response)=>{
-    callback(response.data)
-  })
-}
-const obtenerTrabajo = ({idtrabajo}, callback) => {
-  const query =`select t.* from trabajo t where t.idtrabajo=${idtrabajo}`;
-  doQuery(query,(response)=>{
-    callback(response.data)
-  })
-}
+const obtenerTrabajosVenta = ({ idventa }, callback) => {
+  const query = `select t.* from trabajo t where t.idventa=${idventa}`;
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
+const obtenerTrabajo = ({ idtrabajo }, callback) => {
+  const query = `select t.* from trabajo t where t.idtrabajo=${idtrabajo}`;
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
 
+const do_mp_insert_query_if_any = async (data, venta_id, connection) => {
+  var mp = "";
+  get_mp(data, venta_id).forEach((p) => {
+    mp +=
+      (mp.length > 0 ? "," : "") +
+      `(
+          ${venta_id},
+          ${p.modo_pago_idmodo_pago},
+          ${p.banco_idbanco},
+          ${p.mutual_idmutual},
+          ${p.monto},
+          ${p.monto_int},
+          ${p.cant_cuotas},
+          ${p.monto_cuota},
+          ${p.fk_tarjeta},
+          '${p.modo_pago}',
+          '${p.tarjeta_nro}',
+          ${p.fk_banco_transferencia}
+          )`;
+  });
+  if (mp.length > 0) {
+    await connection.query(query_mp + mp);
+  }
+};
 module.exports = {
   obtenerTrabajo,
   agregarVenta,
