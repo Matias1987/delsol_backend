@@ -295,12 +295,10 @@ const marcar_entregado = ({ idventa }, callback) => {
 const transaccionAgregarTM = async (data, callback) => {
   const _logic = async (connection) => {
     console.log("Begin Transaction...");
+    //console.log("data: " + JSON.stringify(data));
+    console.log(queriesTM.queryVenta(data));
     const venta_insert_response = await connection.query(
       queriesTM.queryVenta(data),
-    );
-
-    console.log(
-      "venta insert response: " + JSON.stringify(venta_insert_response[0]),
     );
 
     const idventa = venta_insert_response[0].insertId;
@@ -311,21 +309,17 @@ const transaccionAgregarTM = async (data, callback) => {
         queriesTM.queryInsertTrabajo(trabajo, idventa),
       );
 
-      console.log(
-        "->trabajo insert response: " +
-          JSON.stringify(venta_insert_response[0]),
-      );
-
       const idtrabajo = trabajo_insert_response[0].insertId;
-      //console.log(queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo));
+
+      //console.log(queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo))
       await connection.query(
         queriesTM.queryVentaStock(trabajo, idventa, data.idsucursal, idtrabajo),
       );
 
       await do_mp_insert_query_if_any(data, idventa, connection);
-
-      return idventa;
     }
+
+    return idventa;
   };
 
   doTransaction(_logic, ({ data, err }) => {
