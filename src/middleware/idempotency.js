@@ -16,6 +16,7 @@ async function idempotencyCheck(req, res, next) {
         console.log("No idempotency key provided....")
         //for now, lets just continue...
         return next();
+        //return res.status(500).json({ error: "Error: No idempotency key provided...." });
     }
 
     try {
