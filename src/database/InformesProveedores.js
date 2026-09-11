@@ -33,7 +33,7 @@ const saldo_proveedores_lista = ({ moneda }, callback) => {
     callback({ moneda, data: response.data });
   });
 };
-const saldo_proveedores_lista_monedas = (data,callback) => {
+const saldo_proveedores_lista_monedas = (data, callback) => {
   const query = `SELECT * FROM (
                 SELECT 
                     prov.idproveedor,
@@ -70,4 +70,22 @@ const saldo_proveedores_lista_monedas = (data,callback) => {
   });
 };
 
-module.exports = { saldo_proveedores_lista, saldo_proveedores_lista_monedas };
+const obtener_saldo_general = (callback) => {
+  const query = `SELECT  
+                    SUM( 
+                    if( i.evento='COBRO', -i.monto, i.monto ) 
+                    ) AS amnt, 
+                    i.moneda 
+                    FROM inf_saldos_proveedores i
+                    WHERE i.activo = 1
+                    GROUP BY i.moneda;`;
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
+
+module.exports = {
+  saldo_proveedores_lista,
+  saldo_proveedores_lista_monedas,
+  obtener_saldo_general,
+};

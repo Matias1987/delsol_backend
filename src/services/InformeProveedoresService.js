@@ -34,5 +34,11 @@ const saldo_proveedores_lista   = (data, callback) => {
   });
 };
 
+const obtener_saldo_general = (callback) => {
+  db.obtener_saldo_general((response) => {
+    callback(response);
+  });
+}
+
 /***/
-module.exports = { saldo_proveedores_lista, saldo_proveedores_lista_v2 };
+module.exports = { saldo_proveedores_lista, saldo_proveedores_lista_v2, obtener_saldo_general }
