@@ -71,9 +71,10 @@ const saldo_proveedores_lista_monedas = (data, callback) => {
 };
 
 const obtener_saldo_general = (callback) => {
+  //avoid proveedor 'La Rosa', just for testing purposes, idproveedor = 37
   const query = `SELECT  
                     SUM( 
-                    if( i.evento='COBRO', -i.monto, i.monto ) 
+                    if( i.pago_proveedor_id is NULL, i.monto, -i.monto ) 
                     ) AS amnt, 
                     i.moneda 
                     FROM inf_saldos_proveedores i
