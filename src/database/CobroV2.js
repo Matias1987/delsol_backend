@@ -30,7 +30,7 @@ const agregar_cobro = (data, callback) => {
       if (cb && cb?.length > 0) {
         const _saldo = parseInt(cb[0].saldo);
         const _estado = (cb[0].estado);
-        if ("ENTREGADO" == _estado || (_saldo < 1 && parseInt(data.total)>0)) {
+        if ("ENTREGADO" == _estado || (_saldo < 1 && parseInt(data.monto)>0)) {
           se_puede_cobrar = false;
           console.log("no se puede cobrar...")
         }
