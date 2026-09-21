@@ -337,6 +337,10 @@ app.use("/api/v1/dc", descuentoClienteRouter);
 
 const pedidoRouter = require("./v1/routes/PedidoRoutes");
 app.use("/api/v1/pedidos", pedidoRouter);
+
+const pingRouter = require("./v1/routes/Ping");
+app.use("/api/v1/ping", pingRouter);
+
 /*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)
