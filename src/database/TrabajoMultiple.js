@@ -265,7 +265,7 @@ const marcar_entregado = ({ idventa }, callback) => {
     const cant_cuotas = 1;
     const monto_int = parseFloat(data.monto_total);
 
-    const query_update = `update venta v set v.estado='ENTREGADO' where v.idventa=${idventa}`;
+    const query_update = `update venta v set v.estado='ENTREGADO', fecha_retiro=NOW() where v.idventa=${idventa}`;
 
     const response_update = await connection.query(query_update);
 

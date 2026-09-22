@@ -474,7 +474,7 @@ const resumen_caja = (data, callback) => {
     const uquery = idf_optica == 3 ? query_coexp_version : query;
 
     doQuery(uquery, (resp) => {
-      callback(resp.data);
+      callback({saldos: resp.data, idcaja: idcaja, fecha: _rows[0]?.fecha, monto_inicial: _rows[0]?.monto_inicial, estado: _rows[0]?.estado});
     });
   });
 };
