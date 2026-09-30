@@ -18,6 +18,7 @@ const obtener_facturas = (idprov, callback) => {
 };
 
 const agregar_factura = (data, callback) => {
+  console.log("agregando factura ver 0")
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(
@@ -182,6 +183,7 @@ const agregar_factura_v2 = (data, callback) => {
   });
 };
 const agregar_factura_v3 = (data, callback) => {
+  console.log("###########agregando factura ver 3")
   console.log(JSON.stringify(data));
   if (data.nro === "" || +data.fkproveedor === -1) {
     console.log("Error en datos de factura");
@@ -386,7 +388,7 @@ const obtener_facturas_saldo = (data, callback) => {
                   f.fk_moneda = '${moneda}' AND
                   f.activo=1 AND
                   f.proveedor_idproveedor=${idproveedor}
-                  ) d WHERE d.saldo>0 
+                  ) d WHERE d.saldo>0.1 
                   ;`;
   console.log(query);
   doQuery(query, (resp) => {
