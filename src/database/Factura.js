@@ -235,7 +235,7 @@ const agregar_factura_v3 = (data, callback) => {
     });
   };
 
-  console.log(query_factura);
+  //console.log(query_factura);
 
   //first insert factura
   doQuery(query_factura, (result) => {
@@ -390,7 +390,7 @@ const obtener_facturas_saldo = (data, callback) => {
                   f.proveedor_idproveedor=${idproveedor}
                   ) d WHERE d.saldo>0.1 
                   ;`;
-  console.log(query);
+  //console.log(query);
   doQuery(query, (resp) => {
     callback(resp.data);
   });

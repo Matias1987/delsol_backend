@@ -1,6 +1,7 @@
 const usuarios_db = require("../database/Usuario");
-
 async function tokenCheck(req, res, next) {
+  
+  //res.setHeader('X-App-Version', process.env.APP_VERSION);
   //console.log("Authenticating incoming request...");
   //console.log(`Authenticating incoming request... Incoming ${req.method} request to ${req.url}`);
   if (req.method === "POST") {
