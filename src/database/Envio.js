@@ -68,7 +68,8 @@ const agregar_envio = (data,callback) => {
                 envio_has_stock ehs,
                 envio e
                 SET 
-                s.cantidad = s.cantidad - ehs.cantidad
+                s.cantidad = s.cantidad - ehs.cantidad,
+                s.modified_by=${data.usuario_idusuario}
                 WHERE
                 e.idenvio = ehs.envio_idenvio AND  
                 s.codigo_idcodigo = ehs.codigo_idcodigo AND
@@ -138,7 +139,7 @@ const obtener_envios_pendientes_sucursal = (idsucursal, callback) => {
     connection.end();
 }
 //cargar envio en la sucursal destino
-const cargarEnvio = (idenvio, idsucursal, callback) =>{
+const cargarEnvio = (idenvio, idsucursal,  callback, idusuario=-1) =>{
     const connection = mysql_connection.getConnection();
     connection.connect();
     connection.query(`select e.idenvio from envio e where e.idenvio=${idenvio} and e.estado='GENERADO'`,(err,_resp)=>{
@@ -158,7 +159,7 @@ const cargarEnvio = (idenvio, idsucursal, callback) =>{
             WHERE s.sucursal_idsucursal = ${idsucursal} ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`)*/
 
 
-            connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
+            connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, modified_by=${idusuario}
             WHERE s.sucursal_idsucursal = ${idsucursal} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`, (err,resp)=>{
                 callback(resp);
                 connection.query(`update envio e set e.estado = 'INGRESADO' where e.idenvio = ${idenvio};`)
@@ -172,7 +173,7 @@ const cargarEnvio = (idenvio, idsucursal, callback) =>{
     
 }
 
-const anular_envio = (idenvio, callback) => {
+const anular_envio = (idenvio, callback, idusuario=-1) => {
     // 
     const connection = mysql_connection.getConnection()
     connection.connect()
@@ -187,7 +188,7 @@ const anular_envio = (idenvio, callback) => {
                     //callback(resp)
                 })
 
-                connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
+                connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, s.modified_by=${idusuario}
                 WHERE s.sucursal_idsucursal = ${rows[0].sucursal_origen} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`, (err,resp)=>{
                     callback(resp);
                 })

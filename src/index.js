@@ -28,6 +28,8 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 };
 
+app.use(express.json());
+
 app.use(cors()); //RELEASE
 app.use(idempotency);
 //app.use(bodyParser.json());
@@ -134,7 +136,7 @@ setInterval(() => {
   logedIn: false,
   cookie: { secure: true,  maxAge: oneDay }
 }))*/
-app.use(express.json());
+
 //app.use(cookieParser());
 /*
 routes 

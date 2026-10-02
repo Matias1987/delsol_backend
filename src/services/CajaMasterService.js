@@ -66,7 +66,7 @@ const agregarEgreso = (data, callback) => {
       monto: data.monto,
       comentarios: data.comentarios,
     };
-    dbEgreso.createEgreso(_data, (response) => {
+    dbEgreso.createEgreso(_data, (err,response) => {
       callback(response);
     });
   });

@@ -46,7 +46,7 @@ const generarTransferenciaAFF = (req, res) => {
         .status(403)
         .json({ error: "User is not authorized to perform this action" });
     }
-    service.generarTransferenciaAFF(data, (results) => {
+    service.generarTransferenciaAFF(data, (err,results) => {
       if (!results)
         return res.status(500).json({ error: "Internal server error" });
       res.json(results);

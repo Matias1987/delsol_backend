@@ -471,13 +471,13 @@ const queryDescontarStockVenta = (data) => `update stock s,
                   AND vhs.descontable=1
                   GROUP BY vhs.stock_codigo_idcodigo
     ) AS vs
-    SET s.cantidad = s.cantidad - vs.cantidad
+    SET s.cantidad = s.cantidad - vs.cantidad, s.modified_by=${data.usuario_idusuario}
     where
     vs.idcodigo = s.codigo_idcodigo AND 
     s.sucursal_idsucursal=${data.idsucursal}
     ;`;
 
-const queryRestaurarStockVenta = (data, id_sucursal) => `update stock s,
+const queryRestaurarStockVenta = (data, id_sucursal, id_usuario=-1) => `update stock s,
         (
                 SELECT 
                     vhs.stock_codigo_idcodigo AS 'idcodigo', 
@@ -487,7 +487,7 @@ const queryRestaurarStockVenta = (data, id_sucursal) => `update stock s,
                       AND vhs.descontable=1
                       GROUP BY vhs.stock_codigo_idcodigo
         ) AS vs
-        SET s.cantidad = s.cantidad + vs.cantidad
+        SET s.cantidad = s.cantidad + vs.cantidad, s.modified_by=${id_usuario}
         where
         vs.idcodigo = s.codigo_idcodigo AND 
         s.sucursal_idsucursal=${id_sucursal}`;

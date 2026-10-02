@@ -29,14 +29,17 @@ const ventas_mes_vendedor = (
   { mes, anio, idvendedor, idsucursal },
   callback,
 ) => {
-  doQuery(queryVentasMesVendedor({ mes, anio, idvendedor, idsucursal }), (res) => {
-    if (!res || res.err) {
-      console.log("error: ", err);
-      callback(null);
-      return;
-    }
-    callback(res.data);
-  });
+  doQuery(
+    queryVentasMesVendedor({ mes, anio, idvendedor, idsucursal }),
+    (res) => {
+      if (!res || res.err) {
+        console.log("error: ", err);
+        callback(null);
+        return;
+      }
+      callback(res.data);
+    },
+  );
 };
 
 const transaction_insert_venta = (data, callback) => {
@@ -48,6 +51,8 @@ const transaction_insert_venta = (data, callback) => {
   //console.log("                    0                        \r\n                     000      0              \r\n            000      00000    000            \r\n          0000000000 000000   0000           \r\n              00000000000000000000           \r\n              000000000000000000000   0      \r\n       000000000000000000000000000   0000    \r\n     00000000000000000000000000000000000     \r\n         000000000000000000000000000000      \r\n          00000000000000000000000000000      \r\n       0000000000000000000000000000000    0  \r\n     00000000000000000000000000000000000000  \r\n    00000000000000000000000000000000000000   \r\n   00   000000000000000000000000000000000    \r\n         00000000000000000000000000000       \r\n       0000000000000000000000000000000       \r\n       000000000000000000000000000000000000  \r\n       0000000000000000000000000000000000    \r\n       000  00000000000000000000000000       \r\n       0    000000000000000000000            \r\n             000000000000  00000000          \r\n             0000   00000   00000000         \r\n              000    0000                    \r\n                        00                   ");
 
   const __now = new Date();
+
+  const id_usuario = data.usuario_idusuario || -1;
 
   if (data.fechaRetiro == null) {
     data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;
@@ -123,10 +128,11 @@ const transaction_insert_venta = (data, callback) => {
       console.log("Edicion de venta. Actualizando venta id: " + data.idventa);
 
       insert_data_id = data.idventa;
-
+      /*
+      to do
       const result_update_venta = await connection.query(
         update_venta_query(venta_queries.parse_venta_data(data), data.idventa),
-      );
+      );*/
     } else {
       const venta_insert_response = await connection.query(
         venta_insert_query(parse_venta_data(data), data.fkcaja),
@@ -169,7 +175,11 @@ const transaction_insert_venta = (data, callback) => {
 
     //descontar stock
     const stock_desc_response = await desc_cantidades_stock_venta_v2(
-      { idventa: insert_data_id, idsucursal: data.fksucursal },
+      {
+        idventa: insert_data_id,
+        idsucursal: data.fksucursal,
+        usuario_idusuario: id_usuario,
+      },
       connection,
     );
     console.log("#############[Inserting venta - The End...]#############");
@@ -185,8 +195,8 @@ const transaction_insert_venta = (data, callback) => {
       stockCristalesResponse: null,
       idVenta: data.insert_data_id,
       error: 0,
-      msg:  data.insert_data_id ? "Venta agregada correctamente" : "Error",
-      data: data
+      msg: data.insert_data_id ? "Venta agregada correctamente" : "Error",
+      data: data,
     });
   });
 };
@@ -492,7 +502,8 @@ const get_quantities_arrays = (data) => {
   return { arrayQttiesCristales, elementsArrCristales };
 };
 
-const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {//compare requested quantities with stock quantities
+const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {
+  //compare requested quantities with stock quantities
   console.log("Comparing requested quantities with database response...");
   console.log("Database response: ", JSON.stringify(dbResponseArr));
   console.log("Requested quantities: ", JSON.stringify(reqQtties));
@@ -534,12 +545,14 @@ const desc_cantidades_stock_venta_v2 = async (data, connection) => {
 
 const inc_cantidades_stock_venta_v2 = async (data, connection) => {
   const response = await connection.query(
-    `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`
+    `SELECT v.estado, v.idventa, v.sucursal_idsucursal from venta v WHERE v.idventa = ${data.idventa};`,
   );
-
+  const { uid_0 } = data;
   const id_sucursal = response[0][0].sucursal_idsucursal;
 
-  return await connection.query(queryRestaurarStockVenta(data, id_sucursal));
+  return await connection.query(
+    queryRestaurarStockVenta(data, id_sucursal, uid_0??-1),
+  );
 };
 
 module.exports = {

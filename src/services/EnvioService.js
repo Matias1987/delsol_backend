@@ -34,10 +34,10 @@ const obtener_envios_pendientes_sucursal = (idsucursal, callback) => {
     })
 }
 
-const cargarEnvio = (idenvio, idsucursal, callback) => {
+const cargarEnvio = (idenvio, idsucursal, callback, uid=-1) => {
     EnvioDB.cargarEnvio(idenvio, idsucursal,(resp)=>{
         return callback(resp)
-    })
+    }, uid)
 }
 
 const anular_envio = (idenvio, callback) => {

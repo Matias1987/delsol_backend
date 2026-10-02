@@ -52,6 +52,7 @@ const generarTransferenciaCaja = (data, callback) => {
             },
             (err, result) => {
               if (err) return callback(err);
+              callback(null, result);
             }
           );
         }
@@ -85,7 +86,7 @@ const generar_transferencia = (data, callback) => {
     ${data.monto_real}
   )
   `;
-  //console.log("Query de transferencia: " + query);
+  console.log("Query de transferencia: " + query);
   doQuery(query, (result) => {
     callback(result);
   });

@@ -2,7 +2,7 @@ const mysql_connection = require("../lib/mysql_connection");
 const { doQuery } = require("./helpers/queriesHelper");
 
 const verificar_cantidades_productos = ({data, ignore_cristales }, callback) => {
-  console.log(JSON.stringify(data));
+ // console.log(JSON.stringify(data));
   const doPush = (idx, obj, _arr) =>
     !obj.hasOwnProperty(idx)
       ? _arr
