@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.get("/:idpedido", (req, res) => {
-  controller.crearPedido(req, res);
+  controller.detalle_pedido(req, res);
 });
 
 router.get("/", (req, res) => {

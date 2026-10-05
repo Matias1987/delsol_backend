@@ -27,7 +27,9 @@ const detalle_pedido = ({ idpedido }, callback) => {
     phc.codigo_idcodigo,
     phc.cant_pedida,
     phc.cant_recibida,
-    phc.comentarios AS item_comentarios
+    phc.comentarios AS item_comentarios,
+    p.sucursal_origen,
+    p.sucursal_pedido
 FROM pedido p
 JOIN pedido_has_codigo phc 
     ON p.idpedido = phc.pedido_idpedido
@@ -311,6 +313,7 @@ const productos_pedidos_pendientes = ({ pedidoId }, callback) => {
     callback(response);
   });
 };
+
 
 /*++++++++++++++++++++++++++*/
 /*INFORMES*/
