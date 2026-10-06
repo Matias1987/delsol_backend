@@ -13,7 +13,8 @@ const actualizar_pedido = (req, res) => {
   });
 };
 const lista_pedidos = (req, res) => {
-  service.lista_pedidos(null, (response) => {
+  const {params: { idsucursal_origen, tipo, idsucursal_dest }} = req;
+  service.lista_pedidos({ idsucursal_origen, tipo, idsucursal_dest }, (response) => {
     res.json(response);
   });
 };

@@ -1,45 +1,97 @@
-const { doTransaction, doQuery } = require("./helpers/queriesHelper");
+const { doTransaction, doQuery, doQueryV2 } = require("./helpers/queriesHelper");
 
-const lista_pedidos = (data, callback) => {
-  const query = `SELECT 
-    p.idpedido,
-    p.tipo,
-    p.sucursal_origen,
-    p.sucursal_pedido,
-    p.proveedor_idproveedor,
-    p.fecha,
-    p.cant_total_pedida,
-    p.cant_total_recibida,
-    p.comentarios
-FROM pedido p
-ORDER BY p.fecha DESC;
-`;
-  doQuery(query, (response) => {
-    callback(response.data);
-  });
+const lista_pedidos = async (data, callback) => {
+  const { idsucursal_origen, tipo, idsucursal_dest } = data;
+
+  // 1. Clean up mapping logic using an object lookup for readability
+  const tipoMap = { 1: "INT", 2: "COMPRA" };
+  const _tipo = tipoMap[tipo] || null; // Use null instead of "0" string fallback
+
+  // 2. Base query using safe alias names and raw column ordering
+  let query = `
+  SELECT 
+      p.idpedido,
+      p.tipo,
+      p.sucursal_origen,
+      p.sucursal_pedido,
+      p.proveedor_idproveedor,
+      DATE_FORMAT(p.fecha, '%d-%m-%Y') AS fecha_formateada, -- Avoid alias collision
+      p.cant_total_pedida,
+      p.cant_total_recibida,
+      p.comentarios,
+      prov.nombre AS nombre_proveedor,
+      s.nombre AS nombre_sucursal_pedido,
+      s2.nombre AS nombre_sucursal_origen
+  FROM pedido p  
+  LEFT JOIN proveedor prov ON p.proveedor_idproveedor = prov.idproveedor
+  LEFT JOIN sucursal s ON p.sucursal_pedido = s.idsucursal
+  LEFT JOIN sucursal s2 ON p.sucursal_origen = s2.idsucursal
+  WHERE 1=1
+  `;
+
+  const queryParams = [];
+
+  // 3. Dynamically add optimized filters using parameterized bindings (?)
+  if (_tipo) {
+    query += ` AND p.tipo = ?`;
+    queryParams.push(_tipo);
+  }
+
+  if (idsucursal_dest && idsucursal_dest !== "0" && idsucursal_dest !== 0) {
+    query += ` AND p.sucursal_pedido = ?`;
+    queryParams.push(Number(idsucursal_dest));
+  }
+
+  if (
+    idsucursal_origen &&
+    idsucursal_origen !== "0" &&
+    idsucursal_origen !== 0
+  ) {
+    query += ` AND p.sucursal_origen = ?`;
+    queryParams.push(Number(idsucursal_origen));
+  }
+
+  // 4. Always sort by the raw column to leverage indexes
+  query += ` ORDER BY p.fecha DESC;`;
+
+  // 5. Pass query and parameters safely to your DB driver execution layer
+  // const [rows] = await db.execute(query, queryParams);
+
+  const response = await doQueryV2(query, queryParams);
+
+  callback(response[0]);
+
 };
+
 const detalle_pedido = ({ idpedido }, callback) => {
   const query = `SELECT 
     p.idpedido,
     p.tipo,
-    p.fecha,
+    date_format(p.fecha, '%d-%m-%Y') AS fecha_f,
     p.comentarios AS pedido_comentarios,
     phc.codigo_idcodigo,
     phc.cant_pedida,
     phc.cant_recibida,
     phc.comentarios AS item_comentarios,
     p.sucursal_origen,
-    p.sucursal_pedido
+    p.sucursal_pedido,
+    p.proveedor_idproveedor,
+    prov.nombre AS nombre_proveedor,
+    s.nombre AS nombre_sucursal_pedido,
+    s2.nombre AS nombre_sucursal_origen
 FROM pedido p
 JOIN pedido_has_codigo phc 
     ON p.idpedido = phc.pedido_idpedido
-WHERE p.idpedido = ${idpedido};
+left join proveedor prov on p.proveedor_idproveedor = prov.idproveedor
+left join sucursal s on p.sucursal_pedido = s.idsucursal
+left join sucursal s2 on p.sucursal_origen = s2.idsucursal
+WHERE p.idpedido = ${Number(idpedido)};
 `;
   doQuery(query, (response) => {
     callback(response.data);
   });
 };
-
+/*
 const insert_pedido_only = () => {
   const q_a_proveedores = `INSERT INTO pedido (
     sucursal_origen,
@@ -120,7 +172,7 @@ const eliminar_producto_de_envio = () => {
 );
 `;
 };
-
+*/
 const insert_pedido = (
   {
     sucursal_origen,
@@ -313,7 +365,6 @@ const productos_pedidos_pendientes = ({ pedidoId }, callback) => {
     callback(response);
   });
 };
-
 
 /*++++++++++++++++++++++++++*/
 /*INFORMES*/

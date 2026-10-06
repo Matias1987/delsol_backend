@@ -9,7 +9,7 @@ router.get("/:idpedido", (req, res) => {
   controller.detalle_pedido(req, res);
 });
 
-router.get("/", (req, res) => {
+router.get("/:idsucursal_origen/:tipo/:idsucursal_dest", (req, res) => {
   controller.lista_pedidos(req, res);
 });
 
