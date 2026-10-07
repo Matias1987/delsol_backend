@@ -3,6 +3,8 @@ const { doTransaction, doQuery, doQueryV2 } = require("./helpers/queriesHelper")
 const lista_pedidos = async (data, callback) => {
   const { idsucursal_origen, tipo, idsucursal_dest } = data;
 
+  console.log("Executing query with data:", JSON.stringify(data));
+
   // 1. Clean up mapping logic using an object lookup for readability
   const tipoMap = { 1: "INT", 2: "COMPRA" };
   const _tipo = tipoMap[tipo] || null; // Use null instead of "0" string fallback
@@ -53,6 +55,8 @@ const lista_pedidos = async (data, callback) => {
 
   // 4. Always sort by the raw column to leverage indexes
   query += ` ORDER BY p.fecha DESC;`;
+
+  console.log("Executing query:", query);
 
   // 5. Pass query and parameters safely to your DB driver execution layer
   // const [rows] = await db.execute(query, queryParams);
@@ -197,11 +201,11 @@ const insert_pedido = (
         sucursal_origen,
         usuario_idusuario,
         tipo,
-        proveedor_idproveedor || null,
-        sucursal_pedido || null,
-        cant_total_pedida || null,
+        proveedor_idproveedor ?? null,
+        sucursal_pedido ?? null,
+        cant_total_pedida ?? null,
         0, // cant_total_recibida inicial
-        comentarios || null,
+        comentarios ?? null,
       ],
     );
 
@@ -219,7 +223,7 @@ const insert_pedido = (
           item.codigo_idcodigo,
           item.cant_pedida,
           0, // cant_recibida inicial
-          item.comentarios || null,
+          item.comentarios ?? null,
         ],
       );
     }

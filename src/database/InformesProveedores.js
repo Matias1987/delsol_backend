@@ -65,7 +65,6 @@ const saldo_proveedores_lista_monedas = (data, callback) => {
   console.log(query);
 
   doQuery(query, (response) => {
-    //console.log("Response: " + JSON.stringify(response));
     callback(response.data);
   });
 };

@@ -3,6 +3,7 @@ const {
   doQuery,
   escapeHelper,
   doTransaction,
+  doQueryV2,
 } = require("./helpers/queriesHelper");
 const { proveedorQueries } = require("./queries/proveedorQueries");
 
@@ -166,6 +167,94 @@ const obtener_ficha_proveedor = (
   });
 };
 
+const obtener_ficha_proveedor_v2 = async (
+  { idproveedor, modo, moneda, estado },
+  callback,
+) => {
+  const query = `SELECT 
+      op.tipo, op.detalle, op.id, op.fecha_f, op.fecha,
+      if(op.tipo='FACTURA' || op.tipo='CM', op.monto, 0) AS 'debe',
+      if(op.tipo='PAGO',op.monto,0) AS 'haber' 
+      FROM (
+          SELECT 
+          'FACTURA' AS 'tipo', 
+          concat(if(f.es_remito=1 , 'Remito ', 'Factura '), f.numero) as 'detalle',
+          f.idfactura AS 'id', 
+          f.monto - f.haber as 'saldo',
+          f.monto,
+          date_format(f.fecha , '%d-%m-%y') AS 'fecha_f',
+          f.fecha
+          FROM factura f 
+          WHERE 
+              f.activo=1 AND 
+              f.fk_moneda = ? AND 
+              f.proveedor_idproveedor = ? AND 
+              (f.es_remito = ? OR 1 = ?) AND 
+              (f.saldado = ? OR 1 = ?)
+          UNION ALL
+          (
+              SELECT 'PAGO' AS 'tipo', 
+              'Pago' as 'detalle',
+              pp.id AS 'id',  
+              pp.monto AS 'saldo', 
+              pp.monto, 
+              date_format(pp.fecha , '%d-%m-%y') AS 'fecha_f',
+              pp.fecha
+              FROM pago_proveedor pp 
+              WHERE 
+                  pp.activo=1 AND 
+                  pp.moneda = ? AND 
+                  pp.fk_proveedor = ? AND 
+                  (pp.modo_ficha = ? OR 1 = ? ) AND 
+                  (pp.saldado = ? OR 1 = ?)
+          )
+          UNION ALL
+          (
+              SELECT 
+              'CM' AS 'tipo', 
+              concat('Carga Manual:', cm.comentarios ) as 'detalle',
+              cm.id AS 'id',  
+              cm.monto - cm.haber as 'saldo',
+              cm.monto,
+              date_format(cm.fecha , '%d-%m-%y') AS 'fecha_f',
+              cm.fecha
+              FROM  carga_manual_proveedor cm 
+              WHERE 
+                  cm.activo=1 AND  
+                  cm.moneda=? AND 
+                  cm.fk_proveedor = ? AND 
+                  (cm.modo_ficha = ? OR 1 = ?) AND 
+                  (cm.saldado = ? OR 1=?)
+          )
+      ) op;`;
+
+  const ignorar_tipo = (modo = -1 ? 1 : 0);
+  const ignorar_saldado = (estado = -1 ? 1 : 0);
+
+  const response = await doQueryV2(query, [
+    moneda,
+    idproveedor,
+    modo == 0 ? 1 : 0,
+    ignorar_tipo,
+    estado,
+    ignorar_saldado,
+    moneda,
+    idproveedor,
+    modo,
+    ignorar_tipo,
+    estado,
+    ignorar_saldado,
+    moneda,
+    idproveedor,
+    modo,
+    ignorar_tipo,
+    estado,
+    ignorar_saldado,
+  ]);
+
+  callback(response.data);
+};
+
 const detalle_proveedor = (data, callback) => {
   const query = `select * from proveedor p where p.idproveedor= ${data} `;
   //console.log(query)
@@ -217,7 +306,7 @@ const agregar_pago_compra = (data, callback) => {
   const __logic = async (connection) => {
     const queries_pago_compras = get_agregar_pago_compra_queries(data);
     for (let i = 0; i < queries_pago_compras.length; i++) {
-      console.log(queries_pago_compras[i])
+      console.log(queries_pago_compras[i]);
       await connection.query(queries_pago_compras[i]);
     }
   };
@@ -234,7 +323,7 @@ const agregar_pago_compra = (data, callback) => {
 
 const transaccionAgregarPagoProveedor = (data, callback) => {
   const saldado = data.compras && data.compras.length > 0 ? 1 : 0;
-  console.log(proveedorQueries.insertPagoProveedor(data, saldado))
+  console.log(proveedorQueries.insertPagoProveedor(data, saldado));
   const __logic = async (connection) => {
     const result_insert_pago = await connection.query(
       proveedorQueries.insertPagoProveedor(data, saldado),
@@ -274,7 +363,7 @@ const transaccionAgregarPagoProveedor = (data, callback) => {
         ),
       );
     }
-    if (data.compras && data?.compras?.length>0) {
+    if (data.compras && data?.compras?.length > 0) {
       const queries_pago_compras = get_agregar_pago_compra_queries({
         ...data,
         idpago: idPago,
@@ -481,7 +570,7 @@ const get_agregar_pago_compra_queries = (data) => {
 
   const saldados_compras = [];
 
-  (data.compras??[]).forEach((c) => {
+  (data.compras ?? []).forEach((c) => {
     const _haber = parseFloat(c.monto_pagado) + parseFloat(c.monto_a_pagar);
     const _saldado = _haber >= parseFloat(c.monto) ? 1 : 0;
     if (c.saldado || _saldado) {
@@ -506,7 +595,7 @@ const get_agregar_pago_compra_queries = (data) => {
   console.log(data);
 
   let compras_values = "";
-  (data.compras??[]).forEach((compra) => {
+  (data.compras ?? []).forEach((compra) => {
     compras_values +=
       (compras_values.length > 0 ? "," : "") +
       `(${data.idpago}, ${compra.idfactura}, ${compra.monto_a_pagar})`;
@@ -560,6 +649,7 @@ module.exports = {
   obtener_pagos_no_saldados,
   agregar_pago_compra,
   obtener_cm_saldo,
+  obtener_ficha_proveedor_v2,
 };
 /*let compras_values = "";
       data.compras.forEach((compra) => {
