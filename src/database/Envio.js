@@ -1,11 +1,13 @@
 const mysql_connection = require("../lib/mysql_connection");
+const { doTransaction } = require("./helpers/queriesHelper");
 
 const envio_queries = require("./queries/envioQueries");
 
 const obtenerEnvios = (callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    connection.query(`SELECT 
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(
+    `SELECT 
     e.sucursal_idsucursal,
     DATE_FORMAT(e.fecha, '%d-%m-%y') AS 'fecha', 
     e.cantidad_total,
@@ -17,53 +19,58 @@ const obtenerEnvios = (callback) => {
 	 e.sucursal_idsucursal = s.idsucursal AND 
 	 e.sucursal_origen = s1.idsucursal
 	 order by e.idenvio desc;`,
-        (err,results)=>{
-            //console.log(JSON.stringify(results))
-            return callback(results);
-        }
-    );
-    connection.end();
-}
+    (err, results) => {
+      return callback(results);
+    },
+  );
+  connection.end();
+};
 
-const agregar_envio = (data,callback) => {
-    var _eid=-1;
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    let _query = `insert into envio (
+const agregar_envio = (data, callback) => {
+  var _eid = -1;
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  let _query = `insert into envio (
         sucursal_idsucursal,
         usuario_idusuario,
         cantidad_total,
         sucursal_origen
     )
-        values (${data.sucursal_idsucursal},${data.usuario_idusuario},${data.cantidad_total},${data.id_sucursal_origen})`
-    
-        //console.log(_query)
+        values (${data.sucursal_idsucursal},${data.usuario_idusuario},${data.cantidad_total},${data.id_sucursal_origen})`;
+
+  //console.log(_query)
+  connection.query(_query, (err, results) => {
+    if (err) {
+      console.error(err);
+      throw err;
+    }
+    _eid = results.insertId;
+    let values = "";
+    data.items.forEach((element) => {
+      values +=
+        (values == "" ? "" : ",") +
+        "(" +
+        results.insertId +
+        "," +
+        element.codigo_idcodigo +
+        "," +
+        element.cantidad +
+        ")";
+    });
+    //console.log("items: ", values)
+    connection.query(
+      "INSERT INTO `envio_has_stock` (`envio_idenvio`, `codigo_idcodigo`,  `cantidad`) VALUES " +
+        values +
+        ";",
+      values,
+
+      (err, res) => {
+        //console.error(err)
+
+        //descontar cantidades
+
         connection.query(
-        _query
-            ,
-        (err,results)=>{
-            
-            if(err){
-                console.error(err)
-                throw err;
-            }
-            _eid = results.insertId;
-            let values = "";
-            data.items.forEach(element => {
-                values+= (values==""? "" : ",") + "("+results.insertId + "," + element.codigo_idcodigo + "," + element.cantidad+")"
-            });
-            //console.log("items: ", values)
-            connection.query("INSERT INTO `envio_has_stock` (`envio_idenvio`, `codigo_idcodigo`,  `cantidad`) VALUES " + values + ";",
-            values,
-            
-            (err,res)=>{
-
-                //console.error(err)
-
-                //descontar cantidades
-
-
-                connection.query(`UPDATE 
+          `UPDATE 
                 stock s, 
                 envio_has_stock ehs,
                 envio e
@@ -75,145 +82,193 @@ const agregar_envio = (data,callback) => {
                 s.codigo_idcodigo = ehs.codigo_idcodigo AND
                 s.sucursal_idsucursal = ${data.id_sucursal_origen} AND 
                 ehs.envio_idenvio=${_eid} 
-                ;`, (err,_resp)=>{
-                    callback(_eid);
-                })
+                ;`,
+          (err, _resp) => {
+            callback(_eid);
+          },
+        );
 
-                connection.end();
-            })
-            
-        }
+        connection.end();
+      },
     );
-    
-}
+  });
+};
 
-const detalle_envio = (idenvio,callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    //console.log("getting details of envio: " + idenvio)
-    //console.log(envio_queries.queryDetalleEnvio(idenvio))
-    connection.query(
-        envio_queries.queryDetalleEnvio(idenvio),
-        (err,results)=>{
-           // console.log(JSON.stringify(results))
-            return callback(results);
-        }
-    );
-    connection.end();
-}
+const agregar_envio_v2 = async (data, callback) => {
+  const {
+    sucursal_idsucursal,
+    usuario_idusuario,
+    cantidad_total,
+    id_sucursal_origen,
+    items,
+  } = data;
+
+  const _logic = async () => {
+    let _query_insert_envio = `insert into envio (
+        sucursal_idsucursal,
+        usuario_idusuario,
+        cantidad_total,
+        sucursal_origen
+    )
+        values (?,?,?,?);`;
+
+    const values = [
+      sucursal_idsucursal,
+      usuario_idusuario,
+      cantidad_total,
+      id_sucursal_origen,
+    ];
+
+    const [envioResult] = await connection.query(_query_insert_envio, values);
+    const insertId = envioResult.insertId;
+
+    //insert items
+
+    const items_values = items.map((i) => [
+      insertId, // envio_idenvio
+      i.idcodigo, // codigo_idcodigo
+      i.cantidad, // cantidad
+    ]);
+
+    const query_items = `INSERT INTO envio_has_stock (envio_idenvio, codigo_idcodigo,  cantidad) VALUES ? `;
+
+    const inser_items_response = await connection.query(query_items, [
+      items_values,
+    ]);
+  };
+
+  doTransaction(_logic, callback);
+};
+
+const detalle_envio = (idenvio, callback) => {
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  //console.log("getting details of envio: " + idenvio)
+  //console.log(envio_queries.queryDetalleEnvio(idenvio))
+  connection.query(envio_queries.queryDetalleEnvio(idenvio), (err, results) => {
+    // console.log(JSON.stringify(results))
+    return callback(results);
+  });
+  connection.end();
+};
 
 const lista_envios = (callback) => {
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    connection.query(
-        envio_queries.queryListaEnvios(),
-        (err,results)=>{
-            return callback(results);
-        }
-    );
-    connection.end();
-}
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(envio_queries.queryListaEnvios(), (err, results) => {
+    return callback(results);
+  });
+  connection.end();
+};
 
-const obtener_envios_codigo = (idcodigo,callback) => {
-    const query = `SELECT ehs.envio_idenvio AS 'nroenvio', ehs.cantidad , s.nombre as 'sucursal'
+const obtener_envios_codigo = (idcodigo, callback) => {
+  const query = `SELECT ehs.envio_idenvio AS 'nroenvio', ehs.cantidad , s.nombre as 'sucursal'
     FROM envio_has_stock ehs, sucursal s, envio e WHERE ehs.codigo_idcodigo = ${idcodigo} and ehs.envio_idenvio = e.idenvio and e.sucursal_idsucursal = s.idsucursal ;`;
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    connection.query(
-        query,
-        (err,results)=>{
-            return callback(results);
-        }
-    );
-    connection.end();
-}
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, results) => {
+    return callback(results);
+  });
+  connection.end();
+};
 
 const obtener_envios_pendientes_sucursal = (idsucursal, callback) => {
-    const query = `SELECT e.idenvio, e.cantidad_total , DATE_FORMAT(e.fecha, '%d-%m-%Y')  as 'fecha' 
-    FROM envio e WHERE e.sucursal_idsucursal=${idsucursal} AND e.estado<>'INGRESADO' and e.anulado<>1;`
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    connection.query(query,(err,rows)=>{
-        callback(rows)
-    })
-    connection.end();
-}
+  const query = `SELECT e.idenvio, e.cantidad_total , DATE_FORMAT(e.fecha, '%d-%m-%Y')  as 'fecha' 
+    FROM envio e WHERE e.sucursal_idsucursal=${idsucursal} AND e.estado<>'INGRESADO' and e.anulado<>1;`;
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, rows) => {
+    callback(rows);
+  });
+  connection.end();
+};
 //cargar envio en la sucursal destino
-const cargarEnvio = (idenvio, idsucursal,  callback, idusuario=-1) =>{
-    const connection = mysql_connection.getConnection();
-    connection.connect();
-    connection.query(`select e.idenvio from envio e where e.idenvio=${idenvio} and e.estado='GENERADO'`,(err,_resp)=>{
-        if(_resp.length<1)
-        {
-            callback(_resp);
-            //ERROR, INSER EVENT ABOUT WHAT HAPPENED
-            connection.query(`INSERT INTO evento ( detalle, fk_usuario, fk_sucursal, ref_id, tipo)  VALUES ( 'ERROR CARGAR ENVIO',NULL, ${idsucursal}, ${idenvio}, 'ENVIO ERROR');`)
+const cargarEnvio = (idenvio, idsucursal, callback, idusuario = -1) => {
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(
+    `select e.idenvio from envio e where e.idenvio=${idenvio} and e.estado='GENERADO'`,
+    (err, _resp) => {
+      if (_resp.length < 1) {
+        callback(_resp);
+        //ERROR, INSER EVENT ABOUT WHAT HAPPENED
+        connection.query(
+          `INSERT INTO evento ( detalle, fk_usuario, fk_sucursal, ref_id, tipo)  VALUES ( 'ERROR CARGAR ENVIO',NULL, ${idsucursal}, ${idenvio}, 'ENVIO ERROR');`,
+        );
 
-            connection.end()
-            return
-        }
-        connection.query(`INSERT ignore INTO stock (codigo_idcodigo,sucursal_idsucursal,cantidad)
+        connection.end();
+        return;
+      }
+      connection.query(
+        `INSERT ignore INTO stock (codigo_idcodigo,sucursal_idsucursal,cantidad)
         ( SELECT ehs.codigo_idcodigo, ${idsucursal} , 0 FROM envio_has_stock ehs WHERE ehs.envio_idenvio =${idenvio} ) `,
-        (err,resp)=>{
-            /*console.log(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
+        (err, resp) => {
+          /*console.log(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
             WHERE s.sucursal_idsucursal = ${idsucursal} ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`)*/
 
+          connection.query(
+            `UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, modified_by=${idusuario}
+            WHERE s.sucursal_idsucursal = ${idsucursal} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`,
+            (err, resp) => {
+              callback(resp);
+              connection.query(
+                `update envio e set e.estado = 'INGRESADO' where e.idenvio = ${idenvio};`,
+              );
+              connection.end();
+            },
+          );
+        },
+      );
+    },
+  );
+};
 
-            connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, modified_by=${idusuario}
-            WHERE s.sucursal_idsucursal = ${idsucursal} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`, (err,resp)=>{
-                callback(resp);
-                connection.query(`update envio e set e.estado = 'INGRESADO' where e.idenvio = ${idenvio};`)
-                connection.end();
-            })
-            
-        })
+const anular_envio = (idenvio, callback, idusuario = -1) => {
+  //
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  //console.log(`select e.estado from envio e where e.idenvio=${idenvio};`)
+  //console.log(`update envio e set e.anulado = 1, e.estado='ANULADO' where e.idenvio=${idenvio}`);
+  connection.query(
+    `select e.estado, e.sucursal_origen from envio e where e.idenvio=${idenvio};`,
+    (err, rows) => {
+      if (rows.length > 0) {
+        if (rows[0].estado == "GENERADO") {
+          connection.query(
+            `update envio e set e.anulado = 1, e.estado='ANULADO' where e.idenvio=${idenvio};`,
+            (err, resp) => {
+              //callback(resp)
+            },
+          );
 
-        
-    })
-    
-}
-
-const anular_envio = (idenvio, callback, idusuario=-1) => {
-    // 
-    const connection = mysql_connection.getConnection()
-    connection.connect()
-    //console.log(`select e.estado from envio e where e.idenvio=${idenvio};`)
-    //console.log(`update envio e set e.anulado = 1, e.estado='ANULADO' where e.idenvio=${idenvio}`);
-    connection.query(`select e.estado, e.sucursal_origen from envio e where e.idenvio=${idenvio};`,(err,rows)=>{
-        if(rows.length>0)
-        {
-            if(rows[0].estado=='GENERADO')
-            {
-                connection.query(`update envio e set e.anulado = 1, e.estado='ANULADO' where e.idenvio=${idenvio};`,(err,resp)=>{
-                    //callback(resp)
-                })
-
-                connection.query(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, s.modified_by=${idusuario}
-                WHERE s.sucursal_idsucursal = ${rows[0].sucursal_origen} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`, (err,resp)=>{
-                    callback(resp);
-                })
-            }
+          connection.query(
+            `UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, s.modified_by=${idusuario}
+                WHERE s.sucursal_idsucursal = ${rows[0].sucursal_origen} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`,
+            (err, resp) => {
+              callback(resp);
+            },
+          );
         }
-        else{
-            callback({msg:"error - estado incorrecto", status:"error"})
-        }
+      } else {
+        callback({ msg: "error - estado incorrecto", status: "error" });
+      }
 
-        connection.end()
-
-    })
-
-}
-
+      connection.end();
+    },
+  );
+};
 
 const search_stock_envio = (data, callback) => {
-    const tags =( data.tags.length>0 ? data.tags : [`'-'`]).map(t=>`'${t}'`)
-    //const tags = typeof data.tags === 'undefined' ? [] : data.tags
-    const tags_count = data.tags.length-1
+  const tags = (data.tags.length > 0 ? data.tags : [`'-'`]).map(
+    (t) => `'${t}'`,
+  );
+  //const tags = typeof data.tags === 'undefined' ? [] : data.tags
+  const tags_count = data.tags.length - 1;
 
-    const q_local = data.conStockOrigen ? ' s1.cantidad>0 ':' true '
-    const q_dest = data.sinStockDestino ? ' s.cantidad<1 ':' true '
+  const q_local = data.conStockOrigen ? " s1.cantidad>0 " : " true ";
+  const q_dest = data.sinStockDestino ? " s.cantidad<1 " : " true ";
 
-    const query = `
+  const query = `
                 SELECT 
                 f.nombre_largo AS 'familia',
                 sf.nombre_largo AS 'subfamilia',
@@ -255,25 +310,26 @@ const search_stock_envio = (data, callback) => {
                 (case when '${data.idsubgrupo}'<>'-1' then c.subgrupo_idsubgrupo=${data.idsubgrupo} ELSE TRUE END) AND 
                 (case when '${data.idgrupo}'<>'-1' then sg.grupo_idgrupo=${data.idgrupo} ELSE TRUE END )
                 ;
-                `
-                //console.log(query)
-                const connection = mysql_connection.getConnection()
-                connection.connect()
-                connection.query(query,(err,resp)=>{
-                    //console.log(JSON.stringify(resp))
-                    callback(resp)
-                })
-                connection.end()
-}
+                `;
+  //console.log(query)
+  const connection = mysql_connection.getConnection();
+  connection.connect();
+  connection.query(query, (err, resp) => {
+    //console.log(JSON.stringify(resp))
+    callback(resp);
+  });
+  connection.end();
+};
 
 module.exports = {
-    search_stock_envio,
-    anular_envio,
-    cargarEnvio,
-    obtener_envios_pendientes_sucursal,
-    agregar_envio,
-    detalle_envio,
-    lista_envios,
-    obtenerEnvios,
-    obtener_envios_codigo,
-}
+  search_stock_envio,
+  anular_envio,
+  cargarEnvio,
+  obtener_envios_pendientes_sucursal,
+  agregar_envio,
+  detalle_envio,
+  lista_envios,
+  obtenerEnvios,
+  obtener_envios_codigo,
+  agregar_envio_v2,
+};
