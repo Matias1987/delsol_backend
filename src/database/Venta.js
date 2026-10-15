@@ -1,5 +1,5 @@
 const { idf_optica } = require("../lib/global");
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, doQueryV2 } = require("./helpers/queriesHelper");
 const { obtenerCajaAbierta } = require("./queries/cajaQueries");
 const { insertEvento } = require("./queries/eventoQueries");
 const venta_queries = require("./queries/ventaQueries");
@@ -587,7 +587,7 @@ const lista_ventas_sucursal = (data, callback) => {
 
 };
 
-const lista_venta_sucursal_estado = (data, callback) => {
+const lista_venta_sucursal_estado = async (data, callback) => {
   let idmedico = data.idmedico || "";
   let iddestinatario = data.iddestinatario || "";
   let idventa = data.id || "";
@@ -610,7 +610,7 @@ const lista_venta_sucursal_estado = (data, callback) => {
 
   let limit = typeof data.limit === "undefined" ? -1 : +data.limit;
 
-  const q = venta_queries.queryListaVentasSucursalEstado(
+  const {query, values} = venta_queries.queryListaVentasSucursalEstadoV2(
     idsucursal,
     typeof data.estado === "undefined" ? "" : data.estado,
     typeof data.tipo === "undefined" ? "" : data.tipo,
@@ -628,11 +628,9 @@ const lista_venta_sucursal_estado = (data, callback) => {
     limit,
   );
 
-  //console.log(q)
+  const result = await doQueryV2(query, values);
 
-  doQuery(q, (resp) => {
-    callback(resp.data);
-  });
+  callback(result[0]);
 };
 
 const lista_venta_mp = (idventa, callback) => {

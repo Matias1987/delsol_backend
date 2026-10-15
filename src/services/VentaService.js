@@ -374,8 +374,9 @@ const obtenerVentaMPCtaCte = (idventa, callback) => {
 
 const lista_venta_sucursal_estado = (data, callback) => {
   ventaDB.lista_venta_sucursal_estado(data, (rows) => {
+
     const result = procesar_ventas(rows)
-    //console.log(JSON.stringify(result))
+    
     return callback(result);
   });
 };

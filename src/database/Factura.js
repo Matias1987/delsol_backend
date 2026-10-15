@@ -1,5 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, doTransaction } = require("./helpers/queriesHelper");
 
 const obtener_facturas = (idprov, callback) => {
   const connection = mysql_connection.getConnection();
@@ -18,7 +18,7 @@ const obtener_facturas = (idprov, callback) => {
 };
 
 const agregar_factura = (data, callback) => {
-  console.log("agregando factura ver 0")
+  console.log("agregando factura ver 0");
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(
@@ -183,7 +183,7 @@ const agregar_factura_v2 = (data, callback) => {
   });
 };
 const agregar_factura_v3 = (data, callback) => {
-  console.log("###########agregando factura ver 3")
+  console.log("###########agregando factura ver 3");
   console.log(JSON.stringify(data));
   if (data.nro === "" || +data.fkproveedor === -1) {
     console.log("Error en datos de factura");
@@ -369,7 +369,7 @@ const obtener_factura_montos_adic = (idfactura, callback) => {
 };
 
 const obtener_facturas_saldo = (data, callback) => {
-  const {idproveedor, moneda, modo} = data;
+  const { idproveedor, moneda, modo } = data;
   //modo 1 para facturas 2 remitos
   //console.log("obtener_facturas_saldo")
   //console.log(modo)
@@ -396,6 +396,124 @@ const obtener_facturas_saldo = (data, callback) => {
   });
 };
 
+const agregar_factura_v4 = (data, callback) => {
+  const {
+    nro,
+    fkproveedor,
+    total,
+    cant_productos,
+    tipo,
+    puntoVenta,
+    esremito,
+    fecha,
+    descuento,
+    netoNoGravado,
+    impuestosInternos,
+    netoGravado,
+    moneda,
+    idsucursal,
+    iva,
+    retenciones,
+    percepciones,
+    productos,
+  } = data;
+
+  const logic = async (connection) => {
+    const query_insert_factura = `INSERT INTO factura (
+          numero, 
+          proveedor_idproveedor, 
+          monto, 
+          cantidad, 
+          tipo, 
+          punto_venta, 
+          es_remito, 
+          fecha, 
+          descuento, 
+          c_n_gravados, 
+          imp_int, 
+          neto_gravado, 
+          fk_moneda) 
+          VALUES ?`;
+
+    let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES ? `;
+    let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto, tipo) VALUES ?`;
+    let query_percepciones = `INSERT INTO factura_percepcion (fk_factura, monto) VALUES ?`;
+    let query_productos = `INSERT INTO codigo_factura (factura_idfactura, stock_codigo_idcodigo, cantidad, costo) VALUES ?`;
+    let query_increase_quantities = `UPDATE stock s, ( SELECT * from codigo_factura cf0 WHERE cf0.factura_idfactura=? ) cf
+							SET s.cantidad = s.cantidad + cf.cantidad
+							WHERE
+							s.codigo_idcodigo = cf.stock_codigo_idcodigo AND  
+							s.sucursal_idsucursal = ?;`;
+
+    const factura_values = [
+      nro,
+      fkproveedor,
+      total,
+      cant_productos,
+      tipo,
+      puntoVenta,
+      esremito,
+      fecha,
+      descuento,
+      netoNoGravado,
+      impuestosInternos,
+      netoGravado,
+      moneda,
+    ];
+
+    const [insert_factura_response] = await connection.query(
+      query_insert_factura,
+      factura_values,
+    );
+    const factura_id = insert_factura_response.insertId;
+
+    if (iva.length > 0) {
+      const iva_values = iva.map((r) => [factura_id, r.monto, r.tipo]);
+      await connection.query(query_iva, iva_values);
+    }
+
+    if (retenciones.length > 0) {
+      const retenciones_values = retenciones.map((r) => [
+        factura_id,
+        r.monto,
+        r.tipo,
+      ]);
+      await connection.query(query_retenciones, retenciones_values);
+    }
+
+    if (percepciones.length > 0) {
+      const percepciones_values = percepciones.map((r) => [
+        factura_id,
+        r.monto,
+      ]);
+      await connection.query(query_percepciones, percepciones_values);
+    }
+
+    if (productos.length > 0) {
+      const productos_values = productos.map((p) => [
+        factura_id,
+        p.idcodigo,
+        p.cantidad,
+        p.precio,
+      ]);
+
+      await connection.query(query_productos, productos_values);
+
+      await connection.query(query_increase_quantities, [
+        factura_id,
+        idsucursal,
+      ]);
+
+    }
+
+      return factura_id;
+  };
+
+  doTransaction(logic, (err, result) => {
+    callback(result);
+  });
+};
+
 module.exports = {
   obtener_facturas_filtros,
   obtener_factura_por_nro,
@@ -404,6 +522,7 @@ module.exports = {
   detalle_factura,
   lista_elementos_factura,
   agregar_factura_v3,
+  agregar_factura_v4,
   obtener_factura_montos_adic,
   obtener_facturas_saldo,
 };

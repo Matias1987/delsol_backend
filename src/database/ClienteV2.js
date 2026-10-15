@@ -237,7 +237,7 @@ const operaciones_cliente = (data, callback) => {
      (case when '${data.idsucursal}'='-1' then true else ${data.idsucursal} = ops.idsucursal end)     
      order by ops.fecha asc, ops.orden asc;`;
 
-  console.log(query);
+  //console.log(query);
 
   doQuery(query, (resp) => {
     if (!resp) {

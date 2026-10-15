@@ -135,9 +135,13 @@ const agregar_envio_v2 = async (data, callback) => {
     const inser_items_response = await connection.query(query_items, [
       items_values,
     ]);
+
+    return { insertId, inser_items_response };
   };
 
-  doTransaction(_logic, callback);
+  doTransaction(_logic, (err, result) => {
+    callback(err, result);
+  });
 };
 
 const detalle_envio = (idenvio, callback) => {
@@ -203,8 +207,6 @@ const cargarEnvio = (idenvio, idsucursal, callback, idusuario = -1) => {
         `INSERT ignore INTO stock (codigo_idcodigo,sucursal_idsucursal,cantidad)
         ( SELECT ehs.codigo_idcodigo, ${idsucursal} , 0 FROM envio_has_stock ehs WHERE ehs.envio_idenvio =${idenvio} ) `,
         (err, resp) => {
-          /*console.log(`UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad
-            WHERE s.sucursal_idsucursal = ${idsucursal} ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`)*/
 
           connection.query(
             `UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, modified_by=${idusuario}
@@ -262,7 +264,7 @@ const search_stock_envio = (data, callback) => {
   const tags = (data.tags.length > 0 ? data.tags : [`'-'`]).map(
     (t) => `'${t}'`,
   );
-  //const tags = typeof data.tags === 'undefined' ? [] : data.tags
+  
   const tags_count = data.tags.length - 1;
 
   const q_local = data.conStockOrigen ? " s1.cantidad>0 " : " true ";
@@ -311,11 +313,9 @@ const search_stock_envio = (data, callback) => {
                 (case when '${data.idgrupo}'<>'-1' then sg.grupo_idgrupo=${data.idgrupo} ELSE TRUE END )
                 ;
                 `;
-  //console.log(query)
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(query, (err, resp) => {
-    //console.log(JSON.stringify(resp))
     callback(resp);
   });
   connection.end();

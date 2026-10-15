@@ -1,6 +1,6 @@
 const queries = require("./queries/clienteQueries")
 const mysql_connection = require("../lib/mysql_connection")
-const UsuarioDB = require("./Usuario")
+//const UsuarioDB = require("./Usuario")
 const update_cliente = (data, callback) => {
     const connection = mysql_connection.getConnection()
     connection.connect()
