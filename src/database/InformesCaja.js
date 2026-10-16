@@ -33,49 +33,7 @@ const montoEgresoCategoria = ({ idsucursal, periodoMes }, callback) => {
     callback(response.data);
   });
 };
-/*
-const operacionesEgresoIngresoSucursal = ({ idsucursal }, callback) => {
-  const query = `
-    -- 1. THE PRIOR BALANCE ROW (Everything older than 30 days)
-    select * from (
-    SELECT 
-        IF(SUM(CASE WHEN oo.tipo = 'i' THEN oo.monto ELSE -oo.monto END) >= 0, 'i', 'e') AS tipo,
-        ABS(SUM(CASE WHEN oo.tipo = 'i' THEN oo.monto ELSE -oo.monto END)) AS monto,
-        0 AS id,
-        'Saldo Anterior' AS f_fecha,
-        '1970-01-01' as fecha
-    FROM (
-        SELECT 'i' AS tipo, cast(c.monto as float) as monto, c.fecha FROM cobro c WHERE c.anulado = 0 AND c.sucursal_idsucursal = ${idsucursal}
-        UNION ALL
-        SELECT 'e' AS tipo, cast(g.monto as float) as monto, g.fecha_alta as fecha FROM gasto g WHERE g.anulado = 0 AND g.sucursal_idsucursal = ${idsucursal}
-    ) oo
-    WHERE oo.fecha < CURRENT_DATE() - INTERVAL 30 DAY
-    HAVING monto IS NOT NULL
 
-    UNION ALL
-
-    -- 2. THE CURRENT OPERATIONS ROWS (The last 30 days)
-    SELECT 
-        oo.tipo,
-        oo.monto,
-        oo.id,
-        DATE_FORMAT(oo.fecha, '%d-%m-%y') AS f_fecha,
-        oo.fecha
-    FROM (
-        SELECT 'i' AS tipo, cast(c.monto as float) as monto, c.fecha, c.idcobro AS id FROM cobro c WHERE c.anulado = 0 AND c.sucursal_idsucursal = ${idsucursal}
-        UNION ALL
-        SELECT 'e' AS tipo, cast(g.monto as float) as monto, g.fecha_alta as fecha, g.idgasto AS id FROM gasto g WHERE g.anulado = 0 AND g.sucursal_idsucursal = ${idsucursal}
-    ) oo
-    WHERE oo.fecha >= CURRENT_DATE() - INTERVAL 30 DAY
-) as q order by q.fecha asc
-`;
-
-  //console.log(query);
-
-  doQuery(query, (response) => {
-    callback(response.data);
-  });
-};*/
 const operacionesEgresoIngresoSucursal = ({ idcaja }, callback) => {
   const query = `
     SELECT 

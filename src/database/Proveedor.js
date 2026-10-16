@@ -41,7 +41,7 @@ const obtener_ficha_proveedor = (
   { idproveedor, modo, moneda, agrupar, estado },
   callback,
 ) => {
-  //console.log({ idproveedor, modo, moneda, agrupar });
+  console.log({ idproveedor, modo, moneda, agrupar, estado });
   const query = `
   SELECT * FROM (
   SELECT 
@@ -160,7 +160,7 @@ const obtener_ficha_proveedor = (
  ) gl ORDER BY gl.fecha asc                             
 ;`;
 
-  //console.log(query);
+  console.log(query);
 
   doQuery(query, (resp) => {
     callback(resp.data);
@@ -226,17 +226,25 @@ const obtener_ficha_proveedor_v2 = async (
                   (cm.modo_ficha = ? OR 1 = ?) AND 
                   (cm.saldado = ? OR 1=?)
           )
-      ) op;`;
+      ) op order by op.fecha asc;`;
+  console.log(`modo: ${modo}, estado: ${estado}`);
+  const ignorar_tipo = (+modo == -1 ? 1 : 0);
+  const ignorar_saldado = (+estado == 2 ? 1 : 0);
+  console.log("############about to run query################");
+  console.log(`ignorar_tipo: ${ignorar_tipo}, ignorar_saldado: ${ignorar_saldado}`);
 
-  const ignorar_tipo = (modo = -1 ? 1 : 0);
-  const ignorar_saldado = (estado = -1 ? 1 : 0);
-
-  const response = await doQueryV2(query, [
+  const params = [
     moneda,
     idproveedor,
-    modo == 0 ? 1 : 0,
+    +modo == 0 ? 1 : 0,
     ignorar_tipo,
-    estado,
+    +estado,
+    ignorar_saldado,
+    moneda,
+    idproveedor,
+    modo,
+    ignorar_tipo,
+    +estado,
     ignorar_saldado,
     moneda,
     idproveedor,
@@ -244,20 +252,15 @@ const obtener_ficha_proveedor_v2 = async (
     ignorar_tipo,
     estado,
     ignorar_saldado,
-    moneda,
-    idproveedor,
-    modo,
-    ignorar_tipo,
-    estado,
-    ignorar_saldado,
-  ]);
+  ];
 
-  callback(response.data);
+
+  const [response] = await doQueryV2(query, params);
+  callback(response);
 };
 
 const detalle_proveedor = (data, callback) => {
   const query = `select * from proveedor p where p.idproveedor= ${data} `;
-  //console.log(query)
   doQuery(query, (resp) => {
     callback(resp.data);
   });
@@ -310,6 +313,7 @@ const agregar_pago_compra = (data, callback) => {
       await connection.query(queries_pago_compras[i]);
     }
   };
+
 
   doTransaction(__logic, ({ data, err }) => {
     if (err) {

@@ -27,6 +27,7 @@ module.exports = {
   doQueryV2: async (query, variables) =>
   {
     try{
+      //console.log(pool.format(query, variables));
       return await pool.query(query,variables);
     }
     catch(error){
