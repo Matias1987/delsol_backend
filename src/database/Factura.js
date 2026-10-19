@@ -1,6 +1,6 @@
 const mysql_connection = require("../lib/mysql_connection");
 const { doQuery, doTransaction } = require("./helpers/queriesHelper");
-
+const mysql = require('mysql2');
 const obtener_facturas = (idprov, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
@@ -183,6 +183,9 @@ const agregar_factura_v2 = (data, callback) => {
   });
 };
 const agregar_factura_v3 = (data, callback) => {
+  console.log(JSON.stringify(data))
+
+  return;//test only
   console.log("###########agregando factura ver 3");
   console.log(JSON.stringify(data));
   if (data.nro === "" || +data.fkproveedor === -1) {
@@ -433,7 +436,7 @@ const agregar_factura_v4 = (data, callback) => {
           imp_int, 
           neto_gravado, 
           fk_moneda) 
-          VALUES ?`;
+          VALUES (?)`;
 
     let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES ? `;
     let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto, tipo) VALUES ?`;
@@ -460,16 +463,20 @@ const agregar_factura_v4 = (data, callback) => {
       netoGravado,
       moneda,
     ];
-
+    console.log("about to insert factura")
+    console.log(mysql.format(query_insert_factura, [factura_values]))
     const [insert_factura_response] = await connection.query(
       query_insert_factura,
-      factura_values,
+      [factura_values],
     );
+    console.log("factura inserted, supodsely...");
+    console.log(JSON.stringify(insert_factura_response))
+
     const factura_id = insert_factura_response.insertId;
 
     if (iva.length > 0) {
       const iva_values = iva.map((r) => [factura_id, r.monto, r.tipo]);
-      await connection.query(query_iva, iva_values);
+      await connection.query(query_iva, [iva_values]);
     }
 
     if (retenciones.length > 0) {
@@ -478,7 +485,7 @@ const agregar_factura_v4 = (data, callback) => {
         r.monto,
         r.tipo,
       ]);
-      await connection.query(query_retenciones, retenciones_values);
+      await connection.query(query_retenciones, [retenciones_values]);
     }
 
     if (percepciones.length > 0) {
@@ -486,7 +493,7 @@ const agregar_factura_v4 = (data, callback) => {
         factura_id,
         r.monto,
       ]);
-      await connection.query(query_percepciones, percepciones_values);
+      await connection.query(query_percepciones, [percepciones_values]);
     }
 
     if (productos.length > 0) {
@@ -497,7 +504,7 @@ const agregar_factura_v4 = (data, callback) => {
         p.precio,
       ]);
 
-      await connection.query(query_productos, productos_values);
+      await connection.query(query_productos, [productos_values]);
 
       await connection.query(query_increase_quantities, [
         factura_id,
@@ -510,6 +517,7 @@ const agregar_factura_v4 = (data, callback) => {
   };
 
   doTransaction(logic, (err, result) => {
+    console.log("Insertion response: " , JSON.stringify(result))
     callback(result);
   });
 };
