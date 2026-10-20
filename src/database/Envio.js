@@ -27,6 +27,7 @@ const obtenerEnvios = (callback) => {
 };
 
 const agregar_envio = (data, callback) => {
+  console.log(JSON.stringify(data))
   var _eid = -1;
   const connection = mysql_connection.getConnection();
   connection.connect();
@@ -38,7 +39,7 @@ const agregar_envio = (data, callback) => {
     )
         values (${data.sucursal_idsucursal},${data.usuario_idusuario},${data.cantidad_total},${data.id_sucursal_origen})`;
 
-  //console.log(_query)
+  console.log(_query)
   connection.query(_query, (err, results) => {
     if (err) {
       console.error(err);
@@ -103,6 +104,8 @@ const agregar_envio_v2 = async (data, callback) => {
     items,
   } = data;
 
+  console.log(JSON.stringify(data))
+
   const _logic = async () => {
     let _query_insert_envio = `insert into envio (
         sucursal_idsucursal,
@@ -130,11 +133,28 @@ const agregar_envio_v2 = async (data, callback) => {
       i.cantidad, // cantidad
     ]);
 
-    const query_items = `INSERT INTO envio_has_stock (envio_idenvio, codigo_idcodigo,  cantidad) VALUES ? `;
+    const query_items = `INSERT INTO envio_has_stock (envio_idenvio, codigo_idcodigo,  cantidad) VALUES (?) `;
 
     const inser_items_response = await connection.query(query_items, [
       items_values,
     ]);
+
+    await connection.query(
+      `UPDATE 
+        stock s, 
+        envio_has_stock ehs,
+        envio e
+        SET 
+        s.cantidad = s.cantidad - ehs.cantidad,
+        s.modified_by=?
+        WHERE
+        e.idenvio = ehs.envio_idenvio AND  
+        s.codigo_idcodigo = ehs.codigo_idcodigo AND
+        s.sucursal_idsucursal = ? AND 
+        ehs.envio_idenvio=?
+        ;`,
+      [data.usuario_idusuario, data.id_sucursal_origen, _eid],
+    );
 
     return { insertId, inser_items_response };
   };
@@ -207,7 +227,6 @@ const cargarEnvio = (idenvio, idsucursal, callback, idusuario = -1) => {
         `INSERT ignore INTO stock (codigo_idcodigo,sucursal_idsucursal,cantidad)
         ( SELECT ehs.codigo_idcodigo, ${idsucursal} , 0 FROM envio_has_stock ehs WHERE ehs.envio_idenvio =${idenvio} ) `,
         (err, resp) => {
-
           connection.query(
             `UPDATE stock s, envio_has_stock ehs SET s.cantidad = s.cantidad + ehs.cantidad, modified_by=${idusuario}
             WHERE s.sucursal_idsucursal = ${idsucursal} AND ehs.codigo_idcodigo = s.codigo_idcodigo AND ehs.envio_idenvio = ${idenvio};`,
@@ -264,7 +283,7 @@ const search_stock_envio = (data, callback) => {
   const tags = (data.tags.length > 0 ? data.tags : [`'-'`]).map(
     (t) => `'${t}'`,
   );
-  
+
   const tags_count = data.tags.length - 1;
 
   const q_local = data.conStockOrigen ? " s1.cantidad>0 " : " true ";

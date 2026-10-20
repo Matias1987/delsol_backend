@@ -13,7 +13,7 @@ const obtenerEnvios = (callback) => {
 }
 
 const agregarEnvio = (data, callback) => {
-    EnvioDB.agregar_envio(
+    EnvioDB.agregar_envio_v2(
         data, (id)=>{
             return callback(id);
         }
