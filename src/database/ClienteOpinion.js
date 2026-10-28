@@ -1,41 +1,25 @@
-const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper, doQueryV2 } = require("./helpers/queriesHelper");
 
 const obtenerOpinionVenta = ({ idventa }, callback) => {};
 
-const guardarOpinionCliente = (data, callback) => {
-  const {
-    idcliente,
-    idventa,
-    idvendedor,
-    idsucursal,
-    puntaje,
-    comentario,
-    tipo_operacion,
-  } = data;
+const guardarOpinionCliente = async (data, callback) => {
+  const { sucursal, vendedor, puntaje, comentario } = data;
   const query = `INSERT INTO 
                         cliente_opinion 
-                        (
-                            id_cliente, 
-                            id_vendedor, 
-                            id_sucursal, 
-                            id_operacion, 
+                        ( 
+                            sucursal,
+                            vendedor,
                             puntaje, 
                             comentario,
-                            tipo_operacion
+                            id_tipo_opinion
                         ) 
-                        VALUES (
-                            ${escapeHelper(idcliente)},
-                            ${escapeHelper(idvendedor)},
-                            ${escapeHelper(idsucursal)},
-                            ${escapeHelper(idventa)},
-                            ${escapeHelper(puntaje)},
-                           ${escapeHelper(comentario)},
-                           ${escapeHelper(tipo_operacion)}
-                        );`;
-  console.log(query);
-  doQuery(query, (resp) => {
-    return callback(resp);
-  });
+                        VALUES (?);`;
+
+  const values = [sucursal ?? null, vendedor ?? null, puntaje, comentario, 3];
+ 
+  const response = await doQueryV2(query, [values]);
+
+  callback(response);
 };
 
 const obtenerOpiniones = (callback) => {

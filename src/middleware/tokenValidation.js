@@ -7,9 +7,10 @@ async function tokenCheck(req, res, next) {
   if (req.method === "POST") {
     if (
       req.url !== "/api/v1/usuarios/login/" &&
-      req.url !== "/api/v1/usuarios/refresh_token/"
+      req.url !== "/api/v1/usuarios/refresh_token/" && 
+      req.url !== "/api/v1/opinion/add/" 
     ) {
-      const token =  req.headers.authorization?.split(" ")[1]; //req.headers.authorization// req.headers.authorization?.split(" ")[1]; //req.headers.authorization;
+      const token =   req.headers.authorization?.split(" ")[1]; //req.headers.authorization// req.headers.authorization?.split(" ")[1]; //req.headers.authorization;
       console.log("Authenticating request with token:", token);
       if (token) {
         const loged_id = await usuarios_db.checkIfUserLoggedInV2(token);
