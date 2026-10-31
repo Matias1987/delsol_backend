@@ -1,5 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
-const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper, doQueryV2 } = require("./helpers/queriesHelper");
 
 const obtener_subgrupos_grupo = (idsubfamilia, callback) => {
   const q = `SELECT g.nombre_corto AS 'grupo', 
@@ -349,6 +349,28 @@ const rm_grupo_has_subgrupo = (data, callback) => {
   doQuery(query, (response) => {
     callback(response.data);
   });
+};
+
+const obtener_subgrupos_tipo_venta = async ({ tipo }, callback) => {
+  let id = 0;
+  switch (tipo) {
+    case "receta_stock":
+      id = 0;
+      break;
+    case "monof_laboratorio":
+      id = 0;
+      break;
+    case "multif_laboratorio":
+      id = 0;
+      break;
+  }
+  const query = `SELECT sg.idsubgrupo FROM subgrupo sg WHERE sg.grupo_idgrupo = ${id} AND  EXISTS 
+(SELECT 1 FROM codigo c WHERE c.subgrupo_idsubgrupo = sg.idsubgrupo)
+;`;
+
+  const response = await doQueryV2(query, []);
+
+  return response;
 };
 
 module.exports = {
