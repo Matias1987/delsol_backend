@@ -351,26 +351,16 @@ const rm_grupo_has_subgrupo = (data, callback) => {
   });
 };
 
-const obtener_subgrupos_tipo_venta = async ({ tipo }, callback) => {
-  let id = 0;
-  switch (tipo) {
-    case "receta_stock":
-      id = 0;
-      break;
-    case "monof_laboratorio":
-      id = 0;
-      break;
-    case "multif_laboratorio":
-      id = 0;
-      break;
-  }
-  const query = `SELECT sg.idsubgrupo FROM subgrupo sg WHERE sg.grupo_idgrupo = ${id} AND  EXISTS 
-(SELECT 1 FROM codigo c WHERE c.subgrupo_idsubgrupo = sg.idsubgrupo)
-;`;
+const obtener_subgrupos_tipo_venta = async (data, callback) => {
+  const query = `SELECT sg.idsubgrupo, g.nombre_corto, sg.nombre_corto FROM subgrupo sg, grupo g, subfamilia sf WHERE 
+                sg.grupo_idgrupo = g.idgrupo AND 
+                g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
+                sf.familia_idfamilia=? AND EXISTS (SELECT 1 FROM codigo c WHERE c.subgrupo_idsubgrupo = sg.idsubgrupo);
+                `;
 
-  const response = await doQueryV2(query, []);
-
-  return response;
+  const [response] = await doQueryV2(query, [13]);
+  //console.log(response)
+  callback(response);
 };
 
 module.exports = {
@@ -387,4 +377,5 @@ module.exports = {
   obtener_descripcion_cat_subgrupo,
   obtener_subgrupos_grupo,
   agregarSGAGrupo,
+  obtener_subgrupos_tipo_venta,
 };

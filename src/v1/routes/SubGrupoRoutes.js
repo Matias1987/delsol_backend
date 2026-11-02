@@ -3,62 +3,66 @@ const router = express.Router();
 const subGrupoController = require("../../controllers/SubGrupoController");
 
 router.get("/listado/subgrupos/:idgrupo?", (req, res) => {
-  subGrupoController.obtenerSubgrupos(req,res)
+  subGrupoController.obtenerSubgrupos(req, res);
 });
 
-router.get("/listado/subgrupos/fitros/:idsubgrupo/:idgrupo/:idsubfamilia/:idfamilia", (req, res) => {
-  subGrupoController.obtenerSubgrupos(req,res)
-});
+router.get(
+  "/listado/subgrupos/fitros/:idsubgrupo/:idgrupo/:idsubfamilia/:idfamilia",
+  (req, res) => {
+    subGrupoController.obtenerSubgrupos(req, res);
+  },
+);
 
 router.get("/:subgrupoId", (req, res) => {
-  subGrupoController.obtener_detalle_subgrupo(req,res)
+  subGrupoController.obtener_detalle_subgrupo(req, res);
 });
 
 router.get("/subgrupo_por_grupo_v2/:subgrupoId", (req, res) => {
-  subGrupoController.obtenerSubgruposGrupoV2(req,res)
+  subGrupoController.obtenerSubgruposGrupoV2(req, res);
 });
 
 router.get("/optionsforgrupo/:grupoId/:ignorarOcultos?", (req, res) => {
-  subGrupoController.obtener_subgrupos_bygrupo_opt(req,res);
+  subGrupoController.obtener_subgrupos_bygrupo_opt(req, res);
 });
 router.get("/descripcion_cat_subgrupo/:subgrupoId", (req, res) => {
-  subGrupoController.obtener_descripcion_cat_subgrupo(req,res);
+  subGrupoController.obtener_descripcion_cat_subgrupo(req, res);
 });
 router.get("/subgrupos_subfamilia/:idsubfamilia", (req, res) => {
-  subGrupoController.obtener_subgrupos_grupo(req,res);
+  subGrupoController.obtener_subgrupos_grupo(req, res);
+});
+
+router.get("/obtener/subgrupos/tipo_venta/", (req, res) => {
+  console.log("obtener lalalallsdaf")
+  subGrupoController.obtener_subgrupos_tipo_venta(req, res);
 });
 
 router.post("/", (req, res) => {
-  subGrupoController.agregarSubgrupo(req,res);
+  subGrupoController.agregarSubgrupo(req, res);
 });
 
 router.post("/modificar_multiplicador/", (req, res) => {
   //console.log("modificar mult.")
-  subGrupoController.modificar_multiplicador(req,res)
+  subGrupoController.modificar_multiplicador(req, res);
 });
 router.post("/modificar_precios_defecto/", (req, res) => {
   //console.log("modificar_precios_defecto")
-  subGrupoController.modificar_precios_defecto(req,res)
+  subGrupoController.modificar_precios_defecto(req, res);
 });
 
-router.post("/rm/g_has_sg/", (req,res)=>{
-  subGrupoController.rm_grupo_has_subgrupo(req,res)
-})
+router.post("/rm/g_has_sg/", (req, res) => {
+  subGrupoController.rm_grupo_has_subgrupo(req, res);
+});
 
-router.post("/m/v/sg/",(req,res)=>{
-  subGrupoController.mover(req, res)
-})
+router.post("/m/v/sg/", (req, res) => {
+  subGrupoController.mover(req, res);
+});
 
-router.post("/m/modif_sg",(req,res)=>{
- 
-  subGrupoController.editarSubgrupo(req,res)
- 
-})
-router.post("/add/to/grupo",(req,res)=>{
- 
-  subGrupoController.agregarSGAGrupo(req,res)
- 
-})
+router.post("/m/modif_sg", (req, res) => {
+  subGrupoController.editarSubgrupo(req, res);
+});
+router.post("/add/to/grupo", (req, res) => {
+  subGrupoController.agregarSGAGrupo(req, res);
+});
 
 router.patch("/:subgrupoId", (req, res) => {
   res.send("Update an existing workout");

@@ -204,6 +204,17 @@ const obtenerBasesItems = (req, res) => {
   });
 };
 
+const obtener_codigo_sg_grad = (req, res) => {
+  const {body} = req;
+  const { idsubgrupo, esf, cil } = body;
+  codigoService.obtener_codigo_sg_grad(
+    { idsubgrupo: idsubgrupo || "0", esf: esf || "0", cil: cil || "0" },
+    (response) => {
+      res.status(201).send({ status: "OK", data: response });
+    },
+  );
+};
+
 module.exports = {
   obtenerStockItems,
   obtenerBasesItems,
@@ -225,4 +236,5 @@ module.exports = {
   modificar_precios_indv_categoria,
   modificar_cant_critica,
   obtener_lp_codigos,
+  obtener_codigo_sg_grad,
 };

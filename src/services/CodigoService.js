@@ -74,23 +74,27 @@ const cambiar_estado_activo = (data, callback) => {
 };
 
 const ejemplo_codigo = (data, callback) => {
-  CodigoDB.ejemplo_codigo(data, (response) => {return callback(response);});
+  CodigoDB.ejemplo_codigo(data, (response) => {
+    return callback(response);
+  });
 };
 
 const agregar_codigos = (data, callback) => {
   CodigoDB.agregar_codigos(data, (resp) => {
     StockDB.distribuir_cantidad_a_sucursales(
       {
-        idsubgrupo: typeof data.idsubgrupo === 'undefined' ? 0 : data.idsubgrupo,
-        idgrupo: typeof data.idgrupo === 'undefined' ? 0 : data.idgrupo,
-        idsubfamilia: typeof data.idsubfamilia === 'undefined' ? 0 : data.idsubfamilia,
-        idfamilia: typeof data.idfamilia === 'undefined' ? 0 : data.idfamilia,
+        idsubgrupo:
+          typeof data.idsubgrupo === "undefined" ? 0 : data.idsubgrupo,
+        idgrupo: typeof data.idgrupo === "undefined" ? 0 : data.idgrupo,
+        idsubfamilia:
+          typeof data.idsubfamilia === "undefined" ? 0 : data.idsubfamilia,
+        idfamilia: typeof data.idfamilia === "undefined" ? 0 : data.idfamilia,
         cantidad_inicial: data.cantidad_inicial,
         idsucursales: data.idsucursales,
       },
       (response) => {
         callback(resp);
-      }
+      },
     );
   });
 };
@@ -101,29 +105,41 @@ const modificar_precios_indv_categoria = (data, callback) => {
   });
 };
 
-const modificar_cant_critica = (data, callback) =>{
-  CodigoExtDB.modificar_cant_critica(data, (response)=>{
-    return callback(response)
-  })
-}
-
-const obtener_lp_codigos = (data,callback) => {
-  CodigoDB.obtener_lp_codigos(data,response=>{
+const modificar_cant_critica = (data, callback) => {
+  CodigoExtDB.modificar_cant_critica(data, (response) => {
     return callback(response);
-  })
-}
+  });
+};
+
+const obtener_lp_codigos = (data, callback) => {
+  CodigoDB.obtener_lp_codigos(data, (response) => {
+    return callback(response);
+  });
+};
 
 const obtenerStockItems = (data, callback) => {
   //100217   100297
-  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:id_g_stock}, response=>{
-    callback(response);
-  })
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f(
+    { idgrupo: id_g_stock },
+    (response) => {
+      callback(response);
+    },
+  );
 };
 const obtenerBasesItems = (data, callback) => {
   //100216 100298
-  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f({idgrupo:id_g_bases}, response=>{
+  CodigoExtDB.obtener_subgrupo_codigo_has_subgrupo_f(
+    { idgrupo: id_g_bases },
+    (response) => {
+      callback(response);
+    },
+  );
+};
+
+const obtener_codigo_sg_grad = (data, callback) => {
+  CodigoExtDB.obtener_codigo_sg_grad(data, (response) => {
     callback(response);
-  })
+  });
 };
 
 module.exports = {
@@ -147,4 +163,5 @@ module.exports = {
   modificar_precios_indv_categoria,
   modificar_cant_critica,
   obtener_lp_codigos,
+  obtener_codigo_sg_grad,
 };

@@ -84,6 +84,12 @@ const rm_grupo_has_subgrupo = (data, callback) => {
   })
 }
 
+const obtener_subgrupos_tipo_venta = (data,  callback) => {
+  SubGrupoDB.obtener_subgrupos_tipo_venta(data,(response)=>{
+    callback(response);
+  })
+}
+
 module.exports = {
     rm_grupo_has_subgrupo,
     agregarSGAGrupo,
@@ -99,4 +105,5 @@ module.exports = {
     obtener_descripcion_cat_subgrupo,
     obtener_subgrupos_grupo,
     obtenerSubgruposGrupoV2,
+    obtener_subgrupos_tipo_venta,
   };

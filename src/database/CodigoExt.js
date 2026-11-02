@@ -63,8 +63,17 @@ const obtener_subgrupo_codigo_has_subgrupo_f = ({ idgrupo }, callback) => {
   });
 };
 
+const obtener_codigo_sg_grad = ({idsubgrupo, esf, cil}, callback) => {
+  const query = `SELECT c.idcodigo FROM codigo c WHERE c.subgrupo_idsubgrupo=${idsubgrupo} AND c.codigo LIKE '%${esf}%${cil}%';`; 
+  console.log(query);
+  doQuery(query, (response) => {
+    callback(response.data);
+  });
+};
+
 module.exports = {
   modificar_precios_indv,
   modificar_cant_critica,
   obtener_subgrupo_codigo_has_subgrupo_f,
+  obtener_codigo_sg_grad,
 };

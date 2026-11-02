@@ -165,6 +165,12 @@ const rm_grupo_has_subgrupo = (req,res) => {
   })
 }
 
+const obtener_subgrupos_tipo_venta = (req, res) => {
+  subgrupoService.obtener_subgrupos_tipo_venta(null, (response)=>{
+    res.status(201).send({status:'OK', data:response});
+  })
+}
+
 module.exports = {
   rm_grupo_has_subgrupo,
   mover,
@@ -180,4 +186,5 @@ module.exports = {
   obtener_subgrupos_grupo,
   agregarSGAGrupo,
   obtenerSubgruposGrupoV2,
+  obtener_subgrupos_tipo_venta,
   };
