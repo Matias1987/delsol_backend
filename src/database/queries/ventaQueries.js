@@ -68,7 +68,8 @@ INSERT INTO venta
 	hora_retiro,
 	json_items,
 	uid,
-	estado
+	estado,
+  descuento_mutual
 ) 
 VALUES (
 	'${data.cliente_idcliente}', 
@@ -89,8 +90,35 @@ VALUES (
 	'${data.horaRetiro}',
 	'${data.json_items}',
 	'${data.uid}',
-	'${data.estado}'
+	'${data.estado}',
+	'${data.descuento_mutual ?? "0"}'
 );
+`;
+const venta_insert_query_v2 = (data, idcaja = 0) => ` 
+INSERT INTO venta 
+(
+	cliente_idcliente, 
+	sucursal_idsucursal, 
+	caja_idcaja, 
+	usuario_idusuario, 
+	medico_idmedico, 
+	monto_total, 
+	descuento, 
+	subtotal, 
+	comentarios, 
+	fecha_retiro,
+	fk_destinatario,
+	fk_os,
+	tipo,
+	debe,
+	saldo,
+	hora_retiro,
+	json_items,
+	uid,
+	estado,
+  descuento_mutual
+) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `;
 const query_mp = `INSERT INTO venta_has_modo_pago 
 					(
@@ -592,4 +620,5 @@ module.exports = {
   queryVentasMesVendedor,
   queryDescontarStockVenta,
   queryRestaurarStockVenta,
+  venta_insert_query_v2,
 };

@@ -1,13 +1,10 @@
 const { doQuery, doTransaction } = require("./helpers/queriesHelper");
 const {
   acutalizar_stock_cristales_v2,
-  obtener_stock_v2,
   obtener_stock_cristales_v2,
   restaurar_cantidades_venta,
 } = require("./StockCristales");
 const {
-  venta_insert_query,
-  parse_venta_data,
   get_mp,
   query_items,
   query_mp,
@@ -15,6 +12,7 @@ const {
   queryVentasMesVendedor,
   queryDescontarStockVenta,
   queryRestaurarStockVenta,
+  venta_insert_query_v2,
 } = require("./queries/ventaQueries");
 
 const { verificar_cantidades_productos_v2 } = require("./StockExt");
@@ -82,11 +80,13 @@ const transaction_insert_venta = (data, callback) => {
       });
 
       await connection.query(
-        `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=${data.idventa};`,
+        `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=?;`,
+        [data.idventa],
       );
 
       await connection.query(
-        `DELETE FROM venta_has_stock vhs WHERE vhs.venta_idventa=${data.idventa};`,
+        `DELETE FROM venta_has_stock vhs WHERE vhs.venta_idventa=?;`,
+        [data.idventa],
       );
     }
 
@@ -115,7 +115,7 @@ const transaction_insert_venta = (data, callback) => {
       }
     }
 
-    const resp_data_stock = await verificar_cantidades_productos_v2(
+    await verificar_cantidades_productos_v2(
       { data, ignore_cristales: false },
       connection,
     );
@@ -134,8 +134,34 @@ const transaction_insert_venta = (data, callback) => {
         update_venta_query(venta_queries.parse_venta_data(data), data.idventa),
       );*/
     } else {
-      const venta_insert_response = await connection.query(
+      const v_values = [
+        data.cliente_idcliente,
+        data.sucursal_idsucursal,
+        data.fkcaja == 0 ? data.caja_idcaja : data.fkcaja,
+        data.usuario_idusuario,
+        data.medico_idmedico,
+        data.monto_total,
+        data.descuento,
+        data.subtotal,
+        data.comentarios,
+        data.fecha_retiro,
+        data.fk_destinatario,
+        data.fk_os,
+        data.tipo,
+        data.monto_total,
+        data.monto_total,
+        data.horaRetiro,
+        "",
+        data.uid,
+        data.estado,
+        data.descuento_mutual ?? "0",
+      ];
+      /*const venta_insert_response = await connection.query(
         venta_insert_query(parse_venta_data(data), data.fkcaja),
+      );*/
+      const venta_insert_response = await connection.query(
+        venta_insert_query_v2,
+        v_values,
       );
       insert_data_id = venta_insert_response[0].insertId;
     }
@@ -174,7 +200,7 @@ const transaction_insert_venta = (data, callback) => {
     }
 
     //descontar stock
-    const stock_desc_response = await desc_cantidades_stock_venta_v2(
+    await desc_cantidades_stock_venta_v2(
       {
         idventa: insert_data_id,
         idsucursal: data.fksucursal,
@@ -408,7 +434,6 @@ const prepare_ventaitems_and_mp = (venta_id, data) => {
       break;
   }
 
-  //venta_id = parseInt(resp.insertId);
   var mp = "";
   get_mp(data, venta_id).forEach((p) => {
     mp +=
@@ -551,7 +576,7 @@ const inc_cantidades_stock_venta_v2 = async (data, connection) => {
   const id_sucursal = response[0][0].sucursal_idsucursal;
 
   return await connection.query(
-    queryRestaurarStockVenta(data, id_sucursal, uid_0??-1),
+    queryRestaurarStockVenta(data, id_sucursal, uid_0 ?? -1),
   );
 };
 

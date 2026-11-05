@@ -24,14 +24,12 @@ module.exports = {
     }
   },
 
-  doQueryV2: async (query, variables) =>
-  {
-    try{
+  doQueryV2: async (query, variables) => {
+    try {
       //console.log(pool.format(query, variables));
-      return await pool.query(query,variables);
-    }
-    catch(error){
-      return {err:error}
+      return await pool.query(query, variables);
+    } catch (error) {
+      return { err: error };
     }
   },
 
@@ -39,7 +37,7 @@ module.exports = {
   doTransaction: async (transactionLogicFn, callback) => {
     // 1. Obtener la conexión exclusiva del pool
     const connection = await pool.getConnection();
-    
+
     try {
       // 2. Iniciar la transacción
       await connection.beginTransaction();
@@ -50,12 +48,17 @@ module.exports = {
       // 4. Si la lógica interna termina sin errores, confirmamos cambios
       await connection.commit();
       callback?.({ data: result });
-
     } catch (error) {
       // 5. Si algo falló en cualquier paso de la lógica, revertimos todo
-      await connection.rollback();
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error(
+          "Error crítico: No se pudo hacer rollback",
+          rollbackError,
+        );
+      }
       callback?.({ err: error });
-
     } finally {
       // 6. Liberar la conexión pase lo que pase
       connection.release();
@@ -80,7 +83,6 @@ module.exports = {
     }
   },
 };
-
 
 /*
 EJEMPLO DE USO DE CODIGO
