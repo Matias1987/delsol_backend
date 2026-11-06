@@ -94,7 +94,7 @@ VALUES (
 	'${data.descuento_mutual ?? "0"}'
 );
 `;
-const venta_insert_query_v2 = (data, idcaja = 0) => ` 
+const venta_insert_query_v2 = ` 
 INSERT INTO venta 
 (
 	cliente_idcliente, 

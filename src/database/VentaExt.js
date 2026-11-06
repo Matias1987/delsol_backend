@@ -13,6 +13,7 @@ const {
   queryDescontarStockVenta,
   queryRestaurarStockVenta,
   venta_insert_query_v2,
+  parse_venta_data,
 } = require("./queries/ventaQueries");
 
 const { verificar_cantidades_productos_v2 } = require("./StockExt");
@@ -96,6 +97,7 @@ const transaction_insert_venta = (data, callback) => {
     );
 
     if (!resp_data_stock_cristales?.error) {
+      
       const stock_check = compare_requested_with_db_response(
         resp_data_stock_cristales.data,
         arrayQttiesCristales,
@@ -134,31 +136,31 @@ const transaction_insert_venta = (data, callback) => {
         update_venta_query(venta_queries.parse_venta_data(data), data.idventa),
       );*/
     } else {
+      const _data = parse_venta_data(data);
+
       const v_values = [
-        data.cliente_idcliente,
-        data.sucursal_idsucursal,
-        data.fkcaja == 0 ? data.caja_idcaja : data.fkcaja,
-        data.usuario_idusuario,
-        data.medico_idmedico,
-        data.monto_total,
-        data.descuento,
-        data.subtotal,
-        data.comentarios,
-        data.fecha_retiro,
-        data.fk_destinatario,
-        data.fk_os,
-        data.tipo,
-        data.monto_total,
-        data.monto_total,
-        data.horaRetiro,
+        _data.cliente_idcliente,
+        _data.sucursal_idsucursal,
+        _data.fkcaja == 0 ? _data.caja_idcaja : data.fkcaja,
+        _data.usuario_idusuario,
+        _data.medico_idmedico,
+        _data.monto_total,
+        _data.descuento,
+        _data.subtotal,
+        _data.comentarios,
+        _data.fecha_retiro,
+        _data.fk_destinatario,
+        _data.fk_os,
+        _data.tipo,
+        _data.monto_total,
+        _data.monto_total,
+        _data.horaRetiro,
         "",
-        data.uid,
-        data.estado,
-        data.descuento_mutual ?? "0",
+        "",
+        _data.estado,
+        _data.descuento_mutual ?? "0",
       ];
-      /*const venta_insert_response = await connection.query(
-        venta_insert_query(parse_venta_data(data), data.fkcaja),
-      );*/
+      
       const venta_insert_response = await connection.query(
         venta_insert_query_v2,
         v_values,
