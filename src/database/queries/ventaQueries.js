@@ -23,6 +23,7 @@ const parse_venta_data = (body) => ({
       ? "ENTREGADO"
       : "PENDIENTE"
     : "INGRESADO",
+  descuento_mutual: body?.descuentoMutual || "0",
 });
 
 const update_venta_query = (r, idventa) => `
