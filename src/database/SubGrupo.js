@@ -351,15 +351,25 @@ const rm_grupo_has_subgrupo = (data, callback) => {
   });
 };
 
-const obtener_subgrupos_tipo_venta = async (data, callback) => {
+const obtener_subgrupos_tipo_venta = async ({tipo_venta}, callback) => {
+  let id = 13; //for now it is hardcoded to 13, but in the future it will be dynamic based on the tipo_venta parameter
+  switch (tipo_venta) {
+    case "receta_stock": break;
+    case "multifocales_lab": id = 13; break;
+    case "monofocales_lab": id = 13; break;//ids to be defined
+    case "lc_stock": id = 14; break;
+    case "lc_lab": id = 14; break;
+    default: id = 13; break;
+  }
   const query = `SELECT sg.idsubgrupo, g.nombre_corto, sg.nombre_corto FROM subgrupo sg, grupo g, subfamilia sf WHERE 
                 sg.grupo_idgrupo = g.idgrupo AND 
                 g.subfamilia_idsubfamilia = sf.idsubfamilia AND 
                 sf.familia_idfamilia=? AND EXISTS (SELECT 1 FROM codigo c WHERE c.subgrupo_idsubgrupo = sg.idsubgrupo);
                 `;
 
-  const [response] = await doQueryV2(query, [13]);
-  //console.log(response)
+  const [response] = await doQueryV2(query, [id]);
+  console.log("the response:")
+  console.log(response)
   callback(response);
 };
 

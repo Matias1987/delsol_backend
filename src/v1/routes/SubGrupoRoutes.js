@@ -31,8 +31,7 @@ router.get("/subgrupos_subfamilia/:idsubfamilia", (req, res) => {
   subGrupoController.obtener_subgrupos_grupo(req, res);
 });
 
-router.get("/obtener/subgrupos/tipo_venta/", (req, res) => {
-  console.log("obtener lalalallsdaf")
+router.post("/obtener/subgrupos/tipo_venta/", (req, res) => {
   subGrupoController.obtener_subgrupos_tipo_venta(req, res);
 });
 

@@ -166,7 +166,8 @@ const rm_grupo_has_subgrupo = (req,res) => {
 }
 
 const obtener_subgrupos_tipo_venta = (req, res) => {
-  subgrupoService.obtener_subgrupos_tipo_venta(null, (response)=>{
+  const {body} = req;
+  subgrupoService.obtener_subgrupos_tipo_venta(body, (response)=>{
     res.status(201).send({status:'OK', data:response});
   })
 }
