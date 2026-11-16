@@ -7,7 +7,8 @@ const getConnection = () =>{
             host: _global_vars.connection_data.host,
             user: _global_vars.connection_data.user,
             password: _global_vars.connection_data.password,
-            database: _global_vars.connection_data.database
+            database: _global_vars.connection_data.database,
+            port: Number(process.env.DB_PORT) || 3306,
         }
     );
 }
