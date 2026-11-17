@@ -568,20 +568,20 @@ const queryVentasMesVendedor = ({
     v.estado='ENTREGADO' AND 
     (case when '${idsucursal}'<>'-1' then v.sucursal_idsucursal=${idsucursal} ELSE TRUE END)`;
 
-const queryDescontarStockVenta = (data) => `update stock s,
+const queryDescontarStockVenta = ({idventa, usuario_idusuario, idsucursal}) => `update stock s,
     (
             SELECT 
                 vhs.stock_codigo_idcodigo AS 'idcodigo', 
                 sum(vhs.cantidad) AS 'cantidad' 
             FROM venta_has_stock vhs 
-                  WHERE vhs.venta_idventa= ${data.idventa} 
+                  WHERE vhs.venta_idventa= ${idventa} 
                   AND vhs.descontable=1
                   GROUP BY vhs.stock_codigo_idcodigo
     ) AS vs
-    SET s.cantidad = s.cantidad - vs.cantidad, s.modified_by=${data.usuario_idusuario}
+    SET s.cantidad = s.cantidad - vs.cantidad, s.modified_by=${usuario_idusuario}
     where
     vs.idcodigo = s.codigo_idcodigo AND 
-    s.sucursal_idsucursal=${data.idsucursal}
+    s.sucursal_idsucursal=${idsucursal}
     ;`;
 
 const queryRestaurarStockVenta = (

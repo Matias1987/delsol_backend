@@ -30,7 +30,6 @@ const verificar_cantidades_productos_v2 = async (
   { data, ignore_cristales },
   connection,
 ) => {
-  //console.log(JSON.stringify(data));
 
   const doPush = (idx, obj, _arr) =>
     !obj.hasOwnProperty(idx)
@@ -45,7 +44,6 @@ const verificar_cantidades_productos_v2 = async (
   var arr = [];
   switch (+data.tipo) {
     case 1: //DIRECTA
-      console.log("venta directa... adding");
       productos.forEach((p) => {
         arr.push(p);
       });
@@ -83,7 +81,7 @@ const verificar_cantidades_productos_v2 = async (
       arr = doPush("insumo", productos, arr);
       break;
   }
-  //console.log(JSON.stringify(arr))
+  
   var codigos = [];
   arr.forEach((r) => {
     const temp = codigos.find((c) => c.idcodigo == r.idcodigo);
@@ -124,11 +122,7 @@ const verificar_cantidades_productos_v2 = async (
     query = `select true; `;
   }
 
-  //console.log(query);
-
   const resp = await connection.query(query);
-
-  //console.log(JSON.stringify(resp[0]))
 
   const rows = resp[0];
   // check if there are codes with less than the required quantity!
@@ -144,7 +138,7 @@ const verificar_cantidades_productos_v2 = async (
         }
       }
     });
-    //console.log(JSON.stringify(codigos));
+
     for (let i = 0; i < codigos.length; i++) {
       if (codigos[i].cantidad > codigos[i].cantidad_serv) {
         c = codigos[i];
@@ -153,7 +147,7 @@ const verificar_cantidades_productos_v2 = async (
       }
     }
   }
-  //console.log(JSON.stringify({ error: error, ref: c }));
+  
   return { error: error, ref: c };
 };
 

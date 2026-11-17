@@ -54,50 +54,19 @@ const transaction_insert_venta = (data, callback) => {
   const id_usuario = data.usuario_idusuario || -1;
 
   if (data.fechaRetiro == null) {
-    data.fechaRetiro = `${__now.getDate()}-${__now.getMonth()}-${__now.getFullYear()}`;
+    data.fechaRetiro = `${__now.getDate()}-${parseInt(__now.getMonth()) + 1}-${__now.getFullYear()}`;
   }
 
   const { arrayQttiesCristales, elementsArrCristales } =
     get_quantities_arrays(data); //prepare quantities
 
   const __logic = async (connection) => {
-    if (data.edicion) {
-      console.log(
-        "Edicion de venta. Eliminando items y mp de venta id: " + data.idventa,
-      );
-
-      await inc_cantidades_stock_venta_v2(data, connection);
-
-      const sucursal_detalle = await connection.query(
-        queriesStockCristales.sucursal_cristales(data),
-      );
-
-      const _id_sucursal_cristales =
-        sucursal_detalle[0][0].fk_sucursal_cristales;
-
-      await restaurar_cantidades_venta({
-        id_sucursal_cristales: _id_sucursal_cristales,
-        idventa: data.idventa,
-      });
-
-      await connection.query(
-        `DELETE FROM venta_has_modo_pago vhmp WHERE vhmp.venta_idventa=?;`,
-        [data.idventa],
-      );
-
-      await connection.query(
-        `DELETE FROM venta_has_stock vhs WHERE vhs.venta_idventa=?;`,
-        [data.idventa],
-      );
-    }
-
     const resp_data_stock_cristales = await obtener_stock_cristales_v2(
       { codigos: arrayQttiesCristales, fk_sucursal: data.fksucursal },
       connection,
     );
 
     if (!resp_data_stock_cristales?.error) {
-      
       const stock_check = compare_requested_with_db_response(
         resp_data_stock_cristales.data,
         arrayQttiesCristales,
@@ -126,47 +95,36 @@ const transaction_insert_venta = (data, callback) => {
 
     let insert_data_id = -1;
 
-    if (data.edicion) {
-      console.log("Edicion de venta. Actualizando venta id: " + data.idventa);
+    const _data = parse_venta_data(data);
 
-      insert_data_id = data.idventa;
-      /*
-      to do
-      const result_update_venta = await connection.query(
-        update_venta_query(venta_queries.parse_venta_data(data), data.idventa),
-      );*/
-    } else {
-      const _data = parse_venta_data(data);
+    const v_values = [
+      _data.cliente_idcliente,
+      _data.sucursal_idsucursal,
+      _data.fkcaja == 0 ? _data.caja_idcaja : data.fkcaja,
+      _data.usuario_idusuario,
+      _data.medico_idmedico,
+      _data.monto_total,
+      _data.descuento,
+      _data.subtotal,
+      _data.comentarios,
+      _data.fecha_retiro,
+      _data.fk_destinatario,
+      _data.fk_os,
+      _data.tipo,
+      _data.monto_total,
+      _data.monto_total,
+      _data.horaRetiro,
+      "",
+      "",
+      _data.estado,
+      _data.descuento_mutual ?? "0",
+    ];
 
-      const v_values = [
-        _data.cliente_idcliente,
-        _data.sucursal_idsucursal,
-        _data.fkcaja == 0 ? _data.caja_idcaja : data.fkcaja,
-        _data.usuario_idusuario,
-        _data.medico_idmedico,
-        _data.monto_total,
-        _data.descuento,
-        _data.subtotal,
-        _data.comentarios,
-        _data.fecha_retiro,
-        _data.fk_destinatario,
-        _data.fk_os,
-        _data.tipo,
-        _data.monto_total,
-        _data.monto_total,
-        _data.horaRetiro,
-        "",
-        "",
-        _data.estado,
-        _data.descuento_mutual ?? "0",
-      ];
-      
-      const venta_insert_response = await connection.query(
-        venta_insert_query_v2,
-        v_values,
-      );
-      insert_data_id = venta_insert_response[0].insertId;
-    }
+    const venta_insert_response = await connection.query(
+      venta_insert_query_v2,
+      v_values,
+    );
+    insert_data_id = venta_insert_response[0].insertId;
 
     console.log("Venta insert id: " + insert_data_id);
 
@@ -531,9 +489,6 @@ const get_quantities_arrays = (data) => {
 
 const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {
   //compare requested quantities with stock quantities
-  console.log("Comparing requested quantities with database response...");
-  console.log("Database response: ", JSON.stringify(dbResponseArr));
-  console.log("Requested quantities: ", JSON.stringify(reqQtties));
   const responseWithQtty = dbResponseArr.map((stockRecord) => {
     const requestedQtty = reqQtties.find(
       (requested) =>
@@ -549,15 +504,6 @@ const compare_requested_with_db_response = (dbResponseArr, reqQtties) => {
         ? stockRecord.cantidad >= requestedQtty.cantidad
         : true,
     };
-
-    console.log(
-      `Stock record for codigo ${stockRecord.fk_codigo}, esf ${stockRecord.esf}, cil ${stockRecord.cil}:`,
-    );
-    console.log(`- Stock cantidad: ${stockRecord.cantidad}`);
-    console.log(`- Requested cantidad: ${response.requestedCantidad}`);
-    console.log(
-      `- Stock suficiente: ${response.stockSuficiente ? "Sí" : "No"}`,
-    );
 
     return response;
   });

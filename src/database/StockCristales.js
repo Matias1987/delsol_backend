@@ -144,8 +144,9 @@ const acutalizar_stock_cristales = (data, callback) => {
  *
  */
 
-const obtener_stock_cristales_v2 = async (data, connection) => {
-  if (!data.codigos || data.codigos.length == 0) {
+const obtener_stock_cristales_v2 = async ({codigos, fk_sucursal}, connection) => {
+  
+  if (!codigos || codigos.length == 0) {
     console.log(
       "No se proporcionaron codigos para obtener stock de cristales.",
     );
@@ -155,18 +156,16 @@ const obtener_stock_cristales_v2 = async (data, connection) => {
     };
   }
 
-  const query = `select * from stock_cristales s where s.fk_sucursal = ${data.fk_sucursal} and `;
-  let codigos = "";
+  const query = `select * from stock_cristales s where s.fk_sucursal = ${fk_sucursal} and `;
+  let codigosStr = "";
 
-  data.codigos.forEach((c) => {
-    codigos +=
-      (codigos.length > 0 ? " or " : "") +
+  codigos.forEach((c) => {
+    codigosStr +=
+      (codigosStr.length > 0 ? " or " : "") +
       `(s.fk_codigo=${c.idcodigo} and s.esf='${c.esf}' and s.cil='${c.cil}')`;
   });
-  //console.log("Query to obtain stock for cristales:");
-  //console.log(query + codigos);
 
-  const resp = await connection.query(query + codigos);
+  const resp = await connection.query(query + codigosStr);
   return { error: false, data: resp[0] };
 };
 
