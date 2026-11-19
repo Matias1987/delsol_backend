@@ -17,7 +17,7 @@ const obtener_comprobante = (idprov, callback) => {
   connection.end();
 };
 
-const agregar_comprobante= (data, callback) => {
+const agregar_comprobante = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(
@@ -29,7 +29,7 @@ const agregar_comprobante= (data, callback) => {
   connection.end();
 };
 
-const detalle_comprobante= (data, callback) => {
+const detalle_comprobante = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
 
@@ -57,7 +57,7 @@ const detalle_comprobante= (data, callback) => {
   connection.end();
 };
 
-const lista_elementos_comprobante_= (data, callback) => {
+const lista_elementos_comprobante_ = (data, callback) => {
   const connection = mysql_connection.getConnection();
   connection.connect();
   connection.query(
@@ -75,112 +75,6 @@ const lista_elementos_comprobante_= (data, callback) => {
   connection.end();
 };
 
-const agregar_comprobante_v2 = (data, callback) => {
-  console.log(JSON.stringify(data));
-  if (data.nro === "" || +data.fkproveedor === -1) {
-    console.log("Error en datos de factura");
-    callback(-1);
-    return;
-  }
-  const connection = mysql_connection.getConnection();
-
-  const _fecha = data.fecha == "" ? "now()" : data.fecha;
-  let idfactura = -1;
-
-  let query_factura = `INSERT INTO comprobante (numero, proveedor_idproveedor, monto, cantidad, tipo, punto_venta, es_remito, fecha, descuento, c_n_gravados, imp_int) VALUES (
-    ${connection.escape(data.nro)}, 
-    ${connection.escape(data.fkproveedor)},
-    ${connection.escape(data.total)},
-    ${connection.escape(data.cant_productos)},
-    ${connection.escape(data.tipo)},
-    ${connection.escape(data.puntoVenta)}, 
-    ${connection.escape(data.esremito)},
-    date(${connection.escape(data.fecha)}),
-    ${connection.escape(data.descuento)},
-    ${connection.escape(parseFloat(data.conceptosNoGravados || "0"))},
-    ${connection.escape(parseFloat(data.impuestosInternos || "0"))}
-    );`; //toDo
-
-  let query_iva = `INSERT INTO factura_iva (fk_factura, monto, tipo) VALUES `;
-  let query_retenciones = `INSERT INTO factura_retencion (fk_factura, monto, tipo) VALUES `;
-  let query_percepciones = `INSERT INTO factura_percepcion (fk_factura, monto) VALUES `;
-  let query_productos = `INSERT INTO codigo_factura (factura_idfactura, stock_codigo_idcodigo, cantidad, costo) VALUES `;
-  let query_increase_quantities = (
-    _idfactura,
-  ) => `UPDATE stock s, ( SELECT * from codigo_factura cf0 WHERE cf0.factura_idfactura=${_idfactura} ) cf
-                                SET s.cantidad = s.cantidad + cf.cantidad
-                                WHERE
-                                s.codigo_idcodigo = cf.stock_codigo_idcodigo AND  
-                                s.sucursal_idsucursal = ${data.idsucursal};`;
-
-  const _process = (_queries) => {
-    if (_queries.length < 1) {
-      callback(idfactura);
-      return;
-    }
-    const query = _queries.pop();
-    console.log("Executing query: " + query);
-    doQuery(query, ({ data }) => {
-      _process(_queries);
-    });
-  };
-
-  //first insert factura
-  doQuery(query_factura, (result) => {
-    let idfactura = result.data.insertId;
-    let _iva = "";
-    let _retenciones = "";
-    let _percepciones = "";
-
-    data.iva.forEach((row) => {
-      _iva +=
-        (_iva.length > 0 ? "," : "") +
-        `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(
-          row.tipo,
-        )})`;
-    });
-
-    data.retenciones.forEach((row) => {
-      _retenciones +=
-        (_retenciones.length > 0 ? "," : "") +
-        `(${idfactura}, ${connection.escape(row.monto)}, ${connection.escape(row.tipo)})`;
-    });
-
-    data.percepciones.forEach((row) => {
-      _percepciones +=
-        (_percepciones.length > 0 ? "," : "") +
-        `(${idfactura}, ${connection.escape(row.monto)})`;
-    });
-
-    data.productos.forEach((row) => {
-      query_productos +=
-        (query_productos.endsWith("VALUES ") ? "" : ",") +
-        `(${idfactura}, ${connection.escape(row.idcodigo)}, ${connection.escape(
-          row.cantidad,
-        )}, ${connection.escape(+row.precio)})`;
-    });
-
-    let queries = [];
-
-    if (data.iva.length > 0) {
-      queries.push(query_iva + _iva);
-    }
-
-    if (data.retenciones.length > 0) {
-      queries.push(query_retenciones + _retenciones);
-    }
-
-    if (data.percepciones.length > 0) {
-      queries.push(query_percepciones + _percepciones);
-    }
-    if (data.productos.length > 0) {
-      queries.push(query_increase_quantities(idfactura));
-      queries.push(query_productos);
-    }
-
-    _process(queries);
-  });
-};
 const agregar_comprobante_v3 = (data, callback) => {
   console.log(JSON.stringify(data));
   if (data.nro === "" || +data.fkproveedor === -1) {
@@ -234,6 +128,12 @@ const agregar_comprobante_v3 = (data, callback) => {
   };
 
   console.log(query_factura);
+
+  try {
+    connection.end();
+  } catch (e) {
+    console.log(e);
+  }
 
   //first insert factura
   doQuery(query_factura, (result) => {
@@ -367,7 +267,7 @@ const obtener_comprobante_montos_adic = (idfactura, callback) => {
 };
 
 const obtener_comprobante_saldo = (data, callback) => {
-  const {idproveedor, moneda, modo} = data;
+  const { idproveedor, moneda, modo } = data;
   //modo 1 para facturas 2 remitos
   //console.log("obtener_facturas_saldo")
   //console.log(modo)

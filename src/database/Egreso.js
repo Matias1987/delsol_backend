@@ -1,5 +1,5 @@
 const mysql_connection = require("../lib/mysql_connection");
-const { doQuery } = require("./helpers/queriesHelper");
+const { doQuery, doQueryV2 } = require("./helpers/queriesHelper");
 // Example CRUD methods for Egreso with 'params' and 'callback' arguments
 // Create
 function createEgreso(params, callback) {
@@ -22,24 +22,21 @@ function createEgreso(params, callback) {
   connection.end();
 }
 function createEgresoV2(params, callback) {
-
   const { fk_caja, fk_motivo, monto, modos, fk_deuda } = params;
 
   const _fk_deuda = fk_deuda || null;
 
-    const connection = mysql_connection.getConnection();
-
+  //const connection = mysql_connection.getConnection();
+  const values = [fk_caja, fk_motivo, monto, modos, _fk_deuda];
   const sql = `insert into 
   caja_master.cm_egreso (fk_caja, fk_motivo, monto, fk_deuda) 
-  values (
-  ${connection.escape(fk_caja)}, 
-  ${connection.escape(fk_motivo)}, 
-  ${connection.escape(monto)},
-  ${connection.escape(_fk_deuda)}
-  )`;
+  values (?)`;
 
   console.log(sql);
+  const [response] = doQueryV2(sql, values);
 
+  callback(null, { id: response.insertId });
+  /*
   doQuery(sql, (results) => {
     console.log("Egreso created with ID:", results.data.insertId);
     if (!results || !results.data.insertId) {
@@ -58,21 +55,25 @@ function createEgresoV2(params, callback) {
       
       callback(null,{ id: results.data.insertId, ...params });
     });
-  });
+  });*/
 }
 
 const createEgresosModo = (idEgreso, data, callback) => {
-    
-    const values = data.map(modo => `(${idEgreso}, '${modo.modo}', ${modo.fk_cta_bancaria||null}, ${modo.monto})`).join(", ");
-    const sql = `INSERT INTO caja_master.cm_egreso_modo (fk_egreso, modo, fk_cta_bancaria, monto) VALUES ${values}`;
-    console.log(sql);
-    doQuery(sql, (results) => {
-        if (!results) {
-            console.log("Failed to create egreso modos");
-            return callback(null);
-        }
-        callback(results.data);
-    });
+  const values = data
+    .map(
+      (modo) =>
+        `(${idEgreso}, '${modo.modo}', ${modo.fk_cta_bancaria || null}, ${modo.monto})`,
+    )
+    .join(", ");
+  const sql = `INSERT INTO caja_master.cm_egreso_modo (fk_egreso, modo, fk_cta_bancaria, monto) VALUES ${values}`;
+  console.log(sql);
+  doQuery(sql, (results) => {
+    if (!results) {
+      console.log("Failed to create egreso modos");
+      return callback(null);
+    }
+    callback(results.data);
+  });
 };
 
 // Read

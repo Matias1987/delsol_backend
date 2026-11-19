@@ -401,6 +401,7 @@ const total_tarjetas_periodo = (data, callback) => {
     }
     callback(response);
   });
+  connection.end();
 };
 
 const total_cobros_tipo_periodo = ({ fecha_desde, fecha_hasta }, callback) => {
@@ -607,10 +608,10 @@ const obtener_ventas_por_tipo_producto = (
   AND vhs.stock_codigo_idcodigo=${idcodigo} 
   ) vhs1 
   WHERE vhs1.venta_idventa = v.idventa AND v.cliente_idcliente=c.idcliente`;
- console.log(query);
-  doQuery(query,(response)=>{
+  console.log(query);
+  doQuery(query, (response) => {
     callback(response.data);
-  })
+  });
 };
 
 module.exports = {

@@ -106,7 +106,9 @@ const obtenerTickets = (data, callback)=>{
         {
             console.log("Error trying to get tickets for sorteo")
         }
-    })
+    });
+
+    connection.end();
 }
 
 const determinarGanador = (data, callback) => {

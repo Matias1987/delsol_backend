@@ -23,21 +23,6 @@ const obtenerBancos = (callback, _bancos_prov) => {
   connection.end();
 };
 
-const obtenerBanco = (callback) => {
-  const connection = mysql_connection.getConnection();
-
-  connection.connect();
-
-  connection.query(
-    "select * from banco b where b.idbanco = 0 ",
-    (err, rows, fields) => {
-      return callback(rows);
-    }
-  );
-
-  connection.end();
-};
-
 const agregarBanco = (data, callback) => {
   const connection = mysql_connection.getConnection();
 
