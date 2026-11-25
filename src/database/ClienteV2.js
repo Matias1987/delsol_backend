@@ -1,6 +1,6 @@
 const queries = require("./queries/clienteQueries");
 const UsuarioDB = require("./Usuario");
-const { doQuery, escapeHelper } = require("./helpers/queriesHelper");
+const { doQuery, escapeHelper, doTransaction } = require("./helpers/queriesHelper");
 
 const update_cliente = (data, callback) => {
   const _q = `UPDATE cliente c SET c.direccion='${data.direccion}', c.nombre='${data.nombre}', c.apellido='${data.apellido}', c.telefono1='${data.telefono}', c.dni='${data.dni}' WHERE c.idcliente=${data.idcliente};`;
@@ -38,8 +38,35 @@ function getCurrentDate() {
 
 const do_agregar_cliente = (data, callback) => {
   //console.log(data);
-  const query =`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${escapeHelper(data.dni)});`;
 
+  // const query =`SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(${escapeHelper(data.dni)});`;
+  const logic = async (connection) => {
+    const [rows] = await connection.query('SELECT c.idcliente FROM cliente c WHERE trim(c.dni)=trim(?);', [data.dni]);
+    if (rows.length > 0) {
+      //el cliente ya existe
+      return callback({ msg: "Ya existe", error: 1 });
+    }
+    const _fecha = data?.fechaNac ? data.fechaNac : getCurrentDate();
+    const params = [
+      data.localidad_idlocalidad,
+      data.nombre,
+      data.apellido,
+      data.direccion,
+      data.dni,
+      data.telefono1,
+      data.telefono2,
+      data.destinatario,
+      _fecha,
+      data?.cliente_mayorista || "0",
+    ];
+    const [response] = await connection.query(queries.queryAgregarClienteV2, params);
+
+    return response.insertId
+  }
+  doTransaction(logic, response=>{
+    callback(response.data)
+  })
+/*
   doQuery(
     query,
     (resp) => {
@@ -50,25 +77,32 @@ const do_agregar_cliente = (data, callback) => {
       }
       const rows = resp.data;
       if (rows.length < 1) {
-        const _fecha = data?.fechaNac ?  data.fechaNac : getCurrentDate() ;
+        const _fecha = data?.fechaNac ? data.fechaNac : getCurrentDate();
         //console.log("fecha_nac: "+ _fecha);
+
+        const query = queries.queryAgregarCliente(
+          {
+            localidad_idlocalidad: data.localidad_idlocalidad,
+            nombre: data.nombre,
+            apellido: data.apellido,
+            direccion: data.direccion,
+            dni: data.dni,
+            telefono1: data.telefono1,
+            telefono2: data.telefono2,
+            destinatario: data.destinatario,
+            fechaNac: _fecha,
+            cliente_mayorista: data?.cliente_mayorista || "0",
+          }
+        )
+        console.log(query)
+
         doQuery(
-          queries.queryAgregarCliente(
-            {
-              localidad_idlocalidad: data.localidad_idlocalidad,
-              nombre: data.nombre,
-              apellido: data.apellido,
-              direccion: data.direccion,
-              dni: data.dni,
-              telefono1: data.telefono1,
-              telefono2: data.telefono2,
-              destinatario: data.destinatario,
-              fechaNac: _fecha,
-              cliente_mayorista: data?.cliente_mayorista||"0",
-            }
-          ),
+         queries.queryAgregarClienteV2
+          ,
           (resp) => {
-            doQuery(`INSERT INTO evento  (detalle, fk_usuario, fk_sucursal, tipo, ref_id) VALUE ('','${data.id_usuario}','${data.id_sucursal}','NUSR','${resp.data.insertId}');`,_=>{
+            const q = `INSERT INTO evento  (detalle, fk_usuario, fk_sucursal, tipo, ref_id) VALUE ('','${data.id_usuario}','${data.id_sucursal}','NUSR','${resp.data.insertId}');`
+            console.log(q);
+            doQuery(q,_=>{
                 return callback(resp.data.insertId);
             })
             
@@ -76,7 +110,7 @@ const do_agregar_cliente = (data, callback) => {
         );
       }
     },
-  );
+  );*/
 };
 
 const agregar_cliente = (data, callback) => {
@@ -84,7 +118,7 @@ const agregar_cliente = (data, callback) => {
 
 };
 
-const obtener_lista_clientes = ({mayorista, limit},callback) => {
+const obtener_lista_clientes = ({ mayorista, limit }, callback) => {
   let query = `SELECT c.*, 
     CONCAT(c.apellido,', ', c.nombre) AS 'nombre_completo'
      FROM cliente c where c.destinatario=0 AND (case when '${mayorista}'<>'1' then true else c.cliente_mayorista=1 end)`;
@@ -328,7 +362,7 @@ const desbloquear_cuenta = (idcliente, callback) => {
   const query = `update cliente c set c.bloqueado = 0 where c.idcliente = ${idcliente};`;
 
   doQuery(query, (resp) => {
-    callback(resp.data||null);
+    callback(resp.data || null);
   });
 };
 
@@ -371,7 +405,7 @@ const add_flag = (data, callback) => {
   const query = `update cliente c set c.flag='${data.flag}' where c.idcliente=${data.idcliente}`;
 
   doQuery(query, (resp) => {
-    callback(resp.data||null);
+    callback(resp.data || null);
   });
 };
 
@@ -401,7 +435,7 @@ const obtener_ultimas_graduaciones = (data, callback) => {
     )_	ORDER BY _.orden1 ASC, _.orden ASC   `;
 
   doQuery(query, (resp) => {
-    callback(resp.data||null);
+    callback(resp.data || null);
   });
 };
 

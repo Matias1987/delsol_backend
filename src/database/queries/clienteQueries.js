@@ -56,6 +56,30 @@ const queryAgregarCliente = (
         '${cliente_mayorista}' 
         )`;
 }
+const queryAgregarClienteV2 =  `INSERT INTO cliente (
+        localidad_idlocalidad, 
+        nombre, 
+        apellido, 
+        direccion, 
+        dni, 
+        telefono1, 
+        telefono2,
+        destinatario,
+        fecha_nacimiento,
+        cliente_mayorista
+        ) values (
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ? 
+        )`;
+
 
 const queryObtenerBalance = (idcliente) => {
     return `SELECT SUM(op.debe) AS 'debe', SUM(op.haber) AS 'haber'  FROM
@@ -112,5 +136,6 @@ module.exports = {
     queryObtenerListaClientes,
     queryAgregarCliente,
     queryObtenerBalance,
+    queryAgregarClienteV2
 }
 
