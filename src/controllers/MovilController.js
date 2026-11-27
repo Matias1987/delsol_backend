@@ -7,4 +7,15 @@ const insert = (req, res) => {
   });
 };
 
-module.exports = { insert };
+const obtenerSucursales = (req, res) => {
+  service.obtenerSucursales(response => {
+    res.send({ status: "OK", data: response });
+  })
+}
+const obtenerVendedores = (req, res) => {
+  service.obtenerVendedores(response => {
+    res.send({ status: "OK", data: response });
+  })
+}
+
+module.exports = { insert, obtenerSucursales, obtenerVendedores };

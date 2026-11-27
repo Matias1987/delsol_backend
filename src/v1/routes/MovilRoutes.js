@@ -6,4 +6,12 @@ router.post("/operaciones/", (req, res) => {
   controller.insert(req, res);
 });
 
+router.get("/sucursales/", (req, res) => {
+  controller.obtenerSucursales(req, res);
+})
+
+router.get("/vendedores/", (req, res) => {
+  controller.obtenerVendedores(req, res);
+})
+
 module.exports = router;

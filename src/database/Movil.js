@@ -1,3 +1,4 @@
+const { response } = require("express");
 const { doTransaction } = require("./helpers/queriesHelper");
 
 const insert = (data, callback) => {
@@ -197,4 +198,21 @@ const cambiarEstadoOperacion = async (req, res) => {
   });
 };
 
-module.exports = { insert, listarOperacionesMovil, cambiarEstadoOperacion };
+const obtenerVendedores = (callback) => {
+  doTransaction(async connection => {
+    return await connection.query();
+  }, response => {
+    callback(response.data)
+  })
+}
+
+const obtenerSucursales = (callback) => {
+  doTransaction(async connection => {
+    return await connection.query("");
+  },
+    response => {
+      callback(response.data)
+    })
+}
+
+module.exports = { insert, listarOperacionesMovil, cambiarEstadoOperacion, obtenerSucursales, obtenerVendedores };
