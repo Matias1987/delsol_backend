@@ -8,14 +8,39 @@ const insert = (req, res) => {
 };
 
 const obtenerSucursales = (req, res) => {
-  service.obtenerSucursales(response => {
-    res.send({ status: "OK", data: response });
-  })
-}
+  service.obtenerSucursales((response) => {
+    res.send(response);
+  });
+};
 const obtenerVendedores = (req, res) => {
-  service.obtenerVendedores(response => {
-    res.send({ status: "OK", data: response });
-  })
-}
+  service.obtenerVendedores((response) => {
+    res.send(response);
+  });
+};
 
-module.exports = { insert, obtenerSucursales, obtenerVendedores };
+const listarOperacionesMovil = (req, res) => {
+  //console.log(req);
+ console.log(req.query);
+ //console.log(req.params);
+ //console.log(req.originalUrl);
+
+  const { sucursalId, estado, usuarioId } = req.query;
+
+  service.listarOperacionesMovil(
+    {
+      sucursalId: sucursalId ?? null,
+      estado: estado ?? null,
+      usuarioId: usuarioId ?? null,
+    },
+    (response) => {
+      res.send({ status: "OK", data: response });
+    },
+  );
+};
+
+module.exports = {
+  insert,
+  obtenerSucursales,
+  obtenerVendedores,
+  listarOperacionesMovil,
+};

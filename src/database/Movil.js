@@ -1,10 +1,11 @@
 const { response } = require("express");
 const { doTransaction } = require("./helpers/queriesHelper");
-
-const insert = (data, callback) => {
-  /**
-     * payload
-     * {
+/**
+ * 
+ * url: http://localhost:3001/api/v1/operaciones/
+ * 
+ * payload example:
+   {
       id: 1,
       codigo: "AB7K9",
       clienteNombre: "Juan Perez",
@@ -55,8 +56,8 @@ const insert = (data, callback) => {
       fechaCreacion: "20/11/2026 14:35",
     },
 
-     */
-
+ */
+const insert = (data, callback) => {
   const {
     codigo,
     vendedorId,
@@ -67,12 +68,11 @@ const insert = (data, callback) => {
     estado,
   } = data;
 
+  console.log(JSON.stringify(data));
+
   // Validación básica de campos obligatorios (NOT NULL en la tabla)
-  if (!codigo || !vendedorId || !sucursalId) {
-    return res.status(400).json({
-      success: false,
-      message: "Faltan campos obligatorios: codigo, vendedorId o sucursalId.",
-    });
+  if (!codigo || vendedorId == null || sucursalId == null) {
+    return callback({ error: 1 });
   }
 
   const sql = `
@@ -97,27 +97,32 @@ const insert = (data, callback) => {
     estado || "PENDIENTE",
   ];
 
-  const logic = async (connection) => {
-    await connection.query(sql, values);
-  };
-
-  doTransaction(logic, (response) => {
-    callback(response.data);
-  });
+  //doTransaction is a helper with a try catch block.
+  doTransaction(
+    async (connection) => {
+      console.log(connection.format(sql, values));
+      await connection.query(sql, values);
+    },
+    (response) => {
+      callback(response.data);
+    },
+  );
 };
 
 // 2. OBTENER LISTADO (GET)
 // Soporta filtros opcionales por query: ?sucursalId=16&estado=PENDIENTE
-const listarOperacionesMovil = async (req, res) => {
-  const { sucursalId, estado, usuarioId } = req.query;
+const listarOperacionesMovil = (data, callback) => {
+  const { sucursalId, estado, usuarioId } = data;
 
-  let sql = `
+  const logic = async (connection) => {
+    let sql = `
       SELECT 
         id,
         codigo,
         usuario_id AS vendedorId,
         sucursal_id AS sucursalId,
         cliente_nombre AS clienteNombre,
+        'Carlos' AS vendedorNombre,
         datos_dni AS datosDni,
         datos_receta AS datosReceta,
         estado,
@@ -127,42 +132,46 @@ const listarOperacionesMovil = async (req, res) => {
       WHERE 1=1
     `;
 
-  const params = [];
+    const params = [];
 
-  if (sucursalId) {
-    sql += " AND sucursal_id = ?";
-    params.push(sucursalId);
-  }
+    if (sucursalId) {
+      sql += " AND sucursal_id = ?";
+      params.push(sucursalId);
+    }
 
-  if (usuarioId) {
-    sql += " AND usuario_id = ?";
-    params.push(usuarioId);
-  }
+    if (usuarioId) {
+      sql += " AND usuario_id = ?";
+      params.push(usuarioId);
+    }
 
-  // Si no se envía estado, por defecto podrías traer solo las PENDIENTE o todas
-  if (estado) {
-    sql += " AND estado = ?";
-    params.push(estado);
-  }
+    // Si no se envía estado, por defecto podrías traer solo las PENDIENTE o todas
+    if (estado) {
+      sql += " AND estado = ?";
+      params.push(estado);
+    }
 
-  sql += " ORDER BY fecha_creacion DESC";
+    sql += " ORDER BY fecha_creacion DESC";
 
-  const [rows] = await pool.execute(sql, params);
+    const [rows] = await connection.query(sql, params);
+    // Asegurar que las columnas JSON se devuelvan como objetos y no como strings
+    const dataFormateada = rows.map((row) => ({
+      ...row,
+      datosDni:
+        typeof row.datosDni === "string"
+          ? JSON.parse(row.datosDni)
+          : row.datosDni,
+      datosReceta:
+        typeof row.datosReceta === "string"
+          ? JSON.parse(row.datosReceta)
+          : row.datosReceta,
+    }));
 
-  // Asegurar que las columnas JSON se devuelvan como objetos y no como strings
-  const dataFormateada = rows.map((row) => ({
-    ...row,
-    datosDni:
-      typeof row.datosDni === "string"
-        ? JSON.parse(row.datosDni)
-        : row.datosDni,
-    datosReceta:
-      typeof row.datosReceta === "string"
-        ? JSON.parse(row.datosReceta)
-        : row.datosReceta,
-  }));
+    return dataFormateada;
+  };
 
-  callback({ data: dataFormateada });
+  doTransaction(logic, (response) => {
+    callback(response.data);
+  });
 };
 
 const cambiarEstadoOperacion = async (req, res) => {
@@ -199,20 +208,33 @@ const cambiarEstadoOperacion = async (req, res) => {
 };
 
 const obtenerVendedores = (callback) => {
-  doTransaction(async connection => {
-    return await connection.query();
-  }, response => {
-    callback(response.data)
-  })
-}
+  doTransaction(
+    async (connection) => {
+      const data = await connection.query("SELECT u.idusuario AS id, u.nombre FROM usuario u;");
+      return data[0];
+    },
+    (response) => {
+      callback(response.data);
+    },
+  );
+};
 
 const obtenerSucursales = (callback) => {
-  doTransaction(async connection => {
-    return await connection.query("");
-  },
-    response => {
-      callback(response.data)
-    })
-}
+  doTransaction(
+    async (connection) => {
+      const data = await connection.query("SELECT s.idsucursal AS id, s.nombre FROM sucursal s ;")
+      return data[0];
+    },
+    (response) => {
+      callback(response.data);
+    },
+  );
+};
 
-module.exports = { insert, listarOperacionesMovil, cambiarEstadoOperacion, obtenerSucursales, obtenerVendedores };
+module.exports = {
+  insert,
+  listarOperacionesMovil,
+  cambiarEstadoOperacion,
+  obtenerSucursales,
+  obtenerVendedores,
+};

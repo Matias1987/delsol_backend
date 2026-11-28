@@ -343,6 +343,9 @@ app.use("/api/v1/pedidos", pedidoRouter);
 const pingRouter = require("./v1/routes/Ping");
 app.use("/api/v1/ping", pingRouter);
 
+const movilRouter = require("./v1/routes/MovilRoutes");
+app.use("/api/v1/movil", movilRouter);
+
 /*
 app.listen(port, () => {
     console.log('api is listening on port ' + port)

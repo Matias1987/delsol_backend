@@ -17,4 +17,10 @@ const obtenerSucursales = (callback) => {
   })
 }
 
-module.exports = { insert, obtenerSucursales, obtenerVendedores };
+const listarOperacionesMovil = (data, callback) => {
+  db.listarOperacionesMovil(data, response => {
+    callback(response);
+  })
+}
+
+module.exports = { insert, obtenerSucursales, obtenerVendedores, listarOperacionesMovil };
